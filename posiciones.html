@@ -1,0 +1,1315 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GO2 — Posiciones de Personajes</title>
+  <style>
+    :root{
+      --bg:#070a12;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.09);
+      --stroke:rgba(255,255,255,.12);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.65);
+      --accent:#7c5cff;
+      --good:#38d39f;
+      --warn:#ffcc66;
+      --bad:#ff5c7a;
+      --shadow: 0 14px 40px rgba(0,0,0,.45);
+      --radius: 18px;
+      --radius2: 14px;
+      --blur: 14px;
+      --pitchLine: rgba(255,255,255,.35);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 700px at 15% 10%, rgba(124,92,255,.20), transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, rgba(56,211,159,.12), transparent 60%),
+        radial-gradient(700px 450px at 60% 90%, rgba(255,92,122,.10), transparent 60%),
+        linear-gradient(180deg, #040612, #070a12 50%, #050816);
+      color:var(--text);
+      overflow:hidden;
+    }
+
+    /* Layout */
+    .app{
+      height:100%;
+      display:grid;
+      grid-template-columns: 360px 1fr 360px;
+      gap:14px;
+      padding:14px;
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+
+    header.topbar{
+      grid-column:1 / -1;
+      background:linear-gradient(90deg, rgba(124,92,255,.16), rgba(56,211,159,.10));
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      min-width: 260px;
+    }
+    .logo{
+      width:38px; height:38px; border-radius:12px;
+      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.30), transparent 45%),
+                  linear-gradient(135deg, rgba(124,92,255,.85), rgba(56,211,159,.65));
+      box-shadow: 0 12px 30px rgba(124,92,255,.18);
+      border:1px solid rgba(255,255,255,.18);
+      display:grid; place-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-40%;
+      background: linear-gradient(120deg, transparent 0 40%, rgba(255,255,255,.22) 50%, transparent 60% 100%);
+      transform: rotate(25deg);
+      animation: sheen 6s linear infinite;
+    }
+    @keyframes sheen{ to{ transform: rotate(25deg) translateX(60%);} }
+
+    .brand h1{
+      font-size:15px;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .brand p{
+      margin:2px 0 0 0;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .top-actions{
+      display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.07);
+      color:var(--text);
+      padding:9px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+    }
+    .btn:hover{ background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.18); transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0px) scale(.99); }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(124,92,255,.75), rgba(124,92,255,.35));
+      border-color: rgba(124,92,255,.55);
+    }
+    .btn.good{ background: linear-gradient(135deg, rgba(56,211,159,.65), rgba(56,211,159,.25)); border-color: rgba(56,211,159,.55); }
+    .btn.warn{ background: linear-gradient(135deg, rgba(255,204,102,.55), rgba(255,204,102,.20)); border-color: rgba(255,204,102,.50); }
+    .btn.bad{ background: linear-gradient(135deg, rgba(255,92,122,.55), rgba(255,92,122,.20)); border-color: rgba(255,92,122,.50); }
+
+    .kbd{
+      font-size:11px;
+      color:rgba(255,255,255,.85);
+      padding:2px 6px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.25);
+    }
+
+    /* Left panel (roster) */
+    .panel .head{
+      padding:14px 14px 10px 14px;
+      border-bottom:1px solid var(--stroke);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+    }
+    .panel .head h2{
+      margin:0;
+      font-size:13px;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin-top:6px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.06);
+      color:rgba(255,255,255,.85);
+      font-weight:600;
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .search{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    input[type="text"], textarea, select, input[type="number"]{
+      width:100%;
+      border-radius:12px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.18);
+      color:var(--text);
+      padding:10px 10px;
+      outline:none;
+      font-size:12px;
+      transition:border-color .12s ease, background .12s ease;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus, input[type="number"]:focus{
+      border-color: rgba(124,92,255,.55);
+      background: rgba(0,0,0,.28);
+    }
+    textarea{
+      min-height:88px;
+      resize:vertical;
+      line-height:1.35;
+    }
+
+    .roster{
+      padding:12px 10px 12px 12px;
+      overflow:auto;
+      min-height:0;
+    }
+
+    .card{
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.06);
+      border-radius:16px;
+      padding:10px;
+      margin:0 0 10px 0;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      cursor:grab;
+      user-select:none;
+      position:relative;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .card:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.18);
+    }
+    .card:active{ cursor:grabbing; }
+
+    .avatar{
+      width:42px; height:42px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,.22), transparent 45%),
+        linear-gradient(135deg, rgba(255,255,255,.10), rgba(0,0,0,.18));
+      display:grid; place-items:center;
+      font-weight:900;
+      letter-spacing:.5px;
+      color: rgba(255,255,255,.85);
+      flex:0 0 auto;
+      position:relative;
+      overflow:hidden;
+    }
+    .avatar .tag{
+      position:absolute;
+      bottom:6px; right:6px;
+      font-size:10px;
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.25);
+      color: rgba(255,255,255,.80);
+      font-weight:800;
+    }
+
+    .meta{
+      flex:1;
+      min-width:0;
+    }
+    .nameRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .meta .name{
+      font-weight:900;
+      font-size:12.5px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .meta .small{
+      color:var(--muted);
+      font-size:11.5px;
+      margin-top:3px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.20);
+      color: rgba(255,255,255,.80);
+      font-size:11px;
+      font-weight:700;
+    }
+
+    .actionsRow{
+      display:flex; gap:6px;
+    }
+    .iconBtn{
+      width:30px; height:30px;
+      border-radius:10px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.22);
+      cursor:pointer;
+      display:grid; place-items:center;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .iconBtn:hover{
+      transform: translateY(-1px);
+      background: rgba(0,0,0,.30);
+      border-color: rgba(255,255,255,.18);
+    }
+    .iconBtn:active{ transform: translateY(0); }
+
+    /* Middle (pitch) */
+    .pitchWrap{
+      background: var(--panel);
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+
+    .pitchHead{
+      padding:14px 14px 10px 14px;
+      border-bottom:1px solid var(--stroke);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+    }
+    .pitchHead h2{ margin:0; font-size:13px; letter-spacing:.2px; }
+    .legend{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .dot{ width:10px; height:10px; border-radius:999px; display:inline-block; margin-right:6px; }
+    .dGK{ background: rgba(124,92,255,.9); }
+    .dDF{ background: rgba(56,211,159,.9); }
+    .dMF{ background: rgba(255,204,102,.9); }
+    .dFW{ background: rgba(255,92,122,.9); }
+
+    .pitch{
+      position:relative;
+      flex:1;
+      min-height:0;
+      overflow:hidden;
+      background:
+        radial-gradient(700px 450px at 50% 30%, rgba(255,255,255,.06), transparent 60%),
+        linear-gradient(180deg, rgba(35,120,80,.22), rgba(10,55,35,.28)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 22px, rgba(0,0,0,0) 22px 44px);
+    }
+
+    .pitch:before{
+      content:"";
+      position:absolute; inset:24px;
+      border:2px solid var(--pitchLine);
+      border-radius:22px;
+      opacity:.9;
+      pointer-events:none;
+    }
+    .lineMid{
+      position:absolute;
+      left:50%;
+      top:24px;
+      bottom:24px;
+      width:2px;
+      transform:translateX(-50%);
+      background:var(--pitchLine);
+      opacity:.85;
+      pointer-events:none;
+    }
+    .circleMid{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:180px; height:180px;
+      transform:translate(-50%,-50%);
+      border-radius:999px;
+      border:2px solid var(--pitchLine);
+      opacity:.85;
+      pointer-events:none;
+    }
+    .boxL, .boxR{
+      position:absolute;
+      top:50%;
+      width:150px; height:240px;
+      transform:translateY(-50%);
+      border:2px solid var(--pitchLine);
+      opacity:.85;
+      pointer-events:none;
+      border-radius:18px;
+    }
+    .boxL{ left:24px; }
+    .boxR{ right:24px; }
+
+    .zoneGrid{
+      position:absolute; inset:24px;
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap:12px;
+      padding:12px;
+    }
+
+    .zone{
+      border:1px dashed rgba(255,255,255,.22);
+      border-radius:18px;
+      background: rgba(0,0,0,.10);
+      position:relative;
+      padding:10px 10px 12px 10px;
+      overflow:hidden;
+    }
+    .zone h3{
+      margin:0;
+      font-size:11.5px;
+      letter-spacing:.4px;
+      text-transform:uppercase;
+      color: rgba(255,255,255,.78);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .zone .count{
+      font-size:11px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.20);
+      color: rgba(255,255,255,.85);
+      font-weight:800;
+    }
+    .zone .slot{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height: 120px;
+    }
+
+    .mini{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.07);
+      border-radius:14px;
+      padding:9px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      cursor:grab;
+      user-select:none;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .mini:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.20);
+    }
+    .mini:active{ cursor:grabbing; transform: translateY(0); }
+
+    .mini .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .badge{
+      width:30px; height:30px; border-radius:12px;
+      display:grid; place-items:center;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      flex:0 0 auto;
+    }
+    .mini .txt{
+      min-width:0;
+    }
+    .mini .t1{
+      font-weight:900;
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .mini .t2{
+      font-size:11px;
+      color: var(--muted);
+      margin-top:2px;
+      display:flex; gap:6px; flex-wrap:wrap;
+    }
+
+    .mini .right{
+      display:flex;
+      gap:6px;
+      flex:0 0 auto;
+    }
+
+    .dropHint{
+      position:absolute;
+      inset:0;
+      display:none;
+      place-items:center;
+      text-align:center;
+      padding:18px;
+      color:rgba(255,255,255,.75);
+      font-weight:800;
+      background: rgba(124,92,255,.12);
+      border:2px dashed rgba(124,92,255,.45);
+      border-radius:18px;
+      pointer-events:none;
+    }
+    .zone.dragover .dropHint{ display:grid; }
+
+    /* Right panel (editor) */
+    .editor{
+      padding:12px 14px 14px 14px;
+      overflow:auto;
+      min-height:0;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .grid .full{ grid-column:1 / -1; }
+    label{
+      display:block;
+      font-size:11px;
+      color:rgba(255,255,255,.78);
+      margin: 10px 0 6px 2px;
+      font-weight:800;
+      letter-spacing:.25px;
+      text-transform:uppercase;
+    }
+    .muted{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    .sep{
+      margin:14px 0;
+      height:1px;
+      background: var(--stroke);
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:16px;
+      transform:translateX(-50%);
+      background: rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.18);
+      color: rgba(255,255,255,.92);
+      padding:10px 12px;
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 14px 40px rgba(0,0,0,.45);
+      font-size:12px;
+      font-weight:700;
+      display:none;
+      gap:10px;
+      align-items:center;
+      max-width:min(560px, calc(100% - 28px));
+    }
+    .toast.show{ display:flex; }
+    .toast .tDot{
+      width:10px;height:10px;border-radius:999px;background:var(--good);
+      box-shadow:0 0 0 6px rgba(56,211,159,.12);
+    }
+
+    .lockRow{
+      display:flex; align-items:center; gap:10px; margin-top:12px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      padding:10px 12px;
+      border-radius: 14px;
+    }
+    .switch{
+      width:42px; height:24px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.25);
+      position:relative;
+      cursor:pointer;
+      flex:0 0 auto;
+    }
+    .switch i{
+      position:absolute; top:50%; left:3px;
+      width:18px; height:18px;
+      transform: translateY(-50%);
+      border-radius:999px;
+      background: rgba(255,255,255,.85);
+      transition: left .12s ease, background .12s ease;
+    }
+    .switch.on{
+      background: rgba(56,211,159,.25);
+      border-color: rgba(56,211,159,.45);
+    }
+    .switch.on i{ left:20px; background: rgba(255,255,255,.92); }
+
+    .hint{
+      font-size:12px;
+      color: rgba(255,255,255,.72);
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px dashed rgba(255,255,255,.18);
+      background: rgba(0,0,0,.16);
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px){
+      body{ overflow:auto; }
+      .app{
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+      }
+      header.topbar{ position:sticky; top:0; z-index:20; }
+      .pitchWrap{ min-height: 620px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">⚡</div>
+        <div>
+          <h1>GO2 — Posiciones de Personajes</h1>
+          <p>Arrastra jugadores al campo, edítalos y guarda tu plantilla. Exporta/Importa en JSON.</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn primary" id="btnAdd">➕ Añadir jugador</button>
+        <button class="btn good" id="btnSave">💾 Guardar</button>
+        <button class="btn" id="btnLoad">📥 Cargar</button>
+        <button class="btn warn" id="btnExport">⤴ Exportar JSON</button>
+        <button class="btn" id="btnImport">⤵ Importar JSON</button>
+        <button class="btn bad" id="btnReset">🧨 Reset</button>
+        <span class="pill"><span class="kbd">Ctrl</span> + <span class="kbd">S</span> guarda</span>
+      </div>
+    </header>
+
+    <!-- Left: Roster -->
+    <section class="panel" id="rosterPanel">
+      <div class="head">
+        <h2>Plantilla (Roster)</h2>
+        <div class="sub">
+          <span id="rosterCount">0 jugadores</span>
+          <span class="pill" id="placedCount">0 en campo</span>
+        </div>
+        <div class="search">
+          <input id="searchInput" type="text" placeholder="Buscar por nombre, rol, elemento, dorsal..." />
+          <button class="btn" id="btnClearSearch" title="Limpiar">🧹</button>
+        </div>
+      </div>
+      <div class="roster" id="rosterList" aria-label="Lista de jugadores"></div>
+    </section>
+
+    <!-- Middle: Pitch -->
+    <section class="pitchWrap">
+      <div class="pitchHead">
+        <h2>Campo — Zonas GO2</h2>
+        <div class="legend">
+          <span><span class="dot dGK"></span>Portero</span>
+          <span><span class="dot dDF"></span>Defensa</span>
+          <span><span class="dot dMF"></span>Medio</span>
+          <span><span class="dot dFW"></span>Delantera</span>
+        </div>
+      </div>
+
+      <div class="pitch" id="pitch">
+        <div class="lineMid"></div>
+        <div class="circleMid"></div>
+        <div class="boxL"></div>
+        <div class="boxR"></div>
+
+        <div class="zoneGrid">
+          <div class="zone" data-zone="GK">
+            <h3><span>Portero</span><span class="count" id="countGK">0</span></h3>
+            <div class="slot" id="slotGK"></div>
+            <div class="dropHint">Suelta aquí<br>para ponerlo de <b>Portero</b></div>
+          </div>
+
+          <div class="zone" data-zone="DF">
+            <h3><span>Defensa</span><span class="count" id="countDF">0</span></h3>
+            <div class="slot" id="slotDF"></div>
+            <div class="dropHint">Suelta aquí<br>para ponerlo de <b>Defensa</b></div>
+          </div>
+
+          <div class="zone" data-zone="MF">
+            <h3><span>Medio</span><span class="count" id="countMF">0</span></h3>
+            <div class="slot" id="slotMF"></div>
+            <div class="dropHint">Suelta aquí<br>para ponerlo de <b>Medio</b></div>
+          </div>
+
+          <div class="zone" data-zone="FW">
+            <h3><span>Delantera</span><span class="count" id="countFW">0</span></h3>
+            <div class="slot" id="slotFW"></div>
+            <div class="dropHint">Suelta aquí<br>para ponerlo de <b>Delantero</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: Editor -->
+    <aside class="panel">
+      <div class="head">
+        <h2>Editor del personaje</h2>
+        <div class="sub">
+          <span id="selectedLabel">Selecciona un jugador</span>
+          <span class="pill" id="selectedIdPill">—</span>
+        </div>
+      </div>
+
+      <div class="editor">
+        <div class="muted">
+          Tip: haz clic en un jugador del roster o del campo para editarlo aquí.
+        </div>
+
+        <div class="lockRow">
+          <div class="switch" id="lockSwitch" role="switch" aria-checked="false" tabindex="0" title="Bloquear arrastre">
+            <i></i>
+          </div>
+          <div>
+            <div style="font-weight:900;">Bloquear movimientos</div>
+            <div class="muted" style="margin-top:3px;">Si está ON, no podrás arrastrar jugadores.</div>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="grid">
+          <div class="full">
+            <label>Nombre</label>
+            <input id="fName" type="text" placeholder="Ej: Renzu Itō" />
+          </div>
+
+          <div>
+            <label>Dorsal</label>
+            <input id="fNumber" type="number" min="0" max="999" placeholder="Ej: 10" />
+          </div>
+
+          <div>
+            <label>Posición (zona)</label>
+            <select id="fZone">
+              <option value="">— Sin asignar —</option>
+              <option value="GK">Portero (GK)</option>
+              <option value="DF">Defensa (DF)</option>
+              <option value="MF">Medio (MF)</option>
+              <option value="FW">Delantera (FW)</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Rol</label>
+            <select id="fRole">
+              <option value="Jugador">Jugador</option>
+              <option value="Capitán">Capitán</option>
+              <option value="As">As</option>
+              <option value="Estratega">Estratega</option>
+              <option value="Portero">Portero</option>
+              <option value="Defensa">Defensa</option>
+              <option value="Mediocampista">Mediocampista</option>
+              <option value="Delantero">Delantero</option>
+              <option value="Manager">Manager</option>
+              <option value="Entrenador">Entrenador</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Elemento</label>
+            <select id="fElement">
+              <option value="—">—</option>
+              <option value="Fuego">Fuego</option>
+              <option value="Aire">Aire</option>
+              <option value="Montaña">Montaña</option>
+              <option value="Bosque">Bosque</option>
+              <option value="Hielo">Hielo</option>
+              <option value="Rayo">Rayo</option>
+              <option value="Luz">Luz</option>
+              <option value="Oscuridad">Oscuridad</option>
+              <option value="Neutro">Neutro</option>
+            </select>
+          </div>
+
+          <div class="full">
+            <label>Notas</label>
+            <textarea id="fNotes" placeholder="Ej: juega mejor por banda derecha, técnica X, etc."></textarea>
+          </div>
+
+          <div class="full" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
+            <button class="btn good" id="btnApply">✅ Aplicar cambios</button>
+            <button class="btn" id="btnUnassign">🧲 Quitar del campo</button>
+            <button class="btn bad" id="btnDelete">🗑️ Borrar jugador</button>
+          </div>
+        </div>
+
+        <div class="hint">
+          <b>Import/Export JSON:</b> ideal para guardarte la plantilla y pegarla en tu wiki o pasársela a un colega.
+          También puedes preparar una lista grande fuera y luego importarla aquí.
+        </div>
+
+        <div class="sep"></div>
+
+        <label>JSON (para Exportar / Importar)</label>
+        <textarea id="jsonBox" placeholder="Aquí aparecerá el JSON al exportar…"></textarea>
+      </div>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="tDot"></span>
+    <span id="toastMsg">Listo</span>
+  </div>
+
+  <script>
+    // =========================
+    // Data model
+    // =========================
+    const LS_KEY = "go2_positions_v1";
+
+    /** @type {{id:string, name:string, number:number|null, role:string, element:string, zone:""|"GK"|"DF"|"MF"|"FW", notes:string}[]} */
+    let players = [];
+
+    let selectedId = null;
+    let lockMoves = false;
+
+    // Demo seed (puedes borrar esto si quieres arrancar vacío)
+    const demoSeed = [
+      { name:"Renzu Itō", number:10, role:"As", element:"Fuego", zone:"FW", notes:"Tiro principal del equipo." },
+      { name:"Jeanne d’Arc", number:9, role:"Capitán", element:"Luz", zone:"MF", notes:"Control y liderazgo." },
+      { name:"Mavuika", number:7, role:"Jugador", element:"Rayo", zone:"DF", notes:"Velocidad + presión alta." },
+      { name:"Kanon Tsukihara", number:null, role:"Manager", element:"—", zone:"", notes:"Apoya desde la banda." },
+    ];
+
+    // =========================
+    // Helpers
+    // =========================
+    const $ = (id) => document.getElementById(id);
+
+    function uid(){
+      return Math.random().toString(16).slice(2,10) + "-" + Date.now().toString(16).slice(-6);
+    }
+
+    function initials(name){
+      const parts = (name || "").trim().split(/\s+/).filter(Boolean);
+      if(!parts.length) return "??";
+      const a = parts[0][0] || "?";
+      const b = parts.length > 1 ? (parts[parts.length-1][0] || "") : (parts[0][1] || "");
+      return (a + b).toUpperCase();
+    }
+
+    function zoneLabel(z){
+      return z === "GK" ? "Portero"
+        : z === "DF" ? "Defensa"
+        : z === "MF" ? "Medio"
+        : z === "FW" ? "Delantera"
+        : "Sin asignar";
+    }
+
+    function elementBadge(el){
+      // Solo para estética (sin colores fijos exigidos), usamos emojis
+      const map = {
+        "Fuego":"🔥","Aire":"🌪️","Montaña":"🪨","Bosque":"🌿","Hielo":"❄️","Rayo":"⚡",
+        "Luz":"✨","Oscuridad":"🌑","Neutro":"⚪","—":"—"
+      };
+      return map[el] ?? "—";
+    }
+
+    function toast(msg){
+      const t = $("toast");
+      $("toastMsg").textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(()=>t.classList.remove("show"), 1800);
+    }
+
+    function placedCount(){
+      return players.filter(p => p.zone).length;
+    }
+
+    function countsByZone(){
+      return {
+        GK: players.filter(p=>p.zone==="GK").length,
+        DF: players.filter(p=>p.zone==="DF").length,
+        MF: players.filter(p=>p.zone==="MF").length,
+        FW: players.filter(p=>p.zone==="FW").length,
+      };
+    }
+
+    function sanitizeNumber(n){
+      if(n === "" || n === null || typeof n === "undefined") return null;
+      const v = Number(n);
+      if(Number.isNaN(v)) return null;
+      return Math.max(0, Math.min(999, Math.floor(v)));
+    }
+
+    // =========================
+    // Rendering
+    // =========================
+    function render(){
+      renderRoster();
+      renderPitch();
+      renderCounts();
+      renderSelectedInfo();
+    }
+
+    function renderCounts(){
+      const c = countsByZone();
+      $("countGK").textContent = c.GK;
+      $("countDF").textContent = c.DF;
+      $("countMF").textContent = c.MF;
+      $("countFW").textContent = c.FW;
+
+      $("rosterCount").textContent = `${players.length} jugadores`;
+      $("placedCount").textContent = `${placedCount()} en campo`;
+    }
+
+    function matchesSearch(p, q){
+      if(!q) return true;
+      const hay = `${p.name} ${p.number ?? ""} ${p.role} ${p.element} ${p.zone} ${p.notes}`.toLowerCase();
+      return hay.includes(q.toLowerCase());
+    }
+
+    function renderRoster(){
+      const q = $("searchInput").value.trim();
+      const list = $("rosterList");
+      list.innerHTML = "";
+
+      const filtered = players.filter(p=>matchesSearch(p,q));
+
+      if(filtered.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "muted";
+        empty.style.padding = "12px";
+        empty.innerHTML = `No hay resultados. <br><br>Prueba a añadir un jugador con <b>“Añadir jugador”</b>.`;
+        list.appendChild(empty);
+        return;
+      }
+
+      for(const p of filtered){
+        const el = document.createElement("div");
+        el.className = "card";
+        el.draggable = !lockMoves;
+        el.dataset.id = p.id;
+
+        el.innerHTML = `
+          <div class="avatar">
+            ${initials(p.name)}
+            <span class="tag">${elementBadge(p.element)}</span>
+          </div>
+          <div class="meta">
+            <div class="nameRow">
+              <div class="name">${escapeHtml(p.name || "(Sin nombre)")}</div>
+              <div class="actionsRow">
+                <button class="iconBtn" title="Editar" data-act="edit">✏️</button>
+                <button class="iconBtn" title="Enviar/Quitar del campo" data-act="toggle">${p.zone ? "🧲" : "🎯"}</button>
+              </div>
+            </div>
+            <div class="small">
+              <span class="chip">#${p.number ?? "—"}</span>
+              <span class="chip">${escapeHtml(p.role || "Jugador")}</span>
+              <span class="chip">${zoneLabel(p.zone)}</span>
+            </div>
+          </div>
+        `;
+
+        // Click select
+        el.addEventListener("click", (ev)=>{
+          const act = ev.target?.dataset?.act;
+          if(act === "edit"){
+            selectPlayer(p.id);
+            return;
+          }
+          if(act === "toggle"){
+            selectPlayer(p.id);
+            // Si está asignado, lo quitamos. Si no, lo ponemos en MF por defecto.
+            if(p.zone) setZone(p.id, "");
+            else setZone(p.id, "MF");
+            render();
+            toast(p.zone ? "Quitado del campo" : "Asignado a Medio");
+            return;
+          }
+          selectPlayer(p.id);
+        });
+
+        // Drag
+        el.addEventListener("dragstart", (ev)=>{
+          if(lockMoves) return ev.preventDefault();
+          ev.dataTransfer.setData("text/plain", p.id);
+          ev.dataTransfer.effectAllowed = "move";
+        });
+
+        list.appendChild(el);
+      }
+    }
+
+    function renderPitch(){
+      // Clear slots
+      $("slotGK").innerHTML = "";
+      $("slotDF").innerHTML = "";
+      $("slotMF").innerHTML = "";
+      $("slotFW").innerHTML = "";
+
+      const byZone = {
+        GK: players.filter(p=>p.zone==="GK"),
+        DF: players.filter(p=>p.zone==="DF"),
+        MF: players.filter(p=>p.zone==="MF"),
+        FW: players.filter(p=>p.zone==="FW"),
+      };
+
+      for(const z of ["GK","DF","MF","FW"]){
+        const slot = $("slot" + z);
+        for(const p of byZone[z]){
+          const mini = document.createElement("div");
+          mini.className = "mini";
+          mini.draggable = !lockMoves;
+          mini.dataset.id = p.id;
+
+          mini.innerHTML = `
+            <div class="left">
+              <div class="badge">${elementBadge(p.element)}</div>
+              <div class="txt">
+                <div class="t1">${escapeHtml(p.name || "(Sin nombre)")}</div>
+                <div class="t2">
+                  <span class="chip">#${p.number ?? "—"}</span>
+                  <span class="chip">${escapeHtml(p.role || "Jugador")}</span>
+                </div>
+              </div>
+            </div>
+            <div class="right">
+              <button class="iconBtn" title="Editar" data-act="edit">✏️</button>
+              <button class="iconBtn" title="Quitar del campo" data-act="remove">🧲</button>
+            </div>
+          `;
+
+          mini.addEventListener("click", (ev)=>{
+            const act = ev.target?.dataset?.act;
+            if(act === "edit"){
+              selectPlayer(p.id);
+              return;
+            }
+            if(act === "remove"){
+              setZone(p.id, "");
+              render();
+              toast("Quitado del campo");
+              return;
+            }
+            selectPlayer(p.id);
+          });
+
+          mini.addEventListener("dragstart", (ev)=>{
+            if(lockMoves) return ev.preventDefault();
+            ev.dataTransfer.setData("text/plain", p.id);
+            ev.dataTransfer.effectAllowed = "move";
+          });
+
+          slot.appendChild(mini);
+        }
+      }
+    }
+
+    function renderSelectedInfo(){
+      const p = players.find(x=>x.id===selectedId);
+      $("selectedIdPill").textContent = p ? p.id : "—";
+      $("selectedLabel").textContent = p ? `Editando: ${p.name || "(Sin nombre)"}` : "Selecciona un jugador";
+
+      // Fill form
+      $("fName").value = p?.name ?? "";
+      $("fNumber").value = (p?.number ?? "");
+      $("fRole").value = p?.role ?? "Jugador";
+      $("fElement").value = p?.element ?? "—";
+      $("fZone").value = p?.zone ?? "";
+      $("fNotes").value = p?.notes ?? "";
+
+      // Buttons enabled
+      const disabled = !p;
+      $("btnApply").disabled = disabled;
+      $("btnUnassign").disabled = disabled;
+      $("btnDelete").disabled = disabled;
+
+      // Visual disabled
+      for(const id of ["btnApply","btnUnassign","btnDelete"]){
+        $(id).style.opacity = disabled ? ".55" : "1";
+        $(id).style.pointerEvents = disabled ? "none" : "auto";
+      }
+    }
+
+    // =========================
+    // Actions
+    // =========================
+    function selectPlayer(id){
+      selectedId = id;
+      renderSelectedInfo();
+    }
+
+    function addPlayer(payload={}){
+      const p = {
+        id: uid(),
+        name: payload.name ?? "Nuevo personaje",
+        number: sanitizeNumber(payload.number ?? ""),
+        role: payload.role ?? "Jugador",
+        element: payload.element ?? "—",
+        zone: payload.zone ?? "",
+        notes: payload.notes ?? ""
+      };
+      players.unshift(p);
+      selectedId = p.id;
+      render();
+      toast("Jugador añadido");
+    }
+
+    function deletePlayer(id){
+      const idx = players.findIndex(p=>p.id===id);
+      if(idx >= 0){
+        const was = players[idx];
+        players.splice(idx,1);
+        if(selectedId === id) selectedId = null;
+        render();
+        toast(`Borrado: ${was.name || "jugador"}`);
+      }
+    }
+
+    function setZone(id, zone){
+      const p = players.find(x=>x.id===id);
+      if(!p) return;
+      p.zone = zone;
+      // Sugerencia: si lo pones de GK, también ajusta rol si estaba sin sentido
+      if(zone === "GK" && (p.role === "Jugador" || p.role === "Delantero" || p.role === "Mediocampista" || p.role === "Defensa")){
+        // no forzamos, solo dejamos
+      }
+    }
+
+    function applyForm(){
+      const p = players.find(x=>x.id===selectedId);
+      if(!p) return;
+
+      p.name = $("fName").value.trim() || "Sin nombre";
+      p.number = sanitizeNumber($("fNumber").value);
+      p.role = $("fRole").value;
+      p.element = $("fElement").value;
+      p.zone = $("fZone").value;
+      p.notes = $("fNotes").value.trim();
+
+      render();
+      toast("Cambios aplicados");
+    }
+
+    function unassignSelected(){
+      const p = players.find(x=>x.id===selectedId);
+      if(!p) return;
+      p.zone = "";
+      $("fZone").value = "";
+      render();
+      toast("Quitado del campo");
+    }
+
+    function saveLS(){
+      const payload = {
+        version: 1,
+        updatedAt: new Date().toISOString(),
+        lockMoves,
+        players
+      };
+      localStorage.setItem(LS_KEY, JSON.stringify(payload));
+      toast("Guardado en el navegador");
+    }
+
+    function loadLS(){
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw){
+        toast("No hay guardado. Te cargué el demo.");
+        players = demoSeed.map(x=>({id:uid(), ...x}));
+        selectedId = players[0]?.id ?? null;
+        render();
+        return;
+      }
+      try{
+        const obj = JSON.parse(raw);
+        players = Array.isArray(obj.players) ? obj.players : [];
+        lockMoves = !!obj.lockMoves;
+        setLock(lockMoves, true);
+        selectedId = players[0]?.id ?? null;
+        render();
+        toast("Cargado");
+      }catch(e){
+        console.error(e);
+        toast("Error cargando guardado");
+      }
+    }
+
+    function exportJSON(){
+      const payload = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        players
+      };
+      $("jsonBox").value = JSON.stringify(payload, null, 2);
+      $("jsonBox").focus();
+      $("jsonBox").select();
+      toast("JSON exportado (copiado listo)");
+      // Intento de copiar automático
+      try{
+        document.execCommand("copy");
+      }catch(_){}
+    }
+
+    function importJSON(){
+      const txt = $("jsonBox").value.trim();
+      if(!txt){
+        toast("Pega un JSON primero");
+        return;
+      }
+      try{
+        const obj = JSON.parse(txt);
+        const incoming = Array.isArray(obj.players) ? obj.players : (Array.isArray(obj) ? obj : null);
+        if(!incoming) throw new Error("Formato no válido");
+
+        // Normalizamos y damos id si falta
+        players = incoming.map(p=>({
+          id: p.id || uid(),
+          name: (p.name ?? "").toString(),
+          number: sanitizeNumber(p.number ?? ""),
+          role: (p.role ?? "Jugador").toString(),
+          element: (p.element ?? "—").toString(),
+          zone: (p.zone ?? "").toString(),
+          notes: (p.notes ?? "").toString()
+        }));
+
+        selectedId = players[0]?.id ?? null;
+        render();
+        toast("Importado correctamente");
+      }catch(e){
+        console.error(e);
+        toast("Ese JSON no me cuadra 😅");
+      }
+    }
+
+    function resetAll(){
+      players = [];
+      selectedId = null;
+      $("jsonBox").value = "";
+      localStorage.removeItem(LS_KEY);
+      render();
+      toast("Reseteado");
+    }
+
+    function setLock(on, silent=false){
+      lockMoves = on;
+      const sw = $("lockSwitch");
+      sw.classList.toggle("on", on);
+      sw.setAttribute("aria-checked", String(on));
+      if(!silent) toast(on ? "Movimientos bloqueados" : "Movimientos desbloqueados");
+      render();
+    }
+
+    // =========================
+    // Drag & Drop zones
+    // =========================
+    function setupZones(){
+      document.querySelectorAll(".zone").forEach(zoneEl=>{
+        const zone = zoneEl.dataset.zone;
+
+        zoneEl.addEventListener("dragover", (ev)=>{
+          if(lockMoves) return;
+          ev.preventDefault();
+          ev.dataTransfer.dropEffect = "move";
+          zoneEl.classList.add("dragover");
+        });
+
+        zoneEl.addEventListener("dragleave", ()=>{
+          zoneEl.classList.remove("dragover");
+        });
+
+        zoneEl.addEventListener("drop", (ev)=>{
+          if(lockMoves) return;
+          ev.preventDefault();
+          zoneEl.classList.remove("dragover");
+          const id = ev.dataTransfer.getData("text/plain");
+          if(!id) return;
+          setZone(id, zone);
+          render();
+          toast(`Asignado a ${zoneLabel(zone)}`);
+        });
+      });
+
+      // Drop outside pitch -> unassign
+      $("pitch").addEventListener("dragover", (ev)=>{
+        if(lockMoves) return;
+        ev.preventDefault();
+      });
+
+      $("pitch").addEventListener("drop", (ev)=>{
+        // Si sueltas en el césped pero no en una zona, no hacemos nada.
+        // (Si quieres, aquí podrías desasignar, pero es fácil cagarla sin querer.)
+      });
+    }
+
+    // =========================
