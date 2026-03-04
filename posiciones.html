@@ -3,595 +3,328 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GO2 — Posiciones de Personajes</title>
+  <title>GO2 — Plantilla y Staff</title>
   <style>
     :root{
-      --bg:#070a12;
-      --panel:rgba(255,255,255,.06);
-      --panel2:rgba(255,255,255,.09);
-      --stroke:rgba(255,255,255,.12);
+      --bg:#0b0d12;
+      --panel:#121522;
+      --panel2:#0f121c;
+      --stroke:rgba(255,255,255,.10);
       --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.65);
+      --muted:rgba(255,255,255,.66);
       --accent:#7c5cff;
-      --good:#38d39f;
+      --ok:#38d39f;
       --warn:#ffcc66;
       --bad:#ff5c7a;
-      --shadow: 0 14px 40px rgba(0,0,0,.45);
-      --radius: 18px;
-      --radius2: 14px;
-      --blur: 14px;
-      --pitchLine: rgba(255,255,255,.35);
+      --radius:16px;
+      --radius2:12px;
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
-      background:
-        radial-gradient(1200px 700px at 15% 10%, rgba(124,92,255,.20), transparent 60%),
-        radial-gradient(900px 500px at 80% 30%, rgba(56,211,159,.12), transparent 60%),
-        radial-gradient(700px 450px at 60% 90%, rgba(255,92,122,.10), transparent 60%),
-        linear-gradient(180deg, #040612, #070a12 50%, #050816);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(900px 600px at 20% 10%, rgba(124,92,255,.18), transparent 60%),
+                  radial-gradient(800px 500px at 85% 30%, rgba(56,211,159,.10), transparent 55%),
+                  var(--bg);
       color:var(--text);
-      overflow:hidden;
     }
 
     /* Layout */
     .app{
       height:100%;
       display:grid;
-      grid-template-columns: 360px 1fr 360px;
-      gap:14px;
-      padding:14px;
+      grid-template-columns: 360px 1fr 380px;
+      gap:12px;
+      padding:12px;
     }
-
     .panel{
-      background:var(--panel);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 40%), var(--panel);
       border:1px solid var(--stroke);
       border-radius:var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(var(--blur));
-      -webkit-backdrop-filter: blur(var(--blur));
       overflow:hidden;
+      min-height:0;
       display:flex;
       flex-direction:column;
-      min-height:0;
     }
-
-    header.topbar{
-      grid-column:1 / -1;
-      background:linear-gradient(90deg, rgba(124,92,255,.16), rgba(56,211,159,.10));
-      border:1px solid var(--stroke);
-      border-radius:var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(var(--blur));
-      -webkit-backdrop-filter: blur(var(--blur));
-      padding:12px 14px;
+    .topbar{
+      grid-column: 1 / -1;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
+      padding:12px 14px;
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      background: rgba(255,255,255,.03);
     }
-
-    .brand{
-      display:flex; align-items:center; gap:10px;
-      min-width: 260px;
-    }
+    .brand{display:flex; gap:10px; align-items:center;}
     .logo{
-      width:38px; height:38px; border-radius:12px;
-      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.30), transparent 45%),
-                  linear-gradient(135deg, rgba(124,92,255,.85), rgba(56,211,159,.65));
-      box-shadow: 0 12px 30px rgba(124,92,255,.18);
-      border:1px solid rgba(255,255,255,.18);
-      display:grid; place-items:center;
-      position:relative;
-      overflow:hidden;
+      width:34px;height:34px;border-radius:12px;
+      display:grid;place-items:center;
+      background: rgba(124,92,255,.22);
+      border:1px solid rgba(124,92,255,.35);
+      font-weight:900;
     }
-    .logo:after{
-      content:"";
-      position:absolute; inset:-40%;
-      background: linear-gradient(120deg, transparent 0 40%, rgba(255,255,255,.22) 50%, transparent 60% 100%);
-      transform: rotate(25deg);
-      animation: sheen 6s linear infinite;
-    }
-    @keyframes sheen{ to{ transform: rotate(25deg) translateX(60%);} }
-
-    .brand h1{
-      font-size:15px;
-      margin:0;
-      letter-spacing:.2px;
-    }
-    .brand p{
-      margin:2px 0 0 0;
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .top-actions{
-      display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;
-    }
-
+    .brand h1{margin:0;font-size:14px;letter-spacing:.2px}
+    .brand p{margin:2px 0 0 0;font-size:12px;color:var(--muted)}
+    .actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+    .actionsMain, .actionsMore{display:contents;}
+    .actionsMore.hidden{display:none;}
+    .btn.more{border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.05);}
     .btn{
       appearance:none;
       border:1px solid var(--stroke);
-      background:rgba(255,255,255,.07);
+      background: rgba(255,255,255,.04);
       color:var(--text);
       padding:9px 10px;
       border-radius:12px;
-      cursor:pointer;
-      font-weight:600;
       font-size:12px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      font-weight:800;
+      cursor:pointer;
       user-select:none;
+      transition: transform .10s ease, background .10s ease, border-color .10s ease;
     }
-    .btn:hover{ background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.18); transform: translateY(-1px); }
-    .btn:active{ transform: translateY(0px) scale(.99); }
-    .btn.primary{
-      background: linear-gradient(135deg, rgba(124,92,255,.75), rgba(124,92,255,.35));
-      border-color: rgba(124,92,255,.55);
-    }
-    .btn.good{ background: linear-gradient(135deg, rgba(56,211,159,.65), rgba(56,211,159,.25)); border-color: rgba(56,211,159,.55); }
-    .btn.warn{ background: linear-gradient(135deg, rgba(255,204,102,.55), rgba(255,204,102,.20)); border-color: rgba(255,204,102,.50); }
-    .btn.bad{ background: linear-gradient(135deg, rgba(255,92,122,.55), rgba(255,92,122,.20)); border-color: rgba(255,92,122,.50); }
-
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.16)}
+    .btn:active{transform: translateY(0px) scale(.99)}
+    .btn.primary{border-color: rgba(124,92,255,.45); background: rgba(124,92,255,.18)}
+    .btn.ok{border-color: rgba(56,211,159,.45); background: rgba(56,211,159,.14)}
+    .btn.warn{border-color: rgba(255,204,102,.45); background: rgba(255,204,102,.12)}
+    .btn.bad{border-color: rgba(255,92,122,.45); background: rgba(255,92,122,.12)}
     .kbd{
       font-size:11px;
-      color:rgba(255,255,255,.85);
       padding:2px 6px;
       border-radius:8px;
-      border:1px solid rgba(255,255,255,.18);
-      background:rgba(0,0,0,.25);
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.25);
+      color: rgba(255,255,255,.85);
+      font-weight:800;
     }
 
-    /* Left panel (roster) */
-    .panel .head{
-      padding:14px 14px 10px 14px;
+    .head{
+      padding:12px 14px;
       border-bottom:1px solid var(--stroke);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
-    }
-    .panel .head h2{
-      margin:0;
-      font-size:13px;
-      letter-spacing:.2px;
-    }
-    .sub{
-      margin-top:6px;
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:10px;
-      color:var(--muted);
-      font-size:12px;
     }
+    .head h2{margin:0;font-size:13px;letter-spacing:.2px}
+    .sub{color:var(--muted); font-size:12px; margin-top:4px}
     .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
+      display:inline-flex; align-items:center; gap:6px;
       padding:6px 10px;
       border-radius:999px;
       border:1px solid var(--stroke);
-      background:rgba(255,255,255,.06);
-      color:rgba(255,255,255,.85);
-      font-weight:600;
+      background: rgba(0,0,0,.18);
+      color: rgba(255,255,255,.85);
       font-size:12px;
+      font-weight:800;
       white-space:nowrap;
     }
 
-    .search{
-      margin-top:10px;
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
+    /* Inputs */
     input[type="text"], textarea, select, input[type="number"]{
       width:100%;
       border-radius:12px;
       border:1px solid var(--stroke);
-      background:rgba(0,0,0,.18);
-      color:var(--text);
+      background: rgba(0,0,0,.20);
+      color: var(--text);
       padding:10px 10px;
       outline:none;
       font-size:12px;
-      transition:border-color .12s ease, background .12s ease;
     }
-    input[type="text"]:focus, textarea:focus, select:focus, input[type="number"]:focus{
+    input:focus, textarea:focus, select:focus{
       border-color: rgba(124,92,255,.55);
-      background: rgba(0,0,0,.28);
     }
-    textarea{
-      min-height:88px;
-      resize:vertical;
-      line-height:1.35;
-    }
+    textarea{min-height:92px; resize:vertical; line-height:1.35}
 
-    .roster{
-      padding:12px 10px 12px 12px;
-      overflow:auto;
-      min-height:0;
-    }
-
+    /* Roster */
+    .rosterTools{padding:12px 14px; border-bottom:1px solid var(--stroke); display:flex; gap:8px; align-items:center}
+    .rosterList{padding:12px 12px 12px 14px; overflow:auto; min-height:0}
     .card{
       border:1px solid var(--stroke);
-      background:rgba(255,255,255,.06);
-      border-radius:16px;
+      background: rgba(255,255,255,.03);
+      border-radius:14px;
       padding:10px;
-      margin:0 0 10px 0;
       display:flex;
       gap:10px;
       align-items:flex-start;
+      margin:0 0 10px 0;
       cursor:grab;
       user-select:none;
-      position:relative;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
     }
-    .card:hover{
-      transform: translateY(-1px);
-      background: rgba(255,255,255,.08);
-      border-color: rgba(255,255,255,.18);
-    }
-    .card:active{ cursor:grabbing; }
-
+    .card:hover{border-color: rgba(255,255,255,.16); background: rgba(255,255,255,.05)}
+    .card:active{cursor:grabbing}
     .avatar{
-      width:42px; height:42px; border-radius:14px;
-      border:1px solid rgba(255,255,255,.16);
-      background:
-        radial-gradient(circle at 30% 25%, rgba(255,255,255,.22), transparent 45%),
-        linear-gradient(135deg, rgba(255,255,255,.10), rgba(0,0,0,.18));
+      width:42px;height:42px;border-radius:14px;
       display:grid; place-items:center;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
       font-weight:900;
-      letter-spacing:.5px;
-      color: rgba(255,255,255,.85);
       flex:0 0 auto;
       position:relative;
-      overflow:hidden;
     }
-    .avatar .tag{
+    .tag{
       position:absolute;
       bottom:6px; right:6px;
       font-size:10px;
       padding:2px 6px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.14);
       background: rgba(0,0,0,.25);
-      color: rgba(255,255,255,.80);
-      font-weight:800;
-    }
-
-    .meta{
-      flex:1;
-      min-width:0;
-    }
-    .nameRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .meta .name{
+      color: rgba(255,255,255,.85);
       font-weight:900;
-      font-size:12.5px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
-    .meta .small{
-      color:var(--muted);
-      font-size:11.5px;
-      margin-top:3px;
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
+    .meta{flex:1; min-width:0}
+    .nameRow{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .name{font-size:12.5px; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .small{margin-top:4px; display:flex; gap:6px; flex-wrap:wrap; color:var(--muted); font-size:11.5px}
     .chip{
       padding:3px 8px;
       border-radius:999px;
       border:1px solid var(--stroke);
-      background: rgba(0,0,0,.20);
-      color: rgba(255,255,255,.80);
+      background: rgba(0,0,0,.18);
+      color: rgba(255,255,255,.82);
+      font-weight:800;
       font-size:11px;
-      font-weight:700;
     }
-
-    .actionsRow{
-      display:flex; gap:6px;
-    }
+    .iconRow{display:flex; gap:6px}
     .iconBtn{
-      width:30px; height:30px;
-      border-radius:10px;
+      width:30px;height:30px;border-radius:10px;
       border:1px solid var(--stroke);
       background: rgba(0,0,0,.22);
       cursor:pointer;
       display:grid; place-items:center;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      transition: transform .10s ease, background .10s ease, border-color .10s ease;
     }
-    .iconBtn:hover{
-      transform: translateY(-1px);
-      background: rgba(0,0,0,.30);
-      border-color: rgba(255,255,255,.18);
-    }
-    .iconBtn:active{ transform: translateY(0); }
+    .iconBtn:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.16); background: rgba(0,0,0,.30)}
+    .iconBtn:active{transform: translateY(0px)}
+    .muted{color:var(--muted)}
 
-    /* Middle (pitch) */
-    .pitchWrap{
-      background: var(--panel);
-      border:1px solid var(--stroke);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(var(--blur));
-      -webkit-backdrop-filter: blur(var(--blur));
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-    }
-
-    .pitchHead{
-      padding:14px 14px 10px 14px;
-      border-bottom:1px solid var(--stroke);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent);
-    }
-    .pitchHead h2{ margin:0; font-size:13px; letter-spacing:.2px; }
-    .legend{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      color:var(--muted);
-      font-size:12px;
-    }
-    .dot{ width:10px; height:10px; border-radius:999px; display:inline-block; margin-right:6px; }
-    .dGK{ background: rgba(124,92,255,.9); }
-    .dDF{ background: rgba(56,211,159,.9); }
-    .dMF{ background: rgba(255,204,102,.9); }
-    .dFW{ background: rgba(255,92,122,.9); }
-
+    /* Pitch */
+    .pitchWrap{min-height:0; display:flex; flex-direction:column}
+    .pitchArea{flex:1; min-height:0; overflow:hidden; position:relative; background: rgba(0,0,0,.18)}
     .pitch{
-      position:relative;
-      flex:1;
-      min-height:0;
-      overflow:hidden;
+      position:absolute; inset:12px;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:18px;
       background:
-        radial-gradient(700px 450px at 50% 30%, rgba(255,255,255,.06), transparent 60%),
-        linear-gradient(180deg, rgba(35,120,80,.22), rgba(10,55,35,.28)),
-        repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 22px, rgba(0,0,0,0) 22px 44px);
+        linear-gradient(180deg, rgba(46,140,92,.22), rgba(18,72,48,.24));
     }
-
     .pitch:before{
       content:"";
-      position:absolute; inset:24px;
-      border:2px solid var(--pitchLine);
-      border-radius:22px;
-      opacity:.9;
+      position:absolute; inset:14px;
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:14px;
       pointer-events:none;
     }
-    .lineMid{
-      position:absolute;
-      left:50%;
-      top:24px;
-      bottom:24px;
-      width:2px;
-      transform:translateX(-50%);
-      background:var(--pitchLine);
-      opacity:.85;
-      pointer-events:none;
-    }
-    .circleMid{
-      position:absolute;
-      left:50%;
-      top:50%;
-      width:180px; height:180px;
-      transform:translate(-50%,-50%);
-      border-radius:999px;
-      border:2px solid var(--pitchLine);
-      opacity:.85;
-      pointer-events:none;
-    }
-    .boxL, .boxR{
-      position:absolute;
-      top:50%;
-      width:150px; height:240px;
-      transform:translateY(-50%);
-      border:2px solid var(--pitchLine);
-      opacity:.85;
-      pointer-events:none;
-      border-radius:18px;
-    }
-    .boxL{ left:24px; }
-    .boxR{ right:24px; }
+    .midLine{position:absolute; left:50%; top:14px; bottom:14px; width:1px; transform:translateX(-50%); background: rgba(255,255,255,.22)}
+    .midCircle{position:absolute; left:50%; top:50%; width:170px; height:170px; transform:translate(-50%,-50%); border:1px solid rgba(255,255,255,.22); border-radius:999px}
 
-    .zoneGrid{
-      position:absolute; inset:24px;
+    .zones{
+      position:absolute; inset:26px;
       display:grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap:12px;
-      padding:12px;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
     }
-
     .zone{
       border:1px dashed rgba(255,255,255,.22);
-      border-radius:18px;
+      border-radius:14px;
       background: rgba(0,0,0,.10);
-      position:relative;
-      padding:10px 10px 12px 10px;
+      padding:10px;
       overflow:hidden;
+      position:relative;
     }
-    .zone h3{
-      margin:0;
-      font-size:11.5px;
-      letter-spacing:.4px;
-      text-transform:uppercase;
-      color: rgba(255,255,255,.78);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+    .zoneTitle{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .zoneTitle b{font-size:11.5px; letter-spacing:.3px; text-transform:uppercase; color: rgba(255,255,255,.84)}
+    .zoneTitle .count{font-size:11px; font-weight:900; color: rgba(255,255,255,.84)}
+    .slot{margin-top:10px; display:flex; flex-direction:column; gap:8px; min-height:120px}
+    .dropHint{
+      position:absolute; inset:0;
+      display:none; place-items:center;
+      text-align:center;
+      padding:16px;
+      background: rgba(124,92,255,.12);
+      border:1px dashed rgba(124,92,255,.45);
+      border-radius:14px;
+      pointer-events:none;
+      color: rgba(255,255,255,.88);
+      font-weight:900;
     }
-    .zone .count{
-      font-size:11px;
-      padding:2px 8px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.20);
-      color: rgba(255,255,255,.85);
-      font-weight:800;
-    }
-    .zone .slot{
-      margin-top:10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      min-height: 120px;
-    }
+    .zone.dragover .dropHint{display:grid}
 
     .mini{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.07);
-      border-radius:14px;
-      padding:9px 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      cursor:grab;
-      user-select:none;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      border-radius:12px;
+      padding:8px 10px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      cursor:grab; user-select:none;
     }
-    .mini:hover{
-      transform: translateY(-1px);
-      background: rgba(255,255,255,.09);
-      border-color: rgba(255,255,255,.20);
-    }
-    .mini:active{ cursor:grabbing; transform: translateY(0); }
-
-    .mini .left{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
+    .mini:hover{border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.05)}
+    .mini:active{cursor:grabbing}
+    .miniLeft{display:flex; gap:10px; align-items:center; min-width:0}
     .badge{
-      width:30px; height:30px; border-radius:12px;
+      width:30px;height:30px;border-radius:12px;
       display:grid; place-items:center;
-      font-weight:900;
-      border:1px solid rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.18);
       flex:0 0 auto;
-    }
-    .mini .txt{
-      min-width:0;
-    }
-    .mini .t1{
       font-weight:900;
-      font-size:12px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
-    .mini .t2{
-      font-size:11px;
-      color: var(--muted);
-      margin-top:2px;
-      display:flex; gap:6px; flex-wrap:wrap;
-    }
+    .miniTxt{min-width:0}
+    .t1{font-weight:900; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .t2{margin-top:2px; display:flex; gap:6px; flex-wrap:wrap; color:var(--muted); font-size:11px}
+    .miniRight{display:flex; gap:6px}
 
-    .mini .right{
-      display:flex;
-      gap:6px;
-      flex:0 0 auto;
-    }
-
-    .dropHint{
-      position:absolute;
-      inset:0;
-      display:none;
-      place-items:center;
-      text-align:center;
-      padding:18px;
-      color:rgba(255,255,255,.75);
-      font-weight:800;
-      background: rgba(124,92,255,.12);
-      border:2px dashed rgba(124,92,255,.45);
-      border-radius:18px;
-      pointer-events:none;
-    }
-    .zone.dragover .dropHint{ display:grid; }
-
-    /* Right panel (editor) */
-    .editor{
-      padding:12px 14px 14px 14px;
-      overflow:auto;
-      min-height:0;
-    }
-    .grid{
+    /* Staff bench */
+    .staffBar{
+      border-top:1px solid var(--stroke);
+      background: rgba(0,0,0,.18);
+      padding:10px;
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:10px;
     }
-    .grid .full{ grid-column:1 / -1; }
+    .staffZone{
+      border:1px dashed rgba(255,255,255,.22);
+      border-radius:14px;
+      background: rgba(255,255,255,.02);
+      padding:10px;
+      position:relative;
+      min-height:140px;
+    }
+    .staffZone.dragover .dropHint{display:grid}
+    .staffZone .slot{min-height:auto}
+
+    /* Editor */
+    .editorBody{padding:12px 14px; overflow:auto; min-height:0}
+    .grid{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .full{grid-column:1 / -1}
     label{
       display:block;
       font-size:11px;
-      color:rgba(255,255,255,.78);
-      margin: 10px 0 6px 2px;
-      font-weight:800;
+      color: rgba(255,255,255,.80);
+      margin:10px 0 6px 2px;
+      font-weight:900;
       letter-spacing:.25px;
       text-transform:uppercase;
     }
-    .muted{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.35;
+    .row{
+      display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;
     }
-
-    .sep{
-      margin:14px 0;
-      height:1px;
-      background: var(--stroke);
-    }
-
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:16px;
-      transform:translateX(-50%);
-      background: rgba(0,0,0,.55);
-      border:1px solid rgba(255,255,255,.18);
-      color: rgba(255,255,255,.92);
-      padding:10px 12px;
-      border-radius: 14px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 14px 40px rgba(0,0,0,.45);
-      font-size:12px;
-      font-weight:700;
-      display:none;
-      gap:10px;
-      align-items:center;
-      max-width:min(560px, calc(100% - 28px));
-    }
-    .toast.show{ display:flex; }
-    .toast .tDot{
-      width:10px;height:10px;border-radius:999px;background:var(--good);
-      box-shadow:0 0 0 6px rgba(56,211,159,.12);
-    }
+    .sep{height:1px; background: var(--stroke); margin:14px 0}
 
     .lockRow{
-      display:flex; align-items:center; gap:10px; margin-top:12px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.06);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
       padding:10px 12px;
-      border-radius: 14px;
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      background: rgba(255,255,255,.03);
     }
     .switch{
-      width:42px; height:24px; border-radius:999px;
+      width:44px; height:24px; border-radius:999px;
       border:1px solid rgba(255,255,255,.18);
       background: rgba(0,0,0,.25);
       position:relative;
@@ -603,35 +336,159 @@
       width:18px; height:18px;
       transform: translateY(-50%);
       border-radius:999px;
-      background: rgba(255,255,255,.85);
-      transition: left .12s ease, background .12s ease;
+      background: rgba(255,255,255,.88);
+      transition: left .12s ease;
     }
-    .switch.on{
-      background: rgba(56,211,159,.25);
-      border-color: rgba(56,211,159,.45);
-    }
-    .switch.on i{ left:20px; background: rgba(255,255,255,.92); }
+    .switch.on{border-color: rgba(56,211,159,.45); background: rgba(56,211,159,.16)}
+    .switch.on i{left:22px}
 
-    .hint{
-      font-size:12px;
-      color: rgba(255,255,255,.72);
-      margin-top:10px;
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:14px;
+      transform:translateX(-50%);
+      background: rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.16);
+      color: rgba(255,255,255,.92);
       padding:10px 12px;
-      border-radius:14px;
-      border:1px dashed rgba(255,255,255,.18);
-      background: rgba(0,0,0,.16);
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+      display:none;
+      gap:10px;
+      align-items:center;
+      max-width:min(560px, calc(100% - 24px));
+      font-size:12px;
+      font-weight:800;
+    }
+    .toast.show{display:flex}
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--ok)}
+
+    /* Desktop header behavior */
+    @media (min-width: 721px){
+      #btnMore{display:none;}
+      .actionsMore{display:contents !important;}
     }
 
-    /* Responsive */
     @media (max-width: 1100px){
-      body{ overflow:auto; }
-      .app{
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto auto;
-      }
-      header.topbar{ position:sticky; top:0; z-index:20; }
-      .pitchWrap{ min-height: 620px; }
+      .app{grid-template-columns: 1fr; grid-template-rows: auto auto auto auto}
+      .pitchArea{min-height:640px}
     }
+  
+
+    @media (max-width: 720px){
+      body{ overflow:auto; }
+      .app{ padding:10px; gap:10px; }
+      .topbar{
+        position:sticky; top:0; z-index:60;
+        flex-direction:column;
+        align-items:stretch;
+        gap:10px;
+      }
+      .brand{ min-width:0; }
+      .brand h1{ font-size:14px; }
+      .brand p{ font-size:11px; }
+      /* Compact header on mobile */
+      .brand p{ display:none; }
+      .topbar{ padding:10px 10px; }
+      .logo{ width:30px; height:30px; border-radius:11px; }
+      .brand h1{ font-size:13px; }
+      .actions{ width:100%; justify-content:stretch; }
+      .actionsMain{ display:grid; grid-template-columns: 1fr 1fr auto; gap:8px; }
+      .actionsMore{ display:grid; grid-template-columns: 1fr 1fr; gap:8px; }
+      .actionsMore.hidden{ display:none; }
+      #btnMore{ width:56px; padding:10px 0; }
+      .actions .btn{ padding:10px 10px; }
+      .rosterTools{ flex-direction:column; align-items:stretch; }
+      .rosterList{ max-height: 45vh; overflow:auto; }
+      .pitchArea{ min-height: 520px; }
+      .zones{ grid-template-columns: repeat(2, 1fr); inset:18px; gap:10px; }
+      .zone{ min-height: 140px; }
+      .staffBar{ grid-template-columns: 1fr; }
+      .editorBody{ max-height: 55vh; overflow:auto; }
+      .grid{ grid-template-columns: 1fr; }
+      .btn{ padding:10px 10px; }
+      .card{ padding:12px; }
+      .mini{ padding:10px; }
+    }
+
+
+    /* =========================
+       Mobile App Nav (Inazuma vibe)
+       ========================= */
+    .mobileNav{
+      display:none;
+      position:fixed;
+      left:12px; right:12px;
+      bottom:12px;
+      z-index:50;
+      border-radius:18px;
+      padding:10px;
+      gap:10px;
+      background: linear-gradient(180deg, rgba(20,24,38,.92), rgba(10,12,20,.92));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: 0 18px 50px rgba(0,0,0,.55);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .mTab{
+      flex:1;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.92);
+      border-radius:16px;
+      padding:10px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      font-weight:900;
+      letter-spacing:.2px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .mTab .ico{ font-size:18px; line-height:1; }
+    .mTab .lbl{ font-size:12px; }
+    .mTab:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
+    .mTab:active{ transform: translateY(0); }
+    .mTab.active{
+      background: linear-gradient(135deg, rgba(124,92,255,.35), rgba(56,211,159,.18));
+      border-color: rgba(124,92,255,.45);
+      box-shadow: 0 0 0 6px rgba(124,92,255,.10);
+    }
+    .mTab.active:after{
+      content:"";
+      position:absolute;
+      inset:-60%;
+      background: linear-gradient(120deg, transparent 0 40%, rgba(255,255,255,.20) 50%, transparent 60% 100%);
+      transform: rotate(18deg);
+      animation: sheen2 4.8s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes sheen2{ to{ transform: rotate(18deg) translateX(70%);} }
+
+
+    @media (max-width: 900px){
+      body{ overflow:auto; }
+      .app{ padding-bottom: 96px; }
+      .mobileNav{ display:flex; }
+      /* show one page at a time on mobile */
+      #pageRoster, #pagePitch, #pageEditor{ display:none; }
+      #pageRoster.activePage, #pagePitch.activePage, #pageEditor.activePage{ display:flex; flex-direction:column; }
+      /* make Pitch page feel like the main screen */
+      .pitchArea{ min-height: 420px; }
+    }
+
+
+    /* Touch drag helper (iOS Safari) */
+    @media (hover:none) and (pointer:coarse){
+      .card, .mini{ touch-action:none; }
+    }
+
+      body.dragging{ overscroll-behavior:none; }
+
     .back-menu{
   position:fixed;
   top:15px;
@@ -666,107 +523,112 @@
       <div class="brand">
         <div class="logo" aria-hidden="true">⚡</div>
         <div>
-          <h1>GO2 — Posiciones de Personajes</h1>
-          <p>Arrastra jugadores al campo, edítalos y guarda tu plantilla. Exporta/Importa en JSON.</p>
+          <h1>GO2 — Plantilla y Staff</h1>
+          <p>Arrastra al campo o al banquillo técnico. Clic para editar. <span class="kbd">Ctrl</span> + <span class="kbd">S</span> guarda.</p>
         </div>
       </div>
-
-      <div class="top-actions">
-        <button class="btn primary" id="btnAdd">➕ Añadir jugador</button>
-        <button class="btn good" id="btnSave">💾 Guardar</button>
-        <button class="btn" id="btnLoad">📥 Cargar</button>
-        <button class="btn warn" id="btnExport">⤴ Exportar JSON</button>
-        <button class="btn" id="btnImport">⤵ Importar JSON</button>
-        <button class="btn bad" id="btnReset">🧨 Reset</button>
-        <span class="pill"><span class="kbd">Ctrl</span> + <span class="kbd">S</span> guarda</span>
+      <div class="actions">
+        <div class="actionsMain">
+          <button class="btn primary" id="btnAdd">＋ Añadir</button>
+          <button class="btn ok" id="btnSave">Guardar</button>
+          <button class="btn more" id="btnMore" title="Más acciones" aria-expanded="false">⋯</button>
+        </div>
+        <div class="actionsMore hidden" id="moreMenu">
+          <button class="btn" id="btnLoad">Cargar</button>
+          <button class="btn warn" id="btnExport">Exportar</button>
+          <button class="btn" id="btnImport">Importar</button>
+          <button class="btn bad" id="btnReset">Reset</button>
+        </div>
       </div>
     </header>
 
     <!-- Left: Roster -->
-    <section class="panel" id="rosterPanel">
+    <section class="panel" id="pageRoster">
       <div class="head">
-        <h2>Plantilla (Roster)</h2>
-        <div class="sub">
-          <span id="rosterCount">0 jugadores</span>
-          <span class="pill" id="placedCount">0 en campo</span>
+        <div>
+          <h2>Roster</h2>
+          <div class="sub"><span id="rosterCount">0</span> · <span id="placedCount">0 en campo</span> · <span id="staffCount">0 staff</span></div>
         </div>
-        <div class="search">
-          <input id="searchInput" type="text" placeholder="Buscar por nombre, rol, elemento, dorsal..." />
-          <button class="btn" id="btnClearSearch" title="Limpiar">🧹</button>
-        </div>
+        <span class="pill" id="selectedPill">—</span>
       </div>
-      <div class="roster" id="rosterList" aria-label="Lista de jugadores"></div>
+      <div class="rosterTools">
+        <input id="searchInput" type="text" placeholder="Buscar por nombre, dorsal, rol..." />
+        <button class="btn" id="btnClearSearch" title="Limpiar">Limpiar</button>
+      </div>
+      <div class="rosterList" id="rosterList" aria-label="Lista de personajes"></div>
     </section>
 
-    <!-- Middle: Pitch -->
-    <section class="pitchWrap">
-      <div class="pitchHead">
-        <h2>Campo — Zonas GO2</h2>
-        <div class="legend">
-          <span><span class="dot dGK"></span>Portero</span>
-          <span><span class="dot dDF"></span>Defensa</span>
-          <span><span class="dot dMF"></span>Medio</span>
-          <span><span class="dot dFW"></span>Delantera</span>
+    <!-- Middle: Pitch + Staff -->
+    <section class="panel pitchWrap" id="pagePitch">
+      <div class="head">
+        <div>
+          <h2>Campo</h2>
+          <div class="sub">Suelta un personaje en una zona para asignarlo. Para staff, usa el banquillo de abajo.</div>
+        </div>
+        <span class="pill" id="hintPill">Arrastrar: ON</span>
+      </div>
+
+      <div class="pitchArea" id="pitch">
+        <div class="pitch">
+          <div class="midLine"></div>
+          <div class="midCircle"></div>
+
+          <div class="zones">
+            <div class="zone" data-zone="GK">
+              <div class="zoneTitle"><b>Portero</b><span class="count" id="countGK">0</span></div>
+              <div class="slot" id="slotGK"></div>
+              <div class="dropHint">Suelta para <b>GK</b></div>
+            </div>
+            <div class="zone" data-zone="DF">
+              <div class="zoneTitle"><b>Defensa</b><span class="count" id="countDF">0</span></div>
+              <div class="slot" id="slotDF"></div>
+              <div class="dropHint">Suelta para <b>DF</b></div>
+            </div>
+            <div class="zone" data-zone="MF">
+              <div class="zoneTitle"><b>Medio</b><span class="count" id="countMF">0</span></div>
+              <div class="slot" id="slotMF"></div>
+              <div class="dropHint">Suelta para <b>MF</b></div>
+            </div>
+            <div class="zone" data-zone="FW">
+              <div class="zoneTitle"><b>Delantera</b><span class="count" id="countFW">0</span></div>
+              <div class="slot" id="slotFW"></div>
+              <div class="dropHint">Suelta para <b>FW</b></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="pitch" id="pitch">
-        <div class="lineMid"></div>
-        <div class="circleMid"></div>
-        <div class="boxL"></div>
-        <div class="boxR"></div>
-
-        <div class="zoneGrid">
-          <div class="zone" data-zone="GK">
-            <h3><span>Portero</span><span class="count" id="countGK">0</span></h3>
-            <div class="slot" id="slotGK"></div>
-            <div class="dropHint">Suelta aquí<br>para ponerlo de <b>Portero</b></div>
-          </div>
-
-          <div class="zone" data-zone="DF">
-            <h3><span>Defensa</span><span class="count" id="countDF">0</span></h3>
-            <div class="slot" id="slotDF"></div>
-            <div class="dropHint">Suelta aquí<br>para ponerlo de <b>Defensa</b></div>
-          </div>
-
-          <div class="zone" data-zone="MF">
-            <h3><span>Medio</span><span class="count" id="countMF">0</span></h3>
-            <div class="slot" id="slotMF"></div>
-            <div class="dropHint">Suelta aquí<br>para ponerlo de <b>Medio</b></div>
-          </div>
-
-          <div class="zone" data-zone="FW">
-            <h3><span>Delantera</span><span class="count" id="countFW">0</span></h3>
-            <div class="slot" id="slotFW"></div>
-            <div class="dropHint">Suelta aquí<br>para ponerlo de <b>Delantero</b></div>
-          </div>
+      <div class="staffBar">
+        <div class="staffZone" data-zone="MN">
+          <div class="zoneTitle"><b>Manager</b><span class="count" id="countMN">0</span></div>
+          <div class="slot" id="slotMN"></div>
+          <div class="dropHint">Suelta para <b>Manager</b></div>
+        </div>
+        <div class="staffZone" data-zone="GR">
+          <div class="zoneTitle"><b>Gerente</b><span class="count" id="countGR">0</span></div>
+          <div class="slot" id="slotGR"></div>
+          <div class="dropHint">Suelta para <b>Gerente</b></div>
         </div>
       </div>
     </section>
 
     <!-- Right: Editor -->
-    <aside class="panel">
+    <aside class="panel" id="pageEditor">
       <div class="head">
-        <h2>Editor del personaje</h2>
-        <div class="sub">
-          <span id="selectedLabel">Selecciona un jugador</span>
-          <span class="pill" id="selectedIdPill">—</span>
+        <div>
+          <h2>Editor</h2>
+          <div class="sub" id="selectedLabel">Selecciona un personaje</div>
         </div>
+        <span class="pill" id="selectedIdPill">—</span>
       </div>
 
-      <div class="editor">
-        <div class="muted">
-          Tip: haz clic en un jugador del roster o del campo para editarlo aquí.
-        </div>
-
+      <div class="editorBody">
         <div class="lockRow">
-          <div class="switch" id="lockSwitch" role="switch" aria-checked="false" tabindex="0" title="Bloquear arrastre">
-            <i></i>
-          </div>
           <div>
-            <div style="font-weight:900;">Bloquear movimientos</div>
-            <div class="muted" style="margin-top:3px;">Si está ON, no podrás arrastrar jugadores.</div>
+            <div style="font-weight:900;">Bloquear arrastre</div>
+            <div class="muted" style="font-size:12px;margin-top:3px;">Si está ON, no se podrá arrastrar.</div>
           </div>
+          <div class="switch" id="lockSwitch" role="switch" aria-checked="false" tabindex="0"><i></i></div>
         </div>
 
         <div class="sep"></div>
@@ -774,7 +636,7 @@
         <div class="grid">
           <div class="full">
             <label>Nombre</label>
-            <input id="fName" type="text" placeholder="Ej: Renzu Itō" />
+            <input id="fName" type="text" placeholder="Ej: Ethan" />
           </div>
 
           <div>
@@ -790,6 +652,8 @@
               <option value="DF">Defensa (DF)</option>
               <option value="MF">Medio (MF)</option>
               <option value="FW">Delantera (FW)</option>
+              <option value="MN">Manager (MN)</option>
+              <option value="GR">Gerente (GR)</option>
             </select>
           </div>
 
@@ -800,11 +664,8 @@
               <option value="Capitán">Capitán</option>
               <option value="As">As</option>
               <option value="Estratega">Estratega</option>
-              <option value="Portero">Portero</option>
-              <option value="Defensa">Defensa</option>
-              <option value="Mediocampista">Mediocampista</option>
-              <option value="Delantero">Delantero</option>
               <option value="Manager">Manager</option>
+              <option value="Gerente">Gerente</option>
               <option value="Entrenador">Entrenador</option>
             </select>
           </div>
@@ -818,40 +679,56 @@
               <option value="Montaña">Montaña</option>
               <option value="Bosque">Bosque</option>
               <option value="Hielo">Hielo</option>
-              <option value="Rayo">Rayo</option>
+              <option value="Agua">Agua</option>
+              <option value="Electricidad">Electricidad</option>
               <option value="Luz">Luz</option>
-              <option value="Oscuridad">Oscuridad</option>
-              <option value="Neutro">Neutro</option>
+              <option value="Cósmico">Cósmico</option>
+              <option value="Dragón">Dragón</option>
+              <option value="Sangre">Sangre</option>
+              <option value="Psiquico">Psíquico</option>
+              <option value="Onirico">Onírico</option>
+              <option value="Fuerza">Fuerza</option>
             </select>
           </div>
 
           <div class="full">
             <label>Notas</label>
-            <textarea id="fNotes" placeholder="Ej: juega mejor por banda derecha, técnica X, etc."></textarea>
+            <textarea id="fNotes" placeholder="Apuntes rápidos..."></textarea>
           </div>
 
-          <div class="full" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
-            <button class="btn good" id="btnApply">✅ Aplicar cambios</button>
-            <button class="btn" id="btnUnassign">🧲 Quitar del campo</button>
-            <button class="btn bad" id="btnDelete">🗑️ Borrar jugador</button>
+          <div class="full">
+            <div class="row">
+              <button class="btn ok" id="btnApply">Aplicar</button>
+              <button class="btn" id="btnUnassign">Quitar de zona</button>
+              <button class="btn bad" id="btnDelete">Borrar</button>
+            </div>
           </div>
-        </div>
-
-        <div class="hint">
-          <b>Import/Export JSON:</b> ideal para guardarte la plantilla y pegarla en tu wiki o pasársela a un colega.
-          También puedes preparar una lista grande fuera y luego importarla aquí.
         </div>
 
         <div class="sep"></div>
 
-        <label>JSON (para Exportar / Importar)</label>
-        <textarea id="jsonBox" placeholder="Aquí aparecerá el JSON al exportar…"></textarea>
+        <label>JSON</label>
+        <textarea id="jsonBox" placeholder="Exporta o pega aquí para importar..."></textarea>
       </div>
     </aside>
   </div>
 
+  <!-- Mobile Bottom Nav -->
+  <nav class="mobileNav" aria-label="Navegación móvil">
+    <button class="mTab" data-tab="Roster" id="tabRoster" type="button">
+      <span class="ico">🧍</span><span class="lbl">Roster</span>
+    </button>
+    <button class="mTab" data-tab="Pitch" id="tabPitch" type="button">
+      <span class="ico">⚽</span><span class="lbl">Campo</span>
+    </button>
+    <button class="mTab" data-tab="Editor" id="tabEditor" type="button">
+      <span class="ico">🛠️</span><span class="lbl">Editor</span>
+    </button>
+  </nav>
+
+
   <div class="toast" id="toast" role="status" aria-live="polite">
-    <span class="tDot"></span>
+    <span class="dot"></span>
     <span id="toastMsg">Listo</span>
   </div>
 
@@ -859,31 +736,41 @@
     // =========================
     // Data model
     // =========================
-    const LS_KEY = "go2_positions_v1";
+    const LS_KEY = "go2_positions_v2_minimal";
 
-    /** @type {{id:string, name:string, number:number|null, role:string, element:string, zone:""|"GK"|"DF"|"MF"|"FW", notes:string}[]} */
+    /** @type {{id:string, name:string, number:number|null, role:string, element:string, zone:""|"GK"|"DF"|"MF"|"FW"|"MN"|"GR", notes:string}[]} */
     let players = [];
-
     let selectedId = null;
     let lockMoves = false;
 
-    // Demo seed (puedes borrar esto si quieres arrancar vacío)
+    // Demo seed (puedes borrar para empezar vacío)
     const demoSeed = [
       { name:"Renzu Itō", number:10, role:"As", element:"Fuego", zone:"FW", notes:"Tiro principal del equipo." },
       { name:"Jeanne d’Arc", number:9, role:"Capitán", element:"Luz", zone:"MF", notes:"Control y liderazgo." },
-      { name:"Mavuika", number:7, role:"Jugador", element:"Rayo", zone:"DF", notes:"Velocidad + presión alta." },
-      { name:"Kanon Tsukihara", number:null, role:"Manager", element:"—", zone:"", notes:"Apoya desde la banda." },
+      { name:"Mavuika", number:7, role:"Jugador", element:"Electricidad", zone:"DF", notes:"Velocidad + presión alta." },
+      { name:"Kanon Tsukihara", number:null, role:"Manager", element:"—", zone:"MN", notes:"Apoya desde la banda." },
     ];
+
+    const ZONES_FIELD = ["GK","DF","MF","FW"];
+    const ZONES_STAFF = ["MN","GR"];
+    const ZONES_ALL = [...ZONES_FIELD, ...ZONES_STAFF];
 
     // =========================
     // Helpers
     // =========================
     const $ = (id) => document.getElementById(id);
 
+    function escapeHtml(str){
+      return (str ?? "").toString()
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/\'/g,"&#39;");
+    }
     function uid(){
       return Math.random().toString(16).slice(2,10) + "-" + Date.now().toString(16).slice(-6);
     }
-
     function initials(name){
       const parts = (name || "").trim().split(/\s+/).filter(Boolean);
       if(!parts.length) return "??";
@@ -891,71 +778,70 @@
       const b = parts.length > 1 ? (parts[parts.length-1][0] || "") : (parts[0][1] || "");
       return (a + b).toUpperCase();
     }
-
+    function elementBadge(el){
+      const map = {
+        "Fuego":"🔥","Aire":"🌪️","Montaña":"🪨","Bosque":"🌿","Hielo":"❄️","Agua":"💧","Electricidad":"⚡",
+        "Luz":"✨","Cósmico":"🌙","Dragón":"🐲","Sangre":"🩸","Psíquico":"🧠","Psiquico":"🧠","Onírico":"🌌","Onirico":"🌌","Fuerza":"💪","—":"—",
+      };
+      return map[el] ?? "—";
+    }
     function zoneLabel(z){
       return z === "GK" ? "Portero"
         : z === "DF" ? "Defensa"
         : z === "MF" ? "Medio"
         : z === "FW" ? "Delantera"
+        : z === "MN" ? "Manager"
+        : z === "GR" ? "Gerente"
         : "Sin asignar";
     }
-
-    function elementBadge(el){
-      // Solo para estética (sin colores fijos exigidos), usamos emojis
-      const map = {
-        "Fuego":"🔥","Aire":"🌪️","Montaña":"🪨","Bosque":"🌿","Hielo":"❄️","Rayo":"⚡",
-        "Luz":"✨","Oscuridad":"🌑","Neutro":"⚪","—":"—"
-      };
-      return map[el] ?? "—";
-    }
-
-    function toast(msg){
-      const t = $("toast");
-      $("toastMsg").textContent = msg;
-      t.classList.add("show");
-      clearTimeout(toast._timer);
-      toast._timer = setTimeout(()=>t.classList.remove("show"), 1800);
-    }
-
-    function placedCount(){
-      return players.filter(p => p.zone).length;
-    }
-
-    function countsByZone(){
-      return {
-        GK: players.filter(p=>p.zone==="GK").length,
-        DF: players.filter(p=>p.zone==="DF").length,
-        MF: players.filter(p=>p.zone==="MF").length,
-        FW: players.filter(p=>p.zone==="FW").length,
-      };
-    }
-
     function sanitizeNumber(n){
       if(n === "" || n === null || typeof n === "undefined") return null;
       const v = Number(n);
       if(Number.isNaN(v)) return null;
       return Math.max(0, Math.min(999, Math.floor(v)));
     }
+    function toast(msg){
+      const t = $("toast");
+      $("toastMsg").textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(()=>t.classList.remove("show"), 1700);
+    }
+
+    function counts(){
+      const c = {GK:0,DF:0,MF:0,FW:0,MN:0,GR:0};
+      for(const p of players){
+        if(p.zone && c[p.zone] !== undefined) c[p.zone]++;
+      }
+      return c;
+    }
+    function countPlacedField(){ return players.filter(p=>ZONES_FIELD.includes(p.zone)).length; }
+    function countStaff(){ return players.filter(p=>ZONES_STAFF.includes(p.zone)).length; }
 
     // =========================
     // Rendering
     // =========================
     function render(){
       renderRoster();
-      renderPitch();
+      renderZones();
       renderCounts();
       renderSelectedInfo();
     }
 
     function renderCounts(){
-      const c = countsByZone();
+      const c = counts();
       $("countGK").textContent = c.GK;
       $("countDF").textContent = c.DF;
       $("countMF").textContent = c.MF;
       $("countFW").textContent = c.FW;
+      $("countMN").textContent = c.MN;
+      $("countGR").textContent = c.GR;
 
-      $("rosterCount").textContent = `${players.length} jugadores`;
-      $("placedCount").textContent = `${placedCount()} en campo`;
+      $("rosterCount").textContent = `${players.length} personajes`;
+      $("placedCount").textContent = `${countPlacedField()} en campo`;
+      $("staffCount").textContent = `${countStaff()} staff`;
+
+      $("hintPill").textContent = lockMoves ? "Arrastrar: OFF" : "Arrastrar: ON";
     }
 
     function matchesSearch(p, q){
@@ -970,12 +856,11 @@
       list.innerHTML = "";
 
       const filtered = players.filter(p=>matchesSearch(p,q));
-
       if(filtered.length === 0){
         const empty = document.createElement("div");
         empty.className = "muted";
         empty.style.padding = "12px";
-        empty.innerHTML = `No hay resultados. <br><br>Prueba a añadir un jugador con <b>“Añadir jugador”</b>.`;
+        empty.innerHTML = `No hay resultados. <br><br>Usa <b>＋ Añadir</b> para crear un personaje.`;
         list.appendChild(empty);
         return;
       }
@@ -987,16 +872,13 @@
         el.dataset.id = p.id;
 
         el.innerHTML = `
-          <div class="avatar">
-            ${initials(p.name)}
-            <span class="tag">${elementBadge(p.element)}</span>
-          </div>
+          <div class="avatar">${escapeHtml(initials(p.name))}<span class="tag">${elementBadge(p.element)}</span></div>
           <div class="meta">
             <div class="nameRow">
               <div class="name">${escapeHtml(p.name || "(Sin nombre)")}</div>
-              <div class="actionsRow">
+              <div class="iconRow">
                 <button class="iconBtn" title="Editar" data-act="edit">✏️</button>
-                <button class="iconBtn" title="Enviar/Quitar del campo" data-act="toggle">${p.zone ? "🧲" : "🎯"}</button>
+                <button class="iconBtn" title="Quitar de zona" data-act="unassign">🧲</button>
               </div>
             </div>
             <div class="small">
@@ -1007,26 +889,18 @@
           </div>
         `;
 
-        // Click select
         el.addEventListener("click", (ev)=>{
           const act = ev.target?.dataset?.act;
-          if(act === "edit"){
-            selectPlayer(p.id);
-            return;
-          }
-          if(act === "toggle"){
-            selectPlayer(p.id);
-            // Si está asignado, lo quitamos. Si no, lo ponemos en MF por defecto.
-            if(p.zone) setZone(p.id, "");
-            else setZone(p.id, "MF");
+          if(act === "unassign"){
+            setZone(p.id, "");
             render();
-            toast(p.zone ? "Quitado del campo" : "Asignado a Medio");
+            toast("Quitado de zona");
             return;
           }
+          // Por defecto, editar/seleccionar
           selectPlayer(p.id);
         });
 
-        // Drag
         el.addEventListener("dragstart", (ev)=>{
           if(lockMoves) return ev.preventDefault();
           ev.dataTransfer.setData("text/plain", p.id);
@@ -1037,22 +911,23 @@
       }
     }
 
-    function renderPitch(){
-      // Clear slots
-      $("slotGK").innerHTML = "";
-      $("slotDF").innerHTML = "";
-      $("slotMF").innerHTML = "";
-      $("slotFW").innerHTML = "";
-
-      const byZone = {
-        GK: players.filter(p=>p.zone==="GK"),
-        DF: players.filter(p=>p.zone==="DF"),
-        MF: players.filter(p=>p.zone==="MF"),
-        FW: players.filter(p=>p.zone==="FW"),
-      };
-
-      for(const z of ["GK","DF","MF","FW"]){
+    function renderZones(){
+      // clear all slots
+      for(const z of ZONES_ALL){
         const slot = $("slot" + z);
+        if(slot) slot.innerHTML = "";
+      }
+
+      const byZone = {};
+      for(const z of ZONES_ALL) byZone[z] = [];
+      for(const p of players){
+        if(p.zone && byZone[p.zone]) byZone[p.zone].push(p);
+      }
+
+      for(const z of ZONES_ALL){
+        const slot = $("slot" + z);
+        if(!slot) continue;
+
         for(const p of byZone[z]){
           const mini = document.createElement("div");
           mini.className = "mini";
@@ -1060,9 +935,9 @@
           mini.dataset.id = p.id;
 
           mini.innerHTML = `
-            <div class="left">
+            <div class="miniLeft">
               <div class="badge">${elementBadge(p.element)}</div>
-              <div class="txt">
+              <div class="miniTxt">
                 <div class="t1">${escapeHtml(p.name || "(Sin nombre)")}</div>
                 <div class="t2">
                   <span class="chip">#${p.number ?? "—"}</span>
@@ -1070,22 +945,18 @@
                 </div>
               </div>
             </div>
-            <div class="right">
+            <div class="miniRight">
               <button class="iconBtn" title="Editar" data-act="edit">✏️</button>
-              <button class="iconBtn" title="Quitar del campo" data-act="remove">🧲</button>
+              <button class="iconBtn" title="Quitar" data-act="remove">🧲</button>
             </div>
           `;
 
           mini.addEventListener("click", (ev)=>{
             const act = ev.target?.dataset?.act;
-            if(act === "edit"){
-              selectPlayer(p.id);
-              return;
-            }
             if(act === "remove"){
               setZone(p.id, "");
               render();
-              toast("Quitado del campo");
+              toast("Quitado de zona");
               return;
             }
             selectPlayer(p.id);
@@ -1105,7 +976,8 @@
     function renderSelectedInfo(){
       const p = players.find(x=>x.id===selectedId);
       $("selectedIdPill").textContent = p ? p.id : "—";
-      $("selectedLabel").textContent = p ? `Editando: ${p.name || "(Sin nombre)"}` : "Selecciona un jugador";
+      $("selectedLabel").textContent = p ? `Editando: ${p.name || "(Sin nombre)"}` : "Selecciona un personaje";
+      $("selectedPill").textContent = p ? (p.name || "Seleccionado") : "—";
 
       // Fill form
       $("fName").value = p?.name ?? "";
@@ -1115,14 +987,9 @@
       $("fZone").value = p?.zone ?? "";
       $("fNotes").value = p?.notes ?? "";
 
-      // Buttons enabled
       const disabled = !p;
-      $("btnApply").disabled = disabled;
-      $("btnUnassign").disabled = disabled;
-      $("btnDelete").disabled = disabled;
-
-      // Visual disabled
       for(const id of ["btnApply","btnUnassign","btnDelete"]){
+        $(id).disabled = disabled;
         $(id).style.opacity = disabled ? ".55" : "1";
         $(id).style.pointerEvents = disabled ? "none" : "auto";
       }
@@ -1149,7 +1016,7 @@
       players.unshift(p);
       selectedId = p.id;
       render();
-      toast("Jugador añadido");
+      toast("Creado");
     }
 
     function deletePlayer(id){
@@ -1159,7 +1026,7 @@
         players.splice(idx,1);
         if(selectedId === id) selectedId = null;
         render();
-        toast(`Borrado: ${was.name || "jugador"}`);
+        toast(`Borrado: ${was.name || "personaje"}`);
       }
     }
 
@@ -1167,10 +1034,6 @@
       const p = players.find(x=>x.id===id);
       if(!p) return;
       p.zone = zone;
-      // Sugerencia: si lo pones de GK, también ajusta rol si estaba sin sentido
-      if(zone === "GK" && (p.role === "Jugador" || p.role === "Delantero" || p.role === "Mediocampista" || p.role === "Defensa")){
-        // no forzamos, solo dejamos
-      }
     }
 
     function applyForm(){
@@ -1185,7 +1048,7 @@
       p.notes = $("fNotes").value.trim();
 
       render();
-      toast("Cambios aplicados");
+      toast("Guardado en ficha");
     }
 
     function unassignSelected(){
@@ -1194,27 +1057,28 @@
       p.zone = "";
       $("fZone").value = "";
       render();
-      toast("Quitado del campo");
+      toast("Quitado de zona");
     }
 
     function saveLS(){
       const payload = {
-        version: 1,
+        version: 2,
         updatedAt: new Date().toISOString(),
         lockMoves,
         players
       };
       localStorage.setItem(LS_KEY, JSON.stringify(payload));
-      toast("Guardado en el navegador");
+      toast("Guardado");
     }
 
     function loadLS(){
       const raw = localStorage.getItem(LS_KEY);
       if(!raw){
-        toast("No hay guardado. Te cargué el demo.");
         players = demoSeed.map(x=>({id:uid(), ...x}));
         selectedId = players[0]?.id ?? null;
+        setLock(false, true);
         render();
+        toast("Demo cargado");
         return;
       }
       try{
@@ -1227,38 +1091,27 @@
         toast("Cargado");
       }catch(e){
         console.error(e);
-        toast("Error cargando guardado");
+        toast("Error al cargar");
       }
     }
 
     function exportJSON(){
-      const payload = {
-        version: 1,
-        exportedAt: new Date().toISOString(),
-        players
-      };
+      const payload = { version: 2, exportedAt: new Date().toISOString(), players };
       $("jsonBox").value = JSON.stringify(payload, null, 2);
       $("jsonBox").focus();
       $("jsonBox").select();
-      toast("JSON exportado (copiado listo)");
-      // Intento de copiar automático
-      try{
-        document.execCommand("copy");
-      }catch(_){}
+      toast("Exportado");
+      try{ document.execCommand("copy"); }catch(_){}
     }
 
     function importJSON(){
       const txt = $("jsonBox").value.trim();
-      if(!txt){
-        toast("Pega un JSON primero");
-        return;
-      }
+      if(!txt){ toast("Pega un JSON"); return; }
       try{
         const obj = JSON.parse(txt);
         const incoming = Array.isArray(obj.players) ? obj.players : (Array.isArray(obj) ? obj : null);
         if(!incoming) throw new Error("Formato no válido");
 
-        // Normalizamos y damos id si falta
         players = incoming.map(p=>({
           id: p.id || uid(),
           name: (p.name ?? "").toString(),
@@ -1271,10 +1124,10 @@
 
         selectedId = players[0]?.id ?? null;
         render();
-        toast("Importado correctamente");
+        toast("Importado");
       }catch(e){
         console.error(e);
-        toast("Ese JSON no me cuadra 😅");
+        toast("JSON inválido");
       }
     }
 
@@ -1292,15 +1145,18 @@
       const sw = $("lockSwitch");
       sw.classList.toggle("on", on);
       sw.setAttribute("aria-checked", String(on));
-      if(!silent) toast(on ? "Movimientos bloqueados" : "Movimientos desbloqueados");
+      $("hintPill").textContent = lockMoves ? "Arrastrar: OFF" : "Arrastrar: ON";
+      if(!silent) toast(on ? "Arrastre bloqueado" : "Arrastre activado");
+      const hp = $("hintPill");
+      if(hp) hp.textContent = on ? "Arrastrar: OFF" : "Arrastrar: ON";
       render();
     }
 
     // =========================
-    // Drag & Drop zones
+    // Drag & Drop zones (field + staff)
     // =========================
     function setupZones(){
-      document.querySelectorAll(".zone").forEach(zoneEl=>{
+      document.querySelectorAll("[data-zone]").forEach(zoneEl=>{
         const zone = zoneEl.dataset.zone;
 
         zoneEl.addEventListener("dragover", (ev)=>{
@@ -1322,21 +1178,313 @@
           if(!id) return;
           setZone(id, zone);
           render();
-          toast(`Asignado a ${zoneLabel(zone)}`);
+          toast(`Asignado: ${zoneLabel(zone)}`);
         });
-      });
-
-      // Drop outside pitch -> unassign
-      $("pitch").addEventListener("dragover", (ev)=>{
-        if(lockMoves) return;
-        ev.preventDefault();
-      });
-
-      $("pitch").addEventListener("drop", (ev)=>{
-        // Si sueltas en el césped pero no en una zona, no hacemos nada.
-        // (Si quieres, aquí podrías desasignar, pero es fácil cagarla sin querer.)
       });
     }
 
     // =========================
+    // UI bindings / init
+    // =========================
+    function setupUI(){
+      $("btnAdd").addEventListener("click", ()=> addPlayer({}));
+      $("btnSave").addEventListener("click", saveLS);
+      $("btnLoad").addEventListener("click", loadLS);
+      $("btnExport").addEventListener("click", exportJSON);
+      $("btnImport").addEventListener("click", importJSON);
+      // Mobile: more actions menu
+      const moreBtn = $("btnMore");
+      const moreMenu = $("moreMenu");
+      function setMore(open){
+        const isOpen = !!open;
+        moreMenu.classList.toggle("hidden", !isOpen);
+        moreBtn.setAttribute("aria-expanded", String(isOpen));
+      }
+      moreBtn.addEventListener("click", (ev)=>{
+        ev.stopPropagation();
+        setMore(moreMenu.classList.contains("hidden"));
+      });
+      document.addEventListener("click", ()=> setMore(false));
+      moreMenu.addEventListener("click", (ev)=> ev.stopPropagation());
 
+      $("btnReset").addEventListener("click", ()=>{
+        if(confirm("¿Resetear? Se borrará el guardado local.")) resetAll();
+      });
+
+      $("searchInput").addEventListener("input", renderRoster);
+      $("btnClearSearch").addEventListener("click", ()=>{
+        $("searchInput").value = "";
+        renderRoster();
+      });
+
+      $("btnApply").addEventListener("click", applyForm);
+      $("btnUnassign").addEventListener("click", unassignSelected);
+      $("btnDelete").addEventListener("click", ()=>{
+        if(!selectedId) return;
+        const p = players.find(x=>x.id===selectedId);
+        if(confirm(`¿Borrar a ${p?.name || "este personaje"}?`)) deletePlayer(selectedId);
+      });
+
+      function toggleLock(){ setLock(!lockMoves); }
+      $("lockSwitch").addEventListener("click", toggleLock);
+      $("lockSwitch").addEventListener("keydown", (ev)=>{
+        if(ev.key === "Enter" || ev.key === " "){
+          ev.preventDefault();
+          toggleLock();
+        }
+      });
+
+      
+      // Quick toggle for drag on mobile: tap the "Arrastrar" pill
+      const hp = $("hintPill");
+      if(hp){
+        hp.style.cursor = "pointer";
+        hp.addEventListener("click", ()=>{
+          setLock(!lockMoves);
+          hp.textContent = lockMoves ? "Arrastrar: OFF" : "Arrastrar: ON";
+        });
+      }
+document.addEventListener("keydown", (ev)=>{
+        const isMac = navigator.platform.toUpperCase().includes("MAC");
+        if((isMac ? ev.metaKey : ev.ctrlKey) && ev.key.toLowerCase() === "s"){
+          ev.preventDefault();
+          saveLS();
+        }
+      });
+    }
+
+
+    function setupMobileTabs(){
+      const nav = document.querySelector(".mobileNav");
+      if(!nav) return;
+
+      const pages = {
+        Roster: $("pageRoster"),
+        Pitch: $("pagePitch"),
+        Editor: $("pageEditor"),
+      };
+      const tabs = {
+        Roster: $("tabRoster"),
+        Pitch: $("tabPitch"),
+        Editor: $("tabEditor"),
+      };
+
+      function apply(tab){
+        // Only apply on small screens where nav is visible
+        const isMobile = window.matchMedia && window.matchMedia("(max-width: 900px)").matches;
+        if(!isMobile) {
+          // ensure desktop shows all
+          Object.values(pages).forEach(p=>p && p.classList.remove("activePage"));
+          Object.values(tabs).forEach(t=>t && t.classList.remove("active"));
+          return;
+        }
+
+        Object.entries(pages).forEach(([k,el])=>{
+          if(!el) return;
+          el.classList.toggle("activePage", k===tab);
+        });
+        Object.entries(tabs).forEach(([k,el])=>{
+          if(!el) return;
+          el.classList.toggle("active", k===tab);
+        });
+
+        try{ sessionStorage.setItem("go2_mobile_tab", tab); }catch(_){}
+      }
+
+      // Click handlers
+      Object.entries(tabs).forEach(([k,btn])=>{
+        if(!btn) return;
+        btn.addEventListener("click", ()=>apply(k));
+      });
+
+      // Default tab
+      let start = "Pitch";
+      try{
+        const saved = sessionStorage.getItem("go2_mobile_tab");
+        if(saved && pages[saved]) start = saved;
+      }catch(_){}
+
+      // Apply now + on resize/orientation change
+      apply(start);
+      window.addEventListener("resize", ()=>apply(start));
+      window.addEventListener("orientationchange", ()=>apply(start));
+    }
+
+    
+    // =========================
+    // Touch drag fallback (iOS Safari)
+    // =========================
+    let touchDrag = {
+      active:false,
+      id:null,
+      ghost:null,
+      lastZoneEl:null,
+      pointerId:null
+    };
+
+    function makeGhost(label){
+      const g = document.createElement("div");
+      g.style.position = "fixed";
+      g.style.left = "0px";
+      g.style.top = "0px";
+      g.style.zIndex = "9999";
+      g.style.transform = "translate(-9999px,-9999px)";
+      g.style.pointerEvents = "none";
+      g.style.padding = "10px 12px";
+      g.style.borderRadius = "14px";
+      g.style.border = "1px solid rgba(255,255,255,.18)";
+      g.style.background = "rgba(0,0,0,.55)";
+      g.style.backdropFilter = "blur(10px)";
+      g.style.webkitBackdropFilter = "blur(10px)";
+      g.style.boxShadow = "0 14px 40px rgba(0,0,0,.45)";
+      g.style.fontWeight = "900";
+      g.style.fontSize = "12px";
+      g.style.maxWidth = "70vw";
+      g.style.whiteSpace = "nowrap";
+      g.style.overflow = "hidden";
+      g.style.textOverflow = "ellipsis";
+      g.textContent = label || "Arrastrando…";
+      document.body.appendChild(g);
+      return g;
+    }
+
+    function clearZoneHighlight(){
+      if(touchDrag.lastZoneEl){
+        touchDrag.lastZoneEl.classList.remove("dragover");
+        touchDrag.lastZoneEl = null;
+      }
+    }
+
+    function touchStartFrom(el, ev){
+      if(lockMoves) return;
+      const id = el?.dataset?.id;
+      if(!id) return;
+
+      const p = players.find(x=>x.id===id);
+      touchDrag.active = true;
+      touchDrag.id = id;
+
+      // Capture pointer if available
+      if(ev.pointerId != null){
+        touchDrag.pointerId = ev.pointerId;
+        try{ el.setPointerCapture(ev.pointerId); }catch(_){}
+      }
+
+      // Create ghost
+      if(touchDrag.ghost) touchDrag.ghost.remove();
+      touchDrag.ghost = makeGhost(p?.name || "Arrastrando…");
+
+      // Prevent page from scrolling while dragging
+      ev.preventDefault();
+      document.body.classList.add("dragging");
+    }
+
+    function touchMove(ev){
+      if(!touchDrag.active) return;
+
+      const x = ev.clientX ?? (ev.touches && ev.touches[0]?.clientX);
+      const y = ev.clientY ?? (ev.touches && ev.touches[0]?.clientY);
+      if(x == null || y == null) return;
+
+      // Move ghost
+      if(touchDrag.ghost){
+        touchDrag.ghost.style.transform = `translate(${x + 12}px, ${y + 12}px)`;
+      }
+
+      // Highlight zone under pointer
+      const el = document.elementFromPoint(x, y);
+      const zoneEl = el ? el.closest("[data-zone]") : null;
+
+      if(zoneEl !== touchDrag.lastZoneEl){
+        clearZoneHighlight();
+        if(zoneEl){
+          zoneEl.classList.add("dragover");
+          touchDrag.lastZoneEl = zoneEl;
+        }
+      }
+
+      ev.preventDefault();
+    }
+
+    function touchEnd(ev){
+      if(!touchDrag.active) return;
+
+      const x = ev.clientX ?? (ev.changedTouches && ev.changedTouches[0]?.clientX);
+      const y = ev.clientY ?? (ev.changedTouches && ev.changedTouches[0]?.clientY);
+
+      let dropped = false;
+      if(x != null && y != null){
+        const el = document.elementFromPoint(x, y);
+        const zoneEl = el ? el.closest("[data-zone]") : null;
+        const zone = zoneEl?.dataset?.zone;
+
+        if(zone){
+          setZone(touchDrag.id, zone);
+          dropped = true;
+        }
+      }
+
+      clearZoneHighlight();
+
+      if(touchDrag.ghost){
+        touchDrag.ghost.remove();
+        touchDrag.ghost = null;
+      }
+
+      const id = touchDrag.id;
+      touchDrag.active = false;
+      touchDrag.id = null;
+      touchDrag.pointerId = null;
+      document.body.classList.remove("dragging");
+
+      if(dropped){
+        render();
+        toast(`Asignado: ${zoneLabel(players.find(p=>p.id===id)?.zone)}`);
+      }
+    }
+
+    function setupTouchDrag(){
+      // Use Pointer Events when available; fallback to Touch Events
+      const usePointer = "PointerEvent" in window;
+
+      // Start on roster cards / minis (event delegation)
+      document.addEventListener(usePointer ? "pointerdown" : "touchstart", (ev)=>{
+        // Only primary touch/pen
+        if(usePointer){
+          if(ev.pointerType && ev.pointerType !== "touch" && ev.pointerType !== "pen") return;
+          if(ev.button != null && ev.button !== 0) return;
+        }
+
+        const target = ev.target;
+        const draggableEl = target?.closest?.(".card, .mini");
+        if(!draggableEl) return;
+
+        // If they tapped an action button, don't start drag
+        if(target.closest(".iconBtn")) return;
+
+        // If the element isn't marked with an id, ignore
+        if(!draggableEl.dataset.id) return;
+
+        // Only apply touch drag on coarse pointer devices (phones/tablets)
+        // (Still works on desktop touchscreens)
+        touchStartFrom(draggableEl, ev);
+      }, {passive:false});
+
+      document.addEventListener(usePointer ? "pointermove" : "touchmove", touchMove, {passive:false});
+      document.addEventListener(usePointer ? "pointerup" : "touchend", touchEnd, {passive:false});
+      document.addEventListener(usePointer ? "pointercancel" : "touchcancel", touchEnd, {passive:false});
+    }
+
+
+    window.addEventListener("DOMContentLoaded", ()=>{
+      setupZones();
+      setupUI();
+      setupTouchDrag();
+
+      // Mobile app navigation (tabs)
+      setupMobileTabs();
+      loadLS();
+    });
+  </script>
+</body>
+</html>
