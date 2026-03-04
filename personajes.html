@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>RP Characters · Rework</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+  :root{
+  --bg:#0b0d12;
+  --panel: rgba(18, 22, 34, .72);
+  --panelSolid:#121622;
+  --muted:#a9b1c3;
+  --text:#e8ecff;
+
+  --acc:#4dd0e1;
+  --acc2:#8b5cf6;
+
+  --stroke: rgba(255,255,255,.08);
+  --stroke2: rgba(255,255,255,.12);
+
+  --chip: rgba(255,255,255,.06);
+  --chipOn: rgba(77,208,225,.14);
+  --chipText:#d6defa;
+
+  --shadow: 0 18px 40px rgba(0,0,0,.45);
+  --shadow2: 0 10px 22px rgba(0,0,0,.35);
+  --ring: 0 0 0 3px rgba(77,208,225,.22);
+  --radius: 16px;
+
+  --font: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family:var(--font);
+  color:var(--text);
+  background:
+    radial-gradient(1200px 700px at 10% -10%, rgba(139,92,246,.22), transparent 55%),
+    radial-gradient(900px 600px at 100% 0%, rgba(77,208,225,.18), transparent 55%),
+    radial-gradient(900px 700px at 30% 120%, rgba(77,208,225,.10), transparent 55%),
+    var(--bg);
+}
+
+::selection{ background: rgba(77,208,225,.25); }
+:focus{ outline:none; }
+:focus-visible{ box-shadow: var(--ring); border-color: rgba(77,208,225,.55) !important; }
+
+/* Header: compacto */
+header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  padding:8px 16px;
+  background: rgba(18,22,34,.85);
+  border-bottom:1px solid var(--stroke);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+header .row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  max-width:1200px;
+  margin:0 auto;
+}
+
+h1{
+  margin:0;
+  font-size:1rem;
+  font-weight:600;
+  letter-spacing:.2px;
+}
+
+/* Layout */
+main{
+  max-width:1200px;
+  margin:18px auto;
+  padding:0 16px 48px;
+}
+
+.toolbar{
+  display:grid;
+  gap:12px;
+  grid-template-columns:1fr;
+  margin-bottom:14px;
+}
+
+@media (min-width:900px){
+  .toolbar{ grid-template-columns: 1fr auto auto auto; }
+}
+
+/* Inputs */
+.search{ position:relative; }
+
+.search input,
+.select{
+  width:100%;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid var(--stroke);
+  background: rgba(10,12,18,.55);
+  color:var(--text);
+  transition: box-shadow .18s ease, border-color .18s ease, background .18s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.search input::placeholder{ color: rgba(169,177,195,.75); }
+
+.search input:hover,
+.select:hover{
+  border-color: var(--stroke2);
+  background: rgba(10,12,18,.68);
+}
+
+/* Buttons */
+.btn{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid var(--stroke);
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  color:var(--text);
+  cursor:pointer;
+  user-select:none;
+  transition: transform .12s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
+}
+
+.btn:hover{
+  border-color: rgba(77,208,225,.25);
+  box-shadow: 0 10px 22px rgba(0,0,0,.30);
+  filter: brightness(1.03);
+}
+
+.btn:active{ transform: translateY(1px); }
+
+#actBtn{
+  border-color: rgba(77,208,225,.35);
+  background: linear-gradient(90deg, rgba(77,208,225,.18), rgba(139,92,246,.14));
+}
+
+/* Chips */
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:10px 0 0;
+}
+
+.chip{
+  padding:8px 10px;
+  border-radius:999px;
+  background: var(--chip);
+  color:var(--chipText);
+  border:1px solid var(--stroke);
+  cursor:pointer;
+  font-size:.85rem;
+  transition: transform .12s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.chip:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,.16);
+  box-shadow: 0 10px 18px rgba(0,0,0,.25);
+}
+
+.chip[data-active="true"]{
+  background: var(--chipOn);
+  border-color: rgba(77,208,225,.35);
+  box-shadow: inset 0 0 0 1px rgba(77,208,225,.22);
+}
+
+/* Stats */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin:16px 0 10px;
+}
+
+.stat{
+  background: var(--panel);
+  border:1px solid var(--stroke);
+  border-radius: var(--radius);
+  padding:12px 10px;
+  text-align:center;
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.stat .big{
+  font-size:1.45rem;
+  font-weight:800;
+  letter-spacing:.2px;
+  background: linear-gradient(90deg, #e8ecff, rgba(77,208,225,.95));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.stat .label{
+  font-size:.8rem;
+  color:rgba(169,177,195,.9);
+  margin-top:2px;
+}
+
+.section-title{
+  margin:18px 0 10px;
+  font-size:.95rem;
+  color:#c6d1f6;
+  letter-spacing:.35px;
+}
+
+/* Chart area */
+canvas{
+  width:100%;
+  height:260px;
+  background: rgba(10,12,18,.55);
+  border:1px solid var(--stroke);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* LISTA en vez de GRID */
+.grid{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+/* Cards estilo lista */
+.card{
+  background: rgba(18,22,34,.75);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:10px 14px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background .15s ease, transform .12s ease, border-color .15s ease, box-shadow .18s ease;
+}
+
+.card:hover{
+  background: rgba(77,208,225,.08);
+  border-color: rgba(77,208,225,.22);
+  transform: translateX(3px);
+  box-shadow: 0 14px 30px rgba(0,0,0,.25);
+}
+
+.avatar{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  font-weight:800;
+  letter-spacing:.3px;
+  color:#cfe9ff;
+  background:
+    radial-gradient(12px 12px at 25% 25%, rgba(77,208,225,.35), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.12);
+  flex:0 0 auto;
+}
+
+.meta{ flex:1; min-width:0; }
+
+/* Nombres y sub: NO cortar */
+.name{
+  font-weight:700;
+  margin:0 0 2px;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:unset;
+  word-break: break-word;
+}
+
+.sub{
+  font-size:.85rem;
+  color:rgba(169,177,195,.92);
+  white-space:normal;
+  overflow:visible;
+  text-overflow:unset;
+  word-break: break-word;
+}
+
+.owner-badge{
+  font-size:.8rem;
+  padding:6px 9px;
+  border-radius:999px;
+  white-space:nowrap;
+  background: rgba(89,225,166,.10);
+  border:1px solid rgba(89,225,166,.22);
+  color: rgba(160,255,215,.95);
+  margin-left:8px;
+}
+
+/* Footer */
+.footer{
+  margin-top:16px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  justify-content:space-between;
+  color:rgba(152,162,179,.95);
+  font-size:.85rem;
+}
+
+.kbd{
+  border:1px solid var(--stroke);
+  border-radius:8px;
+  padding:2px 7px;
+  background: rgba(10,12,18,.55);
+  color:#d9e2ff;
+}
+
+.pill{
+  padding:6px 10px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:999px;
+  background: rgba(255,255,255,.04);
+}
+
+/* Modal */
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background: rgba(0,0,0,.62);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:60;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal{
+  width:min(560px,92vw);
+  background: rgba(12,14,20,.78);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius: 22px;
+  padding:18px 18px 14px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.modal h3{ margin: 0 0 10px; }
+
+.modal .close{
+  float:right;
+  cursor:pointer;
+  opacity:.75;
+  transition: opacity .15s ease, transform .15s ease;
+}
+
+.modal .close:hover{ opacity:1; transform: scale(1.03); }
+
+.hidden{ display:none; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition:none !important; scroll-behavior:auto !important; }
+}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="row">
+      <h1>Personajes de Roleplay — Rework</h1>
+      <button class="btn" id="actBtn" title="Ver novedades">ACT</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="toolbar" aria-label="Filtros">
+      <div class="search">
+        <input id="q" type="search" placeholder="Buscar por nombre, anime o dueño… (Ctrl/⌘+K)" autocomplete="off"/>
+        <div class="chips" id="ownerChips" aria-label="Filtro por dueño"></div>
+      </div>
+      <select id="animeSel" class="select" title="Filtrar por anime">
+        <option value="">Anime: todos</option>
+      </select>
+      <select id="sortSel" class="select" title="Ordenar">
+        <option value="name">Orden: Nombre (A–Z)</option>
+        <option value="anime">Orden: Anime (A–Z)</option>
+        <option value="owner">Orden: Dueño</option>
+        <option value="random">Orden: Aleatorio</option>
+      </select>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn" id="exportCsv">Exportar CSV</button>
+        <button class="btn" id="resetBtn">Reset</button>
+      </div>
+    </section>
+
+    <section class="stats" id="statsWrap">
+      <div class="stat"><div class="big" id="totalCnt">0</div><div class="label">Total</div></div>
+      <div class="stat"><div class="big" id="uniqueAnime">0</div><div class="label">Animes únicos</div></div>
+      <div class="stat"><div class="big" id="ownerBreak">—</div><div class="label">L / S / Y</div></div>
+    </section>
+
+    <h3 class="section-title">Distribución por dueño</h3>
+    <canvas id="ownerChart" aria-label="Distribución por dueño" role="img"></canvas>
+
+    <h3 class="section-title">Listado</h3>
+    <section id="grid" class="grid" aria-live="polite"></section>
+
+    <div class="footer">
+      <div>
+        Consejos: <span class="kbd">Ctrl/⌘</span> + <span class="kbd">K</span> para enfocar búsqueda.
+      </div>
+      <div class="pill">Estado: sin backend • datos en memoria</div>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <span class="close" id="closeModal">✕</span>
+      <h3 id="modalTitle">Novedades (ACT)</h3>
+      <ul>
+        <li>✨ Filtros por dueño (L / S / Y / Otros / Sin asignar) con chips.</li>
+        <li>🔎 Búsqueda rápida por nombre / anime / dueño.</li>
+        <li>🗂️ Filtro por anime y orden configurable.</li>
+        <li>📈 Tarjetas de estadísticas + gráfico de distribución de dueños.</li>
+        <li>📤 Exportar CSV del listado filtrado.</li>
+        <li>💾 Persistencia de filtros en <code>localStorage</code>.</li>
+        <li>⌨️ Atajo Ctrl/⌘+K para la búsqueda.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+  // --- Datos originales inyectados ---
+  const characters = [
+{ name: "Hinemarril", anime: "Why Does Nobody Remember me in This World?", owner: "Yisuss" },
+{ name: "Mio Naruse", anime: "Shinmai Maō no Keiyakusha", owner: "Lexy" },
+{ name: "Kotoha Tachibana", anime: "Wind Breaker", owner: "Lexy" },
+{ name: "Cheelai", anime: "Dragon Ball Super", owner: "Lexy" },
+{ name: "Princesa Hibana", anime: "Fire Force", owner: "Lexy" },
+{ name: "Dorothea", anime: "I'm Giving the Disgraced Noble Lady I Rescued a Crash Course in Naughtiness ", owner: "Lexy" },
+{ name: "Blossom", anime: "Chillin’ in Another World with Level 2 Super Cheat Powers", owner: "Yisuss" },
+{ name: "Najenda", anime: "Akame ga Kill", owner: "Yisuss" },
+{ name: "Shizuka Mikazuki", anime: "Zombie 100", owner: "Sans" },
+{ name: "Ruka Sarashina", anime: "Rent a Girlfriend", owner: "Sans" },
+{ name: "Leone", anime: "Akame ga Kill", owner: "Yisuss" },
+{ name: "Frey", anime: "Mother Goddess Dormitory", owner: "Sans" },
+{ name: "Sakuna Memoire", anime: "The Vexations Shut-In Vampire Princess", owner: "Yisuss" },
+{ name: "Kurokami Medaka", anime: "Medaka Box", owner: "Sans" },
+{ name: "Kikyō Kushida", anime: "You-Zitsu", owner: null },
+{ name: "Stella Vermillion", anime: "A Tale of Worst One", owner: "Sans" },
+{ name: "Arlecchino", anime: "Genshin Impact", owner: "Lexy" },
+{ name: "Yuu Nozaki", anime: "Hypnotic Sexual Counseling", owner: "Yisuss" },
+{ name: "Kyōno Natsumi", anime: "Date a Live", owner: "Yisuss" },
+{ name: "Sofía Bulga", anime: "Moonlight Fantasy", owner: "Sans" },
+{ name: "Fil Nilvalen", anime: "No Game No Life Zero", owner: "Yisuss" },
+{ name: "Fujimiya Sumika", anime: "Uncle for Another World", owner: "Yisuss" },
+{ name: "Arnes Devil Female", anime: "KonoSuba", owner: "Sans" },
+{ name: "Lucy Heartfilia", anime: "Fairy Tail", owner: "Sans" },
+{ name: "Tao Saotome", anime: "Gokurakugai", owner: "Sans" },
+{ name: "Tao Yuifa", anime: "Reincarnated as the 7th Prince", owner: "Sans" },
+{ name: "Seyoung", anime: "Someone Stop Her", owner: "Lexy" },
+{ name: "Citlali", anime: "Genshin Impact", owner: "Lexy" },
+{ name: "Iris", anime: "Fire Force", owner: "Yisuss" },
+{ name: "Destiny", anime: "Takt Op Destiny", owner: "Lexy" },
+{ name: "Sacarossa", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Lucyna Kushinada", anime: "Cyberpunk: Edgerunners", owner: "Yisuss" },
+{ name: "Pyra", anime: "Xenoblade Chronicles 2", owner: "Sans" },
+{ name: "Mythra", anime: "Xenoblade Chronicles 2", owner: "Sans" },
+{ name: "Lee", anime: "Fucked the World Tree", owner: null },
+{ name: "???", anime: "Fucked the World Tree", owner: null },
+{ name: "Mencia", anime: "Pokémon", owner: "Lexy" },
+{ name: "Livia de Udis", anime: "A Salad Bowl of Eccentrics", owner: "Lexy" },
+{ name: "Stelle", anime: "Honkai Star Rail", owner: "Sans" },
+{ name: "Hizuki Reynard", anime: "Demon Lord 2099", owner: "Sans" },
+{ name: "Kaede Kazama", anime: " I Got a Cheat Ability in a Different World, and Became Extraordinary Even in the Real World", owner: "Yisuss" },
+{ name: "Ayane Shirakawa", anime: "Overflow", owner: "Sans" },
+{ name: "Kotone Shirakawa", anime: "Overflow", owner: "Sans" },
+{ name: "Erza Scarlett", anime: "Fairy Tail", owner: "Lexy" },
+{ name: "Yinlin", anime: "Wuthering Waves", owner: "Yisuss" },
+{ name: "Lynette", anime: "Genshin Impact", owner: "Yisuss" },
+{ name: "Eve Reese", anime: "Kaiyari", owner: "Yisuss" },
+{ name: "Setsuna", anime: "Redo of Healer", owner: "Sans" },
+{ name: "Aoba Wakura", anime: "Mato Seihei no Slave", owner: "Sans" },
+{ name: "Nia Honjo", anime: "Date a Live", owner: "Lexy" },
+{ name: "A2", anime: "NieR Autómata", owner: "Yisuss" },
+{ name: "Maid", anime: "Kaiyfuku", owner: "Yisuss" },
+{ name: "Hanekawa Neko", anime: "Monogatari", owner: "Sans" },
+{ name: "Vegetto [Girl]", anime: "Dragon Ball", owner: "Sans" },
+{ name: "Videl", anime: "Dragon Ball", owner: "Yisuss" },
+{ name: "Ayame Kajō", anime: "Shimoseka", owner: "Lexy" },
+{ name: "Suō Yuki", anime: "Alya Sometimes Hide Her Feelings in Russian", owner: "Lexy" },
+{ name: "Ayano Kimishima", anime: "Alya Sometimes Hide Her Feelings in Russian", owner: "Lexy" },
+{ name: "Akame", anime: "Akame Ga Kill", owner: "Sans" },
+{ name: "María Mikhailovna Kujō", anime: "Alya Sometimes Hide Her Feelings in Russian", owner: "Sans" },
+{ name: "Akari Himeno", anime: "Modaete yo, Adam Kun", owner: "Lexy" },
+{ name: "Aki Kokonoe", anime: "Modaete yo, Adam Kun", owner: "Sans" },
+{ name: "Yue Kurumizawa", anime: "Modaete yo, Adam Kun", owner: "Sans" },
+{ name: "Strauss Mirajane", anime: "Fairy Tail", owner: "Sans" },
+{ name: "Liz Smart", anime: "Let This Grieving Soul Retire", owner: "Sans" },
+{ name: "Bibian", anime: "Player", owner: null },
+{ name: "Riko Ikazuchi", anime: "The Undercover Agents Will Never Lose!", owner: "Yisuss" },
+{ name: "Ritsuki Mayama", anime: "Konomi Ja Nai Kedo Mukatsuku Ane to Aishou Batsugun Ecchi", owner: "Yisuss" },
+{ name: "Siesta", anime: "The Detective is Already Dead", owner: "Sans" },
+{ name: "Marl Barrock", anime: "Reincarnation Colosseum", owner: "Lexy" },
+{ name: "Jingliu", anime: "Honkai Star Rail", owner: "Lexy" },
+{ name: "Kaede Shīna", anime: "Modaete yo, Adam Kun", owner: "Lexy" },
+{ name: "Shion Fujino", anime: "Hatsu Inu The Animation", owner: null },
+{ name: "Loretel", anime: "The Extra's Academy Survival Guide", owner: null },
+{ name: "Xiangyun", anime: "Genshin", owner: "Sans" },
+{ name: "Yatogami Tohka", anime: "Date a Live", owner: "Yisuss" },
+{ name: "Jōryuu", anime: "Mato Seihei no Slave", owner: "Yisuss" },
+{ name: "Yurine Hayasaki", anime: "Baku Ane: Otouto Shibocchau zo! The Animation", owner: "Lexy" },
+{ name: "Mío Hayasaki", anime: "Baku Ane: Otouto Shibocchau zo! The Animation", owner: "Lexy" },
+{ name: "Rose", anime: "Chiyo Maho no Machigatta Tsukai-Kata", owner: null },
+{ name: "Ichinose Honami", anime: "You-Zitsu", owner: "" },
+{ name: "Úrsula", anime: "Enzo Kōjai", owner: "Sans" },
+{ name: "Mai Sakurajima", anime: "Bunny Girl Senpai", owner: "Yisuss" },
+{ name: "Tokime", anime: "Kamen Rider", owner: "Yisuss" },
+{ name: "Kana Arima", anime: "Oshi no Ko", owner: "Yisuss" },
+{ name: "Mem-Cho", anime: "Oshi no Ko", owner: "Sans" },
+{ name: "Aria Kisaki", anime: "2.5 Dimensional Seduction", owner: "Lexy" },
+{ name: "Dobberman", anime: "Arknights", owner: "Lexy" },
+{ name: "Mina Ashido", anime: "Boku no Hero", owner: "Lexy" },
+{ name: "Zinnia", anime: "Pokemon", owner: "Yisuss" },
+{ name: "Iris", anime: "Pokemon", owner: "Sans" },
+{ name: "Lusamine", anime: "Pokemon", owner: "Lexy" },
+{ name: "Takina Inōe", anime: "Lycoris Recoil", owner: "Lexy" },
+{ name: "Mitsubi Kanroji", anime: "Kimetsu no Yaiba", owner: "Yisuss" },
+{ name: "Xenobia Quarta", anime: "Highschool DxD", owner: "Lexy" },
+{ name: "Kuroka Tōjō", anime: "Highschool DxD", owner: "Lexy" },
+{ name: "Rías Gremory", anime: "Highschool DxD", owner: "Lexy" },
+{ name: "Akeno Hinemija", anime: "Highschool DxD", owner: "Yisuss" },
+{ name: "Asia Argento", anime: "Hishschool DxD", owner: "Lexy" },
+{ name: "Irina Shidou", anime: "Hishschool DxD", owner: "Yisuss" },
+{ name: "Carlotta", anime: "Wuthering Waves", owner: "Lexy" },
+{ name: "Chouryou", anime: "Kohime Kusou", owner: "Sans" },
+{ name: "Live", anime: "Maoyaka Punch", owner: "Lexy" },
+{ name: "Darkness", anime: "Konosuba", owner: "Sans" },
+{ name: "Aqua", anime: "Konosuba", owner: "Yisuss" },
+{ name: "Kiki", anime: "TenPuru", owner: "Lexy" },
+{ name: "Tsukuyo Aoba", anime: "TenPuru", owner: "Lexy" },
+{ name: "Yuzuki Aoba", anime: "TenPuru", owner: "Yisuss" },
+{ name: "Mía Cristoph", anime: "TenPuru", owner: "Yisuss" },
+{ name: "Tejina", anime: "Tejina Senpai", owner: "Sans" },
+{ name: "Fenris", anime: "Fenrys Wolf Warrior", owner: "Yisuss" },
+{ name: "Inglis Eucus", anime: "Reborn to Master the Blade", owner: "Sans" },
+{ name: "Yui Saikawa", anime: "The Detective is Already Dead", owner: "Sans" },
+{ name: "Chaisia", anime: "V-Tuber", owner: "" },
+{ name: "Miku Izayoi", anime: "Date a Live", owner: "Sans" },
+{ name: "Serafall Leviathan", anime: "Highschool DxD", owner: "Lexy" },
+{ name: "Goddess Rhongomyniad", anime: "Fate/Grand Order", owner: "Lexy" },
+{ name: "Kotori Itsuka", anime: "Date a Live", owner: "Yisuss" },
+{ name: "Sona Sitri", anime: "Highschool DxD", owner: "Lexy" },
+{ name: "Mayuri", anime: "Date a Live", owner: "Yisuss" },
+{ name: "Curran", anime: "Ningen Fushin: Adventurers Who Don't Believe in Humanity Will Save the World", owner: "Yisuss" },
+{ name: "Tomo Aizawa", anime: "Momo-Chan", owner: "Lexy" },
+{ name: "Tobiichi Origami", anime: "Date a Live", owner: "Yisuss" },
+{ name: "Sasha", anime: "Cyberpunk: Edgerunners", owner: "Yisuss" },
+{ name: "Rio Futaba", anime: "Bunny Girl Senpai", owner: "Sans" },
+{ name: "Senshu", anime: "Hello Killer", owner: "Lexy" },
+{ name: "Ayase Momo", anime: "DandaDan", owner: "Lexy" },
+{ name: "Kotoko Iwanaga", anime: "Kyokou Sugiri", owner: "Yisuss" },
+{ name: "Megumin", anime: "Konosuba", owner: "Yisuss" },
+{ name: "Tatsumaki", anime: "One Punch Man", owner: "Yisuss" },
+{ name: "Noire", anime: "Hyperdimension Neptunia", owner: "Yisuss" },
+{ name: "Koko Zenibako", anime: "Wiki Mato Seihei no Slave", owner: "Yisuss" },
+{ name: "Magilou Mayvin", anime: "Tales of Berseria", owner: "Lexy" },
+{ name: "Alma Judikhali", anime: "The Most Notorious Talker", owner: "Yisuss" },
+{ name: "Heaven", anime: "Takt Op Destiny", owner: "Yisuss" },
+{ name: "Hell", anime: "Takt Op Destiny", owner: "Yisuss" },
+{ name: "Combatiente XX", anime: "Go! Go! Loser Ranger!", owner: null },
+{ name: "Jun Tao", anime: "Shaman King", owner: "Yisuss" },
+{ name: "Kaedehara Kazuha", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Mystere", anime: "Synduality Noir Cour 2", owner: "Lexy" },
+{ name: "Sei Utsuki", anime: "VTuber Nandaga Haishin Kiri Wasuretara Densetsu ni Natteta", owner: "Yisuss" },
+{ name: "Awayuki Kokorone", anime: "VTuber Nandaga Haishin Kiri Wasuretara Densetsu ni Natteta", owner: "Yisuss" },
+{ name: "Ninim Raley", anime: "The Genius Prince's Guide to Raising a Nation Out of Debt", owner: "Lexy" },
+{ name: "Anna Aveiro", anime: "Narenare: Cheer for You!", owner: "Yisuss" },
+{ name: "Lydia Beginsgate", anime: "The Greatest Demon Lord", owner: "Yisuss" },
+{ name: "Elletear Lou Nebulis IX", anime: "Our Last Crusade or the Rise of a New World", owner: "Yisuss" },
+{ name: "Echidna", anime: "Yuusha, Yamemasu", owner: "Yisuss" },
+{ name: "Karyl", anime: "Princess Connect Re:Dive", owner: "Yisuss" },
+{ name: "Christina", anime: "Princess Connect Re:Dive", owner: "Yisuss" },
+{ name: "Anna Hiiragi", anime: "Princess Connect Re:Dive", owner: "Lexy" },
+{ name: "Labyrista", anime: "Princess Connect Re:Dive", owner: "Lexy" },
+{ name: "Nelia Cunningham", anime: "Sentouin Hakenshinasu", owner: "Yisuss" },
+{ name: "Millicent Bluenight", anime: "Sentouin Hakenshinasu", owner: "Yisuss" },
+{ name: "Karen Elvesias", anime: "Sentouin Hakenshinasu", owner: "Yisuss" },
+{ name: "Rafinha Bilford", anime: "Sentouin Hakenshinasu", owner: "Yisuss" },
+{ name: "Lena Fox", anime: "Someone Stop Her", owner: "Sans" },
+{ name: "Nei", anime: "Gokurakugai", owner: "Lexy" },
+{ name: "Rurikawa Tsubaki", anime: "Maid Kyouiku", owner: "Sans" },
+{ name: "Emilia ", anime: "ReZero", owner: null },
+{ name: "Soi Fon", anime: "Bleach", owner: "Yisuss" },
+{ name: "Shura Kirigakure", anime: "Blue Exorcist", owner: null },
+{ name: "Shikkoku", anime: "Mato Seihei no Slave", owner: "Sans" },
+{ name: "Naon Yuno", anime: "Mato Seihei no Slave", owner: "Lexy" },
+{ name: "Dai Akuma Onna", anime: "Combatants Will Be Dispatched!", owner: "Lexy" },
+{ name: "Gina Chamber", anime: "Undead Unluck", owner: "Yisuss" },
+{ name: "Furina", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Momo Yaoyorozu", anime: "Boku no Hero", owner: "Lexy" },
+{ name: "Ghislaine Dedoldia", anime: "Mushoku Tensei", owner: "Yisuss" },
+{ name: "Kaina Tsutsumi", anime: "Boku no Hero", owner: "Lexy" },
+{ name: "2B", anime: "NieR Autómata", owner: "Lexy" },
+{ name: "Shushu", anime: "Mato Seihei no Slave", owner: "Yisuss" },
+{ name: "Sahara", anime: "Mato Seihei no Slave", owner: "Lexy" },
+{ name: "Niny Spangcole", anime: "Burn the Witch", owner: "Sans" },
+{ name: "Noel Niihashi", anime: "Burn the Witch", owner: "Sans" },
+{ name: "Charlotte Arisaka", anime: "The Detective is Already Dead", owner: "Sans" },
+{ name: "Sylpha Langlis", anime: "Reincarnated as a 7th prince", owner: "Lexy" },
+{ name: "Luna Heela", anime: "The Hidden Dungeon Only I Can Enter", owner: "Sans" },
+{ name: "Kisara", anime: "Engage Kiss", owner: "Sans" },
+{ name: "Yuki Yokoya", anime: "Ms. Servant", owner: "Sans" },
+{ name: "Malina", anime: "Helltaker", owner: "Sans" },
+{ name: "Grace", anime: "Ms. Servant", owner: "Lexy" },
+{ name: "Roxy", anime: "Pokémon", owner: "Sans" },
+{ name: "Judith", anime: "Pokémon", owner: "Lexy" },
+{ name: "Sonia", anime: "Pokémon", owner: "Sans" },
+{ name: "Sicily von Claude", anime: "Kenja no Mago", owner: "Sans" },
+{ name: "Aroa", anime: "Pokémon", owner: "Sans" },
+{ name: "Sitri Smart", anime: "Let This Grieving Soul Retire", owner: "Sans" },
+{ name: "Gamma", anime: "Pokémon", owner: "Sans" },
+{ name: "Yumeko Jabami  ", anime: "Kakegurui", owner: "Sans" },
+{ name: "Amagami Yae", anime: "Amagami Sister", owner: "Sans" },
+{ name: "Kiana Kaslana", anime: "Kiana Kaslana", owner: "Sans" },
+{ name: "Firefly", anime: "Honkai Star Rail", owner: "Lexy" },
+{ name: "Winnie", anime: "Peach Boy", owner: "Lexy" },
+{ name: "Miku Nakano", anime: "The Quintessential Quintuplets", owner: "Lexy" },
+{ name: "Omoharu Nakanaka", anime: "Komi-San Can't Comunicate", owner: "Sans" },
+{ name: "Elaina", anime: "Wanthering Witch", owner: "Sans" },
+{ name: "Yelan", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Hu Tao", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Fischl", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Xilonen", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Fishcl", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Layla", anime: "Genshin Impact", owner: "Lexy" },
+{ name: "Yunjin", anime: "Genshin Impact", owner: null },
+{ name: "Jean", anime: "Genshin Impact", owner: null },
+{ name: "Rosaria", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Beidou", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Chasca", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Mualani", anime: "Genshin Impact", owner: "Lexy" },
+{ name: "Guinaifen", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Jade", anime: "Honkai Star Rail", owner: "Sans" },
+{ name: "Sparkle", anime: "Honkai Star Rail", owner: "Lexy" },
+{ name: "Yukong", anime: "Honkai Star Rail", owner: "Sans" },
+{ name: "Uketsuke Jou", anime: "Goblin Slayer", owner: null },
+{ name: "Vermeil", anime: "Kinsou no Vermeil", owner: "Sans" },
+{ name: "Mineru Wachi", anime: "Megami-ryō no Ryōbo-kun", owner: null },
+{ name: "Kiriya Sensho", anime: "Megami-ryō no Ryōbo-kun", owner: "Lexy" },
+{ name: "Serene Hozumi", anime: "Megami-ryō no Ryōbo-kun", owner: null },
+{ name: "Sutea Koroya", anime: "Megami-ryō no Ryōbo-kun", owner: null },
+{ name: "Rinna", anime: "Why Does Nobody Remember Me in This World", owner: "Sans" },
+{ name: "Villhaze", anime: "The Vexations of a Shut-In Vampire Princess", owner: "Yisuss" },
+{ name: "Ayame Himuro", anime: "Rikekoi", owner: "Sans" },
+{ name: "Leone Olfa", anime: "Reborn to Master the Blade", owner: "Sans" },
+{ name: "Mayuri Hanyu", anime: "2.5 Dimensional Seduction", owner: "Sans" },
+{ name: "Horikita Suzune", anime: "You-Zitsu", owner: "Sans" },
+{ name: "Ichika Amasawa", anime: "You-Zitsu", owner: "Lexy" },
+{ name: "Kei Karuizawa", anime: "You-Zitsu", owner: "Sans" },
+{ name: "Sae Chabasira", anime: "You-Zitsu", owner: "Sans" },
+{ name: "Chiaki Matsushita", anime: "You-Zitsu", owner: null },
+{ name: "Chie Hoshinomiya", anime: "You-Zitsu", owner: null },
+{ name: "Fūka Kiryūin", anime: "You-Zitsu", owner: "Lexy" },
+{ name: "Haruka Hasebe", anime: "You-Zitsu", owner: null },
+{ name: "Kamuro Masumi", anime: "You-Zitsu", owner: "Sans" },
+{ name: "Kouzaku Mitori", anime: "Toaru Majutsu no Index", owner: null },
+{ name: "Kamira", anime: "Code Geass", owner: null },
+{ name: "Elysia", anime: "Honaki Impact 3rd", owner: "Sans" },
+{ name: "Lugh", anime: "Trinity Seven", owner: "Lexy" },
+{ name: "Anisphia Wynn Palettia", anime: "Tenten Kakumei", owner: "Sans" },
+{ name: "Freya", anime: "DanMachi", owner: "Sans" },
+{ name: "Frey", anime: "Megami-ryō no Ryōbo-kun", owner: "Sans" },
+{ name: "C.C.", anime: "Code Geass", owner: null },
+{ name: "Zero Two", anime: "DARLING in the FRANXX", owner: "Sans" },
+{ name: "Beros", anime: "Boku no Hero", owner: null },
+{ name: "Himiko Toga", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Kemy Utsushimi", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Moe Kamiji", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Takagi Saya", anime: "Highschool of the Dead", owner: "Yisuss" },
+{ name: "Mari Setogaya", anime: "¡Itadaki! Seieki", owner: "Sans" },
+{ name: "Urabe Mikoto", anime: "Nazo no Kanojo X", owner: "Yisuss" },
+{ name: "Kominami Asumi", anime: "We Never Learn", owner: "Yisuss" },
+{ name: "Uruka Takemoto", anime: "We Never Learn", owner: "Yisuss" },
+{ name: "Chevreuse", anime: "Genshin Impact", owner: null },
+{ name: "Kuki Sinobu", anime: "Genshin Impact", owner: "Yisuss" },
+{ name: "Sakura Hibiki", anime: "Dumbbell Nan-Kilo Moteru?", owner: "Sans" },
+{ name: "Miho Tsujinaka", anime: "Kono Koi ni Kizuite", owner: "Sans" },
+{ name: "Taokaka", anime: "Blazblue", owner: "Yisuss" },
+{ name: "Jack-O'", anime: "Guilty Gear", owner: "Yisuss" },
+{ name: "Maki Gamou", anime: "Don't Toy with Me, Miss Nagatoro", owner: "Yisuss" },
+{ name: "Elma", anime: "Kobayashi-San", owner: "Yisuss" },
+{ name: "Mei Hatsume", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Camellya", anime: "Wuthering Waves", owner: "Yisuss" },
+{ name: "Changli", anime: "Wuthering Waves", owner: "Yisuss" },
+{ name: "Seele", anime: "Honkai Star Rail", owner: null },
+{ name: "Juri Han", anime: "Street Fighter", owner: "Sans" },
+{ name: "Shino Asada", anime: "Sword Art Online", owner: null },
+{ name: "Lyla Decirus", anime: "Atelier", owner: "Sans" },
+{ name: "Tania Dragonoid", anime: "Beast Tamer", owner: "Yisuss" },
+{ name: "Ayase Seiko", anime: "DandaDan", owner: "Yisuss" },
+{ name: "Aira Shiratori", anime: "DandaDan", owner: "Lexy" },
+{ name: "Himeno", anime: "Chainsaw Man", owner: "Yisuss" },
+{ name: "Rappa", anime: "Honkai Star Rail", owner: "Yisuss" },
+{ name: "Tsumugi Shiina", anime: "Liar Liar", owner: null },
+{ name: "Yoruka Kirihime", anime: "Saijaku Muhai no Bahamut", owner: "Yisuss" },
+{ name: "Terakomari Gandezblood", anime: "The Vexations of a Shut-In Vampire Princess", owner: "Yisuss" },
+{ name: "Veliona", anime: "Hi3rd", owner: "Yisuss" },
+{ name: "Yona", anime: "Akatsuki no Yona", owner: "Yisuss" },
+{ name: "Emi Haneru", anime: "Pon no Michi", owner: "Yisuss" },
+{ name: "Sanhua", anime: "Wuthering Waves", owner: "Yisuss" },
+{ name: "Takahashi", anime: "Maou 2099", owner: "Yisuss" },
+{ name: "Sei Shonagon", anime: "Fate/Grand Order", owner: "Yisuss" },
+{ name: "Hestia", anime: "DanMachi", owner: "Sans" },
+{ name: "Chess Belle", anime: "Owari no Seraph", owner: "Yisuss" },
+{ name: "Altair", anime: "Re:Creators", owner: "Yisuss" },
+{ name: "Xueli Ouyang", anime: "Cupidschocolate", owner: "Yisuss" },
+{ name: "Astra Yao", anime: "ZZZ", owner: "Yisuss" },
+{ name: "Ai Hayasaka", anime: "Kaguya-sama wa Kokurasetai", owner: null },
+{ name: "Akira Asai", anime: "Call of the Night", owner: "Yisuss" },
+{ name: "Koneko Toujou", anime: "Highschool DxD", owner: null },
+{ name: "Emma", anime: "Yakusoku no Neverland", owner: null },
+{ name: "Nekoyamada", anime: "My Deerfriend Nokota", owner: null },
+{ name: "Bárbara", anime: "Genshin Impact", owner: null },
+{ name: "Shenhe", anime: "Genshin Impact", owner: "Yisuss" },
+{ name: "Shara", anime: "Shoukoku no Altair", owner: "Sans" },
+{ name: "Miko", anime: "No Game No Life", owner: null },
+{ name: "Azriel", anime: "No Game No Life", owner: null },
+{ name: "Tamaki", anime: "Princess Re:Drive", owner: "Sans" },
+{ name: "Sylvia", anime: "Konosuba", owner: "Yisuss" },
+{ name: "Muko Akashiya", anime: "Rosario Vampire", owner: null },
+{ name: "Reanette Elfelt", anime: "No Names", owner: "Yisuss" },
+{ name: "Tatiana The Untouchable", anime: "Undead Unluck", owner: null },
+{ name: "Kohaku", anime: "Dr. Stone", owner: "Yisuss" },
+{ name: "Ruri", anime: "Dr. Stone", owner: "Yisuss" },
+{ name: "Lilysia Amano", anime:"2.5 Dimensional Seduction", owner: null },
+{ name: "Mikari Tachibana", anime:"2.5 Dimensional Seduction", owner: "Yisuss" },
+{ name: "Izumi Reina", anime: "Miryad Colors Phantom World", owner: "Yisuss" },
+{ name: "Ochako Uraraka", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Epsilon", anime: "Eminence in Shadow", owner: "Lexy" },
+{ name: "Alpha", anime: "Eminence in Shadow", owner: "Yisuss" },
+{ name: "Beta", anime: "Eminence in Shadow", owner: "Yisuss" },
+{ name: "Zeta", anime: "Eminence in Shadow", owner: "Yisuss" },
+{ name: "Lillia del Deseo", anime: "Nanatsu no Taizai", owner: "Sans" }, 
+{ name: "Eta", anime: "Eminence in Shadow", owner: "Lexy" },
+{ name: "Gamma", anime: "Eminence in Shadow", owner: "Yisuss" },
+{ name: "Aurora", anime: "Eminence in Shadow", owner: "Lexy" },
+{ name: "Alexia Midgar", anime: "Eminence in Shadow", owner: "Lexy" },
+{ name: "Beatrix", anime: "Eminence in Shadow", owner: "Yisuss" },
+{ name: "Texas", anime: "Arknights", owner: "Yisuss" },
+{ name: "Kal'tsit", anime: "Arknights", owner: "Yisuss" },
+{ name: "Lappland", anime: "Arknights", owner: null },
+{ name: "Nearl", anime: "Arknights", owner: null },
+{ name: "Velvet Crowe", anime: "Tales of Berseria", owner: "Lexy" },
+{ name: "Hanabata Nohkins", anime: "Hanabata Nohkins", owner: "Yisuss" },
+{ name: "Hitamu Kyan", anime: "Futoku no Guild", owner: "Lexy" },
+{ name: "Crownslayer", anime: "Arknights", owner: "Yisuss" },
+{ name: "Ch'en", anime: "Arknights", owner: "Lexy" },
+{ name: "Rossweise", anime: "Highschool DxD", owner: "Yisuss" },
+{ name: "Hatsun e Kashiwazaki", anime: "Princess! Conect Re:Dive", owner: "Yisuss" },
+{ name: "Pecorine", anime: "Princess! Conect Re:Dive", owner: "Lexy" },
+{ name: "Steina", anime: "Yuusha, Yamemasu", owner: null },
+{ name: "Shion Tanizaki", anime: "Nanare Hananare", owner: null },
+{ name: "Chami Yanagase", anime: "VTuber Nandaga Haishin Kiri Wasuretara Densetsu ni Natteta", owner: "Yisuss" },
+{ name: "Mashiro Irodori", anime: "	VTuber Nandaga Haishin Kiri Wasuretara Densetsu ni Natteta", owner: null },
+{ name: "Yaya Fushiguro", anime: "Yuragi-sou no Yuuna-san", owner: null },
+{ name: "Yomiko Tsukigami", anime: "Amagami-san Chi no Enmusubi", owner: null },
+{ name: "Magilou", anime: "Tales of Berseria", owner: "Lexy" },
+{ name: "Menou", anime: "The Executioner and Her Way of Life", owner: null },
+{ name: "Ashuna Grisarika", anime: "The Executioner and Her Way of Life", owner: "Lexy" },
+{ name: "Mina Ashiro", anime: "Kaiju nº8", owner: null },
+{ name: "Serena", anime: "Pokémon", owner: "Sans" },
+{ name: "Celestia Ludenberg", anime: "Danganronpa: Trigger Happy Havoc", owner: "Lexy" },
+{ name: "Inda Karane", anime: "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You", owner: "Lexy" },
+{ name: "Krul Tepes", anime: "Owari no Seraph", owner: "Sans" },
+{ name: "Revy", anime: "Black Lagoon", owner: "Sans" },
+{ name: "Hae In Cha", anime: "Solo Leveling", owner: "Sans" },
+{ name: "Shouko Komi", anime: "Komi-san Can't Comunicate", owner: null },
+{ name: "Kira", anime: "Pokémon", owner: "Lexy" },
+{ name: "Neptune", anime: "Hyperdimension Neptunia", owner: "Yisuss" },
+{ name: "Crimson", anime: "Ragna Crimson", owner: "Lexy" },
+{ name: "Machina Soleige", anime: "Demon Lord 2099", owner: "Yisuss" },
+{ name: "Uta", anime: "One Piece", owner: "Sans" },
+{ name: "Yamato", anime: "One Piece", owner: "Sans" },
+{ name: "Hououji Akane", anime: "Megami no Cafe Terrace", owner: "Yisuss" },
+{ name: "Baiken", anime: "Guilty Year", owner: "Sans" },
+{ name: "Kurumi Haraga", anime: "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You", owner: "Yisuss" },
+{ name: "Shin Haein", anime: "My Bias Gets On The Last Train", owner: "Yisuss" },
+{ name: "Nashiga", anime: "Uchi no Otouto Maji de Dekain dakedo Mi ni Konai?", owner: "Sans" },
+{ name: "Yukiko", anime: "Uchi no Otouto Maji de Dekain dakedo Mi ni Konai?", owner: "Lexy" },
+{ name: "Chiaki", anime: "Uchi no Otouto Maji de Dekain dakedo Mi ni Konai?", owner: "Sans" },
+{ name: "Chaika Bogdan", anime: " Hitsugi no Chaika", owner: "Lexy" },
+{ name: "Roselia Ishtaris", anime: "The Demon Sword Master of Excalibur Academy", owner: "Yisuss" },
+{ name: "Komaru Naegi", anime: "Danganronpa Another Episode: Ultra Despair Girls", owner: "Sans" },
+{ name: "Linia Dedoldia", anime: "Mushoku Tensei", owner: "Lexy" },
+{ name: "Pursena Dedoldia", anime: "Mushoku Tensei", owner: "Sans" },
+{ name: "Rider Medusa", anime: "Fate", owner: "Yisuss" },
+{ name: "Power", anime: "Chainsaw-Man", owner: "Yisuss" },
+{ name: "Aishela", anime: "Record of Grancrest", owner: "Sans" },
+{ name: "Kai Harn", anime: "Bastard!!", owner: "Yisuss" },
+{ name: "Arshes Nei", anime: "Bastard!!", owner: "Sans", note: "Robo."},
+{ name: "Bowsette", anime: "Mario Bros.", owner: "Sans" },
+{ name: "Princess Peach", anime: "Mario Bros.", owner: "Lexy" },
+{ name: "Estela", anime: "Mario Bros.", owner: "Sans" },
+{ name: "Silvya", anime: "College Life Start With Club", owner: "Yisuss" },
+{ name: "Tia Noto Yoko", anime: "Bastard!!", owner: "Sans" },
+{ name: "Kallen", anime: "Code Geass", owner: "Sans" },
+{ name: "Dimaria Yesta", anime: "Fairy Tail", owner: "Yisuss" },
+{ name: "Itsuki Nakano", anime: "The Quintessential Quintuplets", owner: "Lexy" },
+{ name: "Yumeko Shikiya", anime: "Makeine", owner: "Lexy" },
+{ name: "Miyamae Nonoa", anime: "Alya Sometimes Hides Her Feelings in Russian", owner: "Lexy" },
+{ name: "Ruan Mei", anime: "Honkai Star Rail", owner: "Sans" },
+{ name: "Amagami Asahi ", anime: "Amagami Sister", owner: "Sans" },
+{ name: "Ayase Saki", anime: "Days with my Stepsister", owner: "Sans" },
+{ name: "Shiromi Iori", anime: "Blue Archive the Animation", owner: "Yisuss" },
+{ name: "Murasame Reine", anime: "Date a Live", owner: "Sans" },
+{ name: "Elinalise Dragonroad", anime: "Mushoku Tensei", owner: "Yisuss" },
+{ name: "Mutsumi Yozakura", anime: "Mission Yozakura Family", owner: "Yisuss" },
+{ name: "Shion Yozakura", anime: "Mission Yozakura Family", owner: "Yisuss" },
+{ name: "Princesa Zelda", anime: "The Legend of Zelda", owner: "Sans" },
+{ name: "Nyaruko", anime: "Haiyore! Nyaruko-san", owner: "Yisuss" },
+{ name: "Juliette", anime: "Omega Strikers", owner: "Yisuss" },
+{ name: "Alina Clover", anime: "Dengeki", owner: "Sans" },
+{ name: "Samus Aran", anime: "Metroid", owner: "Sans" },
+{ name: "Yuki-Onna", anime: "Kyokou Suiri", owner: "Sans"},
+{ name: "Hilda", anime: "Pokémon", owner: "Sans" },
+{ name: "Nancy", anime: "Pokémon", owner: "Sans" },
+{ name: "Noriko Sonozaki", anime: "Kiznaiver", owner: "Sans" },
+{ name: "Hidra", anime: "Pokémon", owner: "Yisuss" },
+{ name: "Ryōshū", anime: "Limbus Company", owner: "Sans" },
+{ name: "Vulcan", anime: "The Elf-Girl's Cat is Secretly an S-Ranked Monster", owner: "Lexy" },
+{ name: "Misty", anime: "Pokémon", owner: "Sans" },
+{ name: "Gerania", anime: "Pokémon", owner: "Yisuss" },
+{ name: "Camila", anime: "Pokémon", owner: "Yisuss" },
+{ name: "Sabrina", anime: "Pokémon", owner: "Sans"},
+{ name: "Yasmina", anime: "Pokémon", owner: "Lexy" },
+{ name: "Candela", anime: "Pokémon", owner: "Sans" },
+{ name: "Débora", anime: "Pokémon", owner: "Sans" },
+{ name: "Alana", anime: "Pokémon", owner: "Lexy" },
+{ name: "Gardenia", anime: "Pokémon", owner: "Lexy" },
+{ name: "Corelia", anime: "Pokémon", owner: "Sans" },
+{ name: "E-Nigma", anime: "Pokémon", owner: "Sans"},
+{ name: "Lulú", anime: "Pokémon", owner: "Yisuss" },
+{ name: "Cathy", anime: "Pokémon", owner: "Lexy" },
+{ name: "Kira", anime: "Pokémon", owner: "Lexy" },
+{ name: "Nákara", anime: "Pokémon", owner: "Yisuss" },
+{ name: "Francine", anime: "Pokémon", owner: "Yisuss" },
+{ name: "Sada/Álbora", anime: "Pokémon", owner: "Sans" },
+{ name: "Sera", anime: "Pokémon", owner: "Sans" },
+{ name: "Ortiga", anime: "Pokémon", owner: "Sans" },
+{ name: "Salama Amagi", anime: "Amagi Brillant Park", owner: "Sans" },
+{ name: "Shinon", anime: "Sword Art Online", owner: "Sans" },
+{ name: "Nano Eiai", anime: "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You", owner: "Yisuss" },
+{ name: "753♡Nagomi", anime: "2.5 Dimensional Seduction", owner: "Sans" },
+{ name: "Tamaki Kotatsu", anime: "Fire Force", owner: "Sans" },
+{ name: "Spider Gwen", anime: "Spiderman", owner: "Lexy"},
+{ name: "Nami", anime: "One Piece", owner: "Lexy" },
+{ name: "Ryuko Matoi", anime: "Kill la Kill", owner: "Sans" },
+{ name: "Ayame Sakuya", anime: "Momentary Lily", owner: "Lexy" },
+{ name: "Erika Kodaiji", anime: "Momentary Lily", owner: "Yisuss" },
+{ name: "Lilith Asami", anime: "Trinity Eleven", owner: "Lexy" },
+{ name: "Levi Kazama", anime: "Trinity Eleven", owner: "Lexy" },
+{ name: "Titan", anime: "Takt Op Destiny", owner: "Yisuss" },
+{ name: "Coral", anime: "Pokémon", owner: "Sans" },
+{ name: "Mona Kawai", anime: "Medaka Kuroiwa is Impervious to My Charms", owner: "Lexy" },
+{ name: "Asahi Shonan", anime: "Medaka Kuroiwa is Impervious to My Charms", owner: null },
+{ name: "Chris Westland", anime: "Vermeil in Gold", owner: "Lexy" },
+{ name: "Evelyn Chevalier", anime: "Zenless Zone Zero", owner: "Lexy" },
+{ name: "Anby Demara", anime: "Zenless Zone Zero", owner: "Yisuss" },
+{ name: "Eriru", anime: "Mermaid Melody", owner: "Lexy" },
+{ name: "Kousetsu", anime: "Mato Seihei no Slave", owner: "Sans" },
+{ name: "Iku Sutou", anime: "100Kanojo", owner: "Yisuss" },
+{ name: "Himiko Yumeno", anime: "Danganronpa V3: Killing Harmony", owner: "Sans" },
+{ name: "Dra. Arinsu", anime: "Dragon Ball DAIMA", owner: "Sans" },
+{ name: "Gine", anime: "Dragon Ball Super", owner: "Yisuss" },
+{ name: "Kamiunten Mira", anime: "Mato Seihei no Slave", owner: "Yisuss" },
+{ name: "Chika Fujiwara", anime: "Love is War", owner: "Sans" },
+{ name: "W", anime: "Arknights", owner: "Lexy" },
+{ name: "Bulchi", anime: "Dragon Ball", owner: "Yisuss" },
+{ name: "Fasha", anime: "Dragon Ball", owner: "Yisuss" },
+{ name: "Melissa", anime: "Mobile Legends", owner: "Yisuss" },
+{ name: "Nezuko Kamado", anime: "Kimetsu no Yaiba", owner: "Sans" },
+{ name: "Naruhime", anime: "Mato Seihei no Slave", owner: "Yisuss" },
+{ name: "Maki Harukawa", anime: "Danganronpa V3: Killing Harmony", owner: "Sans"},
+{ name: "Miyabi Hoshimi", anime: "Zenless Zone Zero", owner: "Lexy" },
+{ name: "Idola Avorn", anime: "The Red Ranger Becomes As Adventurer In Another World", owner: "Yisuss"},
+{ name: "Koganei Niko", anime: "V-Tuber", owner: "Lexy" },      
+{ name: "Tohru", anime: "Kobayashi-San Chi No Maid Dragon", owner: "Sans" },
+{ name: "Ilulu", anime: "Kobayashi-San Chi No Maid Dragon", owner: "Sans" },
+{ name: "Tsumugi Shirogane", anime: "Danganronpa V3: Killing Harmony", owner: "Sans" },
+{ name: "Rover", anime: "Wuthering Waves", owner: "Sans" },
+{ name: "Aoi Asahina", anime: "Danganronpa: Trigger Happy Havoc", owner: "Sans" },
+{ name: "Zest", anime: "Shinmai Maō no Keiyakusha", owner: "Yisuss" },
+{ name: "Zani", anime: "Wuthering Waves", owner: "Sans" },
+{ name: "Rukia Kuchiki", anime: "Bleach", owner: "Yisuss" },
+{ name: "Shiba Miyuki", anime: "The Irregular at Magic High School", owner: "Lexy"},
+{ name: "Miaya Gekkogahara", anime: "Danganronpa 3: The End of Kibougamine", owner: "Yisuss" },
+{ name: "Chisa Yukizome", anime: "Danganronpa 3: The End of Kibougamine", owner: "Sans" },
+{ name: "Takane Takamine", anime: "Haite Kudasai, Takamine-san", owner: "Yisuss" },
+{ name: "Satone Shichimiya", anime: "Chuunibyou Demo Koi Ga Shitai!", owner: "Sans" },
+{ name: "Eri Evergreen", anime: "Haite Kudasai, Takamine-san", owner: "Yisuss" },
+{ name: "Chris", anime: "Konosuba", owner: "Yisuss" },
+{ name: "Shantae", anime: "Shantae", owner: "Yisuss" },
+{ name: "Milim Nava", anime: "Tensei Shitara Slime Datta Ken", owner: "Yisuss" },
+{ name: "Erdella", anime: "El Caballero Dragón En Otro Mundo", owner: "Sans" },
+{ name: "Ren", anime: "Tensei Shitara Dai Nana Ōji", owner: "Sans" },
+{ name: "Katixiya", anime: "Wuthering Waves", owner: "Sans" },
+{ name: "Sanae Nakagawa", anime: "Kanojo Face The Animation", owner: "Yisuss" },
+{ name: "Cantarella", anime: "Wuthering Waves", owner: "Sans" },
+{ name: "Mito Jujo", anime: "Owari no Seraph", owner: "Yisuss" },
+{ name: "Yukimi Shigure", anime: "Owari no Seraph", owner: "Yisuss" },
+{ name: "Mahiru Hiiragi", anime: "Owari no Seraph", owner: "Yisuss" },
+{ name: "Ashuramaru", anime: "Owari no Seraph", owner: "Sans" },
+{ name: "Mitsuba Sangu", anime: "Owari no Seraph", owner: "Sans" },
+{ name: "Aiko Aihara", anime: "Owari no Seraph", owner: "Sans" },
+{ name: "Kiseki", anime: "Owari no Seraph", owner: "Sans" },
+{ name: "Horn Skuld", anime: "Owari no Seraph", owner: "Yisuss" },
+{ name: "Luna Snow", anime: "Marvel Rivals", owner: "Yisuss" },
+{ name: "Erin", anime: "Knight Of Erin", owner: "Sans" },
+{ name: "Josee", anime: "Joze to Tora to Sakanatachi", owner: "Yisuss" },
+{ name: "Kirisame", anime: "Dr. Stone", owner: "Sans" },
+{ name: "Carol Oston", anime: "Tomo-Chan Is A Girl", owner: "Sans" },
+{ name: "Priscila Barielle", anime: "Re: Zero", owner: "Yisuss" },
+{ name: "Castorice", anime: "Honkai Star Rail", owner: "Sans" },
+{ name: "Taunie", anime: "Pokémon Z-A", owner: "Yisuss" },
+{ name: "Aria", anime: "S-Rank Monster no Behemoth", owner: "Yisuss" },
+{ name: "Lady Iguality", anime: "Lady Iguality", owner: "Yisuss" },
+{ name: "Arrow", anime: "Fire Force", owner: "Sans" },
+{ name: "Orochi", anime: "Fire Force", owner: "Yisuss" },
+{ name: "Cinnamon", anime: "Nekopara", owner: "Yisuss" },
+{ name: "Emma", anime: "Record of Grancrect War", owner: "Yisuss" },
+{ name: "Runa", anime: "Record of Grancrect War", owner: "Sans" },
+{ name: "Awashima", anime: "Nurarihyon No Mago Sennen Makyou", owner: "Yisuss" },
+{ name: "Mayonaka Matome", anime: "Akiba's", owner: "Yisuss" },
+{ name: "Androssi Zahard", anime: "Tower Of God", owner: "Lexy" },
+{ name: "Lum Invader", anime: "Urusei Yatsura", owner: "Sans" },
+{ name: "Stephanie Dolla", anime: "No Game No Life", owner: "Yisuss" },
+{ name: "Bambietta Basterbine", anime: "Bleach", owner: "Yisuss" },
+{ name: "Raika Shinohara", anime: "Inazuma Eleven Victory Road", owner: "Sans" },
+{ name: "Ohara", anime: "Pokemon", owner: "Lexy" },
+{ name: "Warfarin", anime: "Arknights", owner: "Lexy" },
+{ name: "Ishtar", anime: "Fate", owner: "Sans" },
+{ name: "Natsuko Hirose", anime: "Zenshu", owner: "Yisuss" },
+{ name: "Omiko Hakodate", anime: "Kill La Kill", owner: "Yisuss" },
+{ name: "Pan Xeno", anime: "Dragon Ball Heroes", owner: "Sans" },
+{ name: "Sara", anime: "Mushoku Tensei II", owner: "Lexy" },
+{ name: "Ayame Momochi", anime: "I'm Living With A Neet Kunoichi!?", owner: "Sans" },
+{ name: "Hina Izumi", anime: "I'm Living With A Neet Kunoichi!?", owner: "Yisuss" },
+{ name: "Kanna Natsumi", anime: "I'm Living With A Neet Kunoichi!?", owner: "Yisuss" },
+{ name: "Mashu Kyrielight", anime: "Fate", owner: "Yisuss" },
+{ name: "Shampoo", anime: "Ranma", owner: "Sans" },
+{ name: "Queen", anime: "To Be Hero X", owner: "Yisuss" },
+{ name: "Ringo", anime: "Soul Hackers 2", owner: "Sans" },
+{ name: "Figue", anime: "Soul Hackers 2", owner: "Sans" },
+{ name: "Milady", anime: "Soul Hackers 2", owner: "Yisuss" },
+{ name: "Mumei", anime: "Kabaneri Of The Iron Fortress", owner: "Yisuss" },
+{ name: "Myne", anime: "Boushoku No Berserk", owner: "Sans" },
+{ name: "Anna Yamada", anime: "The Dangers in My Heart", owner: "Yisuss" },
+{ name: "Kureha Clyret", anime: "Kaifuku Jutsushi no Yarinaoshi", owner: "Sans" },
+{ name: "Freia", anime: "Kaifuku Jutsushi no Yarinaoshi", owner: "Yisuss" },
+{ name: "Beatriz Amerhauser", anime: "Zom100", owner: "Yisuss" },
+{ name: "Chloé d'Apchier", anime: "Vanitas no Carte", owner: "Yisuss" },
+{ name: "Übel", anime: "Frieren", owner: "Lexy" },
+{ name: "Karen Hinemiya", anime: "Makeine", owner: "Yisuss" },
+{ name: "Takao Ameku", anime: "Ameku Takao no Suiri Karte", owner: "Yisuss" },
+{ name: "Tatenashi Sarashiki", anime: "Infinite Stratos", owner: "Yisuss" },
+{ name: "Satsuki Kiryuin", anime: "Kill la Kill", owner: "Yisuss" },
+{ name: "Atena Saotome", anime: "Dorm Mother of the Godess' Dorm", owner: "Sans" },
+{ name: "Nonon Jakuzure", anime: "Kill la Kill", owner: "Sans" },
+{ name: "Yuki Mita", anime: "Hatsu Ino", owner: "Yisuss" },
+{ name: "Maomao", anime: "The Apotecary Diaries", owner: "Sans" },
+{ name: "Mako Mankanshoku", anime: "Kill la Kill", owner: "Yisuss" },
+{ name: "Zhu Yuan", anime: "Zenless Zone Zero", owner: "Lexy" },
+{ name: "Teltina Avalost", anime: "Sentai Red Isekai de Boukensha ni Naru", owner: "Lexy" },
+{ name: "Misumi Uika", anime: "BanG Dream!", owner: "Lexy" },
+{ name: "Chihaya Anon", anime: "BanG Dream!", owner: "Sans" },
+{ name: "Lilia Kudelfate", anime: "Kinsou no Vermeil", owner: "Lexy" },
+{ name: "Sachiko", anime: "Pokémon", owner: "Yisuss" },
+{ name: "Leaf", anime: "Pokémon", owner: "Yisuss" },
+{ name: "Ragyo Kiryuin", anime: "Kill la Kill", owner: "Yisuss" },
+{ name: "Ann", anime: "Pokémon", owner: "Lexy" },
+{ name: "Makoto Niijima", anime: "Persona 5", owner: "Yisuss" },
+{ name: "Stella", anime: "The Elf-Girl's Cat is Secretly an S-Ranked Monster", owner: "Sans" },
+{ name: "Sumire Yoshizawa", anime: "Persona 5", owner: "Lexy" },
+{ name: "Ann Takamaki", anime: "Persona 5", owner: "Yisuss" },
+{ name: "Milla Maxwell", anime: "Tales of Xilia", owner: "Yisuss" },
+{ name: "Kakure Meme", anime: "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You", owner: "Lexy" },
+{ name: "Homare Azuma", anime: "Mato Seihei no Slave", owner: "Yisuss" },
+{ name: "Vivian", anime: "Zenless Zone Zero", owner: "Yisuss" },
+{ name: "Ayaka Hoshimi", anime: "Sorairo Utility", owner: "Lexy" },
+{ name: "Iris Midgar", anime: "Eminence in Shadows", owner: "Yisuss" },
+{ name:"Yoko Littner", anime: "Tengen Toppa Gurren Lagann", owner: "Yisuss" },
+{ name:"Neru", anime: "Blue Archive", owner: "Yisuss" },
+{ name:"Reina Mishima", anime: "Tekken 8", owner:"Lexy" },
+{ name: "Reina Mito", anime: "Danball Senki", owner: "Sans" },
+{ name: "Wridra", anime: "Welcome to Japan, Ms. Esf!", owner: "Sans" },
+{ name:"Nelliel", anime: "Bleach", owner:"Sans" },
+{ name:"Nanairo Multi", anime: "Beyblade", owner:"Yisuss" },
+{ name:"Maria", anime: "Izure Saikyō no Renkinjutsu-shi?", owner:"Yisuss" },
+{ name:"Myne", anime: "Boushoku No Berserk", owner:"Yisuss" },
+{ name:"Ai-Chan", anime: "Tawawa on Monday", owner:"Yisuss" },
+{ name:"Lena", anime: "Hazure Skill Kinomi Master", owner:"Sans" },
+{ name:"Ako Tamaki", anime: "Netoge no Yome wa Onna no Ko ja nai to Omotta?", owner:"Sans" },
+{ name:"Euphemia", anime: "Sokushi Cheat ga Saikyou Sugite", owner:"Yisuss" },
+{ name:"Esil Radiru", anime: "Solo Leveling", owner:"Yisuss" },
+{ name:"Gyokuen Ren ", anime: "Magi: The Labyrinth of Magic", owner: "Yisuss" },
+{ name:"Hakuei Ren", anime: "Magi: The Labyrinth of Magic", owner:"Sans" },
+{ name:"Kouha Ren", anime: "Magi: The Labyrinth of Magic", owner:"Sans" },
+{ name:"Morgiana", anime: "Magi: The Labyrinth of Magic", owner:"Yisuss" },
+{ name:"Durandal", anime: "Honkai Impact 3rd", owner:"Lexy" },
+{ name:"Kougyoku Ren", anime: "Magi: The Labyrinth of Magic", owner:"Sans" },
+{ name:"Terakomari Gazenblood", anime: "The Vexations Shut-In Vampire Princess", owner:"Yisuss" },
+{ name:"Cayena", anime: "Pokemon", owner:"Lexy" },
+{ name:"Rumi Usagiyama", anime: "Boku no Hero", owner: "Lexy" },
+{ name: "Yamuraiha", anime: "Magi: The Labyrinth of Magic", owner: "Sans" },
+{ name: "Albedo", anime: "Overlord", owner: "Sans" },
+{ name: "Itsuka Kendo", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Ellen Mira Mathers", anime: "Date a Live", owner: "Lexy"},
+{ name: "Ellenor Ljos Aif", anime: "Tsue to Tsurugi no Wistoria", owner: "Sans" },
+{ name: "Elfaria Albis Serfort", anime: "Tsue to Tsurugi no Wistoria", owner: "Sans" },
+{ name: "Ju Tao", anime: "Shaman King", owner: "Yisuss" },
+{ name: "Shakugan", anime: "Sengoku Youko", owner: "Lexy" },
+{ name: "Himari Inuzuka", anime: "Dano no Yuujou wa Seiritsu suru Himari", owner: "Sans"},
+{ name: "Reiko Kujirai", anime: "Kowloon Generic Romance", owner: "Yisuss" },
+{ name: "Kano Yamanouchi", anime: "Jellyfish Can't Swim in the Night", owner: "Lexy" },
+{ name: "Mariabelle", anime: "Yandere Dark Elf: She Chased Me all the way from Another World", owner: "Sans" },
+{ name: "Frieren", anime: "Frieren", owner: "Sans" },
+{ name: "Alice von Ataraxia", anime: "Solo Max level newbie", owner: "Sans" },
+{ name: "Sargento Calhound", anime: "Rompe Ralph", owner: "Sans" },
+{ name: "Mayla", anime: "Pokemon", owner: "Sans" },
+{ name: "Lygna", anime: "The Brilliant Healer's New Life in the Shadows", owner: "Sans" },
+{ name: "Escoffier", anime: "Genshin Impact", owner: "Yisuss" },
+{ name: "Raniya", anime: "Sentai Red Isekai de Bōkensha ni Naru", owner: "Yisuss" },
+{ name: "Brie", anime: "Pokémon", owner: "Lexy" },
+{ name: "Nereida (Hoenn)", anime: "Pokémon", owner: "Lexy" },
+{ name: "Nereida (Alola)", anime: "Pokémon", owner: "Lexy" },
+{ name: "Profesora Pimpinela", anime: "Pokémon", owner: "Sans" },
+{ name: "Capella Emerada Lugnica", anime: "Re:ZERO -Starting Life in Another World", owner: "Yisuss" },
+{ name: "Melo", anime: "Pokémon", owner: "Lexy" },
+{ name: "Cipher", anime: "Hokai Star Rail", owner: "Sans" },
+{ name: "Tieru", anime: "Sukebe Elf Tanbouki", owner: "Yisuss" },
+{ name: "Ao Sorakado", anime: "Summer Pockets", owner: "Yisuss" },
+{ name: "Reisalin Stout 'Ryza'", anime: "Atelier Ryza", owner: "Yisuss" },
+{ name: "Bismarck", anime: "Azur Lane", owner: "Sans" },
+{ name: "Lanyan", anime: "Genshin Impact", owner: null},
+{ name: "Sushang", anime: "Honkai Star Rail", owner: "Sans" },
+{ name: "Yayoi Kasukabe", anime: "Tenkuu Shinpad", owner: "Sans" },
+{ name: "Seiha", anime: "Shiunji Ke No Kodomotachi", owner: "Yisuss" },
+{ name: "Yakumo Ezo", anime: "Mato Seihei no Slave", owner: "Lexy" },
+{ name: "Destra", anime: "Pokémon", owner: "Lexy" },
+{ name: "Lylia", anime: "Pokémon", owner: "Sans" },
+{ name: "Tenka Shiroboshi", anime: "Beyblade", owner: null },
+{ name: "Bell Tsukiyono", anime: "Mato Seihei no Slave", owner: "Sans" },
+{ name: "Ralma", anime: "The Healer Who Was Banished From His Party", owner: "Sans" },
+{ name: "Surena Lysandra", anime: "From Old Country Bumpkin to Master Swordsman", owner: "Lexy" },
+{ name: "Allucia Citrus", anime: "From Old Country Bumpkin to Master Swordsman", owner: "Yisuss" },
+{ name: "Irina Luminesk", anime: "Tsuki to Laika to Nosferatu ", owner: "Yisuss" },
+{ name: "Mizakino Kukuru", anime: "The two girls met in the ruins of damaged dream", owner: "Sans" },
+{ name: "Roxy Migurdia", anime: "Mushoku Tensei", owner: "Lexy" },
+{ name: "Konoha Koga", anime: "A Ninja and an Assassin Under One Roof", owner: "Sans" },
+{ name: "Satoko Kusagakure", anime: "A Ninja and an Assassin Under One Roof", owner: "Sans" },
+{ name: "Prinz Eugen", anime: "Azur Lane", owner: "Sans" },
+{ name: "Meg Raspberry", anime: "Once Upon a Witch's Death", owner: "Sans" },
+{ name: "Chizuru Mizuhara", anime: "Kanojo, Okarishimasu", owner: "Sans" },
+{ name: "Ju Fufu", anime: "ZZZ", owner: "Sans" },
+{ name: "Yi Xuan", anime: "ZZZ", owner: "Yisuss" },
+{ name: "Nazuna Nanakusa", anime: "Yofukashi no Uta", owner: "Sans" },
+{ name: "Jade Greene", anime: "Inazuma Eleven GO", owner: "Lexy" },
+{ name: "Corin", anime: "Pokémon Escarlata", owner: "Sans" },
+{ name: "Celina", anime: "Goodbye Dragon Life", owner: "Lexy" },
+{ name: "Agate", anime: "Pokémon Escarlata", owner: "Lexy" },
+{ name: "Dendra", anime: "Pokémon", owner: "Sans" },
+{ name: "Edelgard", anime: "Isekai Maou to Shoukan Shoujo no Dorei Majutsu", owner: "Yisuss"},
+{ name: "Blade", anime: "Kaifuku Jutsushi no Yarinaoshi", owner: "Yisuss" },
+{ name: "Rika Minami", anime: "Highschool of the Dead", owner: "Sans" },
+{ name: "Isuzu Sento", anime: "Amagi Brillant Park", owner: "Yisuss" },
+{ name: "Tamaki Shiraya", anime: "Rock Lady", owner: "Sans" },
+{ name: "Otoha Kurogane", anime: "Rock Lady", owner: "Sans" },
+{ name: "Marceline", anime: "Hora de Aventuras", owner: "Sans" },
+{ name: "Princesa Chicle", anime: "Hora de Aventuras", owner: "Sans" },
+{ name: "Princesa Llama", anime: "Hora de Aventuras", owner: "Sans" },
+{ name: "Kina", anime: "Player", owner: "Sans" },
+{ name: "Carola", anime: "Pokémon", owner: "Yisuss" },
+{ name: "Silvina", anime: "Pokémon", owner: "Sans" },
+{ name: "Shiunji Ouka", anime: "The Shiunji Family Children", owner: "Sans" },
+{ name: "Tomoe", anime: "Tsuki ga Michibiku Isekai Douchuu", owner: "Lexy" },
+{ name: "Kasumi", anime: "BOFURI: I Don't Want to Get Hurt, so I'll Max Out My Defense", owner: "Yisuss" },
+{ name: "Ushiwakamaru", anime: "Fate", owner: "Yisuss" },
+{ name: "Amate Yuzuriha", anime: "The Gundam", owner: "Yisuss" },
+{ name: "Myron", anime: "Magi: The Labyrinth of Magic", owner: "Yisuss" },
+{ name: "Berros", anime: "Blood Lad", owner: "Yisuss" },
+{ name: "Imika Imose", anime: "Kakushite!! Makina-San!!", owner: "Yisuss" },
+{ name: "Andre Rondo", anime: "Shadowverse", owner: "Yisuss" },
+{ name: "Cian", anime: "To be Hero X", owner: "Yisuss" },
+{ name: "Loli", anime: "To be Hero X", owner: "Yisuss" },
+{ name: "Alice Kurobane", anime: "Shadowverse", owner: "Yisuss" },
+{ name: "Flare Corona", anime: "Fairy Tail", owner: "Yisuss" },
+{ name: "Banri Shiunji", anime: "The Shiunji Family Children", owner: "Yisuss" },
+{ name: "Lolisa", anime: "Konosuba", owner: "Yisuss" },
+{ name: "Nekomata", anime: "Sengoku Youko", owner: "Yisuss" },
+{ name: "Mizarisa", anime: "KYUUKYOKU SHINKA SHITA FULL DIVE RPG GA GENJITSU YORI.", owner: "Yisuss" },
+{ name: "Eiko Tsukimi", anime: "Shadowverse", owner: "Yisuss" },
+{ name: "Saiko Intelli", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Pawoo Nekoyanagi", anime: "Sabikui Bisco", owner: "Yisuss" },
+{ name: "Rumi Hizutome", anime: "Shangri-La Frontier", owner: "Yisuss" },
+{ name: "Shuletta Mercury", anime: "The Gundam", owner: "Yisuss" },
+{ name: "Tina Isemi", anime: "Rock Lady", owner: "Yisuss", },
+{ name: "Méihuā Shíshān", anime: "Scissor Seven", owner: "Yisuss" },
+{ name: "Carmilla", anime: "Shochiku", owner: "Yisuss" },
+{ name: "Amherst", anime: "Sonochiyusi", owner:"Sans" },
+{ name: "Tanzanite Convictor", anime: "Shadowverse Flame", owner:"Sans" },
+{ name: "Zophia", anime: "Shochiku", owner:"Sans" },
+{ name: "Uliminas", anime: "Fenrys, la Guerrera Loba", owner:"Sans" },
+{ name: "Shizuku Murasaki", anime: "Hunter X Hunter", owner:"Sans" },
+{ name: "Ursula", anime: "Even Given the Worthless 'Appraiser' Class, I'm Actually the Strongest", owner:"Sans" },
+{ name: "Ranmaru Rindou", anime: "Binbougami Ga", owner:"Sans" },
+{ name: "Karen Sabi", anime: "Shangri-La Frontier", owner:"Sans" },
+{ name: "Flay", anime: "Am I Actually Stronger", owner:"Sans" },
+{ name: "Lisa Isarabi", anime: "Fire Force", owner:"Sans" },
+{ name: "Anna Kyoyama", anime: "Shaman King", owner:"Sans" },
+{ name: "Theodisia", anime: "Instant Death", owner:"Sans" },
+{ name: "Shee Kelritch", anime: "Gods' Game we Play", owner:"Yisuss" },
+{ name: "Mari Makinami", anime: "Neon Genesis Evangelion", owner:"Sans" },
+{ name: "Agatsuma Makina", anime: "Kakushite!! Makina-San!!", owner:"Sans" },
+{ name: "Lu Shaotang", anime: "Sakamoto Days", owner:"Sans" },
+{ name: "Hina", anime: "Shadowverse Flame", owner:"Sans" },
+{ name: "Sylphid", anime: "Headhunted to Another World", owner:"Sans" },
+{ name: "Akane Oki", anime: "Shangri-La Frontier", owner:"Sans" },
+{ name: "Jamie Osen", anime: "I Left My A-Rank Party to Help My Former Students Reach the Dungeon Depths!", owner:"Sans" },
+{ name: "Ulamandra", anime: "Headhunter to Another World", owner:"Sans" },
+{ name: "Anri Shijou", anime: "Hatsukoi Time", owner:"Sans" },
+{ name: "Wang Qing", anime: "Link Click", owner:"Sans" },
+{ name: "Kureha Enomoto", anime: "Dano no Yuujou wa Seirtsu suru Himari", owner: "Lexy" },
+{ name: "Tsumugi Wenders", anime: "Summer Pockets", owner: "Sans" },
+{ name: "Kamome Kushima", anime: "Summer Pockets", owner: "Sans" },
+{ name: "Shiroha Naruse", anime: "Summer Pockets", owner: "Lexy" },
+{ name: "Riche Hayashi", anime: "Pon no Michi", owner: "Lexy" }, 
+{ name: "Nashiko Jippensha", anime: "Pon no Michi", owner: "Sans" },
+{ name: "Izumi Tokutomi", anime: "Pon no Michi", owner: "Sans" },
+{ name: "Pai Kawahigashi", anime: "Pon no Michi", owner: "Lexy" },
+{ name: "Rashid", anime: "OC", owner: "Lexy" },
+{ name: "Hiedra", anime: "Pokemon", owner: "Yisuss" },
+{ name: "Esdeath", anime: "Akame ga Kill", owner: "Yisuss" },
+{ name: "Yao Ro Dushi", anime: "Gate - Thus the JSDF Fought There!", owner: "Yisuss" },
+{ name: "Valkyrie", anime: "Takt op Destiny", owner: "Lexy" },
+{ name: "Anna Schneider", anime: "Takt op Destiny", owner: "Yisuss" },
+{ name: "Lily", anime: "NieR Autómata", owner: "Yisuss" },
+{ name: "Shuten Douji Pondering", anime: "Fate", owner: "Yisuss" },
+{ name: "Aura", anime: "Pokemon", owner: "Sans" },
+{ name: "Crystal", anime: "Pokemon", owner: "Yisuss" },
+{ name: "Maki Oze", anime: "Fire Force", owner: "Yisuss" },
+{ name: "Kotoko Utsugi", anime: "Danganronpa", owner: null },
+{ name: "Varesa", anime: "Genshin Impact", owner: "Yisuss" },
+{ name: "Kazuho Haneyama", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Lynga", anime: "The Brilliant Healer's New Life in the Shadows", owner: "Sans" },
+{ name: "Belinda", anime: "Pokemon", owner: "Sans" },
+{ name: "Lilya Suzunomiya", anime: "Rock Lady!!", owner: "Sans" },
+{ name: "Jericho", anime: "Nanatsu no Taizai", owner: "Sans" },
+{ name: "Desumi Magahara", anime: "Love After World Domination", owner: "Lexy" },
+{ name: "Yuno Gasai", anime: "Mirai Nikki", owner: "Sans" },
+{ name: "Aries Spring", anime: "Kanata no Astra", owner: "Yisuss" },
+{ name: "Tierr Harribel", anime: "Bleach", owner: "Sans" },
+{ name: "Shiko Murasame", anime: "HxEros", owner: "Yisuss" },
+{ name: "Lupa", anime: "Wuthering Waves", owner: "Sans" },
+{ name: "Baizhi", anime: "Wuthering Waves", owner: "Yisuss" },
+{ name: "Belial", anime: "Sentouin Hakenshimasu", owner: "Sans" },
+{ name: "Ruby Rose", anime: "RWBY: Hyousetsu Teikoku", owner: "Lexy" },
+{ name: "Hattori Junko", anime: "Demon King Daimao", owner: "Sans" },
+{ name: "Niberune", anime: "I Left my A-Rank Party to Help My Former Students Reach the Dungeon Depths!", owner: "Sans" },
+{ name: "Miyamoto Musashi", anime: "Fate", owner: "Sans" },
+{ name: "Tamamo Aria", anime: "Fate", owner: "Sans" },
+{ name: "Fujiko Eto", anime: "Maou 2099", owner: "Yisuss" },
+{ name: "Oboro Shintou", anime: "Yuragi-sou No Yuuna-san", owner: "Sans" },
+{ name: "Chun-Li", anime: "Street Fighter II", owner: "Lexy" },
+{ name: "Lucia Rogier", anime: "Let this Grieving Soul Retire!", owner: "Yisuss" },
+{ name: "Inori", anime: "Once Upon a Witch's Death", owner: "Yisuss" },
+{ name: "Tinasha", anime: "Unnamed Memory", owner: "Yisuss" },
+{ name: "Iris", anime: "The Strongest Sage with The Weakest Crest", owner: "Yisuss" },
+{ name: "Daki", anime: "Kimetsu no Yaiba", owner: "Yisuss" },
+{ name: "Meru", anime: "Meru The Succubus", owner: "Yisuss" },
+{ name: "Loewe", anime: "The Brilliant Healer's New Life in the Shadows", owner: "Yisuss" },
+{ name: "Amaori Renako", anime: "Watanare", owner: "Lexy" },
+{ name: "Ouzuka Mai", anime: "Watanare", owner: "Lexy" },
+{ name: "Koto Satsuki", anime: "Watanare", owner: "Sans" },
+{ name: "Koyanagi Kaho", anime: "Watanare", owner: "Sans" },
+{ name: "Sena Ajisai", anime: "Watanare", owner: "Sans" },
+{ name: "Dratena Belbury", anime: "Kinomimaster", owner: "Yisuss" },
+{ name: "Himiko Agari", anime: "Komi-San wa Komyushou Desu", owner: "Yisuss" },
+{ name: "Sana Sunomiya", anime: "Don't Toy with me, Miss Nagatoro", owner: "Sans" },
+{ name: "Kisara Tendou", anime: "Black Bullet", owner: "Sans" },
+{ name: "Luna Elegant", anime: "Demon Lord, Retry! R", owner: "Lexy" },
+{ name: "Granart Needakitta", anime: "Tales of Wedding Ring", owner: "Yisuss" },
+{ name: "Ai Nekki", anime: "Beyblade X", owner: "Sans" },
+{ name: "Emma Besho", anime: "Yu-Gi-Oh! VRAINS", owner: "Yisuss" },
+{ name: "Yui Yashiya", anime: "Rokudou no Onna", owner: "Yisuss" },
+{ name: "Nyamena", anime: "Arafo Tsuhan", owner: "Lexy" },
+{ name: "Charlotte Wraith", anime: "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World", owner: "Sans" },
+{ name: "Chica Mosquito", anime: "One Punch Man", owner: "Yisuss" },
+{ name: "Yoonda Cha", anime: "Someone Stop Her!", owner: "Sans" },
+{ name: "Hiro Segawa", anime: "A Couple of Cuckoos", owner: "Sans" },
+{ name: "Claire Field Symphonia", anime: "KonoSuba", owner: "Lexy" },
+{ name: "Kukaku Shiba", anime: "Bleach", owner: "Yisuss" },
+{ name: "Nemu Kurotsuchi", anime: "Bleach", owner: "Sans" },
+{ name: "Kinoko Komori", anime: "Bolu no Hero", owner: "Sans" },
+{ name: "Riselia Ray Crystalia", anime: "The Demon Sword Master of Excalibur Academy", owner: "Lexy" },
+{ name: "Yua", anime: "Eiyuuou, Bu wo Kiwameru Tame Tenseisu: Soshite", owner: "Sans" },
+{ name: "Mei", anime: "Maou 2099", owner: "Lexy" },
+{ name: "Celica Arfonia", anime: "Roku de Nashi Majutsu Koushi to Kinki Kyōten", owner: "Lexy" },
+{ name: "Kilmaria", anime: "My One-Hit Kill Sister", owner: "Yisuss" },
+{ name: "Sachi Umino", anime: "A Couple of Cuckoos", owner: "Lexy" },
+{ name: "Erika Amano", anime: "A Couple of Cuckoos", owner: "Sans" },
+{ name: "Heine", anime: "Sentouin, Hakenshimasu!", owner: "Yisuss" },
+{ name: "Minami Fuyuki", anime: "Hokkaido Gals Are Super Adorable!", owner: "Sans" },
+{ name: "Hina Chono", anime: "Blue Box", owner: "Sans" },
+{ name: "Ayame Moriya", anime: "Blue Box", owner: "Sans" },
+{ name: "Shinju Inui", anime: "Sono Bisque Doll", owner: "Sans" },
+{ name: "Nagi Arato", anime: "Ruri no Houseki", owner: "Sans" },
+{ name: "Akagi Ikumi", anime: "Rascal Does Not Dream of Bunny Girl Senpai", owner: "Lexy" },
+{ name: "Fuyumi Todoroki", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Nia Teppelin", anime: "Gurren Lagann", owner: "Lexy" }, 
+{ name: "Fino Bloodstone", anime: "I Couldn't Become a Hero, So I Reluctantly Decided to Get a Job", owner: "Lexy" },
+{ name: "Evernight", anime: "Honkai Star Rail", owner: "Yisuss" },
+{ name: "Momokusa Yomogi", anime: "Tougen Angi", owner: "Sans" },
+{ name: "Julis-Alexia Marie Florentia Renate von Riessfeld", anime: "Gakusen Toshi Asterisk", owner: "Sans" },
+{ name: "Akira Akao", anime: "Sakamoto Days", owner: "Sans" },
+{ name: "Kikoru Shinomiya", anime: "Kaiju nº8", owner: "Yisuss" },
+{ name: "Momo Nishimiya", anime: "Jujutsu Kaisen", owner: "Yisuss" },
+{ name: "Fuuko Izumo", anime: "Undead Unluck", owner: "Sans" },
+{ name: "Jun Aikawa", anime: "NISIOISIN", owner: "Sans" },
+{ name: "Acheron", anime: "Honkai Star Rail", owner: "Sans" },
+{ name: "Victorique de Blois", anime: "Gosick", owner: "Lexy" },
+{ name: "Misaki Ayuzawa", anime: "Kaichō wa Maid-sama!", owner: "Sans" },
+{ name: "Riza Wildman", anime: "Princess Resurrection", owner: "Lexy" },
+{ name: "Ronova", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Aki Murasame", anime: "Mecha Ude", owner: "Yisuss" },
+{ name: "Kuina Sazanami", anime: "Tougen Aki", owner: "Yisuss" },
+{ name: "Waldelia", anime: "Isekai Shikkaku", owner: "Yisuss" },
+{ name: "Nanao Hibiya", anime: "Reign of the Seven Spellblades", owner: "Sans" },
+{ name: "Artoria Gramm", anime: "Shinka no Mi", owner: "Lexy" },
+{ name: "Norika Umihara", anime: "Inazuma Eleven Ares", owner: "Lexy" },
+{ name: "Twoearle", anime: "Twintail-Verse", owner: "Sans" },
+{ name: "Ayame Shaga", anime: "Ben-To", owner: "Sans" },
+{ name: "Kon", anime: "Kemono Jihen", owner: "Yisuss" },
+{ name: "Aya Tademaru", anime: "Kemono Jihen", owner: "Lexy" },
+{ name: "Hina Tachibana", anime: "Domestic Girlfriend", owner: "Sans" },
+{ name: "Iuno", anime: "Wuthering Waves", owner: "Sans" },
+{ name: "Hysilens", anime: "Honkai Star Rail", owner: "Sans" },
+{ name: "Miwa Mikadono", anime: "Mikadono Sanshimai wa Angai, Choroi", owner: "Sans" },
+{ name: "Kan'u Unchou", anime:"Ikkitousen", owner: "Yisuss" },
+{ name: "Toru Hagakure", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Shino Sosaki", anime: "Boku no Hero", owner: "Lexy" },
+{ name: "Ryuko Tsuchikawa", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Tomoko Shiretoko", anime: "Boku no Hero", owner: "Yisuss" },
+{ name: "Sirius", anime: "Boku no Hero", owner: "Sans" },
+{ name: "Ryuko Tatsuma", anime: "Boku no Hero", owner: "Lexy" },
+{ name: "Anghalhad", anime: "Nanatsu no Taizai", owner: "Sans" },
+{ name: "Sharon Holytail", anime: "Engage Kiss", owner: "Sans" },
+{ name: "Ayano Yuugiri", anime: "Engage Kiss", owner: "Sans" },
+{ name: "Chixia", anime: "Wuthering Waves", owner: "Lexy" },
+{ name: "Yangyang", anime: "Wuthering Waves", owner: "Lexy" },
+{ name: "Linhua Hachisuka", anime: "Engage Kiss", owner: "Lexy" },
+{ name: "Shenhua Hachisuka", anime: "Engage Kiss", owner: "Lexy" },
+{ name: "Nanase Katagiri", anime: "Nukitashi THE ANIMATION", owner: "Lexy" },
+{ name: "Misaki Hotori", anime: "Nukitashi THE ANIMATION", owner: "Sans" },
+{ name: "Tōka Reizeiin", anime: "Nukitashi THE ANIMATION", owner: "Lexy" },
+{ name: "Ikuko Onabuta", anime: "Nukitashi THE ANIMATION", owner: "Lexy" },
+{ name: "Rei Tadasugawa", anime: "Nukitashi THE ANIMATION", owner: "Sans" },
+{ name: "Tear Grants", anime: "Tales of Abyss", owner: "Sans" },
+{ name: "Rinslet Walker", anime: "Black Cat", owner: "Sans" },
+{ name: "Tomochika Dannoura", anime: "Instant Death", owner: "Sans" },
+{ name: "Lilith", anime: "One Piece", owner: "Yisuss" },
+{ name: "Goa Minagawa", anime: "The Shy and the Assasin Princesses", owner: "Sans" },
+{ name: "Rei Miyamoto", anime: "Highschool of the Dead", owner: "Yisuss" },
+{ name: "Apostle of Disdain", anime: "Shadowverse Flame", owner: "Sans" },
+{ name: "Orihime Inoue", anime: "Bleach", owner: "Sans" },
+{ name: "Quetzalcoatl", anime: "Fate", owner: "Yisuss" },
+{ name: "Ilya Mao", anime: "Beyblade", owner: "Sans" },
+{ name: "Alisa Ilinichina Amiella", anime: "God Eater", owner: "Yisuss" },
+{ name: "Cerídra", anime: "Honkai Star Rail", owner: "Sans" },
+{ name: "Jack-O' Valentine", anime: "Guilty Gear", owner: "Yisuss" },
+{ name: "Malva", anime: "Pokémon X/Y", owner: "Lexy" },
+{ name: "Ryoko Kaji", anime: "Tsuredure Children", owner: "Sans" },
+{ name: "Shirayuki", anime: "Akami no Shirayuki-hime", owner: "Sans" },
+{ name: "Tatsuki Arisawa", anime: "Bleach", owner: "Sans" },
+{ name: "Rangiku Matsumoto", anime: "Bleach", owner: "Sans" },
+{ name: "Sage", anime: "Sonic Frontiers", owner: "Lexy" },
+{ name: "Panty Anarchy", anime: "Panty & Stocking", owner: "Lexy" },
+{ name: "Stocking Anarchy", anime: "Panty & Stocking", owner: "Yisuss" },
+{ name: "Revy", anime: "Black Lagoon", owner: "Sans" },
+{ name: "Minato", anime: "A Ninja and a Assassin Under One Roof", owner: "Lexy" },
+{ name: "Galbrena", anime: "Wuthering Waves", owner: "Yisuss" },
+{ name: "Sunoookami Shiroko", anime: "Blue Archive", owner: "Sans" },
+{ name: "Kazuki Mikadono", anime: "Mikadono Sanshimai wa Angai, Choroi", owner: "Lexy" },
+{ name: "Kale", anime: "Dragon Ball Super", owner: "Sans" },
+{ name: "Caulifla", anime: "Dragon Ball", owner: "Lexy" },
+{ name: "Nefer", anime: "Genshin Impact", owner: "Yisuss" },
+{ name: "Jinja", anime: "Juusen Battle Monsuno", owner: "Sans" },
+{ name: "Alicia Glenfall", anime: "Clevatess", owner: "Yisuss" },
+{ name: "Roccia", anime: "Wuthering Waves", owner: "Sans" },
+{ name: "Mikado Anna", anime: "Inazuma Eleven", owner: "Yisuss" },
+{ name: "Yui Hirasawa", anime: "K-ON!", owner: "Sans" },
+{ name: "Undyne", anime: "Undertale", owner: "Yisuss" },
+{ name: "Ushikai Musume", anime: "Goblin Slayer", owner: "Lexy" },
+{ name: "Onna Shinkan", anime: "Goblin Slayer", owner: "Sans" },
+{ name: "Yōsei Yunde", anime: "Goblin Slayer", owner: "Lexy" },
+{ name: "Nanao Hibiya", anime: "Reign Of The Seven Spellblades", owner: "Yisuss" },
+{ name: "Monica Bolst", anime: "Kinomimaster", owner: "Yisuss" },
+{ name: "Vi", anime: "Arcane", owner: "Lexy" },
+{ name: "Jinx", anime: "Arcane", owner: "Lexy" },
+{ name: "Liz", anime: "Shochiku", owner: "Sans" },
+{ name: "Krishna", anime: "Shochiku", owner: "Sans" },
+{ name: "Yukina", anime: "Kabaneri Of The Iron Fortress", owner: "Sans" },
+{ name: "Sohma Hatsuharu", anime: "Fruits Basket", owner: "Yisuss" },
+{ name: "Graf Spee", anime: "Azur Lane", owner: "Sans" },
+{ name: "Azuha Hoshino", anime: "Detectives These Days are Crazy!", owner: "Lexy" },
+{ name: "Amo Empool", anime: "Gachiakuta", owner: "Sans" },
+{ name: "Kujira Kurokami", anime: "Medaka Box", owner: "Yisuss" },
+{ name: "Kitasan Black", anime: "Umamusume", owner: "Sans" },
+{ name: "Lauma", anime: "Genshin Impact", owner: "Yisuss" },
+{ name: "Hilda", anime: "Duet Night Abyss", owner: "Lexy" },
+{ name: "Francis Drake", anime: "Fate", owner: "Sans" },
+{ name: "Lufas Maphaahl", anime: "A Wild Last Boss Appeared!", owner: "Sans" },
+{ name: "Matière", anime: "Pokémon", owner: "Sans" },
+{ name: "Bárbara", anime: "Pokémon", owner: "Lexy" },
+{ name: "Sheila Metallicana", anime: "Bastard!!", owner: "Sans" },
+{ name: "Alice Thymefield", anime: "Zenless Zone Zero", owner: "Yisuss" },
+{ name: "Luna Ishikawa", anime: "Li'l Miss Vampire Can't Suck Right", owner: "Sans" },
+{ name: "Obey Your Master", anime: "Umamusume", owner: "Sans" },
+{ name: "Milianna", anime: "Fairy Tail", owner: "Sans" },
+{ name: "Gobwa", anime: "That Time I Got Reincarnated As A Slime", owner: "Yisuss" },
+{ name: "Masane Amaha", anime: "Witchblade", owner: "Sans" },
+{ name: "Haru Arisugawa", anime: "Love After World Domination", owner: "Yisuss" },
+{ name: "Naria", anime: "Pokémon Leyendas Z-A", owner: "Yisuss" },
+{ name: "Noa", anime: "Pokémon", owner: "Lexy" },
+{ name: "Sentencia", anime: "Helltaker", owner: "Yisuss"},
+{ name: "Justicia", anime: "Helltaker", owner: "Lexy"},
+{ name: "Deborah Gollini", anime: "Boku no Hero", owner:"Sans" },
+{ name: "Rin Fudou", anime: "Mission Yozakura Family", owner:"Lexy" },
+{ name: "Kurome", anime: "Akame ga Kill", owner:"Sans" },
+{ name: "Grea", anime: "Manaria Friends", owner: "Sans" },
+{ name: "Kristina Kuroda", anime: "Beyblade", owner: "Yisuss" },
+{ name: "Yidhari Murphy", anime: "Zenless Zone Zero", owner: "Sans" },
+{ name: "Delphia", anime: "Pokémon", owner: "Sans" },
+{ name: "Cerbero", anime: "Helltaker", owner: "Lexy" },
+{ name: "Mereoleona Vermillion", anime: "Black Clover", owner: "Lexy" },
+{ name: "Amanda O'Neill", anime: "Little Witch Academia", owner: "Lexy" },
+{ name: "Lin Lin", anime: "One Punch Man", owner: "Sans" },
+{ name: "Nadia", anime: "The Wailing Perversion", owner:" Lexy" },
+{ name: "Vanessa", anime: "Naze Boku no Sekai o Dare mo Obotenai no ka?", owner: "Sans" },
+{ name: "Rindou Kobayashi", anime: "Food Wars", owner: "Yisuss" },
+{ name: "Mayor Motoko Kusanagi", anime: "Ghost In The Shell", owner: "Sans" },
+{ name: "Derieri de la Pureza", anime: "Nanatsu no Taizai", owner: "Lexy" },
+{ name: "Asagi Ryugasaki", anime: "Shadowverse Flame", owner: "Sans" },
+{ name: "Nika Aoi", anime: "Beyblade", owner: "Sans" },
+{ name: "Tyrah", anime: "Inazuma Eleven", owner: "Yisuss" },
+{ name: "Beta", anime: "Inazuma Eleven", owner: "Yisuss" },
+{ name: "Rebecca", anime: "Cyberpunk Edgerunners", owner: "Sans" },
+{ name: "Krystal Novaty Nokanatika", anime: "Tales of Wedding Rings", owner: "Sans" },
+{ name: "Niina Miyamoto", anime: "Now What we Draw", owner: "Yisuss" },
+{ name: "Eleanor Estrella", anime: "Inazuma Eleven", owner: "Yisuss" },
+{ name: "Yuno Kashima", anime: "Danball Senki Wars", owner: "Yisuss" },
+{ name: "Vanessa Gala", anime: "Danball Senki Wars", owner: "Sans" },
+{ name: "Catherine Ruth", anime: "Danball Senki Wars", owner: "Sans" },
+{ name: "Maki Zenin", anime: "Jujutsu Kaisen", owner: "Lexy" },
+{ name: "Yuki Tsukumo", anime: "Jujutsu Kaisen", owner: "Sans" },
+{ name: "Loly Avirrne", anime: "Bleach", owner: "Sans" },
+{ name: "Menoly Mallia", anime: "Bleach", owner: "Yisuss" },
+{ name: "Candice Catnipp", anime: "Bleach", owner: "Yisuss" },
+{ name: "Meninas McAllon", anime: "Bleach", owner: "Sans" },
+{ name: "Bambietta Basterbine", anime: "Bleach", owner: "Yisuss" },
+{ name: "Futaba Sakura", anime: "Persona 5", owner: "Yisuss" },
+{ name: "Eula Lawrence", anime: "Genshin Impact", owner: "Lexy" },
+{ name: "Kiki Majima", anime: "Love After World Domination", owner: "Sans" },
+{ name: "Tsurara Halestome", anime: "MASHLE: Muscles & Magic", owner: "Lexy" },
+{ name: "Lemon Irvine", anime: "MASHLE: Muscles & Magic", owner: "Lexy" },
+{ name: "Kanae Kocho", anime: "Kimetsu no Yaiba", owner: "Lexy" },
+{ name: "Shinobu Kocho", anime: "Kimetsu no Yaiba", owner: "Sans" },
+{ name: "Sophina Brivia", anime: "MASHLE: Muscles & Magic", owner: "Sans" },
+{ name: "Iris Heart/Plutia", anime: "Hyperdimension Neptunia", owner: "Sans" },
+{ name: "Captain Mizuki", anime: "One Punch Man", owner: "Yisuss" },
+{ name: "Fluorite", anime: "Arknights Endfield", owner: "Yisuss" },
+{ name: "Claire Harvey", anime: "Hundrer", owner: "Sans" },
+{ name: "Celistia Ralgris", anime: "Undefeated Bahamut Chronicle", owner: "Yisuss" },
+{ name: "Katie", anime: "Welcome to the Outcast Restaurant", owner: "Sans" },
+{ name: "Suika", anime: "Dr. Stone", owner: "Sans" },
+{ name: "Minerva Orland", anime: "Fairy Tail", owner: "Sans" },
+{ name: "Mawata Fuwa", anime: "Boku no Hero Academia", owner: "Sans" },
+{ name: "Carlotta", anime: "Wuthering Waves", owner: "Sans" },
+{ name: "MEIKO", anime: "Project SEKAI", owner: "Lexy" },
+{ name: "Momo Airi", anime: "Project SEKAI", owner: "Lexy" },
+{ name: "Kusanagi Nene", anime: "Project SEKAI", owner: "Lexy" },
+{ name: "Shinonome Ena", anime: "Project SEKAI", owner: "Lexy" },
+{ name: "Kagamine Rin", anime: "Project SEKAI", owner: "Lexy" },
+{ name: "Asahina Mafuyu", anime: "Project SEKAI", owner: "Sans" },
+{ name: "Shirisa An", anime: "Project SEKAI", owner: "Sans" },
+{ name: "Shinomori Shiho", anime: "Project SEKAI", owner: "Sans" },
+{ name: "Azusawa Kohane", anime: "Project SEKAI", owner: "Sans" },
+{ name: "Megurine Luka", anime: "Project SEKAI", owner: "Sans" },
+{ name: "Hoshino Ichika", anime: "Project SEKAI", owner: "Sans" },
+{ name: "Chisa", anime: "Wuthering Waves", owner: "Sans" },
+{ name: "Momiji", anime: "Tensura", owner: "Yisuss" },
+{ name: "Ramiris", anime: "Tensura", owner: "Sans" },
+{ name: "Shizue Izawa", anime: "Tensura", owner: "Sans" },
+{ name: "Kyouka Shiraishi", anime: "Energy Kyouka!!" },
+{ name: "Amida Arca", anime: "Mobile Suit Gundam Iron-Blooded Orphans", owner: "Yisuss" },
+{ name: "Nobunaga Oda", anime: "Fate", owner: "Yisuss" },
+{ name: "Four Kurosu", anime: "Beyblade", owner: "Yisuss" },
+{ name: "OC Character 091225", anime: "OC", owner: "Yisuss" },
+{ name: "Azusa Kannawa", anime: "My Ankward Senpai", owner: "Sans" },
+{ name: "Columbina", anime: "Genshin Impact", owner: "Lexy" },
+{ name: "Ilia Coral", anime: "Tensei Oujo to Tensai Reijou no Mahou Kakumei", owner: "Lexy" },
+{ name: "Sylphine Maise Palletia", anime: "Tensei Oujo to Tensai Reijou no Mahou Kakumei", owner: "Yisuss" },
+{ name: "Euphyllia Magenta", anime: "Tensei Oujo to Tensai Reijou no Mahou Kakumei", owner: "Lexy" },
+{ name: "Tilty Claret", anime: "Tensei Oujo to Tensai Reijou no Mahou Kakumei", owner: "Yisuss" },
+{ name: "Sharisharu", anime: "Seisen Cerberus", owner: "Yisuss" },
+{ name: "Briar", anime: "Fairy Tail", owner: "Lexy" },
+{ name: "Chunyun", anime: "Record of Ragnarok", owner: "Yisuss" },
+{ name: "Rakkun", anime: "VTuber", owner: "Yisuss" },
+{ name: "Lunaria", anime: "VTuber", owner: "Sans" },
+{ name: "Yuta", anime: "One Punch Man", owner: "Yisuss" },
+{ name: "Kei Ashida", anime: "The Dreaming Boy Is a Realist", owner: "Lexy" },
+{ name: "Fuuka Sasaki", anime: "The Dreaming Boy Is a Realist", owner: "Lexy" },
+{ name: "Kaede Sajo", anime: "The Dreaming Boy Is a Realist", owner: "Sans" },
+{ name: "Aika Natsukawa", anime: "The Dreaming Boy Is a Realist", owner: "Sans" },
+{ name: "Yubel", anime: "YuGiOh!", owner: "Sans" },
+{ name: "Pyrrha Nikos", anime: "RWBY", owner: "Yisuss" },
+{ name: "Artbaran Henning", anime: "Let this Grieving Soul Retire", owner: "Yisuss" },
+{ name: "Principal", anime: "Hinalogic", owner: "Sans" },
+{ name: "Tifa Lockhart", anime: "Final Fantasy VII", owner: "Sans" },
+{ name: "Zdrada", anime: "Helltaker", owner: "Lexy" },
+{ name: "Iroha Kohinata", anime: "My Friend's Little Sister Has It In for Me!", owner: "Sans" },
+{ name: "Mashiro Tsukinomori", anime: "My Friend's Little Sister Has It In for Me!", owner: "Lexy" },
+{ name: "Sumire Kaegeishi", anime: "My Friend's Little Sister Has It In for Me!", owner: "Lexy" },
+{ name: "Reze", anime: "Chainsaw Man", owner: "Yisuss" },
+{ name: "Cyrene", anime: "Honkai Star Rail", owner: "Sans" },
+{ name: "Nemu Manaka", anime: "Euphoria!", owner: "Sans" },
+{ name: "Jackal", anime: "Nikke: Goddess of Victory", owner: "Yisuss" },
+{ name: "Kasane Teto", anime: "Vocaloid", owner: "Lexy" },
+{ name: "Mera Henderson", anime: "Inazuma Eleven", owner: "Yisuss" },
+{ name: "Agata", anime: "Brainless Witch", owner: "Yisuss" },
+{ name: "Goldie Lemmon", anime: "Inazuma Eleven", owner: "Lexy" },
+{ name: "Juvia Lockster", anime: "Fairy Tail", owner: "Lexy" },
+{ name: "Yor Forger", anime: "Spy x Family", owner: "Sans" },
+{ name: "Jeanne", anime: "Vanitas no Carte", owner: "Sans" },
+{ name: "Kafka", anime: "Honkai Star Rail", owner: "Yisuss" },
+{ name: "Karma", anime: "VTuber", owner: "Sans" },
+{ name: "Nobara Kugisaki", anime: "Jujutsu Kaisen", owner: "Sans" },
+{ name: "Sagirl Ameno", anime: "Yuragi-sou No Yuuna-san", owner: "Yisuss" },
+{ name: "Midori Kohabe", anime: "Call of the Night", owner: "Lexy" },
+{ name: "Inca Kasugatani", anime: "Fire Force", owner: "Lexy" },
+{ name: "Lia Todoroki", anime: "Boku no Hero (OC)", owner: "Sans" },
+{ name: "Umi Asanagi", anime: "I Made Friends with the Second Prettiest Girl in My Class", owner: "Sans" },
+{ name: "Herzha", anime: "Animation", owner: "Lexy" },
+{ name: "Lihanna Owenzaus", anime: "Wistoria of Wand and Sword", owner: "Sans" },
+{ name: "Yamashiro Ren", anime: "Mato Seihei no Slave", owner: "Sans" },
+{ name: "Najimi Ajima", anime: "Medaka Box", owner: "Yisuss" },
+{ name: "Kanna Bismarch", anime: "Shaman King", owner: "Yisuss" },
+{ name: "Kanon Hisui", anime: "Go! Go! Loser Ranger!", owner: "Lexy" },
+{ name: "Frankenstein", anime: "Fate", owner: "Yisuss" },
+{ name: "Konomi Tatara", anime: "Mato Seihei no Slave", owner: "Sans" },
+{ name: "Last Rite", anime: "Arknights", owner: "Lexy" },
+{ name: "Laevatain", anime: "Arknights", owner: "Yisuss" },
+{ name: "Ember", anime: "Arknights", owner: "Lexy" },
+{ name: "Endministrator", anime: "Arknights", owner: "Sans" },
+{ name: "Amelia Rose", anime: "Hyouken no Majutsushi ga Sekai o Suberu", owner: "Sans" },
+{ name: "Teresa Beria", anime: "Seikon no Qwaser", owner: "Yisuss" },
+{ name: "Neferpitou", anime: "Hunter x Hunter", owner: "Sans" },
+{ name: "Yae Sakura", anime: "Honkai Impact 3rd", owner: "Yisuss" },
+{ name: "Hina", anime: "Love Me: Hide and Seek", owner: "Yisuss" },
+{ name: "Aina Endou", anime: "Lovely <3", owner: "Sans" },
+{ name: "Carlita", anime: "Pokémon", owner: "Yisuss" },
+{ name: "Centella / Bonde Blazer", anime: "Dispatch", owner: "Sans" },
+{ name: "Malévola Gibb", anime: "Dispatch", owner: "Lexy" },
+{ name: "Li Xiang", anime: "Rememento: White Shadow", owner: "Yisuss" },
+{ name: "Kana", anime: "Rememento: White Shadow", owner: "Yisuss" },
+{ name: "Nihilister", anime: "Nikke", owner: "Yisuss" },
+{ name: "Jeremiah", anime: "Rememento: White Shadow", owner: "Sans" },
+{ name: "Nefarith", anime: "Arknights", owner: "Sans" },
+{ name: "Lacrimosa", anime: "Neverness to Everness", owner: "Sans" },
+{ name: "Jetavie", anime: "Gray Ravens", owner: "Sans" },
+{ name: "Shinku", anime: "Neverness to Everness", owner: "Yisuss" },
+{ name: "Frtiz Rumey", anime: "Azur Lane", owner: "Yisuss" },
+{ name: "Viper", anime: "Valorant", owner: "Yisuss" },
+{ name: "Rin Shinomiya", anime: "Yumemiru Danshi wa Genjitsushugisha", owner: "Sans" },
+{ name: "Naori Jinguji", anime: "Love is Indivisible by Twins", owner: "Lexy" },
+{ name: "Reyna", anime: "Valorant", owner: "Lexy" },
+{ name: "Yukana Yame", anime: "My first girlfriend is a gal", owner: "Sans" },
+{ name: "Ranko Honjo", anime: "My first girlfriend is a gal", owner: "Lexy" },
+{ name: "Miyu Suzuki", anime: "You and I are polar opposites", owner: "Sans" },
+{ name: "Sunna", anime: "Zenless Zone Zero", owner: "Lexy" },
+{ name: "Ravel Phoenix", anime: "DxD", owner: "Yisuss" },
+{ name: "Aika Kiryuu", anime: "DxD", owner: "Sans" },
+{ name: "Psykos", anime: "One Punch Man", owner: "Yisuss" },
+{ name: "Dragon God Leoleshea", anime: "Gods' Game we Play", owner: "Sans" },
+{ name: "Felicia", anime: "Darkstalkers", owner: "Yisuss" },
+{ name: "Ye Shunguang", anime: "Zenless Zone Zero", owner: "Sans" },
+{ name: "Quanxi", anime: "Chainsaw Man", owner: "Yisuss" },
+{ name: "Nero", anime: "Black Clover", owner: "Sans" },
+{ name: "Kamin", anime: "Dragon Ball Heroes", owner: "Yisuss" },
+{ name: "Earth-chan", anime: "Internet", owner: "Yisuss" },
+{ name: "Kivia Patausche", anime: "Sentenced to be a Hero", owner: "Lexy" },
+{ name: "Ruti Ragnason", anime: "Banished from the Hero's Party", owner: "Lexy" },
+{ name: "Lucifer", anime: "Helltaker", owner: "Sans" },
+{ name: "Cecilia Aquarain", anime: "There was a Cute Girl in the Hero's Party so I tried to confessing to her", owner: "Lexy" },
+{ name: "Teresa du Laurentia", anime: "Max Level Newbie", owner: "Sans" },
+{ name: "Kokutou", anime: "Shibou Yuugi de Meshi wo Taberu", owner: "Sans" },
+// Agregar el resto de los personajes aquí  1
+    ];
+
+  // --- Utilidades ---
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const initials = (name) => (name || '').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase() || '??';
+  const ownerCode = (owner) => {
+    if(!owner) return '';
+    const o = owner.toLowerCase();
+    if(o.includes('lexy')) return 'L';
+    if(o.includes('sans')) return 'S';
+    if(o.includes('yisuss')) return 'Y';
+    return 'O'; // Otros
+  };
+
+  // Normaliza
+  const data = (characters || []).map(c => ({
+    name: c.name?.trim() || '—',
+    anime: (c.anime || '').replace(/\s+/g,' ').trim(),
+    owner: (c.owner ?? '') === '' ? null : c.owner,
+    note: c.note || null,
+    code: ownerCode(c.owner)
+  }));
+
+  // Estado
+  const state = {
+    q: localStorage.getItem('q') || '',
+    owner: JSON.parse(localStorage.getItem('owner') || '["L","S","Y","O","U"]'), // U = unassigned
+    anime: localStorage.getItem('anime') || '',
+    sort: localStorage.getItem('sort') || 'name'
+  };
+
+  // Chips de dueño
+  const ownerChips = [
+    { code:'L', label:'L (Lexy)'},
+    { code:'S', label:'S (Sans)'},
+    { code:'Y', label:'Y (Yisuss)'},
+    { code:'O', label:'Otros'},
+    { code:'U', label:'Sin asignar'}
+  ];
+
+  function renderOwnerChips(){
+    const wrap = $('#ownerChips');
+    wrap.innerHTML = '';
+    ownerChips.forEach(ch=>{
+      const b = document.createElement('button');
+      b.className = 'chip';
+      b.dataset.code = ch.code;
+      const on = state.owner.includes(ch.code);
+      b.dataset.active = on ? 'true':'false';
+      b.textContent = ch.label;
+      b.addEventListener('click', ()=>{
+        const i = state.owner.indexOf(ch.code);
+        if(i>=0) state.owner.splice(i,1); else state.owner.push(ch.code);
+        localStorage.setItem('owner', JSON.stringify(state.owner));
+        renderOwnerChips();
+        render();
+      });
+      wrap.appendChild(b);
+    });
+  }
+
+  // Select de anime
+  function populateAnimeSelect(){
+    const set = new Set(data.map(d => d.anime).filter(Boolean));
+    const sel = $('#animeSel');
+    const prev = state.anime;
+    sel.innerHTML = '<option value="">Anime: todos</option>' + [...set].sort((a,b)=>a.localeCompare(b)).map(a=>`<option${a===prev?' selected':''}>${a}</option>`).join('');
+  }
+
+  // Filtro + Orden
+  function getFiltered(){
+    const q = state.q.toLowerCase();
+    return data.filter(d => {
+      const okOwner = (()=>{
+        const code = d.owner ? ownerCode(d.owner) : 'U';
+        return state.owner.includes(code);
+      })();
+      const okAnime = !state.anime || d.anime === state.anime;
+      const okQ = !q || [d.name, d.anime, d.owner || ''].some(v => (v||'').toLowerCase().includes(q));
+      return okOwner && okAnime && okQ;
+    }).sort((a,b)=>{
+      switch(state.sort){
+        case 'name': return a.name.localeCompare(b.name);
+        case 'anime': return a.anime.localeCompare(b.anime) || a.name.localeCompare(b.name);
+        case 'owner': return (a.owner||'').localeCompare(b.owner||'') || a.name.localeCompare(b.name);
+        case 'random': return Math.random() - .5;
+        default: return 0;
+      }
+    });
+  }
+
+  // Render listado
+  function renderList(list){
+    const grid = $('#grid');
+    grid.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    list.forEach(d=>{
+      const card = document.createElement('article');
+      card.className = 'card';
+      const av = document.createElement('div');
+      av.className = 'avatar';
+      av.textContent = (d.name[0] || '?').toUpperCase();
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const name = document.createElement('div'); name.className='name'; name.textContent=d.name;
+      const sub = document.createElement('div'); sub.className='sub'; sub.textContent = d.anime || '—';
+      const badge = document.createElement('span'); badge.className='owner-badge';
+      const code = d.owner ? ownerCode(d.owner) : 'U';
+      badge.textContent = ({'L':'L','S':'S','Y':'Y','O':'Otros','U':'Sin dueño'})[code];
+      meta.appendChild(name); meta.appendChild(sub);
+      card.appendChild(av); card.appendChild(meta); card.appendChild(badge);
+      frag.appendChild(card);
+    });
+    grid.appendChild(frag);
+  }
+
+  // Stats + Chart
+  let chart;
+  function renderStats(list){
+    $('#totalCnt').textContent = list.length;
+    const uniqAnime = new Set(list.map(d=>d.anime).filter(Boolean));
+    $('#uniqueAnime').textContent = uniqAnime.size;
+    const counts = {L:0,S:0,Y:0,O:0,U:0};
+    list.forEach(d=>{ const c = d.owner ? ownerCode(d.owner) : 'U'; counts[c]++; });
+    $('#ownerBreak').textContent = `${counts.L} / ${counts.S} / ${counts.Y}`;
+
+    const labels = ['L','S','Y','Otros','Sin dueño'];
+    const values = [counts.L, counts.S, counts.Y, counts.O, counts.U];
+    const ctx = document.getElementById('ownerChart').getContext('2d');
+    if(chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type:'bar',
+      data:{ labels, datasets:[{ label:'Personajes', data: values }] },
+      options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
+    });
+  }
+
+  // Export CSV
+  function exportCSV(list){
+    const rows = [['Nombre','Anime','Dueño','Código']].concat(list.map(d=>[d.name,d.anime,d.owner||'', ownerCode(d.owner)]));
+    const csv = rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'personajes_filtrado.csv'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Event wiring
+  $('#q').value = state.q;
+  $('#q').addEventListener('input', e=>{ state.q = e.target.value; localStorage.setItem('q', state.q); render(); });
+  $('#animeSel').addEventListener('change', e=>{ state.anime = e.target.value; localStorage.setItem('anime', state.anime); render(); });
+  $('#sortSel').value = state.sort;
+  $('#sortSel').addEventListener('change', e=>{ state.sort = e.target.value; localStorage.setItem('sort', state.sort); render(); });
+  $('#resetBtn').addEventListener('click', ()=>{ localStorage.clear(); state.q=''; state.owner=['L','S','Y','O','U']; state.anime=''; state.sort='name'; $('#q').value=''; populateAnimeSelect(); renderOwnerChips(); render(); });
+  $('#exportCsv').addEventListener('click', ()=> exportCSV(getFiltered()));
+  document.addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); $('#q').focus(); } });
+
+  // Modal ACT
+  const backdrop = $('#backdrop');
+  const openModal = ()=>{ backdrop.style.display='flex'; };
+  const closeModal = ()=>{ backdrop.style.display='none'; };
+  $('#actBtn').addEventListener('click', openModal);
+  $('#closeModal').addEventListener('click', closeModal);
+  backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop) closeModal(); });
+
+  // Boot
+  function render(){
+    const list = getFiltered();
+    renderList(list);
+    renderStats(list);
+  }
+  renderOwnerChips();
+  populateAnimeSelect();
+  render();
+  </script>
+</body>
+</html>
