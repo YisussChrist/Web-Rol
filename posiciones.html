@@ -632,9 +632,35 @@
       header.topbar{ position:sticky; top:0; z-index:20; }
       .pitchWrap{ min-height: 620px; }
     }
+    .back-menu{
+  position:fixed;
+  top:15px;
+  left:15px;
+
+  padding:10px 14px;
+  border-radius:12px;
+
+  background:rgba(20,25,50,0.85);
+  border:1px solid rgba(255,255,255,0.15);
+
+  color:white;
+  text-decoration:none;
+  font-weight:600;
+
+  backdrop-filter:blur(10px);
+
+  transition:0.2s;
+  z-index:999;
+}
+
+.back-menu:hover{
+  background:rgba(40,50,100,0.9);
+  transform:translateY(-2px);
+}
   </style>
 </head>
 <body>
+  <a href="index.html" class="back-menu">← Volver al menú</a>
   <div class="app">
     <header class="topbar">
       <div class="brand">
@@ -1313,3 +1339,4 @@
     }
 
     // =========================
+
