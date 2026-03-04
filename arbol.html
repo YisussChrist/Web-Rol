@@ -1,0 +1,3942 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>
+   Árbol Familiar — Vista Moderna
+  </title>
+<style>
+/* =========================
+   Single-file redesign (no photos)
+   Clean, readable, GitHub Pages friendly
+   ========================= */
+
+:root{
+  --bg: #0b1020;
+  --panel: rgba(255,255,255,.06);
+  --panel-2: rgba(255,255,255,.09);
+  --stroke: rgba(255,255,255,.10);
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.68);
+  --muted-2: rgba(255,255,255,.52);
+
+  --accent: #7c3aed;   /* violet */
+  --accent-2: #22c55e; /* green */
+  --danger: #ef4444;
+
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --radius: 18px;
+
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+}
+
+/* Light mode (si tu JS alterna la clase) */
+body.light-mode{
+  --bg: #f7f7fb;
+  --panel: rgba(0,0,0,.04);
+  --panel-2: rgba(0,0,0,.06);
+  --stroke: rgba(0,0,0,.10);
+  --text: rgba(0,0,0,.88);
+  --muted: rgba(0,0,0,.62);
+  --muted-2: rgba(0,0,0,.50);
+  --shadow: 0 10px 24px rgba(0,0,0,.10);
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family:var(--font);
+  background: radial-gradient(1200px 800px at 20% -10%, rgba(124,58,237,.25), transparent 60%),
+              radial-gradient(1000px 700px at 95% 10%, rgba(34,197,94,.18), transparent 55%),
+              var(--bg);
+  color:var(--text);
+  line-height:1.35;
+}
+
+a{ color:inherit; }
+button, input, select{ font:inherit; color:inherit; }
+::selection{ background: rgba(124,58,237,.35); }
+
+/* ---------- Appbar ---------- */
+.appbar{
+  position:sticky;
+  top:0;
+  z-index:50;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.08));
+  border-bottom: 1px solid var(--stroke);
+}
+body.light-mode .appbar{
+  background: rgba(255,255,255,.75);
+}
+
+.appbar > *{
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  padding: 14px 14px 6px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  cursor: default;
+  user-select:none;
+}
+
+.appbar-main{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 8px 14px 14px;
+  flex-wrap:wrap;
+}
+
+.search-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex: 1 1 320px;
+  min-width: 260px;
+  padding: 10px 12px;
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  border-radius: 999px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.05) inset;
+}
+#global-search{
+  flex:1;
+  border:0;
+  outline:0;
+  background:transparent;
+  padding: 2px 6px;
+}
+#global-search::placeholder{ color: var(--muted-2); }
+
+.ghost{
+  border:0;
+  background: transparent;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor:pointer;
+  opacity:.85;
+}
+.ghost:hover{ background: var(--panel-2); opacity:1; }
+
+.controls{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex: 0 1 auto;
+  flex-wrap:wrap;
+}
+
+.select{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding: 8px 10px;
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  border-radius: 999px;
+}
+
+select{
+  border:0;
+  background:transparent;
+  outline:0;
+  padding-right: 4px;
+  color: var(--text);
+}
+
+.toggle{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.toggle button{
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor:pointer;
+}
+.toggle button:hover{ background: var(--panel-2); }
+
+.chip-group{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  padding: 6px;
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  border-radius: 999px;
+}
+.chip{
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor:pointer;
+  color: var(--muted);
+}
+.chip[aria-pressed="true"]{
+  background: rgba(124,58,237,.22);
+  border-color: rgba(124,58,237,.35);
+  color: var(--text);
+}
+.chip:hover{ background: var(--panel-2); }
+
+/* ---------- Layout ---------- */
+.container{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 14px 60px;
+}
+
+.summary-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  margin: 14px 0 18px;
+}
+
+.stats{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.stat{
+  padding: 10px 12px;
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  border-radius: 999px;
+  color: var(--muted);
+}
+.stat strong{ color: var(--text); }
+
+.index-panel{
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+.index-panel h2{
+  margin:0 0 10px;
+  font-size: 14px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+#index{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+#index a{
+  text-decoration:none;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.03);
+  color: var(--text);
+}
+body.light-mode #index a{ background: rgba(0,0,0,.03); }
+#index a:hover{
+  border-color: rgba(124,58,237,.35);
+  background: rgba(124,58,237,.14);
+}
+
+/* ---------- Family card ---------- */
+.family{
+  margin-top: 18px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+body.light-mode .family{
+  background: #fff;
+}
+
+.parents{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid var(--stroke);
+  background:
+    radial-gradient(900px 200px at 20% 0%, rgba(124,58,237,.18), transparent 70%),
+    radial-gradient(900px 200px at 90% 0%, rgba(34,197,94,.12), transparent 70%),
+    transparent;
+}
+
+.parents-left{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width: 0;
+}
+.parents h2{
+  margin:0;
+  font-size: 18px;
+  line-height: 1.15;
+}
+.parents .meta{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* El contenedor de imágenes existía: lo dejamos pero sin ocupar */
+.parents-images{ display:none !important; }
+
+/* ---------- Children grid ---------- */
+.children{
+  padding: 14px;
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+/* child card */
+.child{
+  position:relative;
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  border-radius: 16px;
+  padding: 12px 12px 12px 12px;
+  transition: transform .12s ease, background .12s ease, border-color .12s ease;
+  min-height: 92px;
+}
+.child:hover{
+  transform: translateY(-2px);
+  background: var(--panel-2);
+  border-color: rgba(124,58,237,.30);
+}
+
+.child h3{
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 750;
+  padding-right: 44px; /* deja espacio para número */
+  word-break: break-word;
+}
+.child p{
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  word-break: break-word;
+}
+
+/* Numerito del hijo: badge arriba derecha */
+.child-number{
+  position:absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display:grid;
+  place-items:center;
+  font-weight: 800;
+  font-size: 12px;
+  border: 1px solid var(--stroke);
+  background: rgba(124,58,237,.18);
+}
+
+/* Badge de estado (L/Y/S/?) */
+.child > span.L,
+.child > span.Y,
+.child > span.S,
+.child > span.I{
+  position:absolute;
+  left: 10px;
+  top: 10px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.05);
+}
+
+.child > span.L{ background: rgba(34,197,94,.18); }
+.child > span.Y{ background: rgba(59,130,246,.18); }
+.child > span.S{ background: rgba(245,158,11,.20); }
+.child > span.I{ background: rgba(148,163,184,.22); }
+
+/* Si el número a veces aparece al final, aseguramos su estilo igual */
+.child span.child-number{ color: var(--text); }
+
+/* ---------- Misc: messages / empty ---------- */
+.empty-state{
+  border: 1px dashed var(--stroke);
+  background: transparent;
+  border-radius: var(--radius);
+  padding: 18px;
+  color: var(--muted);
+  text-align:center;
+}
+
+/* ---------- Modal (si existiera) ---------- */
+.modal, .image-modal, .modal-backdrop{ display:none !important; }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 520px){
+  .brand{ padding-bottom: 2px; }
+  .parents h2{ font-size: 16px; }
+  .children{ grid-template-columns: 1fr; }
+  .child h3{ font-size: 14.5px; }
+}
+
+/* =========================
+   FIXES for legacy HTML structure
+   ========================= */
+
+/* accessibility helper used in markup */
+.sr-only{
+  position:absolute !important;
+  width:1px;height:1px;
+  padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);
+  white-space:nowrap;border:0;
+}
+
+/* markup uses select-wrap, icon-btn, family-header, parent-images */
+.select-wrap{ display:flex; align-items:center; }
+.select-wrap select{
+  border:1px solid var(--stroke);
+  background: var(--panel);
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: var(--text);
+  outline:0;
+}
+.select-wrap select:hover{ background: var(--panel-2); }
+
+.icon-btn{
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor:pointer;
+}
+.icon-btn:hover{ background: var(--panel-2); }
+
+/* Family header in your HTML */
+.family-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid var(--stroke);
+  background:
+    radial-gradient(900px 200px at 20% 0%, rgba(124,58,237,.18), transparent 70%),
+    radial-gradient(900px 200px at 90% 0%, rgba(34,197,94,.12), transparent 70%),
+    transparent;
+}
+.family-header h2{
+  margin:0;
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+/* old image containers from original template */
+.parent-images, .parents-images{ display:none !important; }
+
+/* Fix huge whitespace & center skinny columns */
+.results-title{
+  max-width: 1200px;
+  margin: 16px auto 8px;
+  padding: 0 14px;
+  font-size: 16px;
+  color: var(--muted);
+}
+
+/* stats-bar used by JS; keep it compact even when empty */
+#stats-bar{
+  max-width: 1200px;
+  margin: 10px auto 0;
+  padding: 0 14px;
+  min-height: 0;
+}
+
+/* Search results container */
+#resultados-busqueda.container{
+  padding-top: 8px;
+}
+
+/* Index panel layout for the UL filled by JS */
+#indice-familias.container{
+  max-width: 1200px;
+}
+#lista-indice{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+#lista-indice li{ margin:0; }
+#lista-indice a{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  text-decoration:none;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.03);
+}
+body.light-mode #lista-indice a{ background: rgba(0,0,0,.03); }
+#lista-indice a:hover{
+  border-color: rgba(124,58,237,.35);
+  background: rgba(124,58,237,.14);
+}
+
+/* The HTML currently nests .container several times under #familias; remove extra padding */
+#familias.container{ padding: 0 14px 60px; }
+#familias > main.container{ padding: 0; }
+#familias main.container > .container{ padding: 0; }
+
+/* Children status badge: ensure it doesn't collide with number */
+.child > span.L,
+.child > span.Y,
+.child > span.S,
+.child > span.I{
+  left: 10px;
+  top: 10px;
+}
+.child h3{ padding-top: 22px; } /* leaves room for the status pill */
+
+/* If some child-number is placed at end of card (inconsistent markup), make it absolute anyway */
+.child .child-number{
+  position:absolute;
+  top: 10px;
+  right: 10px;
+}
+
+
+
+/* =========================
+   LIST VIEW (toggle)
+   ========================= */
+body.list-view .children{
+  display: block !important;
+  gap: 0 !important;
+}
+body.list-view .child,
+body.list-view .sin-pareja{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 12px 14px;
+  border-radius: 14px;
+  margin: 10px 0;
+}
+body.list-view .child .child-number{
+  position: static !important;
+  margin-left: 12px;
+  order: 3;
+}
+body.list-view .child h3,
+body.list-view .sin-pareja h3{
+  margin:0;
+  font-weight: 800;
+  letter-spacing:.1px;
+}
+body.list-view .child p,
+body.list-view .sin-pareja p{
+  margin:0;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+  max-width: 44vw;
+}
+body.list-view .child{
+  gap: 12px;
+}
+body.list-view .child .badges,
+body.list-view .sin-pareja .badges{
+  margin-left:auto;
+}
+body.list-view .child .status-pill,
+body.list-view .sin-pareja .status-pill{
+  margin:0;
+}
+
+/* =========================
+   UPDATES DIALOG
+   ========================= */
+.updates-dialog{
+  width: min(720px, calc(100vw - 28px));
+  border: 1px solid var(--stroke);
+  border-radius: 20px;
+  padding: 0;
+  background: rgba(13,18,34,.96);
+  color: var(--text);
+  box-shadow: 0 22px 70px rgba(0,0,0,.55);
+}
+.updates-dialog::backdrop{
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+}
+.updates-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 14px;
+  padding: 16px 16px 10px 16px;
+  border-bottom: 1px solid var(--stroke);
+}
+.updates-head h2{ margin:0; font-size: 18px; }
+.updates-head .muted{ margin:6px 0 0 0; }
+.updates-body{
+  padding: 14px 16px 4px 16px;
+  max-height: min(60vh, 520px);
+  overflow:auto;
+}
+.update-item{
+  padding: 12px 12px;
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  background: rgba(255,255,255,.04);
+  margin-bottom: 12px;
+}
+.update-date{
+  font-weight: 900;
+  letter-spacing:.2px;
+  margin-bottom: 8px;
+}
+.update-item ul{ margin: 0; padding-left: 18px; color: var(--muted); }
+.updates-foot{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding: 12px 16px 16px 16px;
+  border-top: 1px solid var(--stroke);
+}
+.btn{
+  background: rgba(255,255,255,.10);
+  border: 1px solid var(--stroke);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 14px;
+  cursor:pointer;
+}
+.btn:hover{ background: rgba(255,255,255,.14); }
+
+
+/* =========================
+   Fixes: default list + sidebar index + dark selects + consistent 'Sin Padres'
+   ========================= */
+.layout-shell{
+  display:grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 16px;
+  align-items:start;
+}
+@media (max-width: 980px){
+  .layout-shell{ grid-template-columns: 1fr; }
+}
+
+/* Sidebar: Índice */
+#indice-familias{
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+@media (min-width: 981px){
+  #indice-familias{
+    position: sticky;
+    top: 92px; /* bajo la appbar */
+    max-height: calc(100vh - 110px);
+    overflow:auto;
+  }
+}
+#indice-familias h2{
+  margin: 0 0 10px;
+  font-size: 13px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+#lista-indice{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+#lista-indice a{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 8px 12px;
+  border: 1px solid var(--stroke);
+  background: var(--panel-2);
+  border-radius: 999px;
+  text-decoration:none;
+  color: var(--text);
+}
+#lista-indice a:hover{ background: rgba(124,58,237,.18); border-color: rgba(124,58,237,.35); }
+
+/* Stats (Familias visibles / Personas visibles / L Y S ?) */
+.stats{ gap: 8px; }
+.stat{
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+.stats .badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+  padding: 6px 8px;
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  border-radius: 999px;
+}
+.stats .badges .status-pill{
+  margin:0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: var(--panel-2);
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Dark mode selects: evita el fondo blanco/arrow raro */
+select{
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  color: var(--text);
+}
+.select{ position: relative; }
+.select::after{
+  content: "▾";
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: 6px;
+}
+select option{
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Encabezado consistente para 'Sin Padres' */
+.sin-pareja-container{
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+.sin-pareja-container > h2{
+  margin:0;
+  padding: 14px 16px;
+  font-size: 18px;
+  font-weight: 800;
+  background: linear-gradient(90deg, rgba(124,58,237,.28), rgba(34,197,94,.14), rgba(14,165,233,.12));
+  border-bottom: 1px solid var(--stroke);
+}
+.sin-pareja{
+  border-top: 1px solid var(--stroke);
+  padding: 12px 16px;
+}
+
+/* En modo lista, que 'Sin Padres' sea igual de cómodo */
+body.list-view .sin-pareja{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+body.list-view .sin-pareja h3{ margin:0; font-size: 16px; }
+body.list-view .sin-pareja p{
+  margin:0;
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 40ch;
+}
+body.list-view .sin-pareja span.L,
+body.list-view .sin-pareja span.Y,
+body.list-view .sin-pareja span.S,
+body.list-view .sin-pareja span.I{
+  margin-left:auto;
+}
+
+dialog::backdrop {
+  background: rgba(0,0,0,0.6);
+}
+
+dialog {
+  border: none;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+dialog button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+</style>
+</head>
+<body>
+<header class="appbar" role="banner">
+<div aria-label="Inicio" class="brand" role="link" tabindex="0">
+    🌸 Árbol Familiar
+   </div>
+<div class="appbar-main">
+<!-- Buscador global mejorado -->
+<div class="search-wrap">
+<input aria-label="Buscar" id="global-search" placeholder="Buscar personajes, familias, series... (pulsa /)" type="search"/>
+<button aria-label="Limpiar búsqueda" class="ghost" id="clear-search" title="Limpiar">
+      ✕
+     </button>
+</div>
+<!-- Controles de filtros y orden -->
+<div class="controls">
+<!-- Filtro por estado -->
+<div aria-label="Filtrar por estado" class="chip-group" id="status-chips" role="group">
+<button aria-pressed="false" class="chip" data-status="L" title="Estado L">
+       L
+      </button>
+<button aria-pressed="false" class="chip" data-status="Y" title="Estado Y">
+       Y
+      </button>
+<button aria-pressed="false" class="chip" data-status="S" title="Estado S">
+       S
+      </button>
+<button aria-pressed="false" class="chip" data-status="I" title="Indefinido">
+       ?
+      </button>
+</div>
+<!-- Filtro por género -->
+<label class="select-wrap">
+<span class="sr-only">
+       Filtrar por género
+      </span>
+<select aria-label="Filtrar por género" id="gender-filter">
+<option value="all">
+        Género: todos
+       </option>
+<option value="F">
+        Solo chicas (♀️)
+       </option>
+<option value="M">
+        Solo chicos (♂️)
+       </option>
+</select>
+</label>
+<!-- Filtro por serie -->
+<label class="select-wrap">
+<span class="sr-only">
+       Filtrar por serie
+      </span>
+<select aria-label="Filtrar por serie" id="series-filter">
+<option value="all">
+        Todas las series
+       </option>
+<!-- El JS rellenará el resto dinámicamente -->
+</select>
+</label>
+<!-- Orden -->
+<label class="select-wrap">
+<span class="sr-only">
+       Ordenar
+      </span>
+<select aria-label="Ordenar" id="sort-select">
+<option value="az">
+        Orden A → Z (familia)
+       </option>
+<option value="children">
+        Por nº de hijos
+       </option>
+</select>
+</label>
+<!-- Tema -->
+<button aria-pressed="false" class="icon-btn" id="theme-toggle" title="Alternar tema">
+      🌙
+     </button><button aria-label="Alternar vista" aria-pressed="false" class="icon-btn" id="view-toggle" title="Alternar vista (grid/lista)">▦</button><button aria-label="Ver actualizaciones" class="icon-btn" id="updates-toggle" title="Ver actualizaciones">🛈</button>
+</div>
+</div>
+</header>
+<section aria-live="polite" id="stats-bar">
+</section>
+<button id="toggle-theme" style="display:none !important;">
+   Modo Claro
+  </button>
+<div class="search-container" style="display:none !important;">
+<input id="buscador" onkeyup="filtrar()" placeholder="Buscar..." type="text"/>
+</div>
+<h2 class="results-title">
+   Resultados de búsqueda
+  </h2>
+<div class="container" id="resultados-busqueda">
+</div>
+<div class="container" id="indice-familias">
+<h2>
+    Índice de Familias
+   </h2>
+<ul id="lista-indice">
+</ul>
+</div>
+<div class="container" id="familias">
+<main class="container">
+<div class="container">
+<div class="family">
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Rumi y Justin
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Ellen Kaido
+        </h3>
+<p>
+         Ellen Joe - ZZZ
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Yūta Kaido
+        </h3>
+<p>
+         Allen Crawford - Ikenaikyo
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Dyalin Kaido
+        </h3>
+<p>
+         Dyalin - ZZZ
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Amy Kaido
+        </h3>
+<p>
+         Onikata Kayoko - Blue Archive
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         5
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Erika Kaido
+        </h3>
+<p>
+         Koleda Belobog - ZZZ
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family renjeanne excluir-indice" data-force-hidden="1">
+<button class="reveal-btn" onclick="mostrarRenJeanne()" title="Mostrar contenido">
+       🌸
+      </button>
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Ren y Jeanne
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Ariane Ito
+        </h3>
+<p>
+         Ariane Glanys
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Sakura Ito
+        </h3>
+<p>
+         Hana Kazamaki - Detectives These Days Are Crazy!
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Alexia Ito
+        </h3>
+<p>
+         Mordred - Fate
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Kenshi Ito
+        </h3>
+<p>
+         Yanqing - Honkai Star Rail
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         5
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Iris Ito
+        </h3>
+<p>
+         Teoritta - Sentenced to be a Hero
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Shinbad y Delta
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♀️ Ai Ramírez
+        </h3>
+<p>
+         Ai - The Yozakura Family
+        </p>
+<span class="S">
+         S
+        </span>
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Jiro y Akari
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Naomi Yakuin
+        </h3>
+<p>
+         753 ❤ Nayomi
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Nicole Yakuin
+        </h3>
+<p>
+         Nicole Damara - ZZZ
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Vanessa Yakuin
+        </h3>
+<p>
+         Varesa - Genshin Impact
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         5
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Nei Yakuin
+        </h3>
+<p>
+         Nei-San - Mato Seiheo no Slave
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Iono Yakuin
+        </h3>
+<p>
+         E-Nigma - Pokemon
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Sen y Jibril
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Fuji Kaibara
+        </h3>
+<p>
+         Fuji Shikimori - Shikimori's not just a Cutie
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Chinatsu Kaibara
+        </h3>
+<p>
+         Tamaki Kotatsu - Fire Force
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Natsumi Kaibara
+        </h3>
+<p>
+         Natsumi Kurobe - My Senpai is Annoying
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Kyoka Kaibara
+        </h3>
+<p>
+         Jirou Kyoka - Boku no Hero
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Kaito y Maki
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Sutakira Momota
+        </h3>
+<p>
+         Ryoshu - Limbus Company
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<h3>
+         ♀️ Yanshi Momota
+        </h3>
+<p>
+         Original Character
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<h3>
+         ♂️ Mogari Momota
+        </h3>
+<p>
+         Mogari Shishikuna - Phantom Busters
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<h3>
+         ♀️ Koto Momota
+        </h3>
+<p>
+         Koto Satsuki - Watashi ga Koibito ni Nareru Wake Naijan Muri (Watanare)
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Hikaru y Candace
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Xilonen Hoshihara
+        </h3>
+<p>
+         Xilonen - Genshin Impact
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Kai Hoshihara
+        </h3>
+<p>
+         Ai Kamiye - Shikimori's not just a Cutie
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Anna Hoshihara
+        </h3>
+<p>
+         Anna Yanami - Makeine
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Mai Hoshihara
+        </h3>
+<p>
+         Mai Oozuka - Watashi ga Koibito ni Nareru Wake Nai jan, Muri Muri!
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Lidia Foster
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Belle Foster
+        </h3>
+<p>
+         Belle - ZZZ
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Ainhoa Foster
+        </h3>
+<p>
+         Ai Ohto - Wonder Egg Priority
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Jikan y Yachiho
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Francisco Alonso
+        </h3>
+<p>
+         Lowe Losblender - I May Be a Guild Receptionist, but I’ll Solo Any Boss to Clock Out on Time
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Eva Alonso
+        </h3>
+<p>
+         Luppa - Wuthering Waves
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Riruka Alonso
+        </h3>
+<p>
+         Riruka Dokugamine - Bleach
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Kizu Alonso
+        </h3>
+<p>
+         Taiyō - Mission Yozakura Family
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         5
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Katsu Alonso
+        </h3>
+<p>
+         Mitama-Sama - Kaminaki Sekai no Kamisama Katsudou
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Shu y Chisato
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Kanna Ogata
+        </h3>
+<p>
+         Eruca Crawford - Ikenaikyo
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Kevin Ogata
+        </h3>
+<p>
+         Kevin Kaslana - Honkai Impact 3rd
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Topaz Ogata
+        </h3>
+<p>
+         Topaz - Honkai Star Rail
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Kairi Ogata
+        </h3>
+<p>
+         Tino Shade - Let this Grieving Soul Retire!
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Neku y Marceline
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Ryuya Sakuraba
+        </h3>
+<p>
+         Denki Kaminari - Boku no Hero
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Yuuki y Kyouka
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♀️♂️ Cargando Hijo...
+        </h3>
+<p>
+         Los papás aún se están queriendo mucho... 🤫
+        </p>
+<span class="I">
+         ?
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Kuro y Kiyoka
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Fern Fujimoto
+        </h3>
+<p>
+         Fern - Frieren
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Origami Fujimoto
+        </h3>
+<p>
+         Tobiichi Origami - Date a Live
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Izumi Fujimoto
+        </h3>
+<p>
+         Yuu Izumi - Shikimori's not Just a Cutie
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Asumi Fujimoto
+        </h3>
+<p>
+         Kominami Asumi - We Never Learn
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Dan Heng y Kyoko
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1(1)
+        </span>
+<h3>
+         ♀️ Ruan Heng
+        </h3>
+<p>
+         Ruan Mei - Honkai: Star Rail
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         1(2)
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Herta Heng
+        </h3>
+<p>
+         The Herta - Honkai Star Rail
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Yuki Heng
+        </h3>
+<p>
+         Eiai Nano - The 100 Girlfriends That Really Really Really Really Really Love You
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Ryuji y Marzo
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Senshu Sakamoto
+        </h3>
+<p>
+         Lantern - Honkai Impact 3rd
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Ruka Sakamoto
+        </h3>
+<p>
+         Ruka Sarashina - Rent a Girlfriend
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Kurī Sakamoto
+        </h3>
+<p>
+         Mami Nanani - Rent a Girlfriend
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Hyacine Sakamoto
+        </h3>
+<p>
+         Hyacine - Honkai: Star Rail
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Fubuki y Mavuika
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Krystal Sumiye
+        </h3>
+<p>
+         Fu Hua - Honkai Impact 3rd
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Axel Sumiye
+        </h3>
+<p>
+         Mera - Yokai Watch
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Burnice Sumiye
+        </h3>
+<p>
+         Burnice White - ZZZ
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Mika Sumiye
+        </h3>
+<p>
+         Niko Mikadono - Mikadono Sanshimai wa Angai, Choroi.
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Nalu y Alisa
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Lucy Tanaka
+        </h3>
+<p>
+         Lucyna Kushinada - Cyberpunk: Edgerruners
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Thor Tanaka
+        </h3>
+<p>
+         Thorns - Arknights
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Lidya Tanaka
+        </h3>
+<p>
+         Livia de Udis - A Salad Bowl of Eccentrics
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4(1)
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Angie Tanaka
+        </h3>
+<p>
+         Angie Yonaga - DanganronpaV3
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4(2)
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Maria Tanaka
+        </h3>
+<p>
+         Lemon Yakishio - Makeine Heroines
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Shiro y Lambda
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Lucyna Harukawa
+        </h3>
+<p>
+         Alma Judikhali - The Most Notorious Talker
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Heiki Harukawa
+        </h3>
+<p>
+         Ramlethal Valentine - Guilty Gear
+        </p>
+<span class="L">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Toge Harukawa
+        </h3>
+<p>
+         Toge Inumaki - Jujutsu Kaisen
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<h3>
+         ♂️ Arlan Harukawa
+        </h3>
+<p>
+         Arlan - Honkai: Star Rail
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Norman e Irina
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Natsumi Heartless
+        </h3>
+<p>
+         Natsumi Kyouno - Date a Live
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Caesar Heartless
+        </h3>
+<p>
+         Caesar - ZZZ
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Jane Heartless
+        </h3>
+<p>
+         Jane Doe - ZZZ
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Tatsumaki Heartless
+        </h3>
+<p>
+         Tatsumaki - One Punch Man
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Link  y Rubí
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<h3>
+         ♂️ Raúl Hyrule
+        </h3>
+<p>
+         Theo Rikka - 86 - Eighty Six
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Azahara Hyrule
+        </h3>
+<p>
+         Gudako - Fate
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Lucía Hyrule
+        </h3>
+<p>
+         Valentine Lovejoy - Inazuma Eleven Heroes' Victory Road
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Ten y Wang Qing
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Yuan Fujimura
+        </h3>
+<p>
+         Zhu Yuan - ZZZ
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Ryuko Fujimura
+        </h3>
+<p>
+         Ryuko Matoi - Kill la Kill
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<h3>
+         ♀️ Kana Fujimura
+        </h3>
+<p>
+         Kana Arima - Oshi no Ko
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family renwang mostrar excluir-indice">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Ren y Wang Qing
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<h3>
+         ♀️ Ryuko Ito
+        </h3>
+<p>
+         Ryuko Matoi - Kill la Kill
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<h3>
+         ♀️ Kana Ito
+        </h3>
+<p>
+         Kana Arima - Oshi no Ko
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<h3>
+         ♀️ Zenith Ito
+        </h3>
+<p>
+         Jamie Osen - I Left My A-Rank Party to Help My Former Students Reach the Dungeon Depths
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<h3>
+         ♂️ Richard Ito
+        </h3>
+<p>
+         Richard the Lionheart - Fate
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Victor y Rebecca
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Itsuka Koga
+        </h3>
+<p>
+         Itsuka Kendo - Boku no Hero
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Rizu Koga
+        </h3>
+<p>
+         Rizu Ogata - We Never Learn
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Zak Koga
+        </h3>
+<p>
+         Zak Koga - Danball Senki W
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Karane Koga
+        </h3>
+<p>
+         Inda Karane - The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Daniel y Serena
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Daniel Karman
+        </h3>
+<p>
+         Tetora Nagumo - Ensemble Stars!
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Alessandra Karman
+        </h3>
+<p>
+         Rika Kawai - Wonder Egg Priority
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Cedric Karman
+        </h3>
+<p>
+         Cedric Freud - Inazuma Eleven Heroes' Victory Road
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Harper Karman
+        </h3>
+<p>
+         Harper Evans - Inazuma Eleven Heroes' Victory Road
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         5
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Emily  Karman
+        </h3>
+<p>
+         Gwendolyn Poole - Marvel
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Akira y Himari
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>♀️ Miko Tendou</h3>
+<p>Miko Yotsuya - Mieruko Chan</p>
+<span class="Y">Y</span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Simon Tendou
+        </h3>
+<p>
+         Simon Gurren Lagan - Gurren Lagan
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Yumiki Tendou
+        </h3>
+<p>
+         Yumiki Tendou - Owari no Seraph
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Yuichiro y Aika
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Rover Hyakuya
+        </h3>
+<p>
+         Rover - Wuthering Waves
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<h3>
+         ♀️ Kazane Hyakuya
+        </h3>
+<p>
+         The Shorekeper - Wuthering Waves
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Neijere Hyakuya
+        </h3>
+<p>
+         Neijere Hadou - Boku no Hero
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Shin y Bronya
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<h3>
+         ♀️ Letizia Wolford
+        </h3>
+<p>
+         Cantarella - Wuthering Waves
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<h3>
+         ♀️ Tomori Wolford
+        </h3>
+<p>
+         Tomori Takamatsu - BanG Dream!
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<h3>
+         ♀️ Eri Wolford
+        </h3>
+<p>
+         Eri - Boku no Hero
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Shuichi y Miu
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Grace Saihara
+        </h3>
+<p>
+         Grace Howard - ZZZ
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Lucy Saihara
+        </h3>
+<p>
+         Lucy - ZZZ
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Starla Saihara
+        </h3>
+<p>
+         Starla Thorn - Inazuma Eleven Heroes' Victory Road
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Tomioka y Peko
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1(1)
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Suma Tomioka
+        </h3>
+<p>
+         Suma - Kimetsu no Yaiba
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         1(2)
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Makio Tomioka
+        </h3>
+<p>
+         Makio - Kimetsu no Yaiba
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         1(3)
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Hinatsuru Tomioka
+        </h3>
+<p>
+         Hinatsuru - Kimetsu no Yaiba
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Anby Tomioka
+        </h3>
+<p>
+         Anby Demara - ZZZ
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Senku y Chiaki
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Yu Ishigami
+        </h3>
+<p>
+         Yu Takeyama - Boku no Hero
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Yashiro Ishigami
+        </h3>
+<p>
+         Yashiro Nene - Jibaku Shōnen Hanako-kun
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Rikuo y Akane
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♀️ Aoi Mura
+        </h3>
+<p>
+         Aoi Ashahina - Danganronpa 1
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Hiro y Tohsaka
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+</h3>
+<p>
+</p>
+<span class="">
+</span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Bisco y Chris
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♂️ Usami Akaboshi
+        </h3>
+<p>
+         Usami Shohei - Kaoru Hana wa Rin to Saku
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Ciro y Power
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♀️♂️ Cargando Hijo...
+        </h3>
+<p>
+         Los papás aún se están queriendo mucho... 🤫
+        </p>
+<span class="I">
+         ?
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Lee y Shizuka
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♀️♂️ Cargando Hijo...
+        </h3>
+<p>
+         Los papás aún se están queriendo mucho... 🤫
+        </p>
+<span class="I">
+         ?
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Leii y Lilya
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Sasha Ishikawa
+        </h3>
+<p>
+         Arshes Nei - Bastard!!
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<h3>
+         ♀️ Miwa Ishikawa
+        </h3>
+<p>
+         Miwa Kasumi - Jujutsu Kaisen
+        </p>
+<span class="S">
+         S
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Annerose Ishikawa
+        </h3>
+<p>
+         Annerose Nichtsehen  - Eminence in Shadows
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         4
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Ruty Ishikawa
+        </h3>
+<p>
+         Ruty Ragnason - Banished from the Hero's Party
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        James y Abigail
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♂️ Hatz Smith
+        </h3>
+<p>
+         Hatz - Tower of God
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+<div class="child">
+<h3>
+         ♂️ Dax Smith
+        </h3>
+<p>
+         Dax - Juusen Battle Monsuno
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Yokoya y Shinoa
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<span class="child-number">
+         1
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♀️ Mahiru Hitoyoshi
+        </h3>
+<p>
+         Mahiru Hiiragi - Owari no Seraph
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         2
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Durin Hitoyoshi
+        </h3>
+<p>
+         Durin - Genshin Impact
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+<div class="child">
+<span class="child-number">
+         3
+        </span>
+<!-- Número del hijo -->
+<h3>
+         ♂️ Kaede Hitoyoshi
+        </h3>
+<p>
+         Kaede Komura - La chica que me gusta se ha olvidado las gafas
+        </p>
+<span class="Y">
+         Y
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Thiago e Irene
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♀️♂️ Cargando Hijo...
+        </h3>
+<p>
+         Los papás aún se están queriendo mucho... 🤫
+        </p>
+<span class="I">
+         ?
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Top y Mikan
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♀️ Waguri Blaze
+        </h3>
+<p>
+         Waguri Kokoro - Kaoro Hana wa Rin to Saku
+        </p>
+<span class="L">
+         L
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        y Riko
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♀️♂️ Cargando Hijo...
+        </h3>
+<p>
+         Aquí no conocemos ni al papá XD
+        </p>
+<span class="I">
+         ?
+        </span>
+</div>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        y Ayane
+       </h2>
+</div>
+<div class="children">
+<div class="child">
+<h3>
+         ♀️♂️ Cargando Hijo...
+        </h3>
+<p>
+         Aquí no conocemos ni al papá XD
+        </p>
+<span class="I">
+         ?
+        </span>
+</div>
+</div>
+</div>
+<div class="sin-pareja-container">
+<h2>
+       Sin Padres
+      </h2>
+<div class="sin-pareja">
+<h3>
+        ♀️ Shiozaki Ibara
+       </h3>
+<p>
+        Boku no Hero
+       </p>
+<span class="L">
+        L
+       </span>
+</div>
+<div class="sin-pareja">
+<h3>
+        ♀️ Stelle
+       </h3>
+<p>
+        Honkai: Star Rail
+       </p>
+<span class="Y">
+        Y
+       </span>
+</div>
+<div class="sin-pareja">
+<h3>
+        ♀️ Akira Ogata
+       </h3>
+<p>
+        My Dress-Up Darling
+       </p>
+<span class="Y">
+        Y
+       </span>
+</div>
+<div class="sin-pareja">
+<h3>
+        ♂️ Ukyo Ibuki
+       </h3>
+<p>
+        Beyblade Burst
+       </p>
+<span class="L">
+        L
+       </span>
+</div>
+</div>
+<hr class="separador"/>
+<div class="family">
+<div class="family-header">
+<div class="parent-images">
+</div>
+<h2>
+        Yuito y Alice
+       </h2>
+</div>
+<div class="child">
+<h3>
+        ♀️ Iroha Sumeragi
+       </h3>
+<p>
+        Iroha Kohinata - My Friend's Little Sister Has It In for Me!
+       </p>
+<span class="Y">
+        Y
+       </span>
+<span class="child-number">
+        1
+       </span>
+<!-- Número del hijo -->
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Ethan y Katya
+       </h2>
+</div>
+<div class="child">
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Xavier y Dayann
+       </h2>
+</div>
+<div class="child">
+<h3>
+        ♀️ Agata Foster
+       </h3>
+<p>
+        Agata - Honkai Impact 3rd
+       </p>
+<span class="S">
+        S
+       </span>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Waru y Diamond
+       </h2>
+</div>
+<div class="child">
+<h3>
+        ♀️ Pan Walker
+       </h3>
+<p>
+        Pan - Dragon Ball
+       </p>
+<span class="L">
+        L
+       </span>
+</div>
+</div>
+<div class="family">
+<div class="family-header">
+<div class="parents-images">
+</div>
+<h2>
+        Corvus y Celeste
+       </h2>
+</div>
+<div class="child">
+<h3>
+        ♀️ Miku Cardson
+       </h3>
+<p>
+        Hatsune Miku - VOCALOID Synthesizer
+       </p>
+<span class="Y">
+        Y
+       </span>
+</div>
+</div>
+</div>
+</main>
+</div>
+<button class="icon-fab" id="scroll-top" title="Subir">
+   ↑
+  </button>
+<dialog class="updates-dialog" id="updatesDialog">
+
+        <h2>Actualizaciones</h2>
+
+        <div class="update-item">
+         <div class="update-date">2026-03-04</div>
+                <ul>
+                        <li>Nuevo sistema de vista lista.</li>
+                        <li>Sistema de lista preestablecido como principal.</li>
+                        <li>Mejoras visuales en el árbol familiar.</li>
+                        <li>Botón de actualización añadido.</li>
+                        <li>Índice establecido a la izquierda, junto a su slider.</li>
+                </ul>
+  </div>
+
+</dialog><script>
+   (function () {
+  const $ = (s, ctx = document) => ctx.querySelector(s);
+  const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
+
+
+  // Limpieza: algunas familias pueden tener <div class="child"></div> vacío (sin contenido).
+  // Eso genera "bloques" en blanco y rompe el contador de hijos. Aquí los eliminamos.
+  function pruneEmptyChildren() {
+    $$(".child").forEach((c) => {
+      const hasElements = c.children && c.children.length > 0;
+      const hasText = (c.textContent || "").trim().length > 0;
+      if (!hasElements && !hasText) c.remove();
+    });
+  }
+  pruneEmptyChildren();
+
+  // Layout: en escritorio ponemos el Índice a la izquierda como sidebar (sin tocar tu HTML a mano).
+  function ensureSidebarLayout(){
+    const index = document.getElementById('indice-familias');
+    const fam = document.getElementById('familias');
+    if(!index || !fam) return;
+
+    // Evita duplicar si ya existe
+    if(document.getElementById('layoutShell')) return;
+
+    const shell = document.createElement('div');
+    shell.id = 'layoutShell';
+    shell.className = 'layout-shell';
+
+    // Insertar justo antes del índice (en su posición actual)
+    index.parentNode.insertBefore(shell, index);
+    shell.appendChild(index);
+    shell.appendChild(fam);
+  }
+  ensureSidebarLayout();
+
+
+  // Normalizar acentos para búsqueda
+  const norm = (s) =>
+    (s || "")
+      .toString()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+
+  const familiesWrap = $("#familias") || document.body;
+  const resultsGrid = $("#resultados-busqueda");
+  const resultsTitle = document.querySelector(".results-title");
+  const searchInput = $("#global-search");
+  const clearBtn = $("#clear-search");
+  const chipsWrap = $("#status-chips");
+  const sortSelect = $("#sort-select");
+  const genderFilter = $("#gender-filter");
+  const seriesFilter = $("#series-filter");
+  const statsBar = $("#stats-bar");
+  const themeBtn = $("#theme-toggle");
+  const toTop = $("#scroll-top");
+
+  // Lazy loading en todas las imágenes
+  $$("img").forEach((img) => {
+    if (!img.hasAttribute("loading")) img.setAttribute("loading", "lazy");
+    if (!img.hasAttribute("decoding")) img.setAttribute("decoding", "async");
+  });
+
+  // Índice de familias con badge de nº de hijos
+  const indiceUL = $("#lista-indice");
+  let families = $$(".family");
+  if (indiceUL) {
+    indiceUL.innerHTML = "";
+    families.forEach((fam, i) => {
+      
+      if (fam.classList.contains("excluir-indice")) return;
+const h2 = fam.querySelector(".family-header h2");
+      const title = h2 ? h2.textContent.trim() : "Familia " + (i + 1);
+      const childrenCount = $$(".child", fam).length;
+      const slug =
+        (title.toLowerCase().replace(/[^\w]+/g, "-") || "familia") + "-" + i;
+      if (!fam.id) fam.id = slug;
+
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = "#" + fam.id;
+      a.textContent = title;
+      const badge = document.createElement("span");
+      badge.className = "index-badge";
+      badge.textContent = childrenCount;
+      a.appendChild(badge);
+      li.appendChild(a);
+      indiceUL.appendChild(li);
+    });
+  }
+
+  // Contador automático de hijos en cada header de familia
+  families.forEach((fam) => {
+    const header = fam.querySelector(".family-header h2");
+    if (!header) return;
+    const cnt = $$(".child", fam).length;
+    const pill = document.createElement("span");
+    pill.className = "family-count-pill";
+    pill.textContent = cnt + " hijo" + (cnt !== 1 ? "s" : "");
+    header.insertAdjacentElement("afterend", pill);
+  });
+
+  // Metadatos para filtros: estado, género, serie
+  const allChildCards = $$(".child");
+  const cardMeta = new WeakMap();
+  const seriesSet = new Set();
+
+  allChildCards.forEach((card) => {
+    const h3 = card.querySelector("h3");
+    const p = card.querySelector("p");
+    const fam = card.closest(".family");
+
+    const title = h3 ? h3.textContent.trim() : "";
+    const desc = p ? p.textContent.trim() : "";
+    const famTitle = fam
+      ? fam.querySelector(".family-header h2")?.textContent.trim() || ""
+      : "";
+
+    // Estado desde la span de estado (L/Y/S/I)
+    const stateEl = Array.from(card.querySelectorAll("span")).find(
+      (s) =>
+        !s.classList.contains("child-number") &&
+        ["L", "Y", "S", "I"].some((cls) => s.classList.contains(cls))
+    );
+    const state = stateEl
+      ? ["L", "Y", "S", "I"].find((cls) => stateEl.classList.contains(cls)) ||
+        "I"
+      : "I";
+    card.dataset.state = state;
+
+    // Género desde el símbolo en el H3
+    let gender = "X";
+    if (title.includes("♀")) gender = "F";
+    else if (title.includes("♂")) gender = "M";
+    card.dataset.gender = gender;
+
+    // Serie desde el texto tras el último " - "
+    let serie = "";
+    const idx = desc.lastIndexOf(" - ");
+    if (idx !== -1) {
+      serie = desc.slice(idx + 3).trim();
+    }
+    card.dataset.serie = serie;
+    if (serie) seriesSet.add(serie);
+
+    cardMeta.set(card, { title, desc, famTitle, serie });
+  });
+
+  // Rellenar selector dinámico de series
+  if (seriesFilter) {
+    const sortedSeries = Array.from(seriesSet).sort((a, b) =>
+      a.localeCompare(b)
+    );
+    sortedSeries.forEach((serie) => {
+      const opt = document.createElement("option");
+      opt.value = serie;
+      opt.textContent = serie;
+      seriesFilter.appendChild(opt);
+    });
+  }
+
+  // Búsqueda+filtros unificados
+  let currentSearch = "";
+  const activeStates = new Set();
+
+  function updateStats() {
+    const visibleFamilies = $$(".family").filter(
+      (f) => f.style.display !== "none"
+    );
+    const visibleChildren = $$(".child").filter(
+      (c) => c.offsetParent !== null
+    );
+    const L = visibleChildren.filter(
+      (c) => (c.dataset.state || "") === "L"
+    ).length;
+    const Y = visibleChildren.filter(
+      (c) => (c.dataset.state || "") === "Y"
+    ).length;
+    const S = visibleChildren.filter(
+      (c) => (c.dataset.state || "") === "S"
+    ).length;
+    const I = visibleChildren.filter(
+      (c) => (c.dataset.state || "") === "I"
+    ).length;
+
+    statsBar.innerHTML = `
+      <div class="stat">Familias visibles: <strong>${visibleFamilies.length}</strong></div>
+      <div class="stat">Personas visibles: <strong>${visibleChildren.length}</strong></div>
+      <div class="badges">
+        <span class="badge L">L: ${L}</span>
+        <span class="badge Y">Y: ${Y}</span>
+        <span class="badge S">S: ${S}</span>
+        <span class="badge I">?: ${I}</span>
+      </div>
+    `;
+  }
+
+  function recompute() {
+    const needle = norm(currentSearch);
+    resultsGrid.innerHTML = "";
+    let matches = [];
+
+    families.forEach((fam) => {
+      let anyVisible = false;
+
+      $$(".child", fam).forEach((card) => {
+        const meta = cardMeta.get(card) || {
+          title: "",
+          desc: "",
+          famTitle: "",
+          serie: "",
+        };
+
+        const stateOk =
+          activeStates.size === 0 ||
+          activeStates.has(card.dataset.state || "I");
+
+        const genderVal = genderFilter ? genderFilter.value : "all";
+        const genderOk =
+          genderVal === "all" ||
+          (card.dataset.gender || "X") === genderVal;
+
+        const seriesVal = seriesFilter ? seriesFilter.value : "all";
+        const seriesOk =
+          seriesVal === "all" ||
+          (card.dataset.serie || "") === seriesVal;
+
+        const hay = norm(
+          meta.title + " " + meta.desc + " " + meta.famTitle + " " + meta.serie
+        );
+        const searchOk = !needle || hay.includes(needle);
+
+        const visible = stateOk && genderOk && seriesOk && searchOk;
+        card.style.display = visible ? "" : "none";
+        if (visible) {
+          anyVisible = true;
+          matches.push(card);
+        }
+      });
+
+      fam.style.display = anyVisible ? "" : "none";
+    });
+
+    // Modo resultados de búsqueda clonados sólo si hay texto
+    if (!needle) {
+      resultsGrid.classList.remove("show");
+      if (resultsTitle) {
+        resultsTitle.style.display = "none";
+        resultsTitle.textContent = "Resultados de búsqueda";
+      }
+      $$(".family").forEach((f) => f.classList.remove("hidden-family"));
+    } else {
+      if (resultsTitle) {
+        resultsTitle.style.display = "";
+        resultsTitle.textContent =
+          "Resultados de búsqueda (" + matches.length + ")";
+      }
+      resultsGrid.classList.add("show");
+      matches.slice(0, 120).forEach((card) => {
+        const clone = card.cloneNode(true);
+        clone.classList.add("result-clone");
+        resultsGrid.appendChild(clone);
+      });
+      $$(".family").forEach((f) => f.classList.add("hidden-family"));
+      matches.forEach((c) =>
+        c.closest(".family")?.classList.remove("hidden-family")
+      );
+    }
+
+    updateStats();
+  }
+
+  // Eventos de búsqueda
+  searchInput?.addEventListener("input", (e) => {
+    currentSearch = e.target.value;
+    recompute();
+  });
+
+  clearBtn?.addEventListener("click", () => {
+    currentSearch = "";
+    if (searchInput) searchInput.value = "";
+    recompute();
+    searchInput?.focus();
+  });
+
+  // Atajos de teclado
+  document.addEventListener("keydown", (e) => {
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (e.key === "/" && !["input", "textarea", "select"].includes(tag)) {
+      e.preventDefault();
+      searchInput?.focus();
+    }
+    if (e.key.toLowerCase() === "t" && !["input", "textarea", "select"].includes(tag)) {
+      e.preventDefault();
+      toggleTheme();
+    }
+  });
+
+  // Filtros de estado (chips L/Y/S/?)
+  chipsWrap?.addEventListener("click", (e) => {
+    const btn = e.target.closest(".chip");
+    if (!btn) return;
+    const state = btn.dataset.status;
+    if (activeStates.has(state)) {
+      activeStates.delete(state);
+      btn.setAttribute("aria-pressed", "false");
+      btn.classList.remove("active");
+    } else {
+      activeStates.add(state);
+      btn.setAttribute("aria-pressed", "true");
+      btn.classList.add("active");
+    }
+    recompute();
+  });
+
+  // Filtro género
+  genderFilter?.addEventListener("change", recompute);
+  // Filtro serie
+  seriesFilter?.addEventListener("change", recompute);
+
+  // Ordenar familias (A-Z o por nº de hijos)
+  function sortFamilies(mode) {
+    families = $$(".family"); // refrescar por si cambian
+    const parent = families[0]?.parentElement;
+    if (!parent) return;
+    const arr = [...families];
+
+    if (mode === "children") {
+      arr.sort(
+        (a, b) =>
+          $$(".child", b).length - $$(".child", a).length
+      );
+    } else {
+      arr.sort((a, b) => {
+        const A =
+          a.querySelector(".family-header h2")?.textContent
+            .trim()
+            .toLowerCase() || "";
+        const B =
+          b.querySelector(".family-header h2")?.textContent
+            .trim()
+            .toLowerCase() || "";
+        return A.localeCompare(B);
+      });
+    }
+    arr.forEach((n) => parent.appendChild(n));
+  }
+
+  sortSelect?.addEventListener("change", () => {
+    sortFamilies(sortSelect.value);
+    recompute();
+  });
+
+  // Orden alfabético por defecto al cargar
+  sortFamilies("az");
+
+  // Stats iniciales
+  updateStats();
+
+  // Tema persistente
+  const THEME_KEY = "af_theme";
+  function setTheme(mode) {
+    const body = document.body;
+    body.classList.remove("light-mode", "dark-mode");
+    body.classList.add(mode);
+    themeBtn.setAttribute("aria-pressed", mode === "dark-mode" ? "true" : "false");
+    themeBtn.textContent = mode === "dark-mode" ? "☀️" : "🌙";
+    try {
+      localStorage.setItem(THEME_KEY, mode);
+    } catch (e) {}
+  }
+  function toggleTheme() {
+    const isDark = document.body.classList.contains("dark-mode");
+    setTheme(isDark ? "light-mode" : "dark-mode");
+  }
+  themeBtn?.addEventListener("click", toggleTheme);
+  const saved = (localStorage.getItem(THEME_KEY) || "").trim();
+  if (saved === "dark-mode" || saved === "light-mode") {
+    setTheme(saved);
+  } else {
+    setTheme(
+      document.body.classList.contains("dark-mode")
+        ? "dark-mode"
+        : "light-mode"
+    );
+  }
+
+  // Botón scroll-to-top
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 600) toTop?.classList.add("show");
+    else toTop?.classList.remove("show");
+  });
+  toTop?.addEventListener("click", () =>
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  );
+
+  // Compatibilidad: Ren x Wang
+  window.mostrarRenWang = function () {
+    const card = document.querySelector(".family.renwang");
+    if (card) {
+      card.classList.add("mostrar");
+      try {
+        localStorage.setItem("renwang_revealed", "1");
+      } catch (e) {}
+    }
+  };
+  
+  // Compatibilidad: Ren x Jeanne (spoiler)
+  window.mostrarRenJeanne = function () {
+    const card = document.querySelector(".family.renjeanne");
+    if (card) {
+      card.classList.add("mostrar");
+      try {
+        localStorage.setItem("renjeanne_revealed", "1");
+      } catch (e) {}
+    }
+  };
+try {
+    const card = document.querySelector(".family.renwang");
+    const forceHidden = card?.dataset.forceHidden === "1";
+    if (!forceHidden && localStorage.getItem("renwang_revealed") === "1") {
+      card.classList.add("mostrar");
+    }
+  } catch (e) {}
+
+  
+  try {
+    const card = document.querySelector(".family.renjeanne");
+    const forceHidden = card?.dataset.forceHidden === "1";
+    if (!forceHidden && localStorage.getItem("renjeanne_revealed") === "1") {
+      card.classList.add("mostrar");
+    }
+  } catch (e) {}
+// Mantener el buscador legacy enlazado al nuevo
+  const legacy = document.getElementById("buscador");
+  if (legacy) {
+    legacy.addEventListener("input", (e) => {
+      if (searchInput) searchInput.value = e.target.value;
+      currentSearch = e.target.value;
+      recompute();
+    });
+  }
+})();
+ 
+
+  /* =========================
+     View toggle (grid/list)
+     ========================= */
+  const viewToggle = document.getElementById('view-toggle');
+  const VIEW_KEY = 'familyTree:view';
+  function applyView(v){
+    document.body.classList.toggle('list-view', v === 'list');
+    if(viewToggle){
+      viewToggle.textContent = (v === 'list') ? '≡' : '▦';
+      viewToggle.setAttribute('aria-pressed', String(v === 'list'));
+    }
+  }
+  applyView(localStorage.getItem(VIEW_KEY) || 'list');
+  if(viewToggle){
+    viewToggle.addEventListener('click', ()=>{
+      const next = document.body.classList.contains('list-view') ? 'grid' : 'list';
+      localStorage.setItem(VIEW_KEY, next);
+      applyView(next);
+    });
+  }
+
+  /* =========================
+     Updates dialog
+     ========================= */
+  const updatesBtn = document.getElementById('updates-toggle');
+  const updatesDialog = document.getElementById('updatesDialog');
+  const updatesClose = document.getElementById('updatesClose');
+  const updatesOk = document.getElementById('updatesOk');
+
+  function openUpdates(){
+    if(!updatesDialog) return;
+    if(typeof updatesDialog.showModal === 'function') updatesDialog.showModal();
+    else updatesDialog.setAttribute('open','');
+  }
+  function closeUpdates(){
+    if(!updatesDialog) return;
+    if(typeof updatesDialog.close === 'function') updatesDialog.close();
+    else updatesDialog.removeAttribute('open');
+  }
+  if(updatesBtn) updatesBtn.addEventListener('click', openUpdates);
+  if(updatesClose) updatesClose.addEventListener('click', closeUpdates);
+  if(updatesOk) updatesOk.addEventListener('click', closeUpdates);
+
+  if(updatesDialog){
+    updatesDialog.addEventListener('click', (e)=>{
+      const rect = updatesDialog.getBoundingClientRect();
+      const inDialog = rect.top <= e.clientY && e.clientY <= rect.bottom && rect.left <= e.clientX && e.clientX <= rect.right;
+      if(!inDialog) closeUpdates();
+    });
+  }
+
+
+ </script>
+<!-- Modal para imágenes -->
+<!-- Big Profile Modal -->
+<div aria-labelledby="profileTitle" aria-modal="true" class="profile-overlay" id="profileOverlay" role="dialog">
+<div class="profile-sheet" role="document">
+<button aria-label="Cerrar" class="profile-close" id="profileClose">
+     ✕
+    </button>
+<div class="profile-header">
+<div class="profile-main">
+<div class="profile-title">
+<h3 id="profileTitle">
+        Nombre del personaje
+       </h3>
+<div class="profile-badges" id="profileBadges">
+</div>
+</div>
+<p class="profile-sub" id="profileSub">
+       Origen / referencia
+      </p>
+<div class="profile-meta" id="profileMeta">
+</div>
+<div class="profile-content" id="profileContent">
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+   (function(){
+  const overlay = document.getElementById('profileOverlay');
+  const closeBtn = document.getElementById('profileClose');
+  const titleEl = document.getElementById('profileTitle');
+  const subEl = document.getElementById('profileSub');
+  const badgesEl = document.getElementById('profileBadges');
+  const metaEl = document.getElementById('profileMeta');
+  const contentEl = document.getElementById('profileContent');
+
+  function openProfile({name, ref, status, number, familyTitle}){
+    titleEl.textContent = name || 'Personaje';
+    subEl.textContent = ref || '';
+    badgesEl.innerHTML = '';
+    if(status){
+      const b = document.createElement('span');
+      b.className = 'badge-chip ' + status;
+      b.textContent = status;
+      badgesEl.appendChild(b);
+    }
+    metaEl.innerHTML = '';
+    if(number){
+      const pill = document.createElement('span');
+      pill.className='pill';
+      pill.textContent = 'Hijo/a Nº ' + number;
+      metaEl.appendChild(pill);
+    }
+    if(familyTitle){
+      const pill2 = document.createElement('span');
+      pill2.className='pill';
+      pill2.textContent = 'Familia: ' + familyTitle;
+      metaEl.appendChild(pill2);
+    }
+    contentEl.textContent = '';
+
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeProfile(){
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  closeBtn?.addEventListener('click', closeProfile);
+  overlay?.addEventListener('click', (e)=>{
+    if(e.target === overlay) closeProfile();
+  });
+  window.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape') closeProfile();
+  });
+
+  function getText(el, sel){
+    const n = el.querySelector(sel);
+    return n ? n.textContent.trim() : '';
+  }
+  function getStatus(el){
+    const badge = Array.from(el.querySelectorAll('span')).find(s => s.className && /(?:\s|^)(L|Y|S|I)(?:\s|$)/.test(s.className) && !s.classList.contains('child-number'));
+    return badge ? badge.classList.value.split(' ').find(c => ['L','Y','S','I'].includes(c)) : '';
+  }
+  function getNumber(el){
+    const n = el.querySelector('.child-number');
+    return n ? n.textContent.trim() : '';
+  }
+  function getFamilyTitle(el){
+    const fam = el.closest('.family');
+    return fam ? (fam.querySelector('.family-header h2')?.textContent.trim() || '') : '';
+  }
+
+  document.addEventListener('click', (e)=>{
+    const card = e.target.closest('.child, .sin-pareja');
+    if(!card) return;
+    const name = getText(card, 'h3');
+    const ref = getText(card, 'p');
+    const status = getStatus(card);
+    const number = getNumber(card);
+    const familyTitle = getFamilyTitle(card);
+    openProfile({name, ref, status, number, familyTitle});
+  });
+})();
+  </script>
+</body>
+</html>
