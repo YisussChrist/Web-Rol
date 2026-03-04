@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lista de Héroes — Dex MHA</title>
+  <meta name="description" content="Registro editable de héroes al estilo My Hero Academia. Añade fotos, roles y stats, con fichas detalladas.">
+  <style>
+  /* dembelengue.css — Estilo MHA "LISTA DE HÉROES" (inlined)
+     Hecho con cariño. Puedes editar colores y tamaños desde :root. */
+  :root{
+    --bg:#0e0f13; --panel:#151823; --ink:#0a0b0e; --paper:#f7f7f7;
+    --mha-yellow:#f6e84b; --mha-red:#ff2d55; --mha-teal:#10d5c2; --mha-green:#35dc64;
+    --mha-blue:#2aa9ff; --mha-orange:#ff9f1c; --text:#e9ecf1; --muted:#a6b0c3;
+    --shadow:#000000; --outline:#0a0b0e; --radius:18px; --gap:14px;
+    --card-shadow: 8px 8px 0 var(--outline); --thick:4px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background: radial-gradient(1200px 800px at 10% -10%, #1f2433 0%, transparent 60%),
+                radial-gradient(1000px 800px at 110% 10%, #1c2231 0%, transparent 60%),
+                var(--bg);
+    color:var(--text);
+    font: 500 16px/1.4 "Segoe UI", Roboto, system-ui, Arial, sans-serif;
+  }
+  .header{ position:sticky; top:0; z-index:50; background:
+      repeating-linear-gradient(135deg, transparent 0 12px, rgba(0,0,0,.08) 12px 24px),
+      linear-gradient(0deg, #141825, #121526);
+    border-bottom: var(--thick) solid var(--outline); box-shadow: 0 10px 0 #0006; }
+  .wrap{max-width:1200px;margin:0 auto;padding:18px}
+  .brand{ display:flex;align-items:center;gap:14px; }
+  .brand__badge{ background: var(--mha-yellow); color:#111; padding:8px 12px; border: var(--thick) solid var(--outline);
+    border-radius: 999px; box-shadow: var(--card-shadow); font-weight:900; letter-spacing:1px; }
+  .brand__title{ font-size: clamp(22px, 3vw, 34px); margin:0; text-transform:uppercase; font-weight:1000; letter-spacing:.5px; text-shadow: 0 3px 0 #000; display:flex; align-items:center; gap:10px; }
+  .brand__subtitle{ color:var(--muted); margin:4px 0 0 0; font-size:14px; }
+
+  .toolbar{ margin-top:16px; display:grid; grid-template-columns: 1fr repeat(7, max-content); gap:var(--gap); align-items:center; }
+  .input, .select, .button{ height:44px; border-radius:999px; border: var(--thick) solid var(--outline); background: var(--paper); color:#111; padding:0 14px; box-shadow: var(--card-shadow); display:flex; align-items:center; gap:8px; font-weight:700; }
+  .input input{ all:unset; width:100%; color:#111; font-weight:700; }
+  .select select{ appearance:none; background:transparent; border:none; outline:none; font-weight:800; }
+  .button{ background: linear-gradient(180deg, var(--mha-yellow), #ffd643); cursor:pointer; user-select:none; }
+  .button--ghost{ background:#fff; color:#111; }
+  .button--danger{ background: linear-gradient(180deg, #ff6a6a, #ff3b3b); color:#111; }
+  .button--info{ background: linear-gradient(180deg, #b9fffb, var(--mha-teal)); color:#111; }
+  .button--blue{ background: linear-gradient(180deg, #d7ecff, var(--mha-blue)); color:#111; }
+  .button--green{ background: linear-gradient(180deg, #d8ffe6, var(--mha-green)); color:#111; }
+  .button--warn{ background: linear-gradient(180deg, #ffe9c9, #ffb64b); color:#111; }
+
+  .grid{ max-width:1200px; margin:22px auto; padding:0 18px 80px; display:grid; grid-template-columns: repeat( auto-fill, minmax(260px, 1fr) ); gap:22px; }
+  .card{ background: linear-gradient(180deg, #1b2030 0%, #0f1320 100%); border: var(--thick) solid var(--outline); border-radius: var(--radius); box-shadow: var(--card-shadow); overflow:hidden; position:relative; transition:.2s transform; }
+  .card:hover{ transform: translateY(-4px) }
+  .card__media{ position:relative; height:180px; overflow:hidden; background:
+      radial-gradient( circle at 20% 10%, rgba(255,255,255,.15), transparent 50% ),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 6px, rgba(255,255,255,0) 6px 12px);
+    border-bottom: var(--thick) solid var(--outline); }
+  .card__media img{ width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.95) contrast(1.05);  object-position:50% 0%;}
+  .badges{ position:absolute; left:10px; top:10px; display:flex; flex-wrap:wrap; gap:8px; }
+  .badge{ background: var(--mha-yellow); color:#111; padding:6px 10px; border-radius:999px; border: var(--thick) solid var(--outline); font-weight:900; box-shadow: 4px 4px 0 var(--outline); text-transform:uppercase; font-size:12px; }
+  .card__body{ padding:14px 14px 16px; }
+  .alias{ margin:0; font-size:21px; font-weight:1000; letter-spacing:.3px; }
+  .realname{ margin:2px 0 8px; color:var(--muted); font-size:13px; font-weight:700; }
+  .stats{ display:grid; grid-template-columns: 1fr; gap:8px; margin:10px 0 12px; }
+  .stat{ display:grid; grid-template-columns: 100px 1fr 52px; gap:8px; align-items:center; }
+  .stat__name{ font: 800 12px/1 "Segoe UI",sans-serif; color:#d5def0; text-transform:uppercase; letter-spacing:.4px;}
+  .progress{ height:12px; background:#222839; border: var(--thick) solid var(--outline); border-radius:999px; position:relative; overflow:hidden; }
+  .progress__bar{ height:100%; width:0%; background: repeating-linear-gradient(135deg, rgba(255,255,255,.35) 0 10px, rgba(255,255,255,0) 10px 20px), linear-gradient(90deg, var(--mha-teal), var(--mha-blue)); border-right: var(--thick) solid var(--outline); transition: width .6s ease; }
+  .stat__val{ font: 900 12px/1 "Segoe UI",sans-serif; color:#fff; text-align:right; }
+  .card__cta{ display:flex; gap:10px; }
+  .card__cta .button{ height:38px; padding:0 12px; font-size:14px; box-shadow: 5px 5px 0 var(--outline);}
+
+  .modal{ position:fixed; inset:0; background: rgba(0,0,0,.65); display:none; align-items:center; justify-content:center; padding:20px; z-index:100; }
+  .modal.is-open{ display:flex }
+  .modal__panel{ width:min(100%, 900px); background: linear-gradient(180deg, #20263a, #101626); border: var(--thick) solid var(--outline); border-radius: 22px; box-shadow: 14px 14px 0 var(--outline); overflow:hidden; }
+  .modal__head{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 16px; border-bottom: var(--thick) solid var(--outline); background: linear-gradient(180deg, var(--mha-yellow), #ffd643); color:#111; }
+  .modal__title{ font:1000 20px/1 "Segoe UI",sans-serif; text-transform:uppercase; }
+  .modal__close{ all:unset; cursor:pointer; font-weight:1000; border: var(--thick) solid var(--outline); background:#fff; padding:6px 10px; border-radius:999px; box-shadow: 4px 4px 0 var(--outline); }
+  .modal__body{ padding:16px; max-height:70vh; overflow:auto; }
+
+  .tabs{ display:flex; gap:10px; margin-bottom:12px; }
+  .tab{ all:unset; cursor:pointer; padding:10px 14px; border: var(--thick) solid var(--outline); border-radius:999px; background:#fff; color:#111; font-weight:900; }
+  .tab.is-active{ background: var(--mha-yellow); }
+  .tabpanes > section{ display:none }
+  .tabpanes > section.is-active{ display:block }
+
+  .form{ display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; }
+  .form .col-6{ grid-column: span 6; } .form .col-12{ grid-column: span 12; }
+  .label{ font:900 12px/1 "Segoe UI",sans-serif; text-transform:uppercase; margin:4px 0; color:#dfe7ff; }
+  .inputish, .textarea, .multiselect{ width:100%; background:#fff; border: var(--thick) solid var(--outline); border-radius:12px; padding:10px; color:#111; font-weight:700; }
+  .textarea{ min-height:80px; resize:vertical }
+  .multiselect{ display:flex; gap:8px; flex-wrap:wrap }
+  .chip{ background:var(--paper); border: var(--thick) solid var(--outline); border-radius:999px; padding:8px 10px; cursor:pointer; user-select:none; }
+  .chip.is-selected{ background: var(--mha-green); color:#111 }
+
+  .sheet{ display:grid; grid-template-columns: 240px 1fr; gap:16px; }
+  .sheet__avatar{ border: var(--thick) solid var(--outline); border-radius:14px; overflow:hidden; background:#0b0f1a; height:260px; display:flex; align-items:center; justify-content:center; }
+  .sheet__avatar img{ width:100%; height:100%; object-fit:cover;  object-position:50% 0%;}
+  .kv{ display:grid; grid-template-columns: 160px 1fr; gap:6px 10px; }
+  .kv b{ color:#eef2ff }
+  .kv span{ color:#d0d6ea; font-weight:700 }
+
+  .footer{ text-align:center; color:#a9b6d0; padding:30px 16px 60px; font-size:12px; }
+  .hidden{display:none}
+  
+/* === Minimal / Compact / List view (merge from v0.3) === */
+body.is-minimal{ --thick:2px; --card-shadow: 4px 4px 0 var(--outline); background: var(--bg); }
+body.is-minimal .header{ box-shadow:none; }
+body.is-minimal .button{ box-shadow:none; }
+body.is-minimal .card{ background:#141a2a; }
+body.is-minimal .badge{ box-shadow:none; }
+
+body.is-compact .grid{ gap:14px }
+body.is-compact .card__media{ height:140px }
+body.is-compact .stat{ grid-template-columns: 90px 1fr 40px }
+
+body[data-view="list"] .grid{ grid-template-columns: 1fr; }
+body[data-view="list"] .card{ display:grid; grid-template-columns: 180px 1fr; align-items:stretch; }
+body[data-view="list"] .card__media{ height:auto; border-right: var(--thick) solid var(--outline); border-bottom:none; }
+body[data-view="list"] .stats{ grid-template-columns: repeat(3,1fr); }
+
+@keyframes pulseAct { 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.12) } }
+.button--warn.is-active{ animation: pulseAct .8s infinite; }
+
+
+/* ===========================
+   Responsive (móvil + PC)
+   =========================== */
+
+/* Mejoras generales de interacción */
+.button, .tab, .chip, .modal__close, .input, .select { touch-action: manipulation; }
+.card__cta { flex-wrap: wrap; }
+.card__cta .button { flex: 1 1 auto; min-width: 110px; }
+
+/* Evitar que el header "se coma" contenido en iOS con notch */
+.header { padding-top: env(safe-area-inset-top); }
+.wrap { padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right)); }
+
+/* Tablet y abajo: toolbar más flexible */
+@media (max-width: 980px){
+  .toolbar{ grid-template-columns: 1fr 1fr 1fr; }
+  .toolbar > .input{ grid-column: 1 / -1; }
+}
+
+/* Móvil */
+@media (max-width: 720px){
+  :root{
+    --radius:16px;
+    --gap:10px;
+  }
+
+  body{ font-size: 15px; }
+
+  .wrap{ padding: 14px; }
+  .brand{ gap:12px; align-items:flex-start; }
+  .brand__badge{ padding:7px 10px; }
+  .brand__subtitle{ font-size: 13px; line-height: 1.35; }
+
+  /* Toolbar: todo apilado y proporcional */
+  .toolbar{
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .toolbar > .input{ grid-column: 1 / -1; }
+  #roleFilter{ width:100%; }
+  #sortBy{ width:100%; }
+  #addBtn{ grid-column: 1 / -1; justify-content:center; }
+
+  /* Botones compactos */
+  .input, .select, .button{ height: 42px; padding: 0 12px; }
+  .button{ justify-content:center; }
+
+  /* Cards: 1 columna; lista adaptada */
+  .grid{ padding: 0 14px 72px; gap: 16px; grid-template-columns: 1fr; }
+  .card__media{ height: 170px; }
+  body[data-view="list"] .card{ grid-template-columns: 1fr; }
+  body[data-view="list"] .card__media{
+    height: 170px;
+    border-right: none;
+    border-bottom: var(--thick) solid var(--outline);
+  }
+  body[data-view="list"] .stats{ grid-template-columns: repeat(2,1fr); }
+
+  /* Modal: que no "reviente" en móvil */
+  .modal{ padding: 14px; }
+  .modal__panel{ width: 100%; border-radius: 18px; box-shadow: 10px 10px 0 var(--outline); }
+  .modal__body{ max-height: 78vh; }
+
+  /* Ficha detallada: en columna */
+  .sheet{ grid-template-columns: 1fr; }
+  .sheet__avatar{ height: 220px; }
+  .kv{ grid-template-columns: 1fr; }
+  .kv b{ margin-top: 8px; display:block; }
+  .kv span{ display:block; }
+
+  /* Formularios: 1 columna real */
+  .form{ grid-template-columns: 1fr; }
+  .form .col-6, .form .col-12{ grid-column: 1 / -1; }
+
+  /* Tabs: que no se salgan */
+  .tabs{ flex-wrap: wrap; }
+  .tab{ flex: 1 1 auto; text-align:center; }
+
+  /* Evitar zoom raro en iOS al tocar inputs */
+  .inputish, .textarea, .select select, .input input{ font-size: 16px; }
+}
+
+/* Ultra pequeño */
+@media (max-width: 380px){
+  .toolbar{ grid-template-columns: 1fr; }
+  #addBtn{ grid-column: auto; }
+  body[data-view="list"] .stats{ grid-template-columns: 1fr; }
+}
+
+
+</style>
+</head>
+<body>
+  <header class="header">
+    <div class="wrap">
+      <div class="brand">
+        <span class="brand__badge">PLUS ULTRA</span>
+        <div>
+          <h1 class="brand__title">LISTA DE HÉROES <small style="font-size:14px;background:#fff;border:4px solid #0a0b0e;border-radius:999px;padding:4px 8px;color:#111;box-shadow:4px 4px 0 #0a0b0e">Dex MHA</small></h1>
+          <p class="brand__subtitle">Añade tus héroes, sube sus fotos por URL, clasifícalos por rol y mide sus stats con criterios claros.</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <label class="input" title="Buscar por alias o nombre real">
+          🔎 <input id="q" placeholder="Buscar héroe..." />
+        </label>
+        <label class="select" title="Filtrar por rol principal">
+          <select id="roleFilter">
+            <option value="">Todos los roles</option>
+            <option>Rescate</option>
+            <option>Combate</option>
+            <option>Apoyo</option>
+            <option>Control</option>
+            <option>Investigación</option>
+            <option>Logística</option>
+            <option>Sigilo</option>
+            <option>Sanación</option>
+          </select>
+        </label>
+        <label class="select" title="Ordenar">
+          <select id="sortBy">
+            <option value="nameAZ">Nombre A–Z</option>
+            <option value="powerZA">Poder total ↓</option>
+            <option value="recent">Recientes</option>
+          </select>
+        </label>
+        <button class="button" id="minimalBtn" title="Modo minimal">—</button>
+<button class="button" id="compactBtn" title="Modo compacto">≡</button>
+<button class="button" id="viewBtn" title="Vista lista / tarjetas">▤</button>
+<button class="button button--warn" id="actBtn" title="Aviso de actualización">ACT</button>
+<button class="button button--info" id="infoBtn" title="Guía de roles y stats">i</button>
+        <button class="button" id="addBtn">+ Añadir héroe</button>
+        <button class="button button--blue" id="exportBtn" title="Exportar lista como JSON">Exportar</button>
+        <button class="button button--green" id="importBtn" title="Importar JSON (fusiona)">Importar</button>
+        <button class="button button--warn" id="clearBtn" title="Vaciar la Dex (requiere confirmación)">Vaciar Dex</button>
+        <input type="file" id="importFile" accept="application/json" class="hidden">
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="grid" id="grid"></section>
+  </main>
+
+  <footer class="footer">
+    Tus datos se guardan en <b>localStorage</b>. Usa <b>Exportar/Importar</b> para copia de seguridad o mover tu Dex.
+  </footer>
+
+  <!-- Modal INFO: Roles + Stats -->
+  <div class="modal" id="infoModal" aria-hidden="true">
+    <div class="modal__panel">
+      <div class="modal__head">
+        <div class="modal__title">Guía rápida — Roles & Stats</div>
+        <button class="modal__close" data-close="#infoModal">Cerrar</button>
+      </div>
+      <div class="modal__body">
+        <div class="tabs">
+          <button class="tab is-active" data-tab="#roles">Roles</button>
+          <button class="tab" data-tab="#stats">Stats</button>
+          <button class="tab" data-tab="#rangos">Rangos (1–100)</button>
+        </div>
+        <div class="tabpanes">
+          <section id="roles" class="is-active">
+            <ul>
+              <li><b>Rescate:</b> Prioriza salvar civiles y evacuar. <i>Tips:</i> movilidad, percepción, resistencia a entornos hostiles, primeros auxilios.</li>
+              <li><b>Combate:</b> Neutraliza amenazas de forma directa. <i>Tips:</i> fuerza, técnica, control del Don, resiliencia.</li>
+              <li><b>Apoyo:</b> Potencia a aliados o debilita enemigos. <i>Tips:</i> inteligencia táctica, versatilidad, trabajo en equipo.</li>
+              <li><b>Control:</b> Contención/aislamiento del área o del objetivo. <i>Tips:</i> control fino, alcance, mitigación de daños colaterales.</li>
+              <li><b>Investigación:</b> Reúne pruebas, rastreo, análisis. <i>Tips:</i> inteligencia, técnica, discreción.</li>
+              <li><b>Logística:</b> Transporte, suministros, comunicaciones. <i>Tips:</i> fiabilidad, planificación, aguante.</li>
+              <li><b>Sigilo:</b> Operaciones encubiertas. <i>Tips:</i> sigilo real, movilidad silenciosa, precisión, sangre fría.</li>
+              <li><b>Sanación:</b> Estabiliza y recupera aliados. <i>Tips:</i> control biológico/energético, concentración, ética.</li>
+            </ul>
+          </section>
+          <section id="stats">
+            <p>Recomendación de stats (1–100), medidos con criterio consistente:</p>
+            <ul>
+              <li><b>Fuerza:</b> Potencia física bruta.</li>
+              <li><b>Velocidad:</b> Rapidez de desplazamiento y reacción.</li>
+              <li><b>Resistencia:</b> Aguante a daño y fatiga.</li>
+              <li><b>Técnica:</b> Habilidad/mecánica en el uso del Don y combate.</li>
+              <li><b>Inteligencia:</b> Táctica, análisis, resolución de problemas.</li>
+              <li><b>Carisma:</b> Liderazgo, influencia, manejo social.</li>
+              <li><b>Control del Don:</b> Precisión/estabilidad del poder.</li>
+              <li><b>Versatilidad:</b> Adaptación a distintos contextos.</li>
+            </ul>
+            <p><small>Nota: El <b>Poder total</b> se calcula como media ponderada (Fuerza/Velocidad/Resistencia 50% + Técnica/Control 30% + Inteligencia/Carisma/Versatilidad 20%).</small></p>
+          </section>
+          <section id="rangos">
+            <table style="width:100%;border-collapse:separate;border-spacing:0 8px">
+              <tr><td><b>1–10</b></td><td>Fuerza común: humano sin Don.</td></tr>
+              <tr><td><b>11–20</b></td><td>Humano entrenado/atleta.</td></tr>
+              <tr><td><b>21–30</b></td><td>Cadete/aspirante con Don básico.</td></tr>
+              <tr><td><b>31–40</b></td><td>Héroe en prácticas competente.</td></tr>
+              <tr><td><b>41–60</b></td><td>Héroe Pro estándar.</td></tr>
+              <tr><td><b>61–80</b></td><td>Élite/alto rendimiento.</td></tr>
+              <tr><td><b>81–95</b></td><td>Top nacional/Top 20.</td></tr>
+              <tr><td><b>96–100</b></td><td>Top 10/élite absoluta. "Plus Ultra".</td></tr>
+            </table>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal ADD/EDIT -->
+  <div class="modal" id="formModal" data-backdrop="static" aria-hidden="true">
+    <div class="modal__panel">
+      <div class="modal__head">
+        <div class="modal__title"><span id="formTitle">Añadir héroe</span></div>
+        <button class="modal__close" data-close="#formModal">Cerrar</button>
+      </div>
+      <div class="modal__body">
+        <form id="heroForm" class="form" autocomplete="off">
+          <input type="hidden" name="role" id="formRole" value="Combate">
+          <div class="col-6">
+            <div class="label">Alias</div>
+            <input class="inputish" name="alias" placeholder="Ej.: Red Riot" required>
+          </div>
+          <div class="col-6">
+            <div class="label">Nombre real</div>
+            <input class="inputish" name="realname" placeholder="Ej.: Eijiro Kirishima">
+          </div>
+          <div class="col-12">
+            <div class="label">Rol principal (elige uno)</div>
+            <div class="multiselect" id="roleChips"></div>
+          </div>
+<div class="col-12">
+  <div class="label">Rol secundario (opcional)</div>
+  <input type="hidden" name="role2" id="formRole2" value="">
+  <div class="multiselect" id="role2Chips"></div>
+</div>
+          <div class="col-6">
+            <div class="label">Agencia / Afiliación</div>
+            <input class="inputish" name="affiliation" placeholder="Ej.: UA, Agencia Endeavor">
+          </div>
+          <div class="col-6">
+            <div class="label">Don (Quirk)</div>
+            <input class="inputish" name="quirk" placeholder="Describe el poder principal">
+          </div>
+          <div class="col-12">
+            <div class="label">Resumen</div>
+            <textarea class="textarea" name="summary" placeholder="Breve descripción del héroe"></textarea>
+          </div>
+          <div class="col-12">
+            <div class="label">URL de foto</div>
+            <input class="inputish" name="photo" placeholder="https://... (o deja vacío para placeholder)">
+          </div>
+
+          <!-- Stats -->
+          <div class="col-12"><div class="label">Stats (1–100)</div></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="fuerza" placeholder="Fuerza"></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="velocidad" placeholder="Velocidad"></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="resistencia" placeholder="Resistencia"></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="tecnica" placeholder="Técnica"></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="inteligencia" placeholder="Inteligencia"></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="carisma" placeholder="Carisma"></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="control" placeholder="Control del Don"></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="versatilidad" placeholder="Versatilidad"></div>
+
+          <div class="col-12" style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px">
+            <button type="button" class="button button--ghost" id="resetBtn">Reset</button>
+            <button class="button" type="submit">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal DETALLE -->
+  <div class="modal" id="detailModal" aria-hidden="true">
+    <div class="modal__panel">
+      <div class="modal__head">
+        <div class="modal__title">Ficha detallada</div>
+        <button class="modal__close" data-close="#detailModal">Cerrar</button>
+      </div>
+      <div class="modal__body">
+        <div class="sheet">
+          <div class="sheet__avatar"><img id="dPhoto" alt="Foto de héroe"/></div>
+          <div>
+            <h2 id="dAlias" style="margin:0;font-size:28px">Alias</h2>
+            <p id="dReal" style="margin:4px 0 12px;color:#aab6d6;font-weight:700">Nombre real</p>
+            <div class="kv">
+              <b>Rol principal</b> <span id="dRol"></span>
+<b>Rol secundario</b> <span id="dRol2"></span>
+              <b>Agencia</b> <span id="dAff"></span>
+              <b>Don</b> <span id="dQuirk"></span>
+              <b>Poder total</b> <span id="dPower"></span>
+            </div>
+            <div style="height:10px"></div>
+            <div class="label">Resumen</div>
+            <p id="dSummary" style="margin-top:6px"></p>
+
+            <div class="label" style="margin-top:12px">Stats</div>
+            <div id="dStats"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ===== Utilidades =====
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+const ROLES = ["Rescate","Combate","Apoyo","Control","Investigación","Logística","Sigilo","Sanación"];
+const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+  <svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
+    <defs>
+      <pattern id="dots" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+        <circle cx="1.5" cy="1.5" r="1.5" fill="#0a0b0e" opacity=".18"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="#cfd7ea"/>
+    <rect width="100%" height="100%" fill="url(#dots)"/>
+    <g font-family="Segoe UI, Arial" font-weight="900" text-anchor="middle" fill="#0a0b0e">
+      <text x="400" y="235" font-size="40">SIN FOTO</text>
+      <text x="400" y="280" font-size="20">Sube una URL en la ficha</text>
+    </g>
+  </svg>`);
+
+// Peso para poder total
+const WEIGHTS = { fuerza:.17, velocidad:.17, resistencia:.16, tecnica:.18, control:.12, inteligencia:.08, carisma:.06, versatilidad:.06 };
+
+function computePower(h){
+  const s = h.stats || {};
+  let total = 0;
+  for (const k in WEIGHTS){ total += (Number(s[k]||0) * WEIGHTS[k]); }
+  return Math.round(total);
+}
+
+function statRow(name, val){
+  const safe = Math.max(1, Math.min(100, Number(val||0)));
+  return `<div class="stat">
+    <div class="stat__name">${name}</div>
+    <div class="progress"><div class="progress__bar" style="width:${safe}%"></div></div>
+    <div class="stat__val">${safe}</div>
+  </div>`;
+}
+
+// ===== Estado =====
+const STORAGE_KEY = "mha_heroes";
+let HEROES = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+// Preseed algunos ejemplos si está vacío
+if(HEROES.length === 0){
+  HEROES = [
+    {
+      id: crypto.randomUUID(),
+      alias: "Nova Surge",
+      realname: "Aya Saitō",
+      role: "Rescate",
+      affiliation: "Agencia Aster",
+      quirk: "Fulgor Plasmático — convierte aire ionizado en estallidos de luz/impulso",
+      summary: "Especialista en evacuación urbana y señalización luminosa. Puede crear rutas seguras con barridos de plasma.",
+      photo: "",
+      stats: { fuerza:38, velocidad:82, resistencia:55, tecnica:71, inteligencia:67, carisma:62, control:78, versatilidad:74 },
+      createdAt: Date.now()-200000
+    },
+    {
+      id: crypto.randomUUID(),
+      alias: "Iron Hush",
+      realname: "Diego Ramos",
+      role: "Sigilo",
+      affiliation: "Unidad Silente",
+      quirk: "Manto Acústico — absorbe/niega vibraciones sonoras en un radio corto",
+      summary: "Infiltración y detención limpia. Ideal para rescates sin daños colaterales en zonas sensibles.",
+      photo: "",
+      stats: { fuerza:46, velocidad:68, resistencia:59, tecnica:77, inteligencia:71, carisma:48, control:83, versatilidad:69 },
+      createdAt: Date.now()-100000
+    }
+  ];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(HEROES));
+}
+
+// ===== Render =====
+function renderGrid(){
+  const q = $("#q").value.trim().toLowerCase();
+  const f = $("#roleFilter").value;
+  const sort = $("#sortBy").value;
+
+  let list = HEROES.filter(h => {
+  const hit = (h.alias + ' ' + (h.realname||'')).toLowerCase().includes(q);
+  const rf = !f || h.role === f || (h.role2 && h.role2 === f);
+  return hit && rf;
+});
+
+  if(sort === "nameAZ") list.sort((a,b)=> a.alias.localeCompare(b.alias));
+  if(sort === "powerZA") list.sort((a,b)=> computePower(b)-computePower(a));
+  if(sort === "recent") list.sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
+
+  $("#grid").innerHTML = list.map(h => {
+    const p = computePower(h);
+    const img = (h.photo && h.photo.trim()) ? h.photo.trim() : PLACEHOLDER;
+    return `<article class="card" data-id="${h.id}">
+      <div class="card__media">
+        <img src="${img}" alt="${h.alias}">
+        <div class="badges"><span class="badge">${h.role}</span>${h.role2?`<span class=\"badge\" style=\"background:#fff\">${h.role2}</span>`:''}<span class="badge">Power ${p}</span></div>
+      </div>
+      <div class="card__body">
+        <h3 class="alias">${h.alias}</h3>
+        <div class="realname">${h.realname||""}</div>
+        <div class="stats">
+          ${statRow('Fuerza', h.stats.fuerza)}
+          ${statRow('Velocidad', h.stats.velocidad)}
+          ${statRow('Resistencia', h.stats.resistencia)}
+        </div>
+        <div class="card__cta">
+          <button class="button button--ghost" onclick="openDetail('${h.id}')">Ver ficha</button>
+          <button class="button" onclick="editHero('${h.id}')">Editar</button>
+          <button class="button button--danger" onclick="delHero('${h.id}')">Borrar</button>
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+// ===== Modales =====
+function openModal(id){ const m=$(id); m.classList.add("is-open"); m.setAttribute("aria-hidden","false"); }
+function closeModal(id){ const m=$(id); m.classList.remove("is-open"); m.setAttribute("aria-hidden","true"); }
+
+$$("[data-close]").forEach(btn=> btn.addEventListener("click", e=> closeModal(btn.dataset.close)));
+
+// Tabs info
+$$(".tab").forEach(t=> t.addEventListener("click", e=> {
+  $$(".tab").forEach(x=> x.classList.remove("is-active"));
+  t.classList.add("is-active");
+  $$(".tabpanes > section").forEach(sec=> sec.classList.remove("is-active"));
+  const pane = $(t.dataset.tab); if(pane) pane.classList.add("is-active");
+}));
+
+// ==== Chips de Rol (single-select con input hidden) ====
+const rolesBox = $("#roleChips");
+const formRole = $("#formRole");
+
+function buildRoleChips(){
+  rolesBox.innerHTML = "";
+  ROLES.forEach(r=>{
+    const chip = document.createElement("div");
+    chip.className="chip"; chip.textContent=r; chip.dataset.role=r;
+    chip.addEventListener("click", ()=> selectRole(r));
+    rolesBox.appendChild(chip);
+  });
+}
+function selectRole(role){
+  formRole.value = role;
+  $$("#roleChips .chip").forEach(c=> c.classList.toggle("is-selected", c.dataset.role===role));
+}
+
+buildRoleChips();
+selectRole(formRole.value || "Combate");
+
+// Abrir/cerrar info
+$("#infoBtn").addEventListener("click", ()=> openModal("#infoModal"));
+
+// Buscar/filtrar/ordenar
+$("#q").addEventListener("input", renderGrid);
+$("#roleFilter").addEventListener("change", renderGrid);
+$("#sortBy").addEventListener("change", renderGrid);
+
+// ===== Export / Import / Clear =====
+function exportJSON(list = HEROES){
+  const data = JSON.stringify(list, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const ts = new Date().toISOString().slice(0,10);
+  a.href = url; a.download = `heroes_mha_${ts}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+function importJSON(file){
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const arr = JSON.parse(e.target.result);
+      if(!Array.isArray(arr)) throw new Error("Formato inválido: se esperaba un array de héroes.");
+      let processed = 0;
+      arr.forEach(raw => {
+        if(!raw || typeof raw !== 'object' || !raw.alias) return;
+        raw.id = raw.id || crypto.randomUUID();
+        raw.createdAt = raw.createdAt || Date.now();
+        raw.stats = raw.stats || {};
+        const idx = HEROES.findIndex(h=> h.id === raw.id);
+        if(idx >= 0){ HEROES[idx] = raw; }
+        else{
+          const idx2 = HEROES.findIndex(h => (h.alias||'').toLowerCase() === (raw.alias||'').toLowerCase() && (h.realname||'') === (raw.realname||''));
+          if(idx2 >= 0) HEROES[idx2] = raw; else HEROES.push(raw);
+        }
+        processed++;
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(HEROES));
+      renderGrid();
+      alert(`Importación completada. Entradas procesadas: ${processed}.`);
+    }catch(err){ alert('No se pudo importar: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+$("#exportBtn").addEventListener("click", ()=> exportJSON());
+$("#importBtn").addEventListener("click", ()=> $("#importFile").click());
+$("#importFile").addEventListener("change", (e)=>{ const file = e.target.files[0]; if(file) importJSON(file); e.target.value = ""; });
+$("#clearBtn").addEventListener("click", ()=>{ if(confirm("¿Seguro que quieres vaciar por completo la Dex? Esta acción no se puede deshacer.")){ HEROES = []; localStorage.removeItem(STORAGE_KEY); renderGrid(); } });
+
+// ===== Añadir héroe
+$("#addBtn").addEventListener("click", ()=>{
+  $("#formTitle").textContent="Añadir héroe";
+  $("#heroForm").reset();
+  buildRoleChips();
+  selectRole("Combate");
+  $("#resetBtn").onclick = ()=> { $("#heroForm").reset(); buildRoleChips(); selectRole("Combate"); };
+  $("#heroForm").dataset.mode="create";
+  $("#heroForm").dataset.id="";
+  openModal("#formModal");
+});
+
+// Guardar formulario
+$("#heroForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const roleVal = (fd.get("role") || "Combate").toString();
+  const hero = {
+    id: $("#heroForm").dataset.mode==="edit" ? $("#heroForm").dataset.id : crypto.randomUUID(),
+    alias: fd.get("alias").trim(),
+    realname: (fd.get("realname")||"").trim(),
+    role: roleVal,
+    affiliation: (fd.get("affiliation")||"").trim(),
+    quirk: (fd.get("quirk")||"").trim(),
+    summary: (fd.get("summary")||"").trim(),
+    photo: (fd.get("photo")||"").trim(),
+    stats: {
+      fuerza: Number(fd.get("fuerza")||0), velocidad: Number(fd.get("velocidad")||0), resistencia: Number(fd.get("resistencia")||0),
+      tecnica: Number(fd.get("tecnica")||0), inteligencia: Number(fd.get("inteligencia")||0), carisma: Number(fd.get("carisma")||0),
+      control: Number(fd.get("control")||0), versatilidad: Number(fd.get("versatilidad")||0),
+    },
+    createdAt: $("#heroForm").dataset.mode==="edit" ? (HEROES.find(x=>x.id===$("#heroForm").dataset.id)?.createdAt||Date.now()) : Date.now()
+  };
+  if($("#heroForm").dataset.mode==="edit"){ HEROES = HEROES.map(h=> h.id===hero.id ? hero : h); }
+  else{ HEROES.push(hero); }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(HEROES));
+  closeModal("#formModal");
+  renderGrid();
+});
+
+// Editar
+window.editHero = (id)=>{
+  const h = HEROES.find(x=> x.id===id);
+  if(!h) return;
+  $("#formTitle").textContent="Editar héroe";
+  $("#heroForm").dataset.mode="edit";
+  $("#heroForm").dataset.id=h.id;
+  const set = (name,val)=> $("#heroForm [name='"+name+"']").value = val ?? "";
+  set("alias",h.alias); set("realname",h.realname||""); set("affiliation",h.affiliation||""); set("quirk",h.quirk||""); set("summary",h.summary||""); set("photo",h.photo||"");
+  set("fuerza",h.stats.fuerza||""); set("velocidad",h.stats.velocidad||""); set("resistencia",h.stats.resistencia||""); set("tecnica",h.stats.tecnica||""); set("inteligencia",h.stats.inteligencia||""); set("carisma",h.stats.carisma||""); set("control",h.stats.control||""); set("versatilidad",h.stats.versatilidad||"");
+  buildRoleChips();
+  selectRole(h.role || "Combate");
+  $("#resetBtn").onclick = ()=> { window.editHero(id); };
+  openModal("#formModal");
+};
+
+// Borrar
+window.delHero = (id)=>{ if(!confirm("¿Borrar este héroe?")) return; HEROES = HEROES.filter(h=> h.id!==id); localStorage.setItem(STORAGE_KEY, JSON.stringify(HEROES)); renderGrid(); };
+
+// Detalle
+window.openDetail = (id)=>{
+  const h = HEROES.find(x=> x.id===id); if(!h) return;
+  $("#dPhoto").src = (h.photo && h.photo.trim()) ? h.photo.trim() : PLACEHOLDER;
+  $("#dAlias").textContent = h.alias; $("#dReal").textContent = h.realname||""; $("#dRol").textContent = h.role||""; $("#dAff").textContent = h.affiliation||"";
+  $("#dQuirk").textContent = h.quirk||""; $("#dSummary").textContent = h.summary||""; $("#dPower").textContent = computePower(h);
+  const S = h.stats||{};
+  $("#dStats").innerHTML = [ ['Fuerza',S.fuerza],['Velocidad',S.velocidad],['Resistencia',S.resistencia], ['Técnica',S.tecnica],['Inteligencia',S.inteligencia],['Carisma',S.carisma], ['Control del Don',S.control],['Versatilidad',S.versatilidad] ].map(([n,v])=> statRow(n,v)).join("");
+  openModal("#detailModal");
+};
+
+// Cerrar modal al hacer click fuera
+$$(".modal").forEach(m => { m.addEventListener("click", (e)=> { if (m.dataset.backdrop === "static") return; if (e.target===m) closeModal("#"+m.id); }); });
+// ===== Inicial =====
+
+// === Responsive helper: si es móvil y no hay preferencia guardada, preestablece vista "list" ===
+(function(){
+  try{
+    const hasPrefs = localStorage.getItem('mha_ui_prefs');
+    const isMobile = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+    if(isMobile && !hasPrefs){
+      localStorage.setItem('mha_ui_prefs', JSON.stringify({ view: 'list', compact: true, minimal: false }));
+    }
+  }catch(e){}
+})();
+
+renderGrid();
+</script>
+
+  <!-- Modal ACT (actualizaciones) -->
+  <div class="modal" id="actModal" aria-hidden="true">
+    <div class="modal__panel">
+      <div class="modal__head">
+        <div class="modal__title">Actualizaciones recientes</div>
+        <button class="modal__close" data-close="#actModal">Cerrar</button>
+      </div>
+      <div class="modal__body">
+        <p style="margin-top:0;color:#cfd7f7">Resumen de los últimos cambios guardados.</p>
+        <ul id="actList" style="margin:0;padding-left:18px;line-height:1.5"></ul>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+          <button class="button button--ghost" id="actClearBtn">Marcar como visto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// === Merge features from v0.3 ===
+
+// UI prefs
+const PREFS_KEY = 'mha_ui_prefs';
+let PREFS = {}; try{ PREFS = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}'); }catch{ PREFS = {}; }
+function applyPrefs(){ document.body.classList.toggle('is-minimal', !!PREFS.minimal); document.body.classList.toggle('is-compact', !!PREFS.compact); document.body.setAttribute('data-view', PREFS.view || 'cards'); }
+applyPrefs();
+document.getElementById('minimalBtn')?.addEventListener('click', ()=>{ PREFS.minimal=!PREFS.minimal; localStorage.setItem(PREFS_KEY, JSON.stringify(PREFS)); applyPrefs(); });
+document.getElementById('compactBtn')?.addEventListener('click', ()=>{ PREFS.compact=!PREFS.compact; localStorage.setItem(PREFS_KEY, JSON.stringify(PREFS)); applyPrefs(); });
+document.getElementById('viewBtn')?.addEventListener('click', ()=>{ PREFS.view = (PREFS.view==='list'?'cards':'list'); localStorage.setItem(PREFS_KEY, JSON.stringify(PREFS)); applyPrefs(); });
+
+// Role2 chips
+function buildSingleSelectChips(containerSel, inputSel, rolesArray, allowNone=false){
+  const box = document.querySelector(containerSel); const hidden = document.querySelector(inputSel);
+  if(!box || !hidden) return;
+  box.innerHTML = '';
+  const val = hidden.value || '';
+  const list = allowNone ? ['Ninguno', ...ROLES] : [...ROLES];
+  list.forEach(r=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (r==='Ninguno' ? ' is-none' : '');
+    chip.textContent = r;
+    chip.dataset.role = r==='Ninguno' ? '' : r;
+    if((r==='Ninguno' && !val) || chip.dataset.role===val) chip.classList.add('is-selected');
+    chip.addEventListener('click', ()=>{
+      hidden.value = chip.dataset.role;
+      document.querySelectorAll(containerSel+' .chip').forEach(c=> c.classList.remove('is-selected'));
+      chip.classList.add('is-selected');
+    });
+    box.appendChild(chip);
+  });
+}
+function buildRoleChipsAll(){ buildSingleSelectChips('#roleChips', '#formRole', ROLES, false); buildSingleSelectChips('#role2Chips', '#formRole2', ROLES, true); }
+
+// Override add button behavior to init both role selectors
+const addBtn = document.getElementById('addBtn');
+if(addBtn){
+  addBtn.addEventListener('click', ()=>{
+    document.getElementById('formTitle').textContent = 'Añadir héroe';
+    const f = document.getElementById('heroForm');
+    f.reset();
+    f.dataset.mode='create'; f.dataset.id='';
+    document.getElementById('formRole').value='Combate';
+    const r2 = document.getElementById('formRole2'); if(r2) r2.value='';
+    buildRoleChipsAll();
+    const resetBtn = document.getElementById('resetBtn');
+    if(resetBtn){ resetBtn.onclick = ()=>{ f.reset(); document.getElementById('formRole').value='Combate'; if(r2) r2.value=''; buildRoleChipsAll(); }; }
+    if(typeof openModal==='function') openModal('#formModal');
+  }, { once: true }); // ensure we don't stack multiple identical listeners
+}
+
+// Edit flow: ensure role2 is set and chips rebuilt
+if(typeof window.editHero === 'function'){
+  const originalEdit = window.editHero;
+  window.editHero = (id)=>{
+    originalEdit(id);
+    const hId = id;
+    const h = (window.HEROES||[]).find(x=> x.id===hId);
+    const r2 = document.getElementById('formRole2'); if(r2){ r2.value = (h && h.role2) || ''; }
+    buildRoleChipsAll();
+    const resetBtn = document.getElementById('resetBtn');
+    if(resetBtn){ resetBtn.onclick = ()=>{ window.editHero(id); }; }
+  };
+}
+
+// Detail: set rol secundario if function exists
+if(typeof window.openDetail === 'function'){
+  const originalDetail = window.openDetail;
+  window.openDetail = (id)=>{
+    originalDetail(id);
+    const h = (window.HEROES||[]).find(x=> x.id===id);
+    const el = document.getElementById('dRol2');
+    if(el) el.textContent = (h && h.role2) ? h.role2 : '—';
+  };
+}
+
+// Submit patch: enhance existing submit to include role2 & ACT
+(function(){
+  const form = document.getElementById('heroForm');
+  if(!form) return;
+  form.addEventListener('submit', function(e){
+    // We assume the original handler already ran; we adjust latest hero in storage to inject role2 if missing
+    try{
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+      const id = form.dataset.mode==='edit' ? form.dataset.id : (data[data.length-1]?.id);
+      const idx = data.findIndex(h=> h.id===id);
+      if(idx>=0){
+        const r2 = document.getElementById('formRole2'); if(r2) data[idx].role2 = r2.value || '';
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        window.HEROES = data;
+        // ACT record
+        const hero = data[idx];
+        const kind = form.dataset.mode==='edit' ? 'edit' : 'create';
+        if(typeof pushUpdate==='function'){ pushUpdate(kind, hero); }
+        if(typeof markUpdated==='function'){ markUpdated(); }
+      }
+    }catch(_e){}
+  }, false);
+})();
+
+// ACT modal logic
+const UPD_KEY = 'mha_updates';
+function loadUpdates(){ try{ return JSON.parse(localStorage.getItem(UPD_KEY) || '[]'); }catch{ return []; } }
+function saveUpdates(list){ localStorage.setItem(UPD_KEY, JSON.stringify(list)); }
+function markUpdated(){ const b=document.getElementById('actBtn'); if(b) b.classList.add('is-active'); }
+function pushUpdate(kind, hero){
+  const list = loadUpdates(); const ts = new Date().toISOString();
+  const msg = (kind==='create' ? 'Creado: ' : 'Editado: ') + hero.alias + (hero.realname? ' ('+hero.realname+')':'');
+  list.unshift({ ts, kind, id: hero.id, alias: hero.alias, realname: hero.realname||'', msg });
+  saveUpdates(list.slice(0,50)); markUpdated();
+}
+document.getElementById('actBtn')?.addEventListener('click', ()=>{
+  const ul = document.getElementById('actList'); const list = loadUpdates();
+  ul.innerHTML = list.length ? list.map(u=> `<li><b>${u.msg}</b> · <small>${new Date(u.ts).toLocaleString()}</small></li>`).join('') : '<li>Se ha añadido el botón "ACT" para mostrar las actualizaciones realizadas.</li><br><li>Se ha arreglado el problema del cerrado tras clicar fuera del model al actualizar y/o crear una nueva ficha.</li><br><li>Se ha solucionado el problema de las imágenes y no adición de las nuevas features de la anterior versión, implementándose a esta</li><br><li><b>AVISO:</b> El botón "Cerrar" de la pestaña "ACT" aún no funciona, desconozco el motivo y estoy arreglandolo.</li><br><li><b>Nuevas Features:</b> Estoy intentando implementar un botón en la pestaña "Ver Ficha" que te guíe directamente a la wiki del personaje, y que la misma pueda implementarse sin necesidad de editar directamente el código fuente.</li>';
+  openModal('#actModal');
+});
+document.getElementById('actClearBtn')?.addEventListener('click', ()=>{ saveUpdates([]); document.getElementById('actBtn')?.classList.remove('is-active'); closeModal('#actModal'); });
+
+// Backdrop blocker (capture) for static modals
+(function(){
+  const fm = document.getElementById('formModal');
+  if(!fm) return;
+  fm.addEventListener('click', (e)=>{
+    if(e.currentTarget.dataset.backdrop==='static' && e.target===e.currentTarget){
+      e.stopPropagation();
+      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+      // do nothing (block close)
+    }
+  }, true); // capture
+})();
+
+</script>
+</body>
+</html>
