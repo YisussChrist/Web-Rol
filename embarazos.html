@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Embarazos de Rol — Panel</title>
+  <style>
+    :root{
+      --bg:#0b0f1c;
+      --bg-2:#12182a;
+      --panel:rgba(20,26,48,.78);
+      --panel-strong:rgba(24,31,57,.92);
+      --card:rgba(255,255,255,.055);
+      --card-2:rgba(255,255,255,.03);
+      --text:#edf2ff;
+      --muted:#aab4d6;
+      --line:rgba(255,255,255,.10);
+      --accent:#8ea2ff;
+      --accent-2:#ff8bd6;
+      --ok:#86efac;
+      --warn:#fde68a;
+      --late:#fb7185;
+      --shadow:0 16px 50px rgba(0,0,0,.30);
+      --radius:24px;
+      --radius-sm:16px;
+    }
+
+    body.light{
+      --bg:#eef3ff;
+      --bg-2:#dfe7ff;
+      --panel:rgba(255,255,255,.76);
+      --panel-strong:rgba(255,255,255,.95);
+      --card:rgba(32,52,120,.045);
+      --card-2:rgba(32,52,120,.02);
+      --text:#17203a;
+      --muted:#5f6d95;
+      --line:rgba(23,32,58,.10);
+      --accent:#5c73ff;
+      --accent-2:#dd5ab6;
+      --shadow:0 16px 45px rgba(67,86,149,.16);
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(142,162,255,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(255,139,214,.14), transparent 26%),
+        linear-gradient(135deg,var(--bg),var(--bg-2));
+      background-attachment:fixed;
+    }
+
+    .page{
+      width:min(1180px,calc(100% - 24px));
+      margin:0 auto;
+      padding:20px 0 36px;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      padding:10px 0 14px;
+      backdrop-filter:blur(10px);
+    }
+
+    .topbar-inner,
+    .hero,
+    .stats,
+    .toolbar,
+    .empty,
+    .card{
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+    }
+
+    .topbar-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:14px 16px;
+      border-radius:20px;
+      background:var(--panel);
+      backdrop-filter:blur(16px);
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:clamp(1.7rem,3vw,2.6rem);
+      line-height:1.05;
+      letter-spacing:.2px;
+    }
+    .brand p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:.96rem;
+    }
+
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+    button, select, input{
+      font:inherit;
+    }
+    .btn, .field, .select{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:var(--card);
+      color:var(--text);
+      min-height:44px;
+    }
+    .btn{
+      cursor:pointer;
+      padding:0 14px;
+      font-weight:700;
+      transition:.18s ease;
+    }
+    .btn:hover{transform:translateY(-1px);background:var(--panel-strong)}
+
+    .hero{
+      margin-top:12px;
+      border-radius:var(--radius);
+      padding:22px;
+      background:var(--panel);
+      backdrop-filter:blur(16px);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(120deg,rgba(142,162,255,.10),transparent 45%,rgba(255,139,214,.10));
+      pointer-events:none;
+    }
+    .hero > *{position:relative;z-index:1}
+    .eyebrow{
+      display:inline-block;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-size:.76rem;
+      font-weight:800;
+      color:var(--accent);
+      margin-bottom:10px;
+    }
+    .quote{margin:0;font-size:clamp(1rem,2.1vw,1.25rem);line-height:1.65;font-weight:700}
+    .quote-author{margin:8px 0 0;color:var(--muted)}
+
+    .stats{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+      border-radius:var(--radius);
+      padding:14px;
+      background:var(--panel);
+      backdrop-filter:blur(16px);
+    }
+    .stat{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      min-width:0;
+    }
+    .stat .k{display:block;color:var(--muted);font-size:.88rem;margin-bottom:8px}
+    .stat .v{font-size:1.45rem;font-weight:800;line-height:1.1}
+
+    .toolbar{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) repeat(3,auto);
+      gap:12px;
+      border-radius:var(--radius);
+      padding:14px;
+      background:var(--panel);
+      backdrop-filter:blur(16px);
+      align-items:center;
+    }
+    .search-wrap{position:relative}
+    .field, .select{
+      width:100%;
+      padding:0 14px;
+      outline:none;
+    }
+    .field:focus, .select:focus{box-shadow:0 0 0 3px rgba(142,162,255,.22)}
+
+    .chip-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .chip{
+      border:1px solid var(--line);
+      background:var(--card);
+      color:var(--text);
+      border-radius:999px;
+      padding:9px 12px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .chip.active{
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      border-color:transparent;
+      color:#fff;
+    }
+
+    .results{
+      margin-top:16px;
+      display:grid;
+      gap:14px;
+    }
+
+    .card{
+      background:var(--panel);
+      border-radius:var(--radius);
+      padding:18px;
+      backdrop-filter:blur(16px);
+    }
+    .card-top{
+      display:flex;
+      gap:14px;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:14px;
+    }
+    .card h2{margin:0 0 6px;font-size:1.15rem;line-height:1.35}
+    .meta{color:var(--muted);font-size:.95rem}
+
+    .status{
+      flex-shrink:0;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      font-size:.86rem;
+      font-weight:800;
+      border:1px solid var(--line);
+      white-space:nowrap;
+    }
+    .status.ok{background:rgba(134,239,172,.16); color:var(--ok)}
+    .status.warn{background:rgba(253,230,138,.13); color:#facc15}
+    .status.late{background:rgba(251,113,133,.13); color:#fda4af}
+
+    .progress-wrap{margin:12px 0 14px}
+    .progress-head{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+      font-size:.92rem;
+      color:var(--muted);
+    }
+    .progress-bar{
+      height:14px;
+      background:rgba(255,255,255,.08);
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid var(--line);
+    }
+    .progress{
+      height:100%;
+      width:0;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      box-shadow:0 0 16px rgba(142,162,255,.35);
+    }
+    .progress.ok{background:linear-gradient(90deg,#34d399,#86efac)}
+    .progress.warn{background:linear-gradient(90deg,#f59e0b,#facc15)}
+    .progress.late{background:linear-gradient(90deg,#fb7185,#f43f5e)}
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+    }
+    .mini{
+      background:var(--card-2);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      min-width:0;
+    }
+    .mini .label{display:block;color:var(--muted);font-size:.83rem;margin-bottom:6px}
+    .mini .value{font-weight:800;line-height:1.3}
+
+    .empty{
+      display:none;
+      margin-top:16px;
+      padding:26px 18px;
+      text-align:center;
+      background:var(--panel);
+      border-radius:var(--radius);
+      color:var(--muted);
+      backdrop-filter:blur(16px);
+    }
+
+    .footer{
+      margin-top:24px;
+      text-align:center;
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.7;
+      padding-bottom:10px;
+    }
+
+    @media (max-width: 980px){
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .toolbar{grid-template-columns:1fr 1fr;}
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+
+    @media (max-width: 640px){
+      .page{width:min(100% - 16px,1180px);padding-top:12px}
+      .topbar-inner{align-items:flex-start;flex-direction:column}
+      .top-actions{width:100%}
+      .top-actions .btn{flex:1}
+      .stats{grid-template-columns:1fr 1fr;gap:10px}
+      .toolbar{grid-template-columns:1fr;}
+      .card{padding:16px}
+      .card-top{flex-direction:column;align-items:flex-start}
+      .grid{grid-template-columns:1fr;}
+      .status{white-space:normal}
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <h1>🤰 Embarazos de Rol</h1>
+          <p>Panel unificado, responsive y listo para subir a GitHub sin archivos externos.</p>
+        </div>
+        <div class="top-actions">
+          <button class="btn" id="themeToggle">🌙 Tema</button>
+          <button class="btn" id="resetBtn">↺ Resetear filtros</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <span class="eyebrow">Panel narrativo</span>
+      <p class="quote" id="quoteText"></p>
+      <p class="quote-author" id="quoteAuthor"></p>
+      <div class="chip-row" id="quickFilters">
+        <button class="chip" data-status="all">Todos</button>
+        <button class="chip" data-status="progress">En curso</button>
+        <button class="chip" data-status="advanced">Etapa avanzada</button>
+        <button class="chip" data-status="late">Ya nacidos</button>
+      </div>
+    </section>
+
+    <section class="stats" id="stats"></section>
+
+    <section class="toolbar">
+      <input class="field" id="searchInput" type="search" placeholder="Buscar por pareja o personaje..." aria-label="Buscar por pareja o personaje">
+      <select class="select" id="sortSelect" aria-label="Ordenar resultados">
+        <option value="dueSoon">Parto más cercano</option>
+        <option value="recent">Anuncio más reciente</option>
+        <option value="oldest">Anuncio más antiguo</option>
+        <option value="nameAZ">Pareja A → Z</option>
+      </select>
+      <select class="select" id="statusSelect" aria-label="Filtrar por estado">
+        <option value="all">Todos los estados</option>
+        <option value="progress">En curso</option>
+        <option value="advanced">Etapa avanzada</option>
+        <option value="late">Ya nacidos</option>
+      </select>
+      <select class="select" id="timelineSelect" aria-label="Filtrar por franja temporal">
+        <option value="all">Todas las fases</option>
+        <option value="first">Primer trimestre</option>
+        <option value="second">Segundo trimestre</option>
+        <option value="third">Tercer trimestre</option>
+      </select>
+    </section>
+
+    <section class="results" id="results"></section>
+    <section class="empty" id="emptyState">No hay resultados con esos filtros. El lore ha decidido esconderse.</section>
+
+    <footer class="footer">
+      <div><strong>© 2026 Eternal Corp.</strong> Todos los derechos reservados.</div>
+      <div>Incluye búsqueda, filtros, orden automático, semanas, porcentaje, estado visual y modo claro/oscuro.</div>
+    </footer>
+  </main>
+
+  <script>
+    const EMBARAZO_DIAS = 280;
+    const embarazos = [
+      { pareja: "Diamond White ❤️ Waru Walker", anuncio: "2025-08-10" },
+      { pareja: "Akari Foster ❤️ Jiro Yakuin", anuncio: "2025-11-29" },
+      { pareja: "Akane Owari ❤️ Rikuo Nura", anuncio: "2025-11-09" },
+      { pareja: "Alice Berardi ❤️ Yuito Sumeragi", anuncio: "2025-11-09" },
+      { pareja: "Jordan Greenway ❤️ Isabella Trick", anuncio: "2025-12-20" },
+      { pareja: "Exusiai ❤️ Alma Azkaban", anuncio: "2026-01-28" },
+      { pareja: "Yoruichi ❤️ Hak Aethereon", anuncio: "2025-11-09" },
+      { pareja: "Albedo ❤️ Add", anuncio: "2025-11-20" }
+    ];
+
+    const quotes = [
+      { text: "Algunas historias no avanzan en capítulos. Avanzan en latidos, semanas y cuentas atrás.", author: "Panel de Embarazos" },
+      { text: "Hay vínculos que se confirman con una escena; otros, con 280 días de espera narrativa.", author: "RP Hub" },
+      { text: "El lore se complica mucho cuando los calendarios empiezan a importar de verdad.", author: "Narrador cansado pero feliz" },
+      { text: "No todo en un RP son peleas. A veces el verdadero evento canon es simplemente esperar.", author: "Crónica del servidor" }
+    ];
+
+    const $ = s => document.querySelector(s);
+    const results = $("#results");
+    const stats = $("#stats");
+    const emptyState = $("#emptyState");
+    const searchInput = $("#searchInput");
+    const sortSelect = $("#sortSelect");
+    const statusSelect = $("#statusSelect");
+    const timelineSelect = $("#timelineSelect");
+    const themeToggle = $("#themeToggle");
+    const resetBtn = $("#resetBtn");
+    const quickFilters = document.querySelectorAll("#quickFilters .chip");
+
+    function startOfDay(dateLike){
+      const d = new Date(dateLike);
+      d.setHours(0,0,0,0);
+      return d;
+    }
+
+    function diffDays(a,b){
+      return Math.floor((b - a) / 86400000);
+    }
+
+    function addDays(dateLike, days){
+      const d = new Date(dateLike);
+      d.setDate(d.getDate() + days);
+      return d;
+    }
+
+    function formatDate(dateLike){
+      const d = new Date(dateLike);
+      return d.toLocaleDateString("es-ES", { day:"2-digit", month:"2-digit", year:"numeric" });
+    }
+
+    function clamp(n,min,max){
+      return Math.max(min,Math.min(max,n));
+    }
+
+    function getStage(daysPassed){
+      if (daysPassed >= EMBARAZO_DIAS) return { key:"late", label:"👶 Ya habría nacido", tone:"late" };
+      if (daysPassed >= 190) return { key:"advanced", label:"🟠 Etapa avanzada", tone:"warn" };
+      return { key:"progress", label:"🟣 En curso", tone:"ok" };
+    }
+
+    function getTimeline(daysPassed){
+      if (daysPassed < 93) return "first";
+      if (daysPassed < 187) return "second";
+      return "third";
+    }
+
+    function normalize(item){
+      const today = startOfDay(new Date());
+      const start = startOfDay(item.anuncio);
+      const daysPassed = Math.max(diffDays(start,today),0);
+      const daysRemaining = Math.max(EMBARAZO_DIAS - daysPassed,0);
+      const dueDate = addDays(start,EMBARAZO_DIAS);
+      const progress = clamp((daysPassed / EMBARAZO_DIAS) * 100, 0, 100);
+      const weeksPassed = Math.floor(daysPassed / 7);
+      const weeksRemaining = Math.max(40 - weeksPassed,0);
+      const status = getStage(daysPassed);
+      return {
+        ...item,
+        start,
+        dueDate,
+        daysPassed,
+        daysRemaining,
+        progress,
+        weeksPassed,
+        weeksRemaining,
+        status,
+        timeline: getTimeline(daysPassed)
+      };
+    }
+
+    function renderQuote(){
+      const q = quotes[Math.floor(Math.random() * quotes.length)];
+      $("#quoteText").textContent = `“${q.text}”`;
+      $("#quoteAuthor").textContent = `— ${q.author}`;
+    }
+
+    function setTheme(mode){
+      document.body.classList.toggle("light", mode === "light");
+      localStorage.setItem("embarazos_theme", mode);
+      themeToggle.textContent = mode === "light" ? "☀️ Tema" : "🌙 Tema";
+    }
+
+    function applyFilters(){
+      const q = (searchInput.value || "").trim().toLowerCase();
+      const status = statusSelect.value;
+      const timeline = timelineSelect.value;
+      const sort = sortSelect.value;
+
+      let data = embarazos.map(normalize).filter(item => {
+        const hit = !q || item.pareja.toLowerCase().includes(q);
+        const statusOk = status === "all" || item.status.key === status || (status === "progress" && item.status.key === "advanced");
+        const timelineOk = timeline === "all" || item.timeline === timeline;
+        return hit && statusOk && timelineOk;
+      });
+
+      data.sort((a,b) => {
+        if (sort === "recent") return b.start - a.start;
+        if (sort === "oldest") return a.start - b.start;
+        if (sort === "nameAZ") return a.pareja.localeCompare(b.pareja, "es");
+        return a.dueDate - b.dueDate;
+      });
+
+      renderStats(data);
+      renderCards(data);
+      syncChips();
+    }
+
+    function renderStats(data){
+      const total = data.length;
+      const inCourse = data.filter(x => x.status.key !== "late").length;
+      const advanced = data.filter(x => x.status.key === "advanced").length;
+      const born = data.filter(x => x.status.key === "late").length;
+
+      stats.innerHTML = `
+        <div class="stat"><span class="k">Resultados visibles</span><span class="v">${total}</span></div>
+        <div class="stat"><span class="k">En curso</span><span class="v">${inCourse}</span></div>
+        <div class="stat"><span class="k">Etapa avanzada</span><span class="v">${advanced}</span></div>
+        <div class="stat"><span class="k">Ya nacidos</span><span class="v">${born}</span></div>
+      `;
+    }
+
+    function renderCards(data){
+      results.innerHTML = "";
+      emptyState.style.display = data.length ? "none" : "block";
+
+      data.forEach(item => {
+        const card = document.createElement("article");
+        card.className = "card";
+
+        const partoText = item.status.key === "late"
+          ? "✨ Esta historia ya habría llegado al nacimiento"
+          : `🍼 Fecha estimada de parto: <b>${formatDate(item.dueDate)}</b>`;
+
+        card.innerHTML = `
+          <div class="card-top">
+            <div>
+              <h2>${item.pareja}</h2>
+              <div class="meta">Anunciado el ${formatDate(item.start)}</div>
+            </div>
+            <div class="status ${item.status.tone}">${item.status.label}</div>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-head">
+              <span>Progreso narrativo</span>
+              <strong>${item.progress.toFixed(1)}%</strong>
+            </div>
+            <div class="progress-bar">
+              <div class="progress ${item.status.tone}" style="width:${item.progress}%"></div>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="mini"><span class="label">Días transcurridos</span><span class="value">${item.daysPassed}</span></div>
+            <div class="mini"><span class="label">Días restantes</span><span class="value">${item.daysRemaining}</span></div>
+            <div class="mini"><span class="label">Semanas transcurridas</span><span class="value">${item.weeksPassed} / 40</span></div>
+            <div class="mini"><span class="label">Fase</span><span class="value">${item.timeline === "first" ? "Primer trimestre" : item.timeline === "second" ? "Segundo trimestre" : "Tercer trimestre"}</span></div>
+          </div>
+
+          <div class="meta" style="margin-top:14px">${partoText}</div>
+        `;
+
+        results.appendChild(card);
+      });
+    }
+
+    function syncChips(){
+      const current = statusSelect.value;
+      quickFilters.forEach(chip => {
+        chip.classList.toggle("active", chip.dataset.status === current || (current === "all" && chip.dataset.status === "all"));
+      });
+    }
+
+    quickFilters.forEach(chip => {
+      chip.addEventListener("click", () => {
+        statusSelect.value = chip.dataset.status;
+        applyFilters();
+      });
+    });
+
+    [searchInput, sortSelect, statusSelect, timelineSelect].forEach(el => {
+      el.addEventListener("input", applyFilters);
+      el.addEventListener("change", applyFilters);
+    });
+
+    resetBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      sortSelect.value = "dueSoon";
+      statusSelect.value = "all";
+      timelineSelect.value = "all";
+      applyFilters();
+    });
+
+    themeToggle.addEventListener("click", () => {
+      setTheme(document.body.classList.contains("light") ? "dark" : "light");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      const tag = (e.target.tagName || "").toLowerCase();
+      if (e.key === "/" && !["input","textarea","select"].includes(tag)) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+
+    setTheme(localStorage.getItem("embarazos_theme") === "light" ? "light" : "dark");
+    renderQuote();
+    applyFilters();
+  </script>
+</body>
+</html>
