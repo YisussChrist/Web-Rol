@@ -1,83 +1,566 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RP Hub</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RP Hub</title>
 
-<style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#0b1020;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-}
+  <style>
+    :root{
+      --bg-1:#0b1020;
+      --bg-2:#121833;
+      --bg-3:#1a2245;
+      --card:#141a30cc;
+      --card-hover:#1b2342ee;
+      --text:#f5f7ff;
+      --muted:#b9c0dd;
+      --accent:#8ea2ff;
+      --accent-2:#ff8bd6;
+      --border:rgba(255,255,255,0.09);
+      --shadow:0 10px 35px rgba(0,0,0,0.35);
+    }
 
-.container{
-  text-align:center;
-}
+    body.light{
+      --bg-1:#eef3ff;
+      --bg-2:#dfe8ff;
+      --bg-3:#f8fbff;
+      --card:#ffffffd9;
+      --card-hover:#ffffff;
+      --text:#10162b;
+      --muted:#5f6888;
+      --accent:#4d6bff;
+      --accent-2:#d94cb0;
+      --border:rgba(16,22,43,0.08);
+      --shadow:0 10px 30px rgba(50,70,120,0.15);
+    }
 
-h1{
-  margin-bottom:40px;
-}
+    *{
+      box-sizing:border-box;
+    }
 
-.menu{
-  display:flex;
-  flex-direction:column;
-  gap:20px;
-}
+    html,body{
+      margin:0;
+      padding:0;
+      min-height:100%;
+    }
 
-a{
-  text-decoration:none;
-  padding:18px;
-  border-radius:14px;
-  background:#141a30;
-  color:white;
-  font-size:20px;
-  transition:0.2s;
-}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(142,162,255,0.14), transparent 30%),
+        radial-gradient(circle at top right, rgba(255,139,214,0.10), transparent 28%),
+        linear-gradient(270deg,var(--bg-1),var(--bg-2),var(--bg-3),var(--bg-1));
+      background-size:400% 400%;
+      animation:gradientShift 18s ease infinite;
+      overflow-x:hidden;
+    }
 
-a:hover{
-  background:#1f2750;
-  transform:translateY(-3px);
-}
+    @keyframes gradientShift{
+      0%{background-position:0% 50%;}
+      50%{background-position:100% 50%;}
+      100%{background-position:0% 50%;}
+    }
 
-  .footer{
-  text-align:center;
-  margin-top:40px;
-  padding:20px;
-  color:rgba(255,255,255,0.6);
-  font-size:14px;
-}
-</style>
+    .page{
+      width:min(1200px, calc(100% - 32px));
+      margin:0 auto;
+      padding:28px 0 40px;
+      animation:fadeUp .8s ease;
+    }
 
+    @keyframes fadeUp{
+      from{
+        opacity:0;
+        transform:translateY(18px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:20px;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:clamp(2rem, 4vw, 3rem);
+      line-height:1.05;
+      letter-spacing:.5px;
+      text-shadow:
+        0 0 10px rgba(142,162,255,.25),
+        0 0 20px rgba(255,139,214,.15);
+    }
+
+    .brand p{
+      margin:0;
+      color:var(--muted);
+      font-size:0.98rem;
+    }
+
+    .theme-toggle{
+      border:none;
+      border-radius:999px;
+      padding:12px 18px;
+      background:var(--card);
+      color:var(--text);
+      cursor:pointer;
+      font-size:0.95rem;
+      font-weight:700;
+      box-shadow:var(--shadow);
+      border:1px solid var(--border);
+      transition:.2s ease;
+      backdrop-filter:blur(12px);
+    }
+
+    .theme-toggle:hover{
+      transform:translateY(-2px);
+      background:var(--card-hover);
+    }
+
+    .hero{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+      margin-bottom:24px;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(120deg, rgba(142,162,255,0.08), transparent 40%, rgba(255,139,214,0.07));
+      pointer-events:none;
+    }
+
+    .hero-inner{
+      position:relative;
+      z-index:1;
+    }
+
+    .quote-label{
+      display:inline-block;
+      font-size:0.8rem;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--accent);
+      margin-bottom:12px;
+    }
+
+    .quote{
+      font-size:clamp(1.05rem, 2vw, 1.35rem);
+      line-height:1.6;
+      margin:0 0 8px;
+      font-weight:600;
+    }
+
+    .quote-author{
+      color:var(--muted);
+      margin:0;
+      font-size:0.95rem;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:16px;
+      margin:24px 0 28px;
+    }
+
+    .stat{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(12px);
+      text-align:center;
+    }
+
+    .stat .icon{
+      font-size:1.4rem;
+      display:block;
+      margin-bottom:8px;
+    }
+
+    .stat .num{
+      display:block;
+      font-size:1.6rem;
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    .stat .label{
+      color:var(--muted);
+      font-size:0.95rem;
+    }
+
+    .columns{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:20px;
+    }
+
+    .column{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:20px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(14px);
+      min-width:0;
+    }
+
+    .column-header{
+      margin-bottom:16px;
+      padding-bottom:14px;
+      border-bottom:1px solid var(--border);
+    }
+
+    .column-header h2{
+      margin:0 0 6px;
+      font-size:1.3rem;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .column-header p{
+      margin:0;
+      color:var(--muted);
+      font-size:0.95rem;
+      line-height:1.5;
+    }
+
+    .card-list{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .hub-card{
+      display:block;
+      text-decoration:none;
+      color:inherit;
+      background:rgba(255,255,255,0.03);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:16px;
+      transition:.22s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hub-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(135deg, rgba(142,162,255,.08), transparent 50%, rgba(255,139,214,.08));
+      opacity:0;
+      transition:.22s ease;
+      pointer-events:none;
+    }
+
+    .hub-card:hover{
+      transform:translateY(-4px);
+      background:var(--card-hover);
+      border-color:rgba(142,162,255,0.28);
+    }
+
+    .hub-card:hover::after{
+      opacity:1;
+    }
+
+    .hub-card-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+      position:relative;
+      z-index:1;
+    }
+
+    .hub-card-title{
+      font-size:1.05rem;
+      font-weight:800;
+      margin:0;
+    }
+
+    .hub-card-icon{
+      font-size:1.35rem;
+      flex-shrink:0;
+    }
+
+    .hub-card-desc{
+      margin:0;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:0.94rem;
+      position:relative;
+      z-index:1;
+    }
+
+    .hub-card-tag{
+      display:inline-block;
+      margin-top:12px;
+      font-size:0.78rem;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--accent);
+      position:relative;
+      z-index:1;
+    }
+
+    footer{
+      margin-top:28px;
+      text-align:center;
+      color:var(--muted);
+      font-size:0.92rem;
+      line-height:1.7;
+      padding:12px 8px 0;
+    }
+
+    footer strong{
+      color:var(--text);
+    }
+
+    @media (max-width: 980px){
+      .columns{
+        grid-template-columns:1fr;
+      }
+
+      .stats{
+        grid-template-columns:1fr;
+      }
+
+      .page{
+        width:min(100% - 20px, 1200px);
+        padding-top:20px;
+      }
+
+      .hero{
+        padding:20px;
+      }
+
+      .column{
+        padding:18px;
+      }
+    }
+
+    @media (max-width: 560px){
+      .topbar{
+        align-items:stretch;
+      }
+
+      .theme-toggle{
+        width:100%;
+      }
+
+      .brand h1{
+        font-size:2rem;
+      }
+
+      .quote{
+        font-size:1rem;
+      }
+
+      .hub-card{
+        padding:15px;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <main class="page">
+    <div class="topbar">
+      <div class="brand">
+        <h1>🌸 RP HUB</h1>
+        <p>Centro principal de navegación para tu universo de rol</p>
+      </div>
 
-<div class="container">
+      <button class="theme-toggle" id="themeToggle">🌙 Cambiar tema</button>
+    </div>
 
-<h1>🌸 RP HUB</h1>
+    <section class="hero">
+      <div class="hero-inner">
+        <span class="quote-label">Cita del día</span>
+        <p class="quote" id="quoteText">Cargando frase...</p>
+        <p class="quote-author" id="quoteAuthor"></p>
+      </div>
+    </section>
 
-<div class="menu">
+    <section class="stats">
+      <div class="stat">
+        <span class="icon">⚡</span>
+        <span class="num">2</span>
+        <span class="label">Secciones de Inazuma</span>
+      </div>
 
-<a href="arbol.html">🌳 Árbol Familiar</a>
+      <div class="stat">
+        <span class="icon">🐉</span>
+        <span class="num">2</span>
+        <span class="label">Secciones de Dragon Ball</span>
+      </div>
 
-<a href="personajes.html">👥 Personajes</a>
+      <div class="stat">
+        <span class="icon">📚</span>
+        <span class="num">1</span>
+        <span class="label">Sección General</span>
+      </div>
+    </section>
 
-<a href="posiciones.html">⚽ Posiciones</a>
+    <section class="columns">
+      <article class="column">
+        <div class="column-header">
+          <h2>⚽ RP Inazuma</h2>
+          <p>Todo lo relacionado con fútbol, equipos, linajes y posiciones dentro del universo Inazuma.</p>
+        </div>
 
-<a href="heroes.html">🦹 Héroes</a>
+        <div class="card-list">
+          <a class="hub-card" href="arbol.html">
+            <div class="hub-card-top">
+              <h3 class="hub-card-title">🌳 Árbol Familiar</h3>
+              <span class="hub-card-icon">🧬</span>
+            </div>
+            <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
+            <span class="hub-card-tag">RP Inazuma</span>
+          </a>
 
-</div>
+          <a class="hub-card" href="posiciones.html">
+            <div class="hub-card-top">
+              <h3 class="hub-card-title">⚽ Posiciones</h3>
+              <span class="hub-card-icon">📍</span>
+            </div>
+            <p class="hub-card-desc">Consulta los roles de cada personaje en el campo y su distribución táctica.</p>
+            <span class="hub-card-tag">RP Inazuma</span>
+          </a>
+        </div>
+      </article>
 
-<footer><p>© 2026 Eternal Corp. Todos los derechos reservados.</p><br><p>Sans putero</p></footer>
-  
-</div>
+      <article class="column">
+        <div class="column-header">
+          <h2>🐉 RP DB</h2>
+          <p>La parte más bestia del hub: combatientes, escalas, transformaciones y todo el power system.</p>
+        </div>
 
+        <div class="card-list">
+          <a class="hub-card" href="heroes.html">
+            <div class="hub-card-top">
+              <h3 class="hub-card-title">🦸 Héroes</h3>
+              <span class="hub-card-icon">🔥</span>
+            </div>
+            <p class="hub-card-desc">Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP.</p>
+            <span class="hub-card-tag">RP DB</span>
+          </a>
+
+          <a class="hub-card" href="poder.html">
+            <div class="hub-card-top">
+              <h3 class="hub-card-title">💥 Poder</h3>
+              <span class="hub-card-icon">⚔️</span>
+            </div>
+            <p class="hub-card-desc">Consulta escalas, niveles, formas, estados y evolución de poder de los personajes.</p>
+            <span class="hub-card-tag">RP DB</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="column">
+        <div class="column-header">
+          <h2>📖 General</h2>
+          <p>La base central del proyecto: personajes, referencias y acceso transversal al resto del universo.</p>
+        </div>
+
+        <div class="card-list">
+          <a class="hub-card" href="personajes.html">
+            <div class="hub-card-top">
+              <h3 class="hub-card-title">👥 Personajes</h3>
+              <span class="hub-card-icon">🗂️</span>
+            </div>
+            <p class="hub-card-desc">Índice general de personajes del RP, útil como puerta de entrada a toda la wiki.</p>
+            <span class="hub-card-tag">General</span>
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      <p><strong>© 2026 Eternal Corp.</strong> Todos los derechos reservados.</p>
+      <p>Hecho para GitHub Pages, sin imágenes y sin dramas raros de rutas rotas.</p>
+    </footer>
+  </main>
+
+  <script>
+    const quotes = [
+      {
+        text: "El fútbol no se juega solo con los pies. También se juega con lo que eres.",
+        author: "RP Inazuma"
+      },
+      {
+        text: "La fuerza sin propósito solo hace ruido. La fuerza con voluntad cambia mundos.",
+        author: "RP DB"
+      },
+      {
+        text: "Cada personaje carga una historia; lo interesante empieza cuando decide no huir de ella.",
+        author: "General"
+      },
+      {
+        text: "No todos los linajes se heredan con sangre. Algunos se heredan con cicatrices.",
+        author: "Árbol Familiar"
+      },
+      {
+        text: "Hay personajes que entran en escena. Y otros que parten la escena por la mitad.",
+        author: "Hub"
+      }
+    ];
+
+    const quoteText = document.getElementById("quoteText");
+    const quoteAuthor = document.getElementById("quoteAuthor");
+
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    quoteText.textContent = `“${randomQuote.text}”`;
+    quoteAuthor.textContent = `— ${randomQuote.author}`;
+
+    const toggleButton = document.getElementById("themeToggle");
+    const savedTheme = localStorage.getItem("rpHubTheme");
+
+    if(savedTheme === "light"){
+      document.body.classList.add("light");
+      toggleButton.textContent = "☀️ Cambiar tema";
+    }
+
+    toggleButton.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+
+      if(document.body.classList.contains("light")){
+        localStorage.setItem("rpHubTheme", "light");
+        toggleButton.textContent = "☀️ Cambiar tema";
+      } else {
+        localStorage.setItem("rpHubTheme", "dark");
+        toggleButton.textContent = "🌙 Cambiar tema";
+      }
+    });
+  </script>
 </body>
 </html>
