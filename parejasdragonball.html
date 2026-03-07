@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Árbol Familiar — Lista Oscura</title>
+
+  <style>
+    :root{
+      --bg:#070b12;
+      --bg-2:#0d1320;
+      --panel:#111827;
+      --panel-2:#172033;
+      --panel-3:#1c2840;
+      --border:rgba(255,255,255,.08);
+      --border-strong:rgba(255,255,255,.14);
+      --text:#ecf3ff;
+      --muted:#9fb0c9;
+      --accent:#60a5fa;
+      --accent2:#a78bfa;
+      --shadow:0 18px 50px rgba(0,0,0,.38);
+      --radius:20px;
+      --chipS:#34d399;
+      --chipL:#60a5fa;
+      --chipY:#fb923c;
+      --chipQ:#94a3b8;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .light{
+      --bg:#f3f6fb;
+      --bg-2:#e9eef8;
+      --panel:#ffffff;
+      --panel-2:#f7f9fd;
+      --panel-3:#eef3fb;
+      --border:rgba(15,23,42,.08);
+      --border-strong:rgba(15,23,42,.14);
+      --text:#0f172a;
+      --muted:#5b6b84;
+      --shadow:0 16px 40px rgba(15,23,42,.08);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(900px 400px at -10% -10%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 55%),
+        radial-gradient(900px 460px at 110% 0%, color-mix(in srgb, var(--accent2) 12%, transparent), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg-2) 55%, var(--bg));
+    }
+
+    a{color:inherit}
+    .container{max-width:1320px; margin:0 auto; padding:18px 16px 80px}
+
+    header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter:blur(14px);
+      background:color-mix(in srgb, var(--bg) 84%, transparent);
+      border-bottom:1px solid var(--border);
+    }
+    .header-inner{
+      max-width:1320px; margin:0 auto; padding:14px 16px;
+      display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    }
+    .brand{display:flex; flex-direction:column; gap:4px}
+    .brand h1{margin:0; font-size:1.15rem; letter-spacing:.2px}
+    .brand .sub{margin:0; color:var(--muted); font-size:.92rem}
+    .brand .tagline{
+      display:inline-flex; align-items:center; gap:10px;
+      font:700 .78rem var(--mono);
+      letter-spacing:.7px; color:var(--muted);
+    }
+    .dot{
+      width:9px; height:9px; border-radius:999px;
+      background:linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow:0 0 16px color-mix(in srgb, var(--accent) 50%, transparent);
+    }
+
+    .controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .search{position:relative; min-width:260px; flex:1 1 340px}
+    .search input{
+      width:100%; padding:12px 42px 12px 40px; border-radius:14px; outline:none;
+      border:1px solid var(--border); background:var(--panel); color:var(--text);
+    }
+    .search input::placeholder{color:var(--muted)}
+    .search input:focus{
+      border-color:color-mix(in srgb, var(--accent) 55%, var(--border));
+      box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
+    }
+    .search .icon{position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.8}
+    .search .clear{
+      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      border:0; background:transparent; color:var(--muted); cursor:pointer;
+      font-size:18px; padding:4px; line-height:1; visibility:hidden;
+    }
+
+    .group{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+      padding:6px; border:1px solid var(--border); background:var(--panel);
+      border-radius:14px;
+    }
+    .group .label{
+      font:800 .72rem var(--mono); letter-spacing:.7px; color:var(--muted); padding:0 6px;
+    }
+
+    .btn{
+      border:1px solid var(--border); background:var(--panel-2); color:var(--text);
+      padding:9px 12px; border-radius:12px; cursor:pointer; user-select:none;
+      transition:transform .06s ease, border-color .2s, box-shadow .2s, background .2s;
+    }
+    .btn:hover{border-color:color-mix(in srgb, var(--accent2) 40%, var(--border)); background:var(--panel-3)}
+    .btn:active{transform:translateY(1px)}
+    .btn[aria-pressed="true"]{
+      border-color:color-mix(in srgb, var(--accent) 55%, var(--border));
+      background:color-mix(in srgb, var(--accent) 14%, var(--panel-2));
+      box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:1fr 300px;
+      gap:20px;
+      align-items:start;
+    }
+    @media(min-width:1080px){ .layout{grid-template-columns:minmax(0,1fr) 320px} }
+
+    .panel{
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, color-mix(in srgb, var(--panel) 94%, transparent), color-mix(in srgb, var(--panel-2) 92%, transparent));
+      border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
+    }
+
+    .sidebar{
+      position:sticky;
+      top:0;
+      align-self:start;
+      height:fit-content;
+      padding:16px;
+    } 
+
+    .sidebar h2{margin:0 0 10px; font-size:1.03rem}
+    .legend{display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 14px}
+    .chip{
+      display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px;
+      border:1px solid var(--border); background:var(--panel-2); font-size:.86rem;
+    }
+    .c-dot{width:10px; height:10px; border-radius:999px}
+    .c-dot.S{background:var(--chipS)} .c-dot.L{background:var(--chipL)} .c-dot.Y{background:var(--chipY)} .c-dot.Q{background:var(--chipQ)}
+
+    .index{margin:0; padding:0; list-style:none; display:grid; gap:8px}
+    .index a{
+      display:block; text-decoration:none; padding:10px 12px; border-radius:12px;
+      border:1px solid var(--border); background:var(--panel-2); color:var(--text);
+      transition:border-color .2s, transform .06s ease, background .2s;
+    }
+    .index a:hover{border-color:color-mix(in srgb, var(--accent2) 45%, var(--border)); background:var(--panel-3); transform:translateY(-1px)}
+    .emptyNote{color:var(--muted); font-style:italic; margin:8px 0 0}
+
+    .results{padding:14px; margin-bottom:16px}
+    .results.hidden{display:none}
+    .results .title{color:var(--muted); font-size:.92rem; margin-bottom:10px}
+    .strip{display:grid; grid-template-columns:1fr; gap:10px}
+
+    .families{display:flex; flex-direction:column; gap:16px}
+    .family{padding:16px}
+    .family.hidden{display:none !important}
+    .family-header{
+      display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+      padding-bottom:14px; border-bottom:1px solid var(--border); margin-bottom:14px;
+    }
+    .parents{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+
+    .avatar, .card-media, .m-media-box{
+      display:grid; place-items:center; text-align:center; border:1px solid var(--border-strong);
+      background:linear-gradient(135deg, color-mix(in srgb, var(--accent) 15%, transparent), color-mix(in srgb, var(--accent2) 14%, transparent)), var(--panel-3);
+      color:var(--text); font-weight:800; letter-spacing:.03em;
+    }
+    .avatar{width:46px; height:46px; border-radius:14px; font-size:.72rem; padding:4px}
+    .family-title{margin:0; font-size:1.08rem}
+
+    .children{display:grid; grid-template-columns:1fr; gap:10px}
+    .card{
+      border:1px solid var(--border); background:var(--panel-2); border-radius:16px; padding:12px 14px;
+      display:grid; grid-template-columns:92px minmax(0,1fr) auto; gap:14px; align-items:center;
+      cursor:pointer; transition:transform .06s ease, border-color .2s, box-shadow .2s, background .2s;
+      outline:none; position:relative;
+    }
+    .card:hover{
+      transform:translateY(-1px); background:var(--panel-3);
+      border-color:color-mix(in srgb, var(--accent) 45%, var(--border));
+      box-shadow:0 14px 34px rgba(0,0,0,.22);
+    }
+    .card.hidden{display:none !important}
+    .card-media{
+      width:92px; min-height:74px; border-radius:14px; padding:10px; font-size:.95rem; line-height:1.15;
+    }
+    .card-main{min-width:0; display:flex; flex-direction:column; gap:6px}
+    .card h3{margin:0; font-size:1rem; line-height:1.2}
+    .card p{margin:0; color:var(--muted); font-size:.92rem}
+    .card-side{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+
+    .kid-num{
+      display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:30px;
+      padding:0 8px; border-radius:999px; border:1px solid var(--border);
+      background:color-mix(in srgb, var(--bg) 40%, transparent); font:800 .75rem var(--mono);
+    }
+    .badge{
+      display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:34px; padding:0 10px;
+      border-radius:999px; font:900 .76rem var(--mono); color:#08111f;
+    }
+    .badge.S{background:var(--chipS)} .badge.L{background:var(--chipL)} .badge.Y{background:var(--chipY)} .badge.Q{background:var(--chipQ)}
+
+    footer{max-width:1320px; margin:0 auto; padding:18px 16px 40px; color:var(--muted); font-size:.92rem}
+
+    dialog{
+      width:min(760px, 92vw); border:1px solid var(--border); border-radius:18px;
+      background:color-mix(in srgb, var(--panel) 96%, var(--bg)); color:var(--text); padding:0; box-shadow:var(--shadow);
+    }
+    dialog::backdrop{background:rgba(0,0,0,.62)}
+    .modal-wrap{display:grid; grid-template-columns:220px 1fr; gap:14px; padding:14px}
+    @media(max-width:720px){ .modal-wrap{grid-template-columns:1fr} }
+    .m-media-box{width:100%; min-height:220px; border-radius:14px; padding:18px; font-size:1.1rem; line-height:1.25}
+    .m-body{display:flex; flex-direction:column; gap:8px}
+    .m-title{margin:0}
+    .m-meta{margin:0; color:var(--muted)}
+    .m-actions{display:flex; justify-content:flex-end; gap:10px; padding:0 14px 14px}
+    .link{
+      text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+      padding:10px 14px; border-radius:12px; border:1px solid var(--border); background:var(--panel-2); color:var(--text); cursor:pointer;
+    }
+    .link.primary{
+      border-color:color-mix(in srgb, var(--accent) 50%, var(--border));
+      background:color-mix(in srgb, var(--accent) 14%, var(--panel-2));
+    }
+
+    @media (max-width:780px){
+      .controls{width:100%}
+      .search{min-width:100%}
+      .group{width:100%; justify-content:flex-start}
+      .card{grid-template-columns:72px minmax(0,1fr); align-items:start}
+      .card-media{width:72px; min-height:72px; font-size:.85rem}
+      .card-side{grid-column:1 / -1; justify-content:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="tagline"><span class="dot"></span> FAMILIAS / DB-MINIMAL</div>
+        <h1>Árbol Familiar</h1>
+        <p class="sub">Versión en modo oscuro y vista de lista, lista para GitHub Pages.</p>
+      </div>
+
+      <div class="controls">
+        <div class="search" role="search">
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input id="q" type="search" placeholder="Buscar por nombre o serie…" aria-label="Buscar" autocomplete="off" />
+          <button class="clear" id="clear" aria-label="Limpiar búsqueda">✕</button>
+        </div>
+
+        <div class="group" role="group" aria-label="Filtrar por etiqueta">
+          <span class="label">TAG</span>
+          <button class="btn" data-filter-tag="S" aria-pressed="false">S</button>
+          <button class="btn" data-filter-tag="L" aria-pressed="false">L</button>
+          <button class="btn" data-filter-tag="Y" aria-pressed="false">Y</button>
+          <button class="btn" data-filter-tag="?" aria-pressed="false">?</button>
+        </div>
+
+        <div class="group" role="group" aria-label="Filtrar por género">
+          <span class="label">GEN</span>
+          <button class="btn" data-filter-gender="F" aria-pressed="false">♀︎</button>
+          <button class="btn" data-filter-gender="M" aria-pressed="false">♂︎</button>
+          <button class="btn" data-filter-gender="?" aria-pressed="false">？</button>
+        </div>
+
+        <button id="theme" class="btn" aria-pressed="false" aria-label="Cambiar tema">🌙 Tema</button>
+        <button id="reset" class="btn" aria-label="Restablecer filtros">↺ Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="layout">
+      <main>
+        <section class="panel results hidden" id="results">
+          <div class="title">Coincidencias</div>
+          <div class="strip" id="resultsStrip"></div>
+        </section>
+
+        <div class="families" id="families"></div>
+      </main>
+
+      <aside class="panel sidebar">
+        <h2>Índice de Familias</h2>
+
+        <div class="legend" aria-label="Leyenda de etiquetas">
+          <span class="chip"><span class="c-dot S"></span><b>S</b>&nbsp;Etiqueta S</span>
+          <span class="chip"><span class="c-dot L"></span><b>L</b>&nbsp;Etiqueta L</span>
+          <span class="chip"><span class="c-dot Y"></span><b>Y</b>&nbsp;Etiqueta Y</span>
+          <span class="chip"><span class="c-dot Q"></span><b>?</b>&nbsp;Desconocido</span>
+        </div>
+
+        <ul class="index" id="indexList"></ul>
+        <div class="emptyNote" id="noFamiliesMsg" style="display:none;">No hay familias para mostrar.</div>
+      </aside>
+    </div>
+  </div>
+
+  <footer>
+    Tip rápido: pulsa <b>/</b> para enfocar búsqueda · <b>Esc</b> cierra la ficha · Click en una card para abrir.
+  </footer>
+
+  <dialog id="modal" aria-labelledby="mTitle">
+    <div class="modal-wrap">
+      <div class="m-media">
+        <div id="mBox" class="m-media-box"></div>
+      </div>
+      <div class="m-body">
+        <h3 class="m-title" id="mTitle"></h3>
+        <p class="m-meta" id="mMeta"></p>
+      </div>
+    </div>
+    <div class="m-actions">
+      <a class="link" href="#" id="mClose">Cerrar</a>
+      <a class="link primary" href="#" target="_blank" rel="noopener" id="mLink">Más info</a>
+    </div>
+  </dialog>
+
+  <script>
+    const DATA = [
+      { family: 'Alma y Exusiai', parents: ['Alma Azkaban', 'Exusiai'], children: [
+        { name: 'Kiriya Azkaban', gender: 'F', tag: 'Y', series: "Goddess' Dorm", meta: "Kiriya Sensho — Dorm Mother of the Goddess' Dorm", link: '#' }
+      ]},
+      { family: 'Lancelot y Tokishikko', parents: ['Lancelot Tsukue', 'Tokishikko Dana'], children: [
+        { name: 'Kanabe Tsukue', gender: 'M', tag: 'S', series: 'Kemono Jihen', meta: 'Kanabe Kusaka — Kemono Jihen', link: '#' }
+      ]},
+      { family: 'Law y Gogo', parents: ['Law Vireon', 'Gogo Karashina'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Skadi y Beelzebub', parents: ['Skadi Dragenfelt', 'Beelzebub'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Ares y Tao', parents: ['Ares Kane', 'Tao Saotome'], children: [
+        { name: 'Hermes Kane', gender: 'M', tag: 'S', series: 'The Yozakura Family', meta: 'Sui Aoi — The Yozakura Family', link: '#' }
+      ]},
+      { family: 'David y Kurumi', parents: ['David Martinez', 'Kurumi Tokisaki'], children: [
+        { name: 'Kiawa Martínez', gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Sparkle — Honkai Star Rail', link: '#' }
+      ]},
+      { family: 'Zelda y Waru', parents: ['Waru Shintarou', 'Zelda Hellsdothir'], children: [
+        { name: 'Galbrena Shintarou', gender: 'F', tag: 'L', series: 'Wuthering Waves', meta: 'Galbrena — Wuthering Waves', link: '#' },
+        { name: 'Setsuna Shintarou', gender: 'F', tag: 'L', series: 'Redo of Healer', meta: 'Setsuna — Redo of Healer', link: '#' },
+        { name: 'Kawaki Shintarou', gender: 'M', tag: 'L', series: 'Naruto', meta: 'Kawaki — Naruto', link: '#' },
+        { name: 'Ciel Shintarou', gender: 'M', tag: 'Y', series: 'Elsword', meta: 'Ciel — Elsword', link: '#' }
+      ]},
+      { family: 'Hak y Yoruichi', parents: ['Hak', 'Yoruichi Shihōin'], children: [
+        { name: 'Dax Aethereon', gender: 'M', tag: 'L', series: 'Juusen Battle Monsuno', meta: 'Dax — Juusen Battle Monsuno', link: '#' },
+        { name: 'Chun Aethereon', gender: 'F', tag: 'L', series: 'Record of Ragnarok', meta: 'Chun Yun — Record of Ragnarok', link: '#' }
+      ]},
+      { family: 'Add y Albedo', parents: ['Add', 'Albedo'], children: [
+        { name: 'Utena Vileborne', gender: 'F', tag: 'S', series: 'Mahou Shoujo ni Akogarete', meta: 'Utena Hiiragi — Mahou Shoujo ni Akogarete', link: '#' }
+      ]},
+      { family: 'Nara y Khrome', parents: ['Nara Midori', 'Khrome'], children: [
+        { name: 'Ibuki Ryugu', gender: 'F', tag: 'L', series: 'Fate', meta: 'Ibuki-douji — Fate', link: '#' }
+      ]},
+      { family: 'Plasma y Magilou', parents: ['Plasma', 'Magilou Mayvin'], children: [
+        { name: 'Luna Zaoldyeck', gender: 'F', tag: 'L', series: "Li'l Miss Vampire Can't Suck Right", meta: "Luna Ishikawa — Li'l Miss Vampire Can't Suck Right", link: '#' }
+      ]},
+      { family: 'Scar y Wis\'Adel', parents: ['Scar', "Wis'Adel"], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Simon y Ryuko', parents: ['Simon Drayton', 'Ryuko Matoi'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Kael y Jibril', parents: ['Kael', 'Jibril'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Shionne y Goliat', parents: ['Shionne Imeris', 'Goliat'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Gilthunder y Undyne', parents: ['Gilthunder Rainford', 'Undyne'], children: [
+        { name: 'Sirius Rainford', gender: 'F', tag: 'Y', series: 'Boku no Hero', meta: 'Sirius — Boku no Hero', link: '#' }
+      ]},
+      { family: 'Billy y Frostleaf', parents: ['Billy Kid', 'Frostleaf'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Artemisa y Zeo', parents: ['Artemisa Kane', 'Zeo Torzeus'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Venus y Jade', parents: ['Venus Shintarou', 'Jade Karashina'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Uzui y Feixiao', parents: ['Uzui Tengen', 'Feixiao'], children: [
+        { name: 'Fohl Tengen', gender: 'M', tag: 'L', series: 'The Rising of the Shield Hero', meta: 'Fohl Fayon — The Rising of the Shield Hero', link: '#' }
+      ]},
+      { family: 'Jin y Freyja', parents: ['Jin Mori', 'Freyja Kane'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Hakuryuu y Velvet', parents: ['Hakuryuu Ren', 'Velvet Crowe'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Sukuna y Sentencia', parents: ['Sukuna', 'Sentencia'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Grimmjow y Justicia', parents: ['Grimmjow', 'Justicia'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Juri y Vega', parents: ['Juri Han', 'Hugo Vega'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Tier y Rokurou', parents: ['Tier Harribel', 'Rokurou'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Medaka y Basara', parents: ['Kurokami Medaka', 'Basara'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Juno y Eula', parents: ['Eula Lawrence', 'Juno Grinberryal'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+      ]},
+      { family: 'Toga, Toru y Hitoshi', parents: ['Toru Hagakure', 'Hitoshi Shinso', 'Himiko Toga'], children: [
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ??? — [Madre]', link: '#' }
+      ]},
+      { family: 'Zenos y Rias', parents: ['Zenos', 'Rias Gremory'], children: [
+        { name: 'Millicas Shochiku', gender: 'M', tag: 'S', series: 'Highschool DxD', meta: 'Millicas Gremory — Highschool DxD — [Rias Gremory]', link: '#' }
+      ]},
+      { family: 'Shoto y Mina', parents: ['Shoto Todoroki', 'Mina Ashido'], children: [
+        { name: 'Tōshirō Todoroki', gender: 'M', tag: 'L', series: 'Bleach', meta: 'Tōshirō Hitsugaya — Bleach', link: '#' },
+        { name: 'Uta Todoroki', gender: 'F', tag: 'L', series: 'One Piece', meta: 'Uta — One Piece', link: '#' },
+        { name: 'Tao Todoroki', gender: 'F', tag: 'S', series: 'Jigokuraku', meta: 'Tao — Jigokuraku', link: '#' }
+      ]}
+    ];
+
+    const familiesEl = document.getElementById('families');
+    const indexList = document.getElementById('indexList');
+    const noFamiliesMsg = document.getElementById('noFamiliesMsg');
+
+    function normalize(s){ return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
+    function slugify(title){ return normalize(title).replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+    function initials(name){
+      const clean = (name || '??').replace(/[^\p{L}\p{N}\s?]/gu,' ').trim();
+      if(clean === '???') return '???';
+      const parts = clean.split(/\s+/).filter(Boolean);
+      return parts.slice(0,2).map(p => p[0]?.toUpperCase() || '').join('') || '??';
+    }
+    function genderMark(g){ return g === 'F' ? '♀️' : g === 'M' ? '♂️' : '❔'; }
+    function tagClass(t){ return t === 'S' ? 'S' : t === 'L' ? 'L' : t === 'Y' ? 'Y' : 'Q'; }
+
+    function renderFamilies(){
+      familiesEl.innerHTML = '';
+      DATA.forEach((fam, i) => {
+        const section = document.createElement('section');
+        section.className = 'panel family';
+        section.dataset.title = fam.family;
+        section.id = slugify(fam.family) || `familia-${i+1}`;
+
+        section.innerHTML = `
+          <div class="family-header">
+            <div class="parents">
+              ${fam.parents.map(name => `<div class="avatar" title="${name}">${initials(name)}</div>`).join('')}
+            </div>
+            <h2 class="family-title">${fam.family}</h2>
+          </div>
+          <div class="children">
+            ${fam.children.map((kid, idx) => `
+              <article class="card" tabindex="0" data-name="${kid.name}" data-series="${kid.series}" data-gender="${kid.gender}" data-tag="${kid.tag}" data-link="${kid.link}">
+                <div class="card-media">${initials(kid.name)}<br><small>${kid.series || 'Sin serie'}</small></div>
+                <div class="card-main">
+                  <h3>${genderMark(kid.gender)} ${kid.name}</h3>
+                  <p>${kid.meta}</p>
+                </div>
+                <div class="card-side">
+                  <span class="kid-num">${idx + 1}</span>
+                  <span class="badge ${tagClass(kid.tag)}" title="Etiqueta: ${kid.tag}">${kid.tag}</span>
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        `;
+        familiesEl.appendChild(section);
+      });
+      rebuildIndex();
+      apply();
+    }
+
+    function rebuildIndex(){
+      const familySections = [...document.querySelectorAll('section.family')];
+      indexList.innerHTML = '';
+      familySections.forEach((sec, i) => {
+        const title = sec.dataset.title || `Familia ${i+1}`;
+        if(!sec.id) sec.id = slugify(title) || `familia-${i+1}`;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `#${sec.id}`;
+        a.textContent = title;
+        li.appendChild(a);
+        indexList.appendChild(li);
+      });
+      noFamiliesMsg.style.display = familySections.length ? 'none' : '';
+    }
+
+    const themeBtn = document.getElementById('theme');
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    const storedTheme = localStorage.getItem('dbmin-theme');
+    if(storedTheme === 'light') document.documentElement.classList.add('light');
+    updateThemeButton();
+    themeBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('light');
+      localStorage.setItem('dbmin-theme', document.documentElement.classList.contains('light') ? 'light' : 'dark');
+      updateThemeButton();
+    });
+    function updateThemeButton(){
+      const isLight = document.documentElement.classList.contains('light');
+      themeBtn.setAttribute('aria-pressed', String(isLight));
+      themeBtn.textContent = isLight ? '🌙 Claro' : '☀️ Oscuro';
+    }
+
+    const q = document.getElementById('q');
+    const clear = document.getElementById('clear');
+    const results = document.getElementById('results');
+    const resultsStrip = document.getElementById('resultsStrip');
+    const tagBtns = [...document.querySelectorAll('[data-filter-tag]')];
+    const genderBtns = [...document.querySelectorAll('[data-filter-gender]')];
+    const state = { term: '', tags: new Set(), genders: new Set() };
+
+    function toggleBtn(btn){
+      const pressed = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', String(!pressed));
+    }
+
+    function apply(){
+      const nterm = normalize(state.term);
+      const familySections = [...document.querySelectorAll('section.family')];
+      const cards = [...document.querySelectorAll('.card')];
+      const hits = [];
+
+      cards.forEach(card => {
+        const name = normalize(card.dataset.name);
+        const series = normalize(card.dataset.series);
+        const meta = normalize(card.querySelector('p')?.textContent);
+        const tag = card.dataset.tag || '?';
+        const gender = card.dataset.gender || '?';
+
+        const termOk = !nterm || name.includes(nterm) || series.includes(nterm) || meta.includes(nterm);
+        const tagOk = state.tags.size === 0 || state.tags.has(tag);
+        const genOk = state.genders.size === 0 || state.genders.has(gender);
+        const visible = termOk && tagOk && genOk;
+
+        card.classList.toggle('hidden', !visible);
+        if(visible && nterm) hits.push(card);
+      });
+
+      familySections.forEach(sec => {
+        const anyVisible = [...sec.querySelectorAll('.card')].some(c => !c.classList.contains('hidden'));
+        sec.classList.toggle('hidden', !anyVisible);
+      });
+
+      resultsStrip.innerHTML = '';
+      if(nterm){
+        results.classList.remove('hidden');
+        hits.slice(0, 24).forEach(card => {
+          const clone = card.cloneNode(true);
+          clone.classList.remove('hidden');
+          resultsStrip.appendChild(clone);
+        });
+      } else {
+        results.classList.add('hidden');
+      }
+    }
+
+    let tId = null;
+    q.addEventListener('input', () => {
+      state.term = q.value;
+      clear.style.visibility = q.value ? 'visible' : 'hidden';
+      clearTimeout(tId);
+      tId = setTimeout(apply, 120);
+    });
+    clear.addEventListener('click', () => {
+      q.value=''; state.term=''; clear.style.visibility='hidden'; q.focus(); apply();
+    });
+    window.addEventListener('keydown', e => {
+      if(e.key === '/' && document.activeElement !== q){ e.preventDefault(); q.focus(); }
+    });
+
+    tagBtns.forEach(btn => btn.addEventListener('click', () => {
+      const tag = btn.dataset.filterTag;
+      toggleBtn(btn);
+      if(btn.getAttribute('aria-pressed') === 'true') state.tags.add(tag); else state.tags.delete(tag);
+      apply();
+    }));
+    genderBtns.forEach(btn => btn.addEventListener('click', () => {
+      const g = btn.dataset.filterGender;
+      toggleBtn(btn);
+      if(btn.getAttribute('aria-pressed') === 'true') state.genders.add(g); else state.genders.delete(g);
+      apply();
+    }));
+    document.getElementById('reset').addEventListener('click', () => {
+      state.term=''; q.value=''; clear.style.visibility='hidden'; state.tags.clear(); state.genders.clear();
+      [...tagBtns, ...genderBtns].forEach(b => b.setAttribute('aria-pressed','false'));
+      apply();
+    });
+
+    const modal = document.getElementById('modal');
+    const mBox = document.getElementById('mBox');
+    const mTitle = document.getElementById('mTitle');
+    const mMeta = document.getElementById('mMeta');
+    const mLink = document.getElementById('mLink');
+    const mClose = document.getElementById('mClose');
+
+    function openCard(card){
+      const title = card.querySelector('h3')?.textContent || '';
+      mBox.innerHTML = card.querySelector('.card-media')?.innerHTML || '';
+      mTitle.textContent = title;
+      mMeta.textContent = card.querySelector('p')?.textContent || '';
+      mLink.href = card.dataset.link || '#';
+      modal.showModal();
+    }
+    function closeModal(){ if(modal.open) modal.close(); }
+
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('.card');
+      if(!card) return;
+      openCard(card);
+    });
+    document.addEventListener('keydown', (e) => {
+      const card = document.activeElement?.closest?.('.card');
+      if(card && (e.key === 'Enter' || e.key === ' ')){
+        e.preventDefault(); openCard(card);
+      }
+      if(e.key === 'Escape') closeModal();
+    });
+    mClose.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
+
+    renderFamilies();
+  </script>
+</body>
+</html>
