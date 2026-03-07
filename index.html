@@ -18,6 +18,7 @@
       --accent-2:#ff8bd6;
       --border:rgba(255,255,255,0.09);
       --shadow:0 10px 35px rgba(0,0,0,0.35);
+      --gold:#ffd76a;
     }
 
     body.light{
@@ -32,6 +33,7 @@
       --accent-2:#d94cb0;
       --border:rgba(16,22,43,0.08);
       --shadow:0 10px 30px rgba(50,70,120,0.15);
+      --gold:#d99a00;
     }
 
     *{
@@ -131,7 +133,8 @@
       background:var(--card-hover);
     }
 
-    .hero{
+    .hero,
+    .favorites-panel{
       background:var(--card);
       border:1px solid var(--border);
       border-radius:24px;
@@ -143,7 +146,8 @@
       position:relative;
     }
 
-    .hero::before{
+    .hero::before,
+    .favorites-panel::before{
       content:"";
       position:absolute;
       inset:0;
@@ -152,12 +156,14 @@
       pointer-events:none;
     }
 
-    .hero-inner{
+    .hero-inner,
+    .favorites-inner{
       position:relative;
       z-index:1;
     }
 
-    .quote-label{
+    .quote-label,
+    .favorites-label{
       display:inline-block;
       font-size:0.8rem;
       font-weight:800;
@@ -178,6 +184,140 @@
       color:var(--muted);
       margin:0;
       font-size:0.95rem;
+    }
+
+    .favorites-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .favorites-title{
+      margin:0;
+      font-size:1.2rem;
+    }
+
+    .favorites-sub{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:0.95rem;
+    }
+
+    .favorites-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .favorites-btn{
+      border:none;
+      border-radius:999px;
+      padding:10px 14px;
+      background:rgba(255,255,255,0.05);
+      color:var(--text);
+      cursor:pointer;
+      font-size:0.9rem;
+      font-weight:700;
+      border:1px solid var(--border);
+      transition:.2s ease;
+    }
+
+    .favorites-btn:hover{
+      transform:translateY(-2px);
+      background:var(--card-hover);
+    }
+
+    .favorites-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:14px;
+    }
+
+    .favorite-card{
+      display:block;
+      text-decoration:none;
+      color:inherit;
+      background:rgba(255,255,255,0.03);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:16px;
+      transition:.22s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .favorite-card:hover{
+      transform:translateY(-4px);
+      background:var(--card-hover);
+      border-color:rgba(255,215,106,0.35);
+    }
+
+    .favorite-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(135deg, rgba(255,215,106,.08), transparent 50%, rgba(142,162,255,.08));
+      opacity:0;
+      transition:.22s ease;
+      pointer-events:none;
+    }
+
+    .favorite-card:hover::after{
+      opacity:1;
+    }
+
+    .favorite-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      margin-bottom:8px;
+      position:relative;
+      z-index:1;
+    }
+
+    .favorite-title{
+      margin:0;
+      font-size:1rem;
+      font-weight:800;
+    }
+
+    .favorite-icon{
+      font-size:1.2rem;
+      flex-shrink:0;
+    }
+
+    .favorite-desc{
+      margin:0;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:0.92rem;
+      position:relative;
+      z-index:1;
+    }
+
+    .favorite-tag{
+      display:inline-block;
+      margin-top:10px;
+      font-size:0.78rem;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--gold);
+      position:relative;
+      z-index:1;
+    }
+
+    .favorites-empty{
+      padding:18px;
+      border:1px dashed var(--border);
+      border-radius:18px;
+      color:var(--muted);
+      background:rgba(255,255,255,0.02);
+      line-height:1.6;
     }
 
     .stats{
@@ -305,11 +445,50 @@
       font-size:1.05rem;
       font-weight:800;
       margin:0;
+      padding-right:8px;
+    }
+
+    .hub-card-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-shrink:0;
+      position:relative;
+      z-index:3;
     }
 
     .hub-card-icon{
       font-size:1.35rem;
       flex-shrink:0;
+    }
+
+    .favorite-toggle{
+      width:36px;
+      height:36px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,0.04);
+      color:var(--muted);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:.2s ease;
+      font-size:1rem;
+    }
+
+    .favorite-toggle:hover{
+      transform:translateY(-2px) scale(1.03);
+      color:var(--gold);
+      border-color:rgba(255,215,106,0.35);
+      background:rgba(255,215,106,0.08);
+    }
+
+    .favorite-toggle.active{
+      color:var(--gold);
+      border-color:rgba(255,215,106,0.45);
+      background:rgba(255,215,106,0.12);
+      box-shadow:0 0 0 3px rgba(255,215,106,0.08);
     }
 
     .hub-card-desc{
@@ -355,12 +534,17 @@
         grid-template-columns:1fr;
       }
 
+      .favorites-grid{
+        grid-template-columns:1fr;
+      }
+
       .page{
         width:min(100% - 20px, 1200px);
         padding-top:20px;
       }
 
-      .hero{
+      .hero,
+      .favorites-panel{
         padding:20px;
       }
 
@@ -389,6 +573,15 @@
       .hub-card{
         padding:15px;
       }
+
+      .hub-card-top{
+        gap:10px;
+      }
+
+      .favorite-toggle{
+        width:34px;
+        height:34px;
+      }
     }
   </style>
 </head>
@@ -408,6 +601,25 @@
         <span class="quote-label">Cita del día</span>
         <p class="quote" id="quoteText">Cargando frase...</p>
         <p class="quote-author" id="quoteAuthor"></p>
+      </div>
+    </section>
+
+    <section class="favorites-panel">
+      <div class="favorites-inner">
+        <span class="favorites-label">Accesos rápidos</span>
+
+        <div class="favorites-header">
+          <div>
+            <h2 class="favorites-title">⭐ Tus favoritos</h2>
+            <p class="favorites-sub">Marca cualquier sección con la estrella para tenerla aquí arriba.</p>
+          </div>
+
+          <div class="favorites-actions">
+            <button class="favorites-btn" id="clearFavoritesBtn">Vaciar favoritos</button>
+          </div>
+        </div>
+
+        <div id="favoritesContainer"></div>
       </div>
     </section>
 
@@ -439,33 +651,41 @@
         </div>
 
         <div class="card-list">
-          <a class="hub-card" href="arbol.html">
+          <a class="hub-card" href="arbol.html" data-id="arbol-inazuma" data-title="🌳 Árbol Familiar" data-desc="Explora familias, descendencia, conexiones y relaciones entre personajes." data-tag="RP Inazuma" data-icon="🧬">
             <div class="hub-card-top">
               <h3 class="hub-card-title">🌳 Árbol Familiar</h3>
-              <span class="hub-card-icon">🧬</span>
+              <div class="hub-card-actions">
+                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                <span class="hub-card-icon">🧬</span>
+              </div>
             </div>
             <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
             <span class="hub-card-tag">RP Inazuma</span>
           </a>
 
-          <a class="hub-card" href="posiciones.html">
+          <a class="hub-card" href="posiciones.html" data-id="posiciones-inazuma" data-title="⚽ Posiciones" data-desc="Consulta los roles de cada personaje en el campo y su distribución táctica." data-tag="RP Inazuma" data-icon="📍">
             <div class="hub-card-top">
               <h3 class="hub-card-title">⚽ Posiciones</h3>
-              <span class="hub-card-icon">📍</span>
+              <div class="hub-card-actions">
+                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                <span class="hub-card-icon">📍</span>
+              </div>
             </div>
             <p class="hub-card-desc">Consulta los roles de cada personaje en el campo y su distribución táctica.</p>
             <span class="hub-card-tag">RP Inazuma</span>
           </a>
 
-          <a class="hub-card" href="embarazos.html">
+          <a class="hub-card" href="embarazos.html" data-id="embarazos-inazuma" data-title="🤰 Embarazos" data-desc="Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia." data-tag="RP Inazuma" data-icon="🍼">
             <div class="hub-card-top">
               <h3 class="hub-card-title">🤰 Embarazos</h3>
-              <span class="hub-card-icon">🍼</span>
+              <div class="hub-card-actions">
+                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                <span class="hub-card-icon">🍼</span>
+              </div>
             </div>
             <p class="hub-card-desc">Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia.</p>
             <span class="hub-card-tag">RP Inazuma</span>
           </a>
-          
         </div>
       </article>
 
@@ -476,33 +696,41 @@
         </div>
 
         <div class="card-list">
-          <a class="hub-card" href="heroes.html">
+          <a class="hub-card" href="heroes.html" data-id="heroes-db" data-title="🦸 Héroes" data-desc="Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP." data-tag="RP DB" data-icon="🔥">
             <div class="hub-card-top">
               <h3 class="hub-card-title">🦸 Héroes</h3>
-              <span class="hub-card-icon">🔥</span>
+              <div class="hub-card-actions">
+                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                <span class="hub-card-icon">🔥</span>
+              </div>
             </div>
             <p class="hub-card-desc">Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP.</p>
             <span class="hub-card-tag">RP DB</span>
           </a>
 
-          <a class="hub-card" href="poder.html">
+          <a class="hub-card" href="poder.html" data-id="poder-db" data-title="💥 Poder" data-desc="Consulta escalas, niveles, formas, estados y evolución de poder de los personajes." data-tag="RP DB" data-icon="⚔️">
             <div class="hub-card-top">
               <h3 class="hub-card-title">💥 Poder</h3>
-              <span class="hub-card-icon">⚔️</span>
+              <div class="hub-card-actions">
+                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                <span class="hub-card-icon">⚔️</span>
+              </div>
             </div>
             <p class="hub-card-desc">Consulta escalas, niveles, formas, estados y evolución de poder de los personajes.</p>
             <span class="hub-card-tag">RP DB</span>
           </a>
 
-          <a class="hub-card" href="parejasdragonball.html">
+          <a class="hub-card" href="parejasdragonball.html" data-id="arbol-db" data-title="🌳 Arbol Familiar" data-desc="Explora familias, descendencia, conexiones y relaciones entre personajes." data-tag="RP DB" data-icon="🧬">
             <div class="hub-card-top">
               <h3 class="hub-card-title">🌳 Arbol Familiar</h3>
-              <span class="hub-card-icon">🧬</span>
+              <div class="hub-card-actions">
+                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                <span class="hub-card-icon">🧬</span>
+              </div>
             </div>
             <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
             <span class="hub-card-tag">RP DB</span>
           </a>
-          
         </div>
       </article>
 
@@ -513,10 +741,13 @@
         </div>
 
         <div class="card-list">
-          <a class="hub-card" href="personajes.html">
+          <a class="hub-card" href="personajes.html" data-id="personajes-general" data-title="👥 Personajes" data-desc="Índice general de personajes del RP, útil como puerta de entrada a toda la wiki." data-tag="General" data-icon="🗂️">
             <div class="hub-card-top">
               <h3 class="hub-card-title">👥 Personajes</h3>
-              <span class="hub-card-icon">🗂️</span>
+              <div class="hub-card-actions">
+                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                <span class="hub-card-icon">🗂️</span>
+              </div>
             </div>
             <p class="hub-card-desc">Índice general de personajes del RP, útil como puerta de entrada a toda la wiki.</p>
             <span class="hub-card-tag">General</span>
@@ -581,6 +812,111 @@
         toggleButton.textContent = "🌙 Cambiar tema";
       }
     });
+
+    const FAVORITES_KEY = "rpHubFavorites";
+    const allCards = [...document.querySelectorAll(".hub-card")];
+    const favoritesContainer = document.getElementById("favoritesContainer");
+    const clearFavoritesBtn = document.getElementById("clearFavoritesBtn");
+
+    function getFavorites(){
+      try{
+        const saved = JSON.parse(localStorage.getItem(FAVORITES_KEY));
+        return Array.isArray(saved) ? saved : [];
+      }catch{
+        return [];
+      }
+    }
+
+    function saveFavorites(favorites){
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    }
+
+    function isFavorite(id){
+      return getFavorites().includes(id);
+    }
+
+    function toggleFavorite(id){
+      const favorites = getFavorites();
+
+      if(favorites.includes(id)){
+        saveFavorites(favorites.filter(fav => fav !== id));
+      }else{
+        saveFavorites([...favorites, id]);
+      }
+
+      syncFavoriteButtons();
+      renderFavorites();
+    }
+
+    function syncFavoriteButtons(){
+      allCards.forEach(card => {
+        const id = card.dataset.id;
+        const btn = card.querySelector(".favorite-toggle");
+        const active = isFavorite(id);
+
+        btn.classList.toggle("active", active);
+        btn.textContent = active ? "★" : "☆";
+        btn.setAttribute("aria-label", active ? "Quitar de favoritos" : "Añadir a favoritos");
+        btn.setAttribute("title", active ? "Quitar de favoritos" : "Añadir a favoritos");
+      });
+    }
+
+    function renderFavorites(){
+      const favorites = getFavorites();
+
+      if(!favorites.length){
+        favoritesContainer.innerHTML = `
+          <div class="favorites-empty">
+            No tienes favoritos todavía. Marca alguna tarjeta con la estrella y aparecerá aquí arriba, como si el hub por fin hubiese descubierto el concepto de comodidad.
+          </div>
+        `;
+        return;
+      }
+
+      const favoriteCards = favorites
+        .map(id => allCards.find(card => card.dataset.id === id))
+        .filter(Boolean)
+        .map(card => {
+          const href = card.getAttribute("href");
+          const title = card.dataset.title || "";
+          const desc = card.dataset.desc || "";
+          const tag = card.dataset.tag || "";
+          const icon = card.dataset.icon || "⭐";
+
+          return `
+            <a class="favorite-card" href="${href}">
+              <div class="favorite-top">
+                <h3 class="favorite-title">${title}</h3>
+                <span class="favorite-icon">${icon}</span>
+              </div>
+              <p class="favorite-desc">${desc}</p>
+              <span class="favorite-tag">${tag}</span>
+            </a>
+          `;
+        })
+        .join("");
+
+      favoritesContainer.innerHTML = `<div class="favorites-grid">${favoriteCards}</div>`;
+    }
+
+    allCards.forEach(card => {
+      const btn = card.querySelector(".favorite-toggle");
+
+      btn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleFavorite(card.dataset.id);
+      });
+    });
+
+    clearFavoritesBtn.addEventListener("click", () => {
+      localStorage.removeItem(FAVORITES_KEY);
+      syncFavoriteButtons();
+      renderFavorites();
+    });
+
+    syncFavoriteButtons();
+    renderFavorites();
   </script>
 </body>
 </html>
