@@ -186,6 +186,16 @@
       font-size:0.95rem;
     }
 
+    .quote-meaning{
+      color:var(--muted);
+      margin:12px 0 0;
+      font-size:0.93rem;
+      line-height:1.6;
+      opacity:0.95;
+      padding-top:10px;
+      border-top:1px solid var(--border);
+    }
+
     .favorites-header{
       display:flex;
       justify-content:space-between;
@@ -601,6 +611,7 @@
         <span class="quote-label">Cita del día</span>
         <p class="quote" id="quoteText">Cargando frase...</p>
         <p class="quote-author" id="quoteAuthor"></p>
+        <p class="quote-meaning" id="quoteMeaning"></p>
       </div>
     </section>
 
@@ -626,7 +637,7 @@
     <section class="stats">
       <div class="stat">
         <span class="icon">⚡</span>
-        <span class="num">3</span>
+        <span class="num">2</span>
         <span class="label">Secciones de Inazuma</span>
       </div>
 
@@ -638,7 +649,7 @@
 
       <div class="stat">
         <span class="icon">📚</span>
-        <span class="num">1</span>
+        <span class="num">2</span>
         <span class="label">Sección General</span>
       </div>
     </section>
@@ -749,7 +760,7 @@
               </div>
             </div>
             <p class="hub-card-desc">Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia.</p>
-            <span class="hub-card-tag">RP Inazuma</span>
+            <span class="hub-card-tag">General</span>
           </a>
         </div>
       </article>
@@ -768,29 +779,592 @@
         author: "RP Inazuma"
       },
       {
-        text: "La fuerza sin propósito solo hace ruido. La fuerza con voluntad cambia mundos.",
-        author: "RP DB"
+        text: "Solo sé que no sé nada.",
+        author: "Sócrates"
       },
       {
-        text: "Cada personaje carga una historia; lo interesante empieza cuando decide no huir de ella.",
+        text: "El hombre está condenado a ser libre.",
+        author: "Jean-Paul Satre"
+      },
+      {
+        text: "Lo que no me mata, me hace más fuerte.",
+        author: "Friedrich Nietzsche"
+      },
+      {
+        text: "Conócete a ti mismo.",
+        author: "Templo de Delfos"
+      },
+      {
+        text: "La vida es lo que pasa mientras estás ocupado haciendo otros planes.",
+        author: "John Lennon"
+      },
+      {
+        text: "El destino mezcla las cartas, pero nosotros jugamos la mano.",
+        author: "Arthur Schopenhauer"
+      },
+      {
+        text: "La paciencia es amarga, pero su fruto es dulce.",
+        author: "Aristóteles"
+      },
+      {
+        text: "Un héroe no es el que nunca cae, sino el que siempre se levanta.",
         author: "General"
       },
       {
-        text: "No todos los linajes se heredan con sangre. Algunos se heredan con cicatrices.",
+        text: "El poder revela quién eres cuando nadie puede detenerte.",
+        author: "General"
+      },
+      {
+        text: "No hay gloria sin sacrificio.",
+        author: "RP General"
+      },
+      {
+        text: "Los débiles esperan oportunidades. Los fuertes las crean.",
+        author: "RP"
+      },
+      {
+        text: "Cada batalla perdida enseña algo que la victora jamás podría.",
+        author: "RP"
+      },
+      {
+        text: "El verdadero enemigo no siempre está enfrente. A veces está dentro.",
+        author: "General"
+      },
+      {
+        text: "La voluntad es el arma más fuerte que existe.",
+        author: "RP Dragon Ball"
+      },
+      {
+        text: "Un linaje no se mide por su origen, sino por lo que decide proteger.",
         author: "Árbol Familiar"
       },
       {
-        text: "Hay personajes que entran en escena. Y otros que parten la escena por la mitad.",
-        author: "Hub"
+        text: "Algunos nacen con poder, otros lo forjan.",
+        author: "RP"
+      },
+      {
+        text: "Quien controla su mente, controla su destino.",
+        author: "Filosofía"
+      },
+      {
+        text: "El miedo es natural. Rendirse es opcional.",
+        author: "General"
+      },
+      {
+        text: "No luches para ganar, lucha para no perder quién eres.",
+        author: "RP Inazuma"
+      },
+      {
+        text: "La historia recuerda a los que se atreven.",
+        author: "General"
+      },
+      {
+        text: "El fin justifica los medios.",
+        author: "Maquiavelo"
+      },
+      {
+        text: "Los hombres olvidan antes la muerte de su padre que la pérdida de su patrimonio.",
+        author: "Maquiavelo"
+      },
+      {
+        text: "Es mejor ser temido que amado, si no puedes ser ambos.",
+        author: "Maquiavelo"
+      },
+      {
+        text: "Quien desea obediencia debe saber mandar.",
+        author: "Maquiavelo"
+      },
+      {
+        text: "La fortuna favorece a los audaces.",
+        author: "Virgilio"
+      },
+      {
+        text: "Pienso, luego existo.",
+        author: "René Descartes"
+      },
+      {
+        text: "El hombre que mueve montañas empieza apartando pequeñas piedras.",
+        author: "Confucio"
+      },
+      {
+        text: "La libertad no es hacer lo que quieras, si no tener que hacer lo que no quieres.",
+        author: "Jean-Jacques Rousseau"
+      },
+      {
+        text: "Aquel que tiene un porqué para vivir puede soportar casi cualquier cómo.",
+        author: "Nietzsche"
+      },
+      {
+        text: "La guerra es la continuación de la política por otros medios.",
+        author: "Clausewitz"
+      },
+      {
+        text: "Y el universo te dijo Te quiero.",
+        author: "Minecraft"
+      },
+      {
+        text: "Eres más fuerte de lo que crees.",
+        author: "Minecraft"
+      },
+      {
+        text: "El único límite es tu propia imaginación.",
+        author: "Minecraft"
+      },
+      {
+        text: "Después de todo, sigues siendo tú.",
+        author: "Undertale",
+        meaning: "Aunque cambies, falles o te rompas un poco por el camino, sigues conservando tu identidad más profunda: tú."
+      },
+      {
+        text: "Determinación.",
+        author: "Undertale"
+      },
+      {
+        text: "Hace un día hermoso, los pájaros cantan, las flores florecen",
+        author: "Sans"
+      },
+      {
+        text: "En este mundo, es matar o ser asesinado.",
+        author: "Undertale"
+      },
+      {
+        text: "El hombre es libre en el momento en que desea serlo.",
+        author: "Voltaire"
+      },
+      {
+        text: "La vida debe ser comprendida hacia atrás, pero debe ser vivida hacia adelante.",
+        author: "Kierkegaard"
+      },
+      {
+        text: "¿Qué es un hombre, sino la suma de sus decisiones?",
+        author: "Filosofía"
+      },
+      {
+        text: "No temo a la muerte, temo no haber vivido.",
+        author: "Marco Aurelio"
+      },
+      {
+        text: "Quien mira hacia afuera sueña, quien mira hacia adentro despierta.",
+        author: "Carl Jung"
+      },
+      {
+        text: "La duda es el origen de la sabiduría.",
+        author: "Descartes"
+      },
+      {
+        text: "¿Quién eres cuando nadie te está mirando?",
+        author: "General"
+      },
+      {
+        text: "Cada decisión crea un camino que no volverá a existir.",
+        author: "General"
+      },
+      {
+        text: "¿Y si todo lo que recuerdas no fuera toda la historia?",
+        author: "General"
+      },
+      {
+        text: "¿Hasta dónde llegarías por aquello que quieres proteger?",
+        author: "General"
+      },
+      {
+        text: "Mantente con determinación.",
+        author: "Undertale"
+      },
+      {
+        text: "Don't forget.",
+        author: "Undertale"
+      },
+      {
+        text: "¿Es este el mundo que has elegido?",
+        author: "Minecraft"
+      },
+      {
+        text: "La guerra nunca cambia.",
+        author: "Fallout"
+      },
+      {
+        text: "¿Qué es mejor? ¿Nacer bueno, o superar tu naturaleza malvada?",
+        author: "Skyrim"
+      },
+      {
+        text: "El hombre correcto en el lugar equivocado puede marcar la diferencia en el mundo.",
+        author: "Half-Life"
+      },
+      {
+        text: "Ningún precio es demasiado alto.",
+        author: "Hollow Knight"
+      },
+      {
+        text: "¿Recuerdas quién querías ser?",
+        author: "General"
+      },
+      {
+        text: "Toda historia necesita alguien que se niegue a rendirse.",
+        author: "General"
+      },
+      {
+        text: "No todos los finales son el final.",
+        author: "General"
+      },
+      {
+        text: "But it refused.",
+        author: "Undertale",
+        meaning: "No te rindas."
+      },
+      {
+        text: "¿Alguien de verdad lee esto?",
+        author: "Minecraft"
+      },
+      {
+        text: "El hombre sufre porque se toma en serio lo que los dioses hicieron para divertirse.",
+        author: "Alan Watts"
+      },
+      {
+        text: "Nada es verdad, todo está permitido.",
+        author: "Assassin's Creed"
+      },
+      {
+        text: "No puedes cambiar el pasado, pero puedes aprender de él.",
+        author: "General"
+      },
+      {
+        text: "El tiempo que disfrutas perder no es tiempo perdido.",
+        author: "John Lennon"
+      },
+      {
+        text: "El sabio no dice todo lo que piensa, pero siempre piensa todo lo que dice.",
+        author: "Aristóteles."
+      },
+      {
+        text: "La realidad es aquello que, cuando dejas de creer en ella, sigue ahí.",
+        author: "Philip D. Dick"
+      },
+      {
+        text: "Todo lo que somos es el resultado de lo que hemos pensado.",
+        author: "Buda"
+      },
+      {
+        text: "No hay mejor victoria que vencerse a sí mismo.",
+        author: "Platón"
+      },
+      {
+        text: "¿Y si el verdadero enemigo siempre fuiste tú?",
+        author: "General"
+      },
+      {
+        text: "El silencio también es una respuesta.",
+        author: "General"
+      },
+      {
+        text: "El mundo no cambia solo. Alguien decide cambiarlo.",
+        author: "General"
+      },
+      {
+        text: "Cada jugador cree que es el protagonista.",
+        author: "General"
+      },
+      {
+        text: "No todo el que camina está perdido.",
+        author: "J.R.R. Tolkien"
+      },
+      {
+        text: "Las decisiones pequeñas crean futuros enormes.",
+        author: "General"
+      },
+      {
+        text: "El universo not iene obligación de tener sentido para ti.",
+        author: "Neil deGrasse Tyson"
+      },
+      {
+        text: "¿Cuántas veces puedes emperzar de nuevo?",
+        author: "General"
+      },
+      {
+        text: "La esperanza es lo último que se pierde.",
+        author: "General"
+      },
+      {
+        text: "No puedes salvar a todo el mundo.",
+        author: "General"
+      },
+      {
+        text: "El mundo siempre seguirá hacia adelante, contigo o sin ti.",
+        author: "General"
+      },
+      {
+        text: "Despierta.",
+        author: "General"
+      },
+      {
+        text: "El viaje importa más que el destino.",
+        author: "Filosofía."
+      },
+      {
+        text: "La voluntad es capaz de cambiar el resultado.",
+        author: "General"
+      },
+      {
+        text: "A veces, incluso el héroe duda.",
+        author: "General."
+      },
+      {
+        text: "No todo está escrito.",
+        author: "General"
+      },
+      {
+        text: "El final depende de lo que hagas ahora.",
+        author: "General"
+      },
+      {
+        text: "¿Elegiste este camino, o fue el camino quien te eligió a ti?",
+        author: "General"
+      },
+      {
+        text: "Sigue adelante.",
+        author: "Undertale"
+      },
+      {
+        text: "El jugador siempre vuelve.",
+        author: "Minecraft"
+      },
+      {
+        text: "O mueres como un héroe, o vives lo suficiente para convertirte en un villano.",
+        author: "El Caballero Oscuro"
+      },
+      {
+        text: "Un gran poder, conlleva una gran responsabilidad.",
+        author: "Tio Ben"
+      },
+      {
+        text: "Un héroe puede ser cualquiera, incluso alguien que hace algo tan simple como ponerse un abrigo para que un niño no tenga frío.",
+        author: "Batman"
+      },
+      {
+        text: "La libertad es el derecho de todos los seres conscientes.",
+        author: "Optimus Prime"
+      },
+      {
+        text: "La esperanza es lo que nos hace fuertes.",
+        author: "Spider-Man"
+      },
+      {
+        text: "Incluso la persona más pequeña puede cambiar el curso del futuro.",
+        author: "El Señor de los Anillos"
+      },
+      {
+        text: "El mundo no es perfecto, pero está ahí para nosotros, intentando lo mejor que puede.",
+        author: "Fullmetal Alchemist"
+      },
+      {
+        text: "Levántate y avanza. Tienes dos piernas y un corazón.",
+        author: "Edward Elric"
+      },
+      {
+        text: "La gente muere cuando se olvida.",
+        author: "One Piece"
+      },
+      {
+        text: "Si no puedes hacer algo, entonces no lo hagas. Concéntrate en lo que sí puedes.",
+        author: "Attack on Titans"
+      },
+      {
+        text: "El dolor es inevitable, el sufrimiento es opcional.",
+        author: "Buda"
+      },
+      {
+        text: "El infierno está vacío, todos los demonios están aquí.",
+        author: "Shakespeare"
+      },
+      {
+        text: "La vida no es cuestión de encontrarse, sino de crearse.",
+        author: "George Bernard Shaw"
+      },
+      {
+        text: "El hombre que teme sufrir, ya sufre por lo que teme.",
+        author: "Montaigne"
+      },
+      {
+        text: "No importa lo lento que vayas, siempre que no te detengas.",
+        author: "Confucio"
+      },
+      {
+        text: "La verdadera derrota es rendirse.",
+        author: "General"
+      },
+      {
+        text: "El pasado puede doler, puedes aprender de él, o huir.",
+        author: "El Rey León"
+      },
+      {
+        text: "El verdadero poder está en la voluntad.",
+        author: "Dragon Ball"
+      },
+      {
+        text: "No todos los que luchan son héroes, pero todos los héroes luchan.",
+        author: "General"
+      },
+      {
+        text: "Nada dura para siempre, y por eso tiene valor.",
+        author: "General"
+      },
+      {
+        text: "Solo con el corazón se puede ver bien, lo esencial es invisible para los ojos.",
+        author: "El Principito"
+      },
+      {
+        text: "Fue el tiempo que pasaste con tu rosa lo que la hizo tan importante.",
+        author: "El Principito"
+      },
+      {
+        text: "Todos los adultos fueron una vez niños, pero muy pocos lo recuerdan.",
+        author: "El Principito"
+      },
+      {
+        text: "Es mucho más dificil juzgarse a sí mismo que juzgar a los demás.",
+        author: "El Principito"
+      },
+      {
+        text: "Lo que embellece al desierto es que en alguna parte se esconde un pozo.",
+        author: "El Principito"
+      },
+      {
+        text: "Avanzar da miedo porque no hay excusas.",
+        author: "Celeste",
+        meaning: "Mientas no avanzas, puedes culpar al mundo. Cuando avanzas la responsabilidad es tuya."
+      },
+      {
+        text: "Da igual cuan oscuro sea el camino, siempre habrá alguien dispuesto a caminar contigo.",
+        author: "Final Fantasy XV",
+        meaning: "Nos recuerda el valor de la amistad y el apoyo mutuo."
+      },
+      {
+        text: "Un hombre elige, un esclavo obedece.",
+        author: "Bioshock",
+        meaning: "Enseña que la libertad no está en hacer lo que te dicen, si no en cuestionar y decidir por ti mismo."
+      },
+      {
+        text: "Al activar los trucos, desactivas los logros.",
+        author: "Minecraft",
+        meaning: "El camino fácil no siempre dará recompensas."
+      },
+      {
+        text: "Cada bloque cuenta en el camino hacia tus sueños.",
+        author: "Minecraft",
+        meaning: "Por insignificante que parezca, cada bloque sirve para crear algo más grande a futuro."
+      },
+      {
+        text: "Recuerda que no siempre necesitas una antorcha para ilumnar la cueva, también hay otras maneras de encontrar luz.",
+        author: "Minecraft",
+        meaning: "Aunque pueda parecer la más viable, no siempre es la más útil, ¡hay más personas que pueden servirte!"
+      },
+      {
+        text: "Es fácil confundir lapislazuli con los diamantes, son parecidos pero su valor es muy diferente.",
+        author: "Minecraft",
+        meaning: "No te dejes engañar por las apariencias en el amor; lo que parece valioso a primera vista puede no tener el mismo valor en profundidad."
+      },
+      {
+        text: "¡Si mueres en Modo Hardcore, no podrás volver a jugar!",
+        author: "Minecraft",
+        meaning: "Considera tus acciones y sus consecuencias."
+      },
+      {
+        text: "Si caminas solo, llegarás más rápido; Si caminas acompañado llegarás más lejos.",
+        author: "Minecraft",
+        meaning: "Aunque la soledad te aporte agilidad, siempre llegarás más lejos apoyándote en alguien, 2 son más que 1."
+      },
+      {
+        text: "¡Cuanto más desciendas, más común se vuelve el Diamante!",
+        author: "Minecraft",
+        meaning: "Esa persona no es la única que existe, si buscas encontrarás tesoros mejores."
+      },
+      {
+        text: "Cuidado al entrar en una cueva, puede que encuentres la entrada, pero no la salida.",
+        author: "Minecraft",
+        meaning: "Piensa con calma y sin estrés, adentrarse en tus pensamientos es fácil, pero no tanto salir de ellos."
+      },
+      {
+        text: "El Creeper fue un error y ahora es un icono internacional.",
+        author: "Minecraft",
+        meaning: "A veces hasta un error puede beneficiarte y enseñar. ¡De los errores también se aprende!"
+      },
+      {
+        text: "¡Si cavas hacia abajo puedes caer en la lava!",
+        author: "Minecraft",
+        meaning: "Actuar sin precaución puede acarrear problemas inesperados o peligrosos."
+      },
+      {
+        text: "Maravillas infinitas, posibilidades infinitas.",
+        author: "Minecraft",
+        meaning: "El mundo está lleno de oportunidades y maravillas esperando ser expliradas y aprovechadas."
+      },
+      {
+        text: "No todo lo que brilla es oro.",
+        author: "Minecraft",
+        meaning: "No te dejes engañar por la apariencia de alguien o algo, observa y conoce su utilidad antes de que pueda perjudicarte."
+      },
+      {
+        text: "No destruyas tu mundo por un mal momento.",
+        author: "Minecraft",
+        meaning: "No tomes decisiones en momentos de ira, importencia o tristeza, un mal mmento no tiene porqué echar atrás años de trabajo."
+      },
+      {
+        text: "Hay muchas pociones, usa la que más necesites.",
+        author: "Minecraft",
+        meaning: "Hay muchas maneras de sanar. usa la más útil para ti. (Y la más saludable!)."
+      },  
+      {
+        text: "No explores un barco por segunda vez si ya sabes que no hay nada.",
+        author: "Minecraft",
+        meaning: "Anímate a biscar nuevas oportunidades; no te encierres en un sitio donde viste que no hay nada que ganar, deja ir el pasado, reconoce que no merece la pena seguir luchando y avanza."
+      },
+      {
+        text: "Si tus amigos no se pueden unor a tu mundo, puede deberse a que no están en la versión adecuada.",
+        author: "Minecraft",
+        meaning: "La importancia de tener amigos compatibles con tu forma de ser."
+      },
+      {
+        text: "Las mejores librerías siempre ofrecen los mejores libros.",
+        author: "Minecraft",
+        meaning: "Rodearse de buenas personas puede beneficiarte tanto moral como anímicamente."
+      },
+      {
+        text: "¡No construyas sobre arena movediza!",
+        author: "Minecraft",
+        meaning: "Aconseja la importancia de establecer una base sólida antes de actuar o emprender."
+      },
+      {
+        text: "¿Quieres eliminar Tu Mundo? ¡Perderás este mundo para siempre! (Es muchísimo tiempo).",
+        author: "Minecraft",
+        meaning: "Tus acciones a veces no tienen retorno, valora lo que tienes antes de perderlo, posible arrepentimiento a futuro de perder lo que un día luchaste por conseguir."
+      },
+      {
+        text: "Besa el cielo.",
+        author: "Minecraft",
+        meaning: "Sé ambicioso, persigue tus sueños, los límites están en tu cabeza."
+      },
+      {
+        text: "No dejes árboles flotando.",
+        author: "Minecraft",
+        meaning: "No dejes nada a medias, termina lo que empezaste antes de seguir con cualquier cosa."
       }
     ];
 
     const quoteText = document.getElementById("quoteText");
     const quoteAuthor = document.getElementById("quoteAuthor");
+    const quoteMeaning = document.getElementById("quoteMeaning");
 
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     quoteText.textContent = `“${randomQuote.text}”`;
     quoteAuthor.textContent = `— ${randomQuote.author}`;
+
+    if(randomQuote.meaning){
+      quoteMeaning.textContent = randomQuote.meaning;
+      quoteMeaning.style.display = "block";
+    } else {
+      quoteMeaning.textContent = "";
+      quoteMeaning.style.display = "none";
+    }    
 
     const toggleButton = document.getElementById("themeToggle");
     const savedTheme = localStorage.getItem("rpHubTheme");
