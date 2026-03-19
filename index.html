@@ -593,6 +593,9 @@
         height:34px;
       }
     }
+    #newQuoteBtn{
+  margin-top:16px;
+}
   </style>
 </head>
 <body>
@@ -612,6 +615,7 @@
         <p class="quote" id="quoteText">Cargando frase...</p>
         <p class="quote-author" id="quoteAuthor"></p>
         <p class="quote-meaning" id="quoteMeaning"></p>
+        <button class="favorites-btn" id="newQuoteBtn" type="button">🔄 Nueva cita</button>
       </div>
     </section>
 
@@ -1427,145 +1431,168 @@
     ];
 
     const quoteText = document.getElementById("quoteText");
-    const quoteAuthor = document.getElementById("quoteAuthor");
-    const quoteMeaning = document.getElementById("quoteMeaning");
+  const quoteAuthor = document.getElementById("quoteAuthor");
+  const quoteMeaning = document.getElementById("quoteMeaning");
+  const newQuoteBtn = document.getElementById("newQuoteBtn");
 
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  let lastQuoteIndex = -1;
+
+  function showRandomQuote() {
+    if (!quotes.length) return;
+
+    let randomIndex;
+
+    if (quotes.length === 1) {
+      randomIndex = 0;
+    } else {
+      do {
+        randomIndex = Math.floor(Math.random() * quotes.length);
+      } while (randomIndex === lastQuoteIndex);
+    }
+
+    lastQuoteIndex = randomIndex;
+    const randomQuote = quotes[randomIndex];
+
     quoteText.textContent = `“${randomQuote.text}”`;
     quoteAuthor.textContent = `— ${randomQuote.author}`;
 
-    if(randomQuote.meaning){
+    if (randomQuote.meaning) {
       quoteMeaning.textContent = randomQuote.meaning;
       quoteMeaning.style.display = "block";
     } else {
       quoteMeaning.textContent = "";
       quoteMeaning.style.display = "none";
-    }    
+    }
+  }
 
-    const toggleButton = document.getElementById("themeToggle");
-    const savedTheme = localStorage.getItem("rpHubTheme");
+  showRandomQuote();
 
-    if(savedTheme === "light"){
-      document.body.classList.add("light");
+  newQuoteBtn.addEventListener("click", showRandomQuote);
+
+  const toggleButton = document.getElementById("themeToggle");
+  const savedTheme = localStorage.getItem("rpHubTheme");
+
+  if(savedTheme === "light"){
+    document.body.classList.add("light");
+    toggleButton.textContent = "☀️ Cambiar tema";
+  }
+
+  toggleButton.addEventListener("click", () => {
+    document.body.classList.toggle("light");
+
+    if(document.body.classList.contains("light")){
+      localStorage.setItem("rpHubTheme", "light");
       toggleButton.textContent = "☀️ Cambiar tema";
+    } else {
+      localStorage.setItem("rpHubTheme", "dark");
+      toggleButton.textContent = "🌙 Cambiar tema";
     }
+  });
 
-    toggleButton.addEventListener("click", () => {
-      document.body.classList.toggle("light");
+  const FAVORITES_KEY = "rpHubFavorites";
+  const allCards = [...document.querySelectorAll(".hub-card")];
+  const favoritesContainer = document.getElementById("favoritesContainer");
+  const clearFavoritesBtn = document.getElementById("clearFavoritesBtn");
 
-      if(document.body.classList.contains("light")){
-        localStorage.setItem("rpHubTheme", "light");
-        toggleButton.textContent = "☀️ Cambiar tema";
-      } else {
-        localStorage.setItem("rpHubTheme", "dark");
-        toggleButton.textContent = "🌙 Cambiar tema";
-      }
-    });
-
-    const FAVORITES_KEY = "rpHubFavorites";
-    const allCards = [...document.querySelectorAll(".hub-card")];
-    const favoritesContainer = document.getElementById("favoritesContainer");
-    const clearFavoritesBtn = document.getElementById("clearFavoritesBtn");
-
-    function getFavorites(){
-      try{
-        const saved = JSON.parse(localStorage.getItem(FAVORITES_KEY));
-        return Array.isArray(saved) ? saved : [];
-      }catch{
-        return [];
-      }
+  function getFavorites(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(FAVORITES_KEY));
+      return Array.isArray(saved) ? saved : [];
+    }catch{
+      return [];
     }
+  }
 
-    function saveFavorites(favorites){
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  function saveFavorites(favorites){
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  }
+
+  function isFavorite(id){
+    return getFavorites().includes(id);
+  }
+
+  function toggleFavorite(id){
+    const favorites = getFavorites();
+
+    if(favorites.includes(id)){
+      saveFavorites(favorites.filter(fav => fav !== id));
+    }else{
+      saveFavorites([...favorites, id]);
     }
-
-    function isFavorite(id){
-      return getFavorites().includes(id);
-    }
-
-    function toggleFavorite(id){
-      const favorites = getFavorites();
-
-      if(favorites.includes(id)){
-        saveFavorites(favorites.filter(fav => fav !== id));
-      }else{
-        saveFavorites([...favorites, id]);
-      }
-
-      syncFavoriteButtons();
-      renderFavorites();
-    }
-
-    function syncFavoriteButtons(){
-      allCards.forEach(card => {
-        const id = card.dataset.id;
-        const btn = card.querySelector(".favorite-toggle");
-        const active = isFavorite(id);
-
-        btn.classList.toggle("active", active);
-        btn.textContent = active ? "★" : "☆";
-        btn.setAttribute("aria-label", active ? "Quitar de favoritos" : "Añadir a favoritos");
-        btn.setAttribute("title", active ? "Quitar de favoritos" : "Añadir a favoritos");
-      });
-    }
-
-    function renderFavorites(){
-      const favorites = getFavorites();
-
-      if(!favorites.length){
-        favoritesContainer.innerHTML = `
-          <div class="favorites-empty">
-            No tienes favoritos todavía. Marca alguna tarjeta con la estrella y aparecerá aquí arriba, como si el hub por fin hubiese descubierto el concepto de comodidad.
-          </div>
-        `;
-        return;
-      }
-
-      const favoriteCards = favorites
-        .map(id => allCards.find(card => card.dataset.id === id))
-        .filter(Boolean)
-        .map(card => {
-          const href = card.getAttribute("href");
-          const title = card.dataset.title || "";
-          const desc = card.dataset.desc || "";
-          const tag = card.dataset.tag || "";
-          const icon = card.dataset.icon || "⭐";
-
-          return `
-            <a class="favorite-card" href="${href}">
-              <div class="favorite-top">
-                <h3 class="favorite-title">${title}</h3>
-                <span class="favorite-icon">${icon}</span>
-              </div>
-              <p class="favorite-desc">${desc}</p>
-              <span class="favorite-tag">${tag}</span>
-            </a>
-          `;
-        })
-        .join("");
-
-      favoritesContainer.innerHTML = `<div class="favorites-grid">${favoriteCards}</div>`;
-    }
-
-    allCards.forEach(card => {
-      const btn = card.querySelector(".favorite-toggle");
-
-      btn.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        toggleFavorite(card.dataset.id);
-      });
-    });
-
-    clearFavoritesBtn.addEventListener("click", () => {
-      localStorage.removeItem(FAVORITES_KEY);
-      syncFavoriteButtons();
-      renderFavorites();
-    });
 
     syncFavoriteButtons();
     renderFavorites();
+  }
+
+  function syncFavoriteButtons(){
+    allCards.forEach(card => {
+      const id = card.dataset.id;
+      const btn = card.querySelector(".favorite-toggle");
+      const active = isFavorite(id);
+
+      btn.classList.toggle("active", active);
+      btn.textContent = active ? "★" : "☆";
+      btn.setAttribute("aria-label", active ? "Quitar de favoritos" : "Añadir a favoritos");
+      btn.setAttribute("title", active ? "Quitar de favoritos" : "Añadir a favoritos");
+    });
+  }
+
+  function renderFavorites(){
+    const favorites = getFavorites();
+
+    if(!favorites.length){
+      favoritesContainer.innerHTML = `
+        <div class="favorites-empty">
+          No tienes favoritos todavía. Marca alguna tarjeta con la estrella y aparecerá aquí arriba, como si el hub por fin hubiese descubierto el concepto de comodidad.
+        </div>
+      `;
+      return;
+    }
+
+    const favoriteCards = favorites
+      .map(id => allCards.find(card => card.dataset.id === id))
+      .filter(Boolean)
+      .map(card => {
+        const href = card.getAttribute("href");
+        const title = card.dataset.title || "";
+        const desc = card.dataset.desc || "";
+        const tag = card.dataset.tag || "";
+        const icon = card.dataset.icon || "⭐";
+
+        return `
+          <a class="favorite-card" href="${href}">
+            <div class="favorite-top">
+              <h3 class="favorite-title">${title}</h3>
+              <span class="favorite-icon">${icon}</span>
+            </div>
+            <p class="favorite-desc">${desc}</p>
+            <span class="favorite-tag">${tag}</span>
+          </a>
+        `;
+      })
+      .join("");
+
+    favoritesContainer.innerHTML = `<div class="favorites-grid">${favoriteCards}</div>`;
+  }
+
+  allCards.forEach(card => {
+    const btn = card.querySelector(".favorite-toggle");
+
+    btn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleFavorite(card.dataset.id);
+    });
+  });
+
+  clearFavoritesBtn.addEventListener("click", () => {
+    localStorage.removeItem(FAVORITES_KEY);
+    syncFavoriteButtons();
+    renderFavorites();
+  });
+
+  syncFavoriteButtons();
+  renderFavorites();
   </script>
 </body>
 </html>
