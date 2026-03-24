@@ -7,84 +7,102 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        
+       
         body {
             background: linear-gradient(180deg, #0a0a1f 0%, #1a0033 100%);
             font-family: 'Press Start 2P', system-ui;
             color: white;
         }
-        
+       
         .grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            max-width: 360px;
+            gap: 8px;
             margin: 0 auto;
+            background: #0f0f23;
+            padding: 16px;
+            border-radius: 16px;
+            border: 4px solid #444;
         }
-        
+       
         .light {
-            width: 100px;
-            height: 100px;
-            border-radius: 9999px;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
             background: #1f1f3f;
-            border: 6px solid #444;
+            border: 5px solid #555;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+            transition: all 0.15s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 28px;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.9);
         }
-        
+       
         .light.on {
             background: #ffeb3b;
-            box-shadow: 0 0 40px #ffeb3b, inset 0 0 30px #fff;
+            box-shadow: 0 0 35px #ffeb3b, inset 0 0 25px #fff;
             border-color: #ffeb3b;
             color: #000;
         }
-        
+       
         .light:active {
-            transform: scale(0.9);
+            transform: scale(0.92);
         }
 
-         .back-menu{
-  position:fixed;
-  top:15px;
-  left:15px;
-
-  padding:10px 14px;
-  border-radius:12px;
-
-  background:rgba(20,25,50,0.85);
-  border:1px solid rgba(255,255,255,0.15);
-
-  color:white;
-  text-decoration:none;
-  font-weight:600;
-
-  backdrop-filter:blur(10px);
-
-  transition:0.2s;
-  z-index:999;
-}
-
-.back-menu:hover{
-  background:rgba(40,50,100,0.9);
-  transform:translateY(-2px);
-}         
+        .back-menu {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: rgba(20,25,50,0.85);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: 0.2s;
+            z-index: 999;
+        }
+        .back-menu:hover {
+            background: rgba(40,50,100,0.9);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
-      <a href="index.html" class="back-menu">← Volver al menú</a>
 <body class="min-h-screen py-12">
-    <div class="max-w-md mx-auto text-center">
+    <a href="index.html" class="back-menu">← Volver al menú</a>
+
+    <div class="max-w-2xl mx-auto text-center">
         <h1 class="text-5xl mb-2 tracking-widest">LUCES FUERA</h1>
-        <p class="text-yellow-300 mb-8">Apaga todas las luces</p>
-        
+        <p class="text-yellow-300 mb-6">Apaga todas las luces</p>
+
+        <!-- Selector de tamaño -->
+        <div class="mb-8">
+            <p class="text-cyan-300 text-sm mb-3">ELIGE EL TAMAÑO:</p>
+            <div class="flex flex-wrap gap-3 justify-center">
+                <button onclick="cambiarTamano(3)"  class="size-btn px-6 py-3 bg-[#1f1f3f] hover:bg-[#2a2a55] border border-cyan-400 rounded-xl text-sm font-bold">3×3</button>
+                <button onclick="cambiarTamano(5)"  class="size-btn px-6 py-3 bg-[#1f1f3f] hover:bg-[#2a2a55] border border-cyan-400 rounded-xl text-sm font-bold">5×5</button>
+                <button onclick="cambiarTamano(7)"  class="size-btn px-6 py-3 bg-[#1f1f3f] hover:bg-[#2a2a55] border border-cyan-400 rounded-xl text-sm font-bold">7×7</button>
+                <button onclick="cambiarTamano(12)" class="size-btn px-6 py-3 bg-[#1f1f3f] hover:bg-[#2a2a55] border-2 border-yellow-400 rounded-xl text-sm font-bold">12×12</button>
+            </div>
+        </div>
+
+        <!-- Reglas -->
+        <div class="bg-[#1a1a2e] border border-cyan-400/30 rounded-2xl p-5 mb-8 text-left max-w-md mx-auto">
+            <p class="text-cyan-300 text-sm font-bold mb-3">CÓMO JUGAR:</p>
+            <ul class="text-xs text-gray-300 space-y-1">
+                <li>→ Pulsa una luz para cambiarla</li>
+                <li>→ También cambia sus luces vecinas (arriba, abajo, izquierda, derecha)</li>
+                <li>→ Objetivo: apagar **todas** las luces</li>
+            </ul>
+        </div>
+
         <div class="mb-8">
             <div id="grid" class="grid"></div>
         </div>
-        
+       
         <div class="flex gap-4 justify-center mb-8">
             <button onclick="reiniciar()" 
                     class="px-8 py-4 bg-red-600 hover:bg-red-700 rounded-2xl font-bold text-lg">
@@ -95,7 +113,7 @@
                 🎲 NUEVO NIVEL
             </button>
         </div>
-        
+       
         <div class="text-sm text-gray-400">
             Movimientos: <span id="movimientos" class="font-bold text-cyan-400">0</span><br>
             <span id="mensaje" class="text-green-400 font-bold"></span>
@@ -103,80 +121,89 @@
     </div>
 
     <script>
-        let luces = Array(9).fill(false); // false = apagada
+        let tamaño = 3;           // tamaño actual de la cuadrícula
+        let luces = [];           // estado actual
         let movimientos = 0;
-        
+
         function crearGrid() {
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
+            grid.style.gridTemplateColumns = `repeat(${tamaño}, 1fr)`;
             
-            for (let i = 0; i < 9; i++) {
+            // Ajustar tamaño de las luces según el grid
+            const cellSize = tamaño <= 5 ? 80 : tamaño <= 7 ? 55 : 38;
+
+            for (let i = 0; i < tamaño * tamaño; i++) {
                 const light = document.createElement('div');
                 light.className = `light ${luces[i] ? 'on' : ''}`;
+                light.style.width = `${cellSize}px`;
+                light.style.height = `${cellSize}px`;
                 light.textContent = luces[i] ? '💡' : '🌑';
                 light.onclick = () => pulsar(i);
                 grid.appendChild(light);
             }
         }
-        
+
         function pulsar(pos) {
+            const row = Math.floor(pos / tamaño);
+            const col = pos % tamaño;
+
             const posiciones = [
-                pos,
-                pos - 3, // arriba
-                pos + 3, // abajo
-                pos - 1, // izquierda (si no está en borde)
-                pos + 1  // derecha
+                pos,                          // centro
+                pos - tamaño,                 // arriba
+                pos + tamaño,                 // abajo
+                (col > 0) ? pos - 1 : -1,     // izquierda
+                (col < tamaño-1) ? pos + 1 : -1 // derecha
             ];
-            
+
             posiciones.forEach(p => {
-                if (p >= 0 && p < 9) {
-                    // Evitar cruzar bordes en izquierda/derecha
-                    if ((pos % 3 === 0 && p === pos - 1) || 
-                        (pos % 3 === 2 && p === pos + 1)) return;
+                if (p >= 0 && p < luces.length) {
                     luces[p] = !luces[p];
                 }
             });
-            
+
             movimientos++;
             document.getElementById('movimientos').textContent = movimientos;
             crearGrid();
             verificarVictoria();
         }
-        
+
         function verificarVictoria() {
             if (luces.every(l => !l)) {
                 document.getElementById('mensaje').textContent = '¡GANASTE! 🎉';
-                setTimeout(() => alert(`¡Perfecto! Lo resolviste en ${movimientos} movimientos.`), 300);
+                setTimeout(() => {
+                    alert(`¡Perfecto! Lo resolviste en ${movimientos} movimientos en un tablero ${tamaño}×${tamaño}.`);
+                }, 200);
             }
         }
-        
+
         function reiniciar() {
-            // Reinicia con el mismo patrón actual
             movimientos = 0;
             document.getElementById('movimientos').textContent = 0;
             document.getElementById('mensaje').textContent = '';
             crearGrid();
         }
-        
+
         function nuevoNivel() {
-            // Genera un patrón aleatorio (aprox. 4-6 luces encendidas)
-            luces = Array(9).fill(false);
-            for (let i = 0; i < 9; i++) {
-                if (Math.random() > 0.45) luces[i] = true;
+            luces = Array(tamaño * tamaño).fill(false);
+            // Activar aproximadamente el 40-50% de las luces
+            for (let i = 0; i < luces.length; i++) {
+                if (Math.random() > 0.52) luces[i] = true;
             }
             movimientos = 0;
             document.getElementById('movimientos').textContent = 0;
             document.getElementById('mensaje').textContent = '';
             crearGrid();
         }
-        
-        // Iniciar con un nivel interesante
+
+        function cambiarTamano(nuevoTamano) {
+            tamaño = nuevoTamano;
+            nuevoNivel();   // genera un nuevo nivel automáticamente
+        }
+
+        // Iniciar juego
         window.onload = () => {
-            // Patrón inicial chulo
-            luces = [true, false, true,
-                     false, true, false,
-                     true, false, true];
-            crearGrid();
+            nuevoNivel();   // empieza con 3x3 por defecto
         };
     </script>
 </body>
