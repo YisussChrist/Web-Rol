@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lobos y Ovejas — Puzzle del Río</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --bg2:#121933;
+      --card:rgba(18,25,51,.86);
+      --line:rgba(255,255,255,.1);
+      --text:#eef2ff;
+      --muted:#b8c0e0;
+      --accent:#7c9cff;
+      --accent2:#6ee7b7;
+      --danger:#ff7b7b;
+      --warn:#ffd166;
+      --shadow:0 14px 40px rgba(0,0,0,.35);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top, #1a2550 0%, transparent 35%),
+        linear-gradient(180deg, var(--bg) 0%, #08101f 100%);
+      min-height:100vh;
+    }
+
+    .wrap{
+      width:min(1100px, calc(100% - 24px));
+      margin:24px auto;
+      display:grid;
+      gap:18px;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(8px);
+    }
+
+    .hero{
+      padding:24px;
+      display:grid;
+      gap:10px;
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(1.9rem, 4vw, 3rem);
+      line-height:1;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.5;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:4px;
+    }
+
+    .chip{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:.92rem;
+    }
+
+    .game{
+      padding:18px;
+      display:grid;
+      gap:18px;
+    }
+
+    .hud{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:12px;
+    }
+
+    .stat{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+
+    .stat .label{
+      color:var(--muted);
+      font-size:.85rem;
+      margin-bottom:6px;
+    }
+
+    .stat .value{
+      font-size:1.35rem;
+      font-weight:800;
+    }
+
+    .river-area{
+      position:relative;
+      overflow:hidden;
+      border-radius:24px;
+      border:1px solid var(--line);
+      min-height:430px;
+      background:linear-gradient(180deg,#78a7ff 0%,#99d6ff 26%,#49a2ff 26%,#1976d2 72%,#0d4f97 100%);
+    }
+
+    .banks{
+      position:absolute;
+      inset:0;
+      display:grid;
+      grid-template-columns:1fr minmax(120px, 180px) 1fr;
+      align-items:stretch;
+    }
+
+    .bank{
+      position:relative;
+      padding:18px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.12), transparent 26%),
+        linear-gradient(180deg,#467a31 0%, #355f26 100%);
+    }
+
+    .bank.right{
+      background:
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,.12), transparent 26%),
+        linear-gradient(180deg,#467a31 0%, #355f26 100%);
+    }
+
+    .bank::after{
+      content:"";
+      position:absolute;
+      inset:auto 0 0 0;
+      height:34%;
+      background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.18));
+      pointer-events:none;
+    }
+
+    .river{
+      position:relative;
+      background:
+        repeating-linear-gradient(
+          180deg,
+          rgba(255,255,255,.14) 0 2px,
+          rgba(255,255,255,0) 2px 18px
+        );
+      overflow:hidden;
+    }
+
+    .river::before,
+    .river::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.18), transparent 14%),
+        radial-gradient(circle at 60% 75%, rgba(255,255,255,.16), transparent 10%),
+        radial-gradient(circle at 75% 18%, rgba(255,255,255,.14), transparent 12%);
+      animation:shimmer 9s linear infinite;
+    }
+
+    .river::after{
+      animation-duration:12s;
+      opacity:.65;
+    }
+
+    @keyframes shimmer{
+      from{ transform:translateY(0); }
+      to{ transform:translateY(22px); }
+    }
+
+    .bank-title{
+      position:absolute;
+      top:12px;
+      left:12px;
+      z-index:3;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.12);
+      padding:8px 12px;
+      border-radius:999px;
+      font-weight:700;
+      backdrop-filter:blur(4px);
+    }
+
+    .characters{
+      position:absolute;
+      left:16px;
+      right:16px;
+      bottom:22px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:flex-end;
+      z-index:2;
+      min-height:180px;
+    }
+
+    .boat-zone{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%, -50%);
+      width:100%;
+      pointer-events:none;
+    }
+
+    .boat{
+      position:absolute;
+      left:12px;
+      width:min(150px, 72%);
+      aspect-ratio:1.7/1;
+      pointer-events:auto;
+      transition:left .55s ease, top .55s ease, transform .25s ease;
+      filter:drop-shadow(0 10px 16px rgba(0,0,0,.25));
+    }
+
+    .boat.right{
+      left:calc(100% - min(150px, 72%) - 12px);
+    }
+
+    .boat-shape{
+      position:absolute;
+      inset:0;
+    }
+
+    .hull{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:48%;
+      background:linear-gradient(180deg,#7b4a27,#59351b);
+      clip-path:polygon(12% 0, 88% 0, 100% 100%, 0 100%);
+      border-bottom-left-radius:20px;
+      border-bottom-right-radius:20px;
+    }
+
+    .seats{
+      position:absolute;
+      left:12%;
+      right:12%;
+      bottom:22%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .seat{
+      min-height:64px;
+      border:2px dashed rgba(255,255,255,.35);
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,.05);
+      padding:4px;
+      position:relative;
+    }
+
+    .seat-label{
+      position:absolute;
+      top:-22px;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:.72rem;
+      color:#eef2ffcc;
+      white-space:nowrap;
+    }
+
+    .char{
+      width:72px;
+      user-select:none;
+      cursor:pointer;
+      transition:transform .18s ease, filter .18s ease, opacity .18s ease;
+      text-align:center;
+    }
+
+    .char:hover{ transform:translateY(-4px) scale(1.03); }
+    .char:active{ transform:translateY(-1px) scale(.98); }
+    .char.selected{ filter:drop-shadow(0 0 16px rgba(255,255,255,.35)); }
+    .char.disabled{ opacity:.45; cursor:not-allowed; }
+
+    .emoji{
+      font-size:2.6rem;
+      line-height:1;
+      display:block;
+      filter:drop-shadow(0 6px 8px rgba(0,0,0,.22));
+    }
+
+    .name{
+      margin-top:6px;
+      font-size:.8rem;
+      font-weight:700;
+      color:#f1f5ff;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+
+    button{
+      border:0;
+      border-radius:16px;
+      padding:14px 18px;
+      font:inherit;
+      font-weight:800;
+      cursor:pointer;
+      color:white;
+      background:linear-gradient(180deg, #7c9cff, #5f7cff);
+      box-shadow:0 10px 20px rgba(92,119,255,.25);
+      transition:transform .15s ease, opacity .2s ease, filter .2s ease;
+    }
+
+    button:hover{ transform:translateY(-2px); }
+    button:active{ transform:translateY(0); }
+    button:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    button.secondary{
+      background:rgba(255,255,255,.08);
+      box-shadow:none;
+      border:1px solid var(--line);
+      color:var(--text);
+    }
+
+    button.warn{
+      background:linear-gradient(180deg, #ffb84d, #ff9d2f);
+      box-shadow:0 10px 20px rgba(255,157,47,.25);
+      color:#221400;
+    }
+
+    .message{
+      padding:16px 18px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      line-height:1.55;
+      min-height:58px;
+    }
+
+    .message.good{ border-color:rgba(110,231,183,.35); color:#d9fff0; }
+    .message.bad{ border-color:rgba(255,123,123,.35); color:#ffe0e0; }
+    .message.win{ border-color:rgba(255,209,102,.4); color:#fff0bf; }
+
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.58);
+      backdrop-filter:blur(6px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:1000;
+    }
+
+    .modal-backdrop.show{ display:flex; }
+
+    .modal{
+      width:min(560px, 100%);
+      background:linear-gradient(180deg, rgba(18,25,51,.98), rgba(10,16,32,.98));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:26px;
+      box-shadow:0 25px 70px rgba(0,0,0,.45);
+      padding:24px;
+      color:var(--text);
+      animation:popIn .22s ease;
+    }
+
+    @keyframes popIn{
+      from{ opacity:0; transform:scale(.95) translateY(8px); }
+      to{ opacity:1; transform:scale(1) translateY(0); }
+    }
+
+    .modal h2{
+      margin:0 0 10px;
+      font-size:1.5rem;
+    }
+
+    .modal p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+      white-space:pre-line;
+    }
+
+    .modal-actions{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:18px;
+    }
+
+    .moves{
+      padding:18px;
+      display:grid;
+      gap:10px;
+      max-height:280px;
+      overflow:auto;
+    }
+
+    .move{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .legend{
+      padding:18px;
+      display:grid;
+      gap:8px;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .mini{
+      font-size:.92rem;
+      color:var(--muted);
+    }
+
+    @media (max-width:860px){
+      .hud{ grid-template-columns:1fr 1fr; }
+      .river-area{ min-height:620px; }
+      .banks{
+        grid-template-columns:1fr;
+        grid-template-rows:1fr 130px 1fr;
+      }
+      .river{ min-height:130px; }
+      .boat-zone{
+        top:50%;
+        left:50%;
+        transform:translate(-50%, -50%) rotate(90deg);
+        width:130px;
+        height:100%;
+      }
+      .boat{
+        width:120px;
+        left:6px;
+        top:12px;
+      }
+      .boat.right{
+        left:6px;
+        top:calc(100% - 120px - 12px);
+      }
+      .characters{ min-height:150px; }
+    }
+
+    @media (max-width:520px){
+      .wrap{ width:min(100% - 12px, 100%); margin:12px auto; }
+      .hero, .game, .moves, .legend{ padding:14px; }
+      .char{ width:62px; }
+      .emoji{ font-size:2.2rem; }
+      button{ width:100%; }
+      .controls{ display:grid; grid-template-columns:1fr; }
+      .hud{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="panel hero">
+      <h1>🐺🐑 Lobos y Ovejas</h1>
+      <div class="sub">
+        Cruza a los <strong>3 lobos</strong> y las <strong>3 ovejas</strong> al otro lado del río usando una barca con espacio para <strong>2 animales</strong>.
+        <br>
+        Pero ojo: en cualquier orilla donde haya ovejas, <strong>los lobos no pueden ser más que ellas</strong>, o se las comen. Sí, puzzle infantil. Sí, también humilla adultos.
+      </div>
+      <div class="chips">
+        <div class="chip">Desafío: si lo consigues en menos de 13 movimientos recibirás una recompensa</div>
+        <div class="chip">Barca de 2 plazas</div>
+        <div class="chip">No puede viajar vacía</div>
+        <div class="chip">Pierdes si los lobos superan a las ovejas</div>
+      </div>
+    </section>
+
+    <section class="panel game">
+      <div class="hud">
+        <div class="stat">
+          <div class="label">Orilla izquierda</div>
+          <div class="value" id="leftCount">3 🐺 · 3 🐑</div>
+        </div>
+        <div class="stat">
+          <div class="label">Barca</div>
+          <div class="value" id="boatCount">0 / 2</div>
+        </div>
+        <div class="stat">
+          <div class="label">Orilla derecha</div>
+          <div class="value" id="rightCount">0 🐺 · 0 🐑</div>
+        </div>
+        <div class="stat">
+          <div class="label">Movimientos</div>
+          <div class="value" id="moveCount">0</div>
+        </div>
+      </div>
+
+      <div class="river-area">
+        <div class="banks">
+          <div class="bank left">
+            <div class="bank-title">Orilla izquierda</div>
+            <div class="characters" id="leftBank"></div>
+          </div>
+
+          <div class="river">
+            <div class="boat-zone" id="boatZone">
+              <div class="boat" id="boat">
+                <div class="boat-shape">
+                  <div class="hull"></div>
+                  <div class="seats">
+                    <div class="seat">
+                      <span class="seat-label">Plaza 1</span>
+                      <div id="seat0"></div>
+                    </div>
+                    <div class="seat">
+                      <span class="seat-label">Plaza 2</span>
+                      <div id="seat1"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bank right">
+            <div class="bank-title">Orilla derecha</div>
+            <div class="characters" id="rightBank"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="secondary" onclick="location.href='index.html'">⬅️ Volver al menú</button>
+        <button id="crossBtn">⛵ Cruzar río</button>
+        <button class="secondary" id="undoBtn">↩️ Deshacer</button>
+        <button class="warn" id="resetBtn">🔄 Reiniciar</button>
+      </div>
+
+      <div class="message" id="message">
+        Selecciona hasta 2 animales de la orilla donde está la barca y pulsa <strong>“Cruzar río”</strong>.
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="moves" id="moveLog">
+        <div class="mini">Aún no has hecho movimientos.</div>
+      </div>
+    </section>
+
+    <section class="panel legend">
+      <div class="mini">Si detectas algún bug, repórtalo al desarrollador.</div>
+      <strong>Cómo se juega</strong>
+      <div>1. Pulsa sobre lobos u ovejas para subirlos o bajarlos de la barca.</div>
+      <div>2. La barca solo puede llevar 1 o 2 animales.</div>
+      <div>3. No puedes dejar una orilla con más lobos que ovejas, salvo que no quede ninguna oveja allí.</div>
+      <div>4. Ganas cuando los 6 estén a la derecha sin romper la regla.</div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="rewardModal" aria-hidden="true">
+    <div class="modal">
+      <h2>🔓 Pista desbloqueada</h2>
+      <p>Has resuelto el puzzle en menos de 13 movimientos.
+Eso significa que tu cerebro está encendido.
+
+Pista para el siguiente:
+
+Si siempre haces lo lógico, perderás.</p>
+      <div class="modal-actions">
+        <button id="closeModalBtn">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const initialAnimals = [
+      { id:'w1', type:'wolf', side:'left' },
+      { id:'w2', type:'wolf', side:'left' },
+      { id:'w3', type:'wolf', side:'left' },
+      { id:'s1', type:'sheep', side:'left' },
+      { id:'s2', type:'sheep', side:'left' },
+      { id:'s3', type:'sheep', side:'left' }
+    ];
+
+    let animals = [];
+    let boatSide = 'left';
+    let boatPassengers = [];
+    let moveCount = 0;
+    let gameOver = false;
+    let won = false;
+    let history = [];
+
+    const leftBank = document.getElementById('leftBank');
+    const rightBank = document.getElementById('rightBank');
+    const seat0 = document.getElementById('seat0');
+    const seat1 = document.getElementById('seat1');
+    const boatEl = document.getElementById('boat');
+    const messageEl = document.getElementById('message');
+    const moveLog = document.getElementById('moveLog');
+    const leftCount = document.getElementById('leftCount');
+    const rightCount = document.getElementById('rightCount');
+    const boatCount = document.getElementById('boatCount');
+    const moveCountEl = document.getElementById('moveCount');
+    const crossBtn = document.getElementById('crossBtn');
+    const undoBtn = document.getElementById('undoBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const rewardModal = document.getElementById('rewardModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    function deepCopyState(){
+      return JSON.parse(JSON.stringify({
+        animals,
+        boatSide,
+        boatPassengers,
+        moveCount,
+        gameOver,
+        won
+      }));
+    }
+
+    function loadState(state){
+      animals = JSON.parse(JSON.stringify(state.animals));
+      boatSide = state.boatSide;
+      boatPassengers = [...state.boatPassengers];
+      moveCount = state.moveCount;
+      gameOver = state.gameOver;
+      won = state.won;
+      render();
+    }
+
+    function showRewardModal(){
+      rewardModal.classList.add('show');
+      rewardModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideRewardModal(){
+      rewardModal.classList.remove('show');
+      rewardModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function setup(){
+      animals = JSON.parse(JSON.stringify(initialAnimals));
+      boatSide = 'left';
+      boatPassengers = [];
+      moveCount = 0;
+      gameOver = false;
+      won = false;
+      history = [];
+      moveLog.innerHTML = '<div class="mini">Aún no has hecho movimientos.</div>';
+      hideRewardModal();
+      setMessage('Selecciona hasta 2 animales de la orilla donde está la barca y pulsa <strong>“Cruzar río”</strong>.');
+      render();
+    }
+
+    function getAnimal(id){
+      return animals.find(a => a.id === id);
+    }
+
+    function sideCounts(side){
+      const group = animals.filter(a => a.side === side);
+      return {
+        wolves: group.filter(a => a.type === 'wolf').length,
+        sheep: group.filter(a => a.type === 'sheep').length
+      };
+    }
+
+    function isSideSafe(side){
+      const { wolves, sheep } = sideCounts(side);
+      return sheep === 0 || wolves <= sheep;
+    }
+
+    function isSolved(){
+      return animals.every(a => a.side === 'right');
+    }
+
+    function icon(type){
+      return type === 'wolf' ? '🐺' : '🐑';
+    }
+
+    function label(type){
+      return type === 'wolf' ? 'Lobo' : 'Oveja';
+    }
+
+    function animalNode(animal, inBoat = false){
+      const el = document.createElement('div');
+      const selectable = !gameOver && !won && (inBoat || animal.side === boatSide);
+      el.className =
+        'char' +
+        (boatPassengers.includes(animal.id) ? ' selected' : '') +
+        (!selectable ? ' disabled' : '');
+
+      el.innerHTML = `
+        <span class="emoji">${icon(animal.type)}</span>
+        <div class="name">${label(animal.type)}</div>
+      `;
+
+      el.addEventListener('click', () => handleAnimalClick(animal.id));
+      return el;
+    }
+
+    function handleAnimalClick(id){
+      if(gameOver || won) return;
+
+      const animal = getAnimal(id);
+      const inBoat = boatPassengers.includes(id);
+
+      if(inBoat){
+        boatPassengers = boatPassengers.filter(x => x !== id);
+        animal.side = boatSide;
+        setMessage(`${label(animal.type)} bajó de la barca.`);
+        render();
+        return;
+      }
+
+      if(animal.side !== boatSide){
+        setMessage('Ese animal no está en la orilla donde se encuentra la barca.', 'bad');
+        return;
+      }
+
+      if(boatPassengers.length >= 2){
+        setMessage('La barca ya está llena. No intentes hacer overbooking fluvial.', 'bad');
+        return;
+      }
+
+      history.push(deepCopyState());
+      animal.side = 'boat';
+      boatPassengers.push(id);
+      setMessage(`${label(animal.type)} subió a la barca.`);
+      render();
+    }
+
+    function crossRiver(){
+      if(gameOver || won) return;
+
+      if(boatPassengers.length === 0){
+        setMessage('La barca no puede cruzar vacía.', 'bad');
+        return;
+      }
+
+      history.push(deepCopyState());
+
+      boatSide = boatSide === 'left' ? 'right' : 'left';
+      boatEl.classList.toggle('right', boatSide === 'right');
+
+      for(const id of boatPassengers){
+        const animal = getAnimal(id);
+        animal.side = boatSide;
+      }
+
+      const trip = boatPassengers.map(id => label(getAnimal(id).type)).join(' + ');
+      boatPassengers = [];
+      moveCount++;
+
+      logMove(
+        `Movimiento ${moveCount}`,
+        `${trip} → ${boatSide === 'right' ? 'derecha' : 'izquierda'}`
+      );
+
+      const leftSafe = isSideSafe('left');
+      const rightSafe = isSideSafe('right');
+
+      if(!leftSafe || !rightSafe){
+        gameOver = true;
+        setMessage(
+          'Has perdido: en una orilla había más lobos que ovejas. Las ovejas han descubierto por qué esto no era un picnic.',
+          'bad'
+        );
+      } else if(isSolved()){
+        won = true;
+        setMessage(
+          `¡Lo resolviste en ${moveCount} movimientos! Tus amigos ya no pueden decir que esta web solo sirve para mirar personajes.`,
+          'win'
+        );
+
+        if(moveCount < 13 && !cheated){
+          showRewardModal();
+        }
+      } else {
+        setMessage(
+          'Cruce realizado. Sigue pensando antes de mandar ovejas a una reunión de recursos humanos con lobos.',
+          'good'
+        );
+      }
+
+      render();
+    }
+
+    function logMove(title, text){
+      if(moveLog.querySelector('.mini')) moveLog.innerHTML = '';
+
+      const div = document.createElement('div');
+      div.className = 'move';
+      div.innerHTML = `<strong>${title}</strong><span>${text}</span>`;
+      moveLog.prepend(div);
+    }
+
+    function setMessage(text, type=''){
+      messageEl.className = 'message' + (type ? ` ${type}` : '');
+      messageEl.innerHTML = text;
+    }
+
+    function render(){
+      boatEl.classList.toggle('right', boatSide === 'right');
+
+      leftBank.innerHTML = '';
+      rightBank.innerHTML = '';
+      seat0.innerHTML = '';
+      seat1.innerHTML = '';
+
+      const leftAnimals = animals.filter(a => a.side === 'left');
+      const rightAnimals = animals.filter(a => a.side === 'right');
+      const inBoatAnimals = boatPassengers.map(getAnimal);
+
+      leftAnimals.forEach(a => leftBank.appendChild(animalNode(a)));
+      rightAnimals.forEach(a => rightBank.appendChild(animalNode(a)));
+
+      if(inBoatAnimals[0]) seat0.appendChild(animalNode(inBoatAnimals[0], true));
+      if(inBoatAnimals[1]) seat1.appendChild(animalNode(inBoatAnimals[1], true));
+
+      const l = sideCounts('left');
+      const r = sideCounts('right');
+
+      leftCount.textContent = `${l.wolves} 🐺 · ${l.sheep} 🐑`;
+      rightCount.textContent = `${r.wolves} 🐺 · ${r.sheep} 🐑`;
+      boatCount.textContent = `${boatPassengers.length} / 2`;
+      moveCountEl.textContent = moveCount;
+
+      crossBtn.disabled = gameOver || won;
+      undoBtn.disabled = history.length === 0;
+    }
+
+    crossBtn.addEventListener('click', crossRiver);
+
+    resetBtn.addEventListener('click', setup);
+
+    undoBtn.addEventListener('click', () => {
+      if(history.length === 0) return;
+      const prev = history.pop();
+      setMessage('Movimiento deshecho. La cronología ha sido corregida.');
+      loadState(prev);
+    });
+
+    closeModalBtn.addEventListener('click', hideRewardModal);
+
+    rewardModal.addEventListener('click', (e) => {
+      if(e.target === rewardModal) hideRewardModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') hideRewardModal();
+    });
+    
+    let cheated = false;
+
+document.addEventListener("visibilitychange", () => {
+
+  if (document.hidden) {
+
+    cheated = true;
+
+    alert(
+      "Si sales de la ventana para hacer trampas, el intento no contará."
+    );
+
+    setup();
+
+  }
+
+});
+
+    setup();
+  </script>
+</body>
+</html>
