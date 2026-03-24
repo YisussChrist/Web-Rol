@@ -756,6 +756,32 @@
     #newQuoteBtn{
   margin-top:16px;
 }
+
+/* ====================== NUEVA SECCIÓN JUEGOS ====================== */
+.column-header h2 {
+  font-size: 1.35rem;
+}
+
+.hub-card-tag {
+  background: rgba(142, 162, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+}
+
+/* Ajuste para que quepan 4 columnas en pantallas grandes */
+@media (min-width: 1200px) {
+  .columns {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Si quieres que en móviles siga siendo 1 columna (recomendado) */
+@media (max-width: 980px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 </head>
 <body>
@@ -844,6 +870,12 @@
         <span class="icon">📚</span>
         <span class="num">2</span>
         <span class="label">Sección General</span>
+      </div>
+
+      <div class="stat">
+        <span class="icon">🎮</span>
+        <span class="num">2</span>
+        <span class="label">Juegos</span>
       </div>
     </section>
 
@@ -955,6 +987,53 @@
             <p class="hub-card-desc">Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia.</p>
             <span class="hub-card-tag">General</span>
           </a>
+        </div>
+      </article>
+
+            <!-- ====================== NUEVA COLUMNA: JUEGOS ====================== -->
+      <article class="column">
+        <div class="column-header">
+          <h2>🎮 Juegos</h2>
+          <p>Puzzles y minijuegos interactivos para descansar entre rol y rol.</p>
+        </div>
+        <div class="card-list">
+          
+          <!-- Puzzle del Río (Lobos y Ovejas) -->
+          <a class="hub-card" href="puzzle.html" 
+             data-id="puzzle-rio" 
+             data-title="🐺🐑 Lobos y Ovejas" 
+             data-desc="El clásico puzzle del río: lleva a todos al otro lado sin que las ovejas se conviertan en comida." 
+             data-tag="Juegos" 
+             data-icon="⛵">
+            <div class="hub-card-top">
+              <h3 class="hub-card-title">🐺🐑 Lobos y Ovejas</h3>
+              <div class="hub-card-actions">
+                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                <span class="hub-card-icon">⛵</span>
+              </div>
+            </div>
+            <p class="hub-card-desc">El clásico puzzle del río: lleva a todos al otro lado sin que las ovejas se conviertan en comida.</p>
+            <span class="hub-card-tag">Juegos</span>
+          </a>
+
+          <!-- Luces Fuera -->
+          <a class="hub-card" href="lightsout.html" 
+             data-id="lightsout" 
+             data-title="💡 Luces Fuera" 
+             data-desc="Apaga todas las luces pulsando las correctas. Cada clic afecta a la luz y sus vecinas." 
+             data-tag="Juegos" 
+             data-icon="🔦">
+            <div class="hub-card-top">
+              <h3 class="hub-card-title">💡 Luces Fuera</h3>
+              <div class="hub-card-actions">
+                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                <span class="hub-card-icon">🔦</span>
+              </div>
+            </div>
+            <p class="hub-card-desc">Apaga todas las luces pulsando las correctas. Cada clic afecta a la luz y sus vecinas.</p>
+            <span class="hub-card-tag">Juegos</span>
+          </a>
+
         </div>
       </article>
     </section>
