@@ -535,6 +535,166 @@
       color:var(--text);
     }
 
+        .weekly-panel{
+      background:
+        linear-gradient(135deg, rgba(142,162,255,0.16), rgba(255,139,214,0.12)),
+        var(--card);
+      border:1px solid rgba(255,215,106,0.22);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+      margin-bottom:24px;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .weekly-panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(255,215,106,0.18), transparent 24%),
+        radial-gradient(circle at 85% 25%, rgba(142,162,255,0.16), transparent 26%),
+        linear-gradient(120deg, rgba(255,255,255,0.05), transparent 45%, rgba(255,255,255,0.02));
+      pointer-events:none;
+    }
+
+    .weekly-inner{
+      position:relative;
+      z-index:1;
+    }
+
+    .weekly-label{
+      display:inline-block;
+      font-size:0.8rem;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--gold);
+      margin-bottom:12px;
+    }
+
+    .weekly-card{
+      display:block;
+      text-decoration:none;
+      color:inherit;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,215,106,0.22);
+      border-radius:22px;
+      padding:20px;
+      position:relative;
+      overflow:hidden;
+      transition:.22s ease;
+    }
+
+    .weekly-card:hover{
+      transform:translateY(-4px) scale(1.01);
+      background:var(--card-hover);
+      border-color:rgba(255,215,106,0.4);
+      box-shadow:0 0 0 1px rgba(255,215,106,0.08), 0 18px 40px rgba(0,0,0,0.22);
+    }
+
+    .weekly-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(135deg, rgba(255,215,106,.10), transparent 45%, rgba(255,139,214,.08));
+      opacity:0;
+      transition:.22s ease;
+      pointer-events:none;
+    }
+
+    .weekly-card:hover::after{
+      opacity:1;
+    }
+
+    .weekly-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      margin-bottom:10px;
+      position:relative;
+      z-index:1;
+    }
+
+    .weekly-kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:.78rem;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#201500;
+      background:linear-gradient(180deg, #ffd76a, #ffb84d);
+      padding:8px 12px;
+      border-radius:999px;
+      box-shadow:0 8px 20px rgba(255,184,77,0.22);
+    }
+
+    .weekly-icon{
+      font-size:2.2rem;
+      flex-shrink:0;
+      filter:drop-shadow(0 0 10px rgba(255,215,106,.18));
+    }
+
+    .weekly-title{
+      margin:0 0 8px;
+      font-size:1.35rem;
+      font-weight:900;
+    }
+
+    .weekly-desc{
+      margin:0;
+      color:var(--muted);
+      line-height:1.65;
+      font-size:0.97rem;
+      position:relative;
+      z-index:1;
+      max-width:70ch;
+    }
+
+    .weekly-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+      position:relative;
+      z-index:1;
+    }
+
+    .weekly-chip{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:.82rem;
+      font-weight:800;
+      color:var(--text);
+      border:1px solid var(--border);
+      background:rgba(255,255,255,0.05);
+    }
+
+    @media (max-width:560px){
+      .weekly-panel{
+        padding:20px;
+      }
+
+      .weekly-top{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .weekly-icon{
+        font-size:1.9rem;
+      }
+
+      .weekly-title{
+        font-size:1.15rem;
+      }
+    }
+
     @media (max-width: 980px){
       .columns{
         grid-template-columns:1fr;
@@ -635,6 +795,35 @@
         </div>
 
         <div id="favoritesContainer"></div>
+      </div>
+    </section>
+
+        <section class="weekly-panel">
+      <div class="weekly-inner">
+        <span class="weekly-label">Puzzle de la semana</span>
+
+        <a class="weekly-card" href="puzzle.html">
+          <div class="weekly-top">
+            <div>
+              <span class="weekly-kicker">🆕 Nuevo desafío</span>
+              <h2 class="weekly-title">🐺🐑 Lobos y Ovejas — Puzzle del Río</h2>
+            </div>
+
+            <span class="weekly-icon">🧩</span>
+          </div>
+
+          <p class="weekly-desc">
+            El clásico rompecabezas del río ya está disponible en el hub. 
+            Cruza a todos sin que las ovejas acaben en un comité de empresa gestionado por lobos.
+            Además, si lo resuelves en menos de 13 movimientos, desbloqueas una pista para el siguiente desafío.
+          </p>
+
+          <div class="weekly-meta">
+            <span class="weekly-chip">⛵ Interactivo</span>
+            <span class="weekly-chip">🎯 Desafío semanal</span>
+            <span class="weekly-chip">🔓 Recompensa oculta</span>
+          </div>
+        </a>
       </div>
     </section>
 
