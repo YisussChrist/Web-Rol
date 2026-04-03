@@ -36,9 +36,7 @@
       --gold:#d99a00;
     }
 
-    *{
-      box-sizing:border-box;
-    }
+    *{ box-sizing:border-box; }
 
     html,body{
       margin:0;
@@ -389,7 +387,7 @@
 
     .column-header h2{
       margin:0 0 6px;
-      font-size:1.3rem;
+      font-size:1.35rem;
       display:flex;
       align-items:center;
       gap:10px;
@@ -409,13 +407,9 @@
     }
 
     .hub-card{
-      display:block;
-      text-decoration:none;
-      color:inherit;
       background:rgba(255,255,255,0.03);
       border:1px solid var(--border);
       border-radius:18px;
-      padding:16px;
       transition:.22s ease;
       position:relative;
       overflow:hidden;
@@ -441,6 +435,15 @@
       opacity:1;
     }
 
+    .hub-card-link{
+      display:block;
+      text-decoration:none;
+      color:inherit;
+      padding:16px;
+      position:relative;
+      z-index:1;
+    }
+
     .hub-card-top{
       display:flex;
       align-items:flex-start;
@@ -448,7 +451,7 @@
       gap:12px;
       margin-bottom:10px;
       position:relative;
-      z-index:1;
+      z-index:2;
     }
 
     .hub-card-title{
@@ -485,6 +488,8 @@
       cursor:pointer;
       transition:.2s ease;
       font-size:1rem;
+      position:relative;
+      z-index:4;
     }
 
     .favorite-toggle:hover{
@@ -518,6 +523,9 @@
       letter-spacing:.08em;
       text-transform:uppercase;
       color:var(--accent);
+      background:rgba(142,162,255,0.15);
+      padding:4px 10px;
+      border-radius:999px;
       position:relative;
       z-index:1;
     }
@@ -535,7 +543,11 @@
       color:var(--text);
     }
 
-        .weekly-panel{
+    #newQuoteBtn{
+      margin-top:16px;
+    }
+
+    .weekly-panel{
       background:
         linear-gradient(135deg, rgba(142,162,255,0.16), rgba(255,139,214,0.12)),
         var(--card);
@@ -676,26 +688,13 @@
       background:rgba(255,255,255,0.05);
     }
 
-    @media (max-width:560px){
-      .weekly-panel{
-        padding:20px;
-      }
-
-      .weekly-top{
-        flex-direction:column;
-        align-items:flex-start;
-      }
-
-      .weekly-icon{
-        font-size:1.9rem;
-      }
-
-      .weekly-title{
-        font-size:1.15rem;
+    @media (min-width:1200px){
+      .columns{
+        grid-template-columns:repeat(4, minmax(0, 1fr));
       }
     }
 
-    @media (max-width: 980px){
+    @media (max-width:980px){
       .columns{
         grid-template-columns:1fr;
       }
@@ -714,7 +713,8 @@
       }
 
       .hero,
-      .favorites-panel{
+      .favorites-panel,
+      .weekly-panel{
         padding:20px;
       }
 
@@ -723,7 +723,7 @@
       }
     }
 
-    @media (max-width: 560px){
+    @media (max-width:560px){
       .topbar{
         align-items:stretch;
       }
@@ -740,7 +740,7 @@
         font-size:1rem;
       }
 
-      .hub-card{
+      .hub-card-link{
         padding:15px;
       }
 
@@ -752,36 +752,20 @@
         width:34px;
         height:34px;
       }
+
+      .weekly-top{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .weekly-icon{
+        font-size:1.9rem;
+      }
+
+      .weekly-title{
+        font-size:1.15rem;
+      }
     }
-    #newQuoteBtn{
-  margin-top:16px;
-}
-
-/* ====================== NUEVA SECCIÓN JUEGOS ====================== */
-.column-header h2 {
-  font-size: 1.35rem;
-}
-
-.hub-card-tag {
-  background: rgba(142, 162, 255, 0.15);
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-}
-
-/* Ajuste para que quepan 4 columnas en pantallas grandes */
-@media (min-width: 1200px) {
-  .columns {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-/* Si quieres que en móviles siga siendo 1 columna (recomendado) */
-@media (max-width: 980px) {
-  .columns {
-    grid-template-columns: 1fr;
-  }
-}
   </style>
 </head>
 <body>
@@ -792,7 +776,7 @@
         <p>Centro principal de navegación para tu universo de rol</p>
       </div>
 
-      <button class="theme-toggle" id="themeToggle">🌙 Cambiar tema</button>
+      <button class="theme-toggle" id="themeToggle">☀️ Modo claro</button>
     </div>
 
     <section class="hero">
@@ -816,7 +800,7 @@
           </div>
 
           <div class="favorites-actions">
-            <button class="favorites-btn" id="clearFavoritesBtn">Vaciar favoritos</button>
+            <button class="favorites-btn" id="clearFavoritesBtn" type="button">Vaciar favoritos</button>
           </div>
         </div>
 
@@ -824,7 +808,7 @@
       </div>
     </section>
 
-        <section class="weekly-panel">
+    <section class="weekly-panel">
       <div class="weekly-inner">
         <span class="weekly-label">Puzzle de la semana</span>
 
@@ -839,7 +823,7 @@
           </div>
 
           <p class="weekly-desc">
-            El clásico rompecabezas del río ya está disponible en el hub. 
+            El clásico rompecabezas del río ya está disponible en el hub.
             Cruza a todos sin que las ovejas acaben en un comité de empresa gestionado por lobos.
             Además, si lo resuelves en menos de 13 movimientos, desbloqueas una pista para el siguiente desafío.
           </p>
@@ -868,8 +852,8 @@
 
       <div class="stat">
         <span class="icon">📚</span>
-        <span class="num">2</span>
-        <span class="label">Sección General</span>
+        <span class="num">3</span>
+        <span class="label">Secciones Generales</span>
       </div>
 
       <div class="stat">
@@ -887,29 +871,33 @@
         </div>
 
         <div class="card-list">
-          <a class="hub-card" href="arbol.html" data-id="arbol-inazuma" data-title="🌳 Árbol Familiar" data-desc="Explora familias, descendencia, conexiones y relaciones entre personajes." data-tag="RP Inazuma" data-icon="🧬">
-            <div class="hub-card-top">
-              <h3 class="hub-card-title">🌳 Árbol Familiar</h3>
-              <div class="hub-card-actions">
-                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                <span class="hub-card-icon">🧬</span>
+          <article class="hub-card" data-id="arbol-inazuma" data-title="🌳 Árbol Familiar" data-desc="Explora familias, descendencia, conexiones y relaciones entre personajes." data-tag="RP Inazuma" data-icon="🧬">
+            <a class="hub-card-link" href="arbol.html">
+              <div class="hub-card-top">
+                <h3 class="hub-card-title">🌳 Árbol Familiar</h3>
+                <div class="hub-card-actions">
+                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                  <span class="hub-card-icon">🧬</span>
+                </div>
               </div>
-            </div>
-            <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
-            <span class="hub-card-tag">RP Inazuma</span>
-          </a>
+              <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
+              <span class="hub-card-tag">RP Inazuma</span>
+            </a>
+          </article>
 
-          <a class="hub-card" href="posiciones.html" data-id="posiciones-inazuma" data-title="⚽ Posiciones" data-desc="Consulta los roles de cada personaje en el campo y su distribución táctica." data-tag="RP Inazuma" data-icon="📍">
-            <div class="hub-card-top">
-              <h3 class="hub-card-title">⚽ Posiciones</h3>
-              <div class="hub-card-actions">
-                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                <span class="hub-card-icon">📍</span>
+          <article class="hub-card" data-id="posiciones-inazuma" data-title="⚽ Posiciones" data-desc="Consulta los roles de cada personaje en el campo y su distribución táctica." data-tag="RP Inazuma" data-icon="📍">
+            <a class="hub-card-link" href="posiciones.html">
+              <div class="hub-card-top">
+                <h3 class="hub-card-title">⚽ Posiciones</h3>
+                <div class="hub-card-actions">
+                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                  <span class="hub-card-icon">📍</span>
+                </div>
               </div>
-            </div>
-            <p class="hub-card-desc">Consulta los roles de cada personaje en el campo y su distribución táctica.</p>
-            <span class="hub-card-tag">RP Inazuma</span>
-          </a>
+              <p class="hub-card-desc">Consulta los roles de cada personaje en el campo y su distribución táctica.</p>
+              <span class="hub-card-tag">RP Inazuma</span>
+            </a>
+          </article>
         </div>
       </article>
 
@@ -920,41 +908,47 @@
         </div>
 
         <div class="card-list">
-          <a class="hub-card" href="heroes.html" data-id="heroes-db" data-title="🦸 Héroes" data-desc="Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP." data-tag="RP DB" data-icon="🔥">
-            <div class="hub-card-top">
-              <h3 class="hub-card-title">🦸 Héroes</h3>
-              <div class="hub-card-actions">
-                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                <span class="hub-card-icon">🔥</span>
+          <article class="hub-card" data-id="heroes-db" data-title="🦸 Héroes" data-desc="Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP." data-tag="RP DB" data-icon="🔥">
+            <a class="hub-card-link" href="heroes.html">
+              <div class="hub-card-top">
+                <h3 class="hub-card-title">🦸 Héroes</h3>
+                <div class="hub-card-actions">
+                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                  <span class="hub-card-icon">🔥</span>
+                </div>
               </div>
-            </div>
-            <p class="hub-card-desc">Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP.</p>
-            <span class="hub-card-tag">RP DB</span>
-          </a>
+              <p class="hub-card-desc">Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP.</p>
+              <span class="hub-card-tag">RP DB</span>
+            </a>
+          </article>
 
-          <a class="hub-card" href="poder.html" data-id="poder-db" data-title="💥 Poder" data-desc="Consulta escalas, niveles, formas, estados y evolución de poder de los personajes." data-tag="RP DB" data-icon="⚔️">
-            <div class="hub-card-top">
-              <h3 class="hub-card-title">💥 Poder</h3>
-              <div class="hub-card-actions">
-                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                <span class="hub-card-icon">⚔️</span>
+          <article class="hub-card" data-id="poder-db" data-title="💥 Poder" data-desc="Consulta escalas, niveles, formas, estados y evolución de poder de los personajes." data-tag="RP DB" data-icon="⚔️">
+            <a class="hub-card-link" href="poder.html">
+              <div class="hub-card-top">
+                <h3 class="hub-card-title">💥 Poder</h3>
+                <div class="hub-card-actions">
+                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                  <span class="hub-card-icon">⚔️</span>
+                </div>
               </div>
-            </div>
-            <p class="hub-card-desc">Consulta escalas, niveles, formas, estados y evolución de poder de los personajes.</p>
-            <span class="hub-card-tag">RP DB</span>
-          </a>
+              <p class="hub-card-desc">Consulta escalas, niveles, formas, estados y evolución de poder de los personajes.</p>
+              <span class="hub-card-tag">RP DB</span>
+            </a>
+          </article>
 
-          <a class="hub-card" href="parejasdragonball.html" data-id="arbol-db" data-title="🌳 Arbol Familiar" data-desc="Explora familias, descendencia, conexiones y relaciones entre personajes." data-tag="RP DB" data-icon="🧬">
-            <div class="hub-card-top">
-              <h3 class="hub-card-title">🌳 Arbol Familiar</h3>
-              <div class="hub-card-actions">
-                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                <span class="hub-card-icon">🧬</span>
+          <article class="hub-card" data-id="arbol-db" data-title="🌳 Árbol Familiar" data-desc="Explora familias, descendencia, conexiones y relaciones entre personajes." data-tag="RP DB" data-icon="🧬">
+            <a class="hub-card-link" href="parejasdragonball.html">
+              <div class="hub-card-top">
+                <h3 class="hub-card-title">🌳 Árbol Familiar</h3>
+                <div class="hub-card-actions">
+                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                  <span class="hub-card-icon">🧬</span>
+                </div>
               </div>
-            </div>
-            <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
-            <span class="hub-card-tag">RP DB</span>
-          </a>
+              <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
+              <span class="hub-card-tag">RP DB</span>
+            </a>
+          </article>
         </div>
       </article>
 
@@ -965,75 +959,84 @@
         </div>
 
         <div class="card-list">
-          <a class="hub-card" href="personajes.html" data-id="personajes-general" data-title="👥 Personajes" data-desc="Índice general de personajes del RP, útil como puerta de entrada a toda la wiki." data-tag="General" data-icon="🗂️">
-            <div class="hub-card-top">
-              <h3 class="hub-card-title">👥 Personajes</h3>
-              <div class="hub-card-actions">
-                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                <span class="hub-card-icon">🗂️</span>
+          <article class="hub-card" data-id="personajes-general" data-title="👥 Personajes" data-desc="Índice general de personajes del RP, útil como puerta de entrada a toda la wiki." data-tag="General" data-icon="🗂️">
+            <a class="hub-card-link" href="personajes.html">
+              <div class="hub-card-top">
+                <h3 class="hub-card-title">👥 Personajes</h3>
+                <div class="hub-card-actions">
+                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                  <span class="hub-card-icon">🗂️</span>
+                </div>
               </div>
-            </div>
-            <p class="hub-card-desc">Índice general de personajes del RP, útil como puerta de entrada a toda la wiki.</p>
-            <span class="hub-card-tag">General</span>
-          </a>
-          <a class="hub-card" href="embarazos.html" data-id="embarazos-inazuma" data-title="🤰 Embarazos" data-desc="Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia." data-tag="RP Inazuma" data-icon="🍼">
-            <div class="hub-card-top">
-              <h3 class="hub-card-title">🤰 Embarazos</h3>
-              <div class="hub-card-actions">
-                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                <span class="hub-card-icon">🍼</span>
+              <p class="hub-card-desc">Índice general de personajes del RP, útil como puerta de entrada a toda la wiki.</p>
+              <span class="hub-card-tag">General</span>
+            </a>
+          </article>
+
+          <article class="hub-card" data-id="embarazos-inazuma" data-title="🤰 Embarazos" data-desc="Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia." data-tag="General" data-icon="🍼">
+            <a class="hub-card-link" href="embarazos.html">
+              <div class="hub-card-top">
+                <h3 class="hub-card-title">🤰 Embarazos</h3>
+                <div class="hub-card-actions">
+                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                  <span class="hub-card-icon">🍼</span>
+                </div>
               </div>
-            </div>
-            <p class="hub-card-desc">Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia.</p>
-            <span class="hub-card-tag">General</span>
-          </a>
+              <p class="hub-card-desc">Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia.</p>
+              <span class="hub-card-tag">General</span>
+            </a>
+          </article>
+
+          <article class="hub-card" data-id="clima" data-title="☀️ Clima" data-desc="Roll general para el clima en el RP." data-tag="General" data-icon="☀️">
+            <a class="hub-card-link" href="clima.html">
+              <div class="hub-card-top">
+                <h3 class="hub-card-title">☀️ Clima</h3>
+                <div class="hub-card-actions">
+                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                  <span class="hub-card-icon">☀️</span>
+                </div>
+              </div>
+              <p class="hub-card-desc">Roll general para el clima en el RP.</p>
+              <span class="hub-card-tag">General</span>
+            </a>
+          </article>
         </div>
       </article>
 
-            <!-- ====================== NUEVA COLUMNA: JUEGOS ====================== -->
       <article class="column">
         <div class="column-header">
           <h2>🎮 Juegos</h2>
           <p>Puzzles y minijuegos interactivos para descansar entre rol y rol.</p>
         </div>
+
         <div class="card-list">
-          
-          <!-- Puzzle del Río (Lobos y Ovejas) -->
-          <a class="hub-card" href="puzzle.html" 
-             data-id="puzzle-rio" 
-             data-title="🐺🐑 Lobos y Ovejas" 
-             data-desc="El clásico puzzle del río: lleva a todos al otro lado sin que las ovejas se conviertan en comida." 
-             data-tag="Juegos" 
-             data-icon="⛵">
-            <div class="hub-card-top">
-              <h3 class="hub-card-title">🐺🐑 Lobos y Ovejas</h3>
-              <div class="hub-card-actions">
-                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                <span class="hub-card-icon">⛵</span>
+          <article class="hub-card" data-id="puzzle-rio" data-title="🐺🐑 Lobos y Ovejas" data-desc="El clásico puzzle del río: lleva a todos al otro lado sin que las ovejas se conviertan en comida." data-tag="Juegos" data-icon="⛵">
+            <a class="hub-card-link" href="puzzle.html">
+              <div class="hub-card-top">
+                <h3 class="hub-card-title">🐺🐑 Lobos y Ovejas</h3>
+                <div class="hub-card-actions">
+                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                  <span class="hub-card-icon">⛵</span>
+                </div>
               </div>
-            </div>
-            <p class="hub-card-desc">El clásico puzzle del río: lleva a todos al otro lado sin que las ovejas se conviertan en comida.</p>
-            <span class="hub-card-tag">Juegos</span>
-          </a>
+              <p class="hub-card-desc">El clásico puzzle del río: lleva a todos al otro lado sin que las ovejas se conviertan en comida.</p>
+              <span class="hub-card-tag">Juegos</span>
+            </a>
+          </article>
 
-          <!-- Luces Fuera -->
-          <a class="hub-card" href="lightsout.html" 
-             data-id="lightsout" 
-             data-title="💡 Luces Fuera" 
-             data-desc="Apaga todas las luces pulsando las correctas. Cada clic afecta a la luz y sus vecinas." 
-             data-tag="Juegos" 
-             data-icon="🔦">
-            <div class="hub-card-top">
-              <h3 class="hub-card-title">💡 Luces Fuera</h3>
-              <div class="hub-card-actions">
-                <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                <span class="hub-card-icon">🔦</span>
+          <article class="hub-card" data-id="lightsout" data-title="💡 Luces Fuera" data-desc="Apaga todas las luces pulsando las correctas. Cada clic afecta a la luz y sus vecinas." data-tag="Juegos" data-icon="🔦">
+            <a class="hub-card-link" href="lightsout.html">
+              <div class="hub-card-top">
+                <h3 class="hub-card-title">💡 Luces Fuera</h3>
+                <div class="hub-card-actions">
+                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                  <span class="hub-card-icon">🔦</span>
+                </div>
               </div>
-            </div>
-            <p class="hub-card-desc">Apaga todas las luces pulsando las correctas. Cada clic afecta a la luz y sus vecinas.</p>
-            <span class="hub-card-tag">Juegos</span>
-          </a>
-
+              <p class="hub-card-desc">Apaga todas las luces pulsando las correctas. Cada clic afecta a la luz y sus vecinas.</p>
+              <span class="hub-card-tag">Juegos</span>
+            </a>
+          </article>
         </div>
       </article>
     </section>
@@ -1046,821 +1049,330 @@
 
   <script>
     const quotes = [
-      {
-        text: "El fútbol no se juega solo con los pies. También se juega con lo que eres.",
-        author: "RP Inazuma"
-      },
-      {
-        text: "Solo sé que no sé nada.",
-        author: "Sócrates"
-      },
-      {
-        text: "El hombre está condenado a ser libre.",
-        author: "Jean-Paul Satre"
-      },
-      {
-        text: "Lo que no me mata, me hace más fuerte.",
-        author: "Friedrich Nietzsche"
-      },
-      {
-        text: "Conócete a ti mismo.",
-        author: "Templo de Delfos"
-      },
-      {
-        text: "La vida es lo que pasa mientras estás ocupado haciendo otros planes.",
-        author: "John Lennon"
-      },
-      {
-        text: "El destino mezcla las cartas, pero nosotros jugamos la mano.",
-        author: "Arthur Schopenhauer"
-      },
-      {
-        text: "La paciencia es amarga, pero su fruto es dulce.",
-        author: "Aristóteles"
-      },
-      {
-        text: "Un héroe no es el que nunca cae, sino el que siempre se levanta.",
-        author: "General"
-      },
-      {
-        text: "El poder revela quién eres cuando nadie puede detenerte.",
-        author: "General"
-      },
-      {
-        text: "No hay gloria sin sacrificio.",
-        author: "RP General"
-      },
-      {
-        text: "Los débiles esperan oportunidades. Los fuertes las crean.",
-        author: "RP"
-      },
-      {
-        text: "Cada batalla perdida enseña algo que la victora jamás podría.",
-        author: "RP"
-      },
-      {
-        text: "El verdadero enemigo no siempre está enfrente. A veces está dentro.",
-        author: "General"
-      },
-      {
-        text: "La voluntad es el arma más fuerte que existe.",
-        author: "RP Dragon Ball"
-      },
-      {
-        text: "Un linaje no se mide por su origen, sino por lo que decide proteger.",
-        author: "Árbol Familiar"
-      },
-      {
-        text: "Algunos nacen con poder, otros lo forjan.",
-        author: "RP"
-      },
-      {
-        text: "Quien controla su mente, controla su destino.",
-        author: "Filosofía"
-      },
-      {
-        text: "El miedo es natural. Rendirse es opcional.",
-        author: "General"
-      },
-      {
-        text: "No luches para ganar, lucha para no perder quién eres.",
-        author: "RP Inazuma"
-      },
-      {
-        text: "La historia recuerda a los que se atreven.",
-        author: "General"
-      },
-      {
-        text: "El fin justifica los medios.",
-        author: "Maquiavelo"
-      },
-      {
-        text: "Los hombres olvidan antes la muerte de su padre que la pérdida de su patrimonio.",
-        author: "Maquiavelo"
-      },
-      {
-        text: "Es mejor ser temido que amado, si no puedes ser ambos.",
-        author: "Maquiavelo"
-      },
-      {
-        text: "Quien desea obediencia debe saber mandar.",
-        author: "Maquiavelo"
-      },
-      {
-        text: "La fortuna favorece a los audaces.",
-        author: "Virgilio"
-      },
-      {
-        text: "Pienso, luego existo.",
-        author: "René Descartes"
-      },
-      {
-        text: "El hombre que mueve montañas empieza apartando pequeñas piedras.",
-        author: "Confucio"
-      },
-      {
-        text: "La libertad no es hacer lo que quieras, si no tener que hacer lo que no quieres.",
-        author: "Jean-Jacques Rousseau"
-      },
-      {
-        text: "Aquel que tiene un porqué para vivir puede soportar casi cualquier cómo.",
-        author: "Nietzsche"
-      },
-      {
-        text: "La guerra es la continuación de la política por otros medios.",
-        author: "Clausewitz"
-      },
-      {
-        text: "Y el universo te dijo Te quiero.",
-        author: "Minecraft"
-      },
-      {
-        text: "Eres más fuerte de lo que crees.",
-        author: "Minecraft"
-      },
-      {
-        text: "El único límite es tu propia imaginación.",
-        author: "Minecraft"
-      },
-      {
-        text: "Después de todo, sigues siendo tú.",
-        author: "Undertale",
-        meaning: "Aunque cambies, falles o te rompas un poco por el camino, sigues conservando tu identidad más profunda: tú."
-      },
-      {
-        text: "Determinación.",
-        author: "Undertale"
-      },
-      {
-        text: "Hace un día hermoso, los pájaros cantan, las flores florecen",
-        author: "Sans"
-      },
-      {
-        text: "En este mundo, es matar o ser asesinado.",
-        author: "Undertale"
-      },
-      {
-        text: "El hombre es libre en el momento en que desea serlo.",
-        author: "Voltaire"
-      },
-      {
-        text: "La vida debe ser comprendida hacia atrás, pero debe ser vivida hacia adelante.",
-        author: "Kierkegaard"
-      },
-      {
-        text: "¿Qué es un hombre, sino la suma de sus decisiones?",
-        author: "Filosofía"
-      },
-      {
-        text: "No temo a la muerte, temo no haber vivido.",
-        author: "Marco Aurelio"
-      },
-      {
-        text: "Quien mira hacia afuera sueña, quien mira hacia adentro despierta.",
-        author: "Carl Jung"
-      },
-      {
-        text: "La duda es el origen de la sabiduría.",
-        author: "Descartes"
-      },
-      {
-        text: "¿Quién eres cuando nadie te está mirando?",
-        author: "General"
-      },
-      {
-        text: "Cada decisión crea un camino que no volverá a existir.",
-        author: "General"
-      },
-      {
-        text: "¿Y si todo lo que recuerdas no fuera toda la historia?",
-        author: "General"
-      },
-      {
-        text: "¿Hasta dónde llegarías por aquello que quieres proteger?",
-        author: "General"
-      },
-      {
-        text: "Mantente con determinación.",
-        author: "Undertale"
-      },
-      {
-        text: "Don't forget.",
-        author: "Undertale"
-      },
-      {
-        text: "¿Es este el mundo que has elegido?",
-        author: "Minecraft"
-      },
-      {
-        text: "La guerra nunca cambia.",
-        author: "Fallout"
-      },
-      {
-        text: "¿Qué es mejor? ¿Nacer bueno, o superar tu naturaleza malvada?",
-        author: "Skyrim"
-      },
-      {
-        text: "El hombre correcto en el lugar equivocado puede marcar la diferencia en el mundo.",
-        author: "Half-Life"
-      },
-      {
-        text: "Ningún precio es demasiado alto.",
-        author: "Hollow Knight"
-      },
-      {
-        text: "¿Recuerdas quién querías ser?",
-        author: "General"
-      },
-      {
-        text: "Toda historia necesita alguien que se niegue a rendirse.",
-        author: "General"
-      },
-      {
-        text: "No todos los finales son el final.",
-        author: "General"
-      },
-      {
-        text: "But it refused.",
-        author: "Undertale",
-        meaning: "No te rindas."
-      },
-      {
-        text: "¿Alguien de verdad lee esto?",
-        author: "Minecraft"
-      },
-      {
-        text: "El hombre sufre porque se toma en serio lo que los dioses hicieron para divertirse.",
-        author: "Alan Watts"
-      },
-      {
-        text: "Nada es verdad, todo está permitido.",
-        author: "Assassin's Creed"
-      },
-      {
-        text: "No puedes cambiar el pasado, pero puedes aprender de él.",
-        author: "General"
-      },
-      {
-        text: "El tiempo que disfrutas perder no es tiempo perdido.",
-        author: "John Lennon"
-      },
-      {
-        text: "El sabio no dice todo lo que piensa, pero siempre piensa todo lo que dice.",
-        author: "Aristóteles."
-      },
-      {
-        text: "La realidad es aquello que, cuando dejas de creer en ella, sigue ahí.",
-        author: "Philip D. Dick"
-      },
-      {
-        text: "Todo lo que somos es el resultado de lo que hemos pensado.",
-        author: "Buda"
-      },
-      {
-        text: "No hay mejor victoria que vencerse a sí mismo.",
-        author: "Platón"
-      },
-      {
-        text: "¿Y si el verdadero enemigo siempre fuiste tú?",
-        author: "General"
-      },
-      {
-        text: "El silencio también es una respuesta.",
-        author: "General"
-      },
-      {
-        text: "El mundo no cambia solo. Alguien decide cambiarlo.",
-        author: "General"
-      },
-      {
-        text: "Cada jugador cree que es el protagonista.",
-        author: "General"
-      },
-      {
-        text: "No todo el que camina está perdido.",
-        author: "J.R.R. Tolkien"
-      },
-      {
-        text: "Las decisiones pequeñas crean futuros enormes.",
-        author: "General"
-      },
-      {
-        text: "El universo not iene obligación de tener sentido para ti.",
-        author: "Neil deGrasse Tyson"
-      },
-      {
-        text: "¿Cuántas veces puedes emperzar de nuevo?",
-        author: "General"
-      },
-      {
-        text: "La esperanza es lo último que se pierde.",
-        author: "General"
-      },
-      {
-        text: "No puedes salvar a todo el mundo.",
-        author: "General"
-      },
-      {
-        text: "El mundo siempre seguirá hacia adelante, contigo o sin ti.",
-        author: "General"
-      },
-      {
-        text: "Despierta.",
-        author: "General"
-      },
-      {
-        text: "El viaje importa más que el destino.",
-        author: "Filosofía."
-      },
-      {
-        text: "La voluntad es capaz de cambiar el resultado.",
-        author: "General"
-      },
-      {
-        text: "A veces, incluso el héroe duda.",
-        author: "General."
-      },
-      {
-        text: "No todo está escrito.",
-        author: "General"
-      },
-      {
-        text: "El final depende de lo que hagas ahora.",
-        author: "General"
-      },
-      {
-        text: "¿Elegiste este camino, o fue el camino quien te eligió a ti?",
-        author: "General"
-      },
-      {
-        text: "Sigue adelante.",
-        author: "Undertale"
-      },
-      {
-        text: "El jugador siempre vuelve.",
-        author: "Minecraft"
-      },
-      {
-        text: "O mueres como un héroe, o vives lo suficiente para convertirte en un villano.",
-        author: "El Caballero Oscuro"
-      },
-      {
-        text: "Un gran poder, conlleva una gran responsabilidad.",
-        author: "Tio Ben"
-      },
-      {
-        text: "Un héroe puede ser cualquiera, incluso alguien que hace algo tan simple como ponerse un abrigo para que un niño no tenga frío.",
-        author: "Batman"
-      },
-      {
-        text: "La libertad es el derecho de todos los seres conscientes.",
-        author: "Optimus Prime"
-      },
-      {
-        text: "La esperanza es lo que nos hace fuertes.",
-        author: "Spider-Man"
-      },
-      {
-        text: "Incluso la persona más pequeña puede cambiar el curso del futuro.",
-        author: "El Señor de los Anillos"
-      },
-      {
-        text: "El mundo no es perfecto, pero está ahí para nosotros, intentando lo mejor que puede.",
-        author: "Fullmetal Alchemist"
-      },
-      {
-        text: "Levántate y avanza. Tienes dos piernas y un corazón.",
-        author: "Edward Elric"
-      },
-      {
-        text: "La gente muere cuando se olvida.",
-        author: "One Piece"
-      },
-      {
-        text: "Si no puedes hacer algo, entonces no lo hagas. Concéntrate en lo que sí puedes.",
-        author: "Attack on Titans"
-      },
-      {
-        text: "El dolor es inevitable, el sufrimiento es opcional.",
-        author: "Buda"
-      },
-      {
-        text: "El infierno está vacío, todos los demonios están aquí.",
-        author: "Shakespeare"
-      },
-      {
-        text: "La vida no es cuestión de encontrarse, sino de crearse.",
-        author: "George Bernard Shaw"
-      },
-      {
-        text: "El hombre que teme sufrir, ya sufre por lo que teme.",
-        author: "Montaigne"
-      },
-      {
-        text: "No importa lo lento que vayas, siempre que no te detengas.",
-        author: "Confucio"
-      },
-      {
-        text: "La verdadera derrota es rendirse.",
-        author: "General"
-      },
-      {
-        text: "El pasado puede doler, puedes aprender de él, o huir.",
-        author: "El Rey León"
-      },
-      {
-        text: "El verdadero poder está en la voluntad.",
-        author: "Dragon Ball"
-      },
-      {
-        text: "No todos los que luchan son héroes, pero todos los héroes luchan.",
-        author: "General"
-      },
-      {
-        text: "Nada dura para siempre, y por eso tiene valor.",
-        author: "General"
-      },
-      {
-        text: "Solo con el corazón se puede ver bien, lo esencial es invisible para los ojos.",
-        author: "El Principito"
-      },
-      {
-        text: "Fue el tiempo que pasaste con tu rosa lo que la hizo tan importante.",
-        author: "El Principito"
-      },
-      {
-        text: "Todos los adultos fueron una vez niños, pero muy pocos lo recuerdan.",
-        author: "El Principito"
-      },
-      {
-        text: "Es mucho más dificil juzgarse a sí mismo que juzgar a los demás.",
-        author: "El Principito"
-      },
-      {
-        text: "Lo que embellece al desierto es que en alguna parte se esconde un pozo.",
-        author: "El Principito"
-      },
-      {
-        text: "Avanzar da miedo porque no hay excusas.",
-        author: "Celeste",
-        meaning: "Mientas no avanzas, puedes culpar al mundo. Cuando avanzas la responsabilidad es tuya."
-      },
-      {
-        text: "Da igual cuan oscuro sea el camino, siempre habrá alguien dispuesto a caminar contigo.",
-        author: "Final Fantasy XV",
-        meaning: "Nos recuerda el valor de la amistad y el apoyo mutuo."
-      },
-      {
-        text: "Un hombre elige, un esclavo obedece.",
-        author: "Bioshock",
-        meaning: "Enseña que la libertad no está en hacer lo que te dicen, si no en cuestionar y decidir por ti mismo."
-      },
-      {
-        text: "Al activar los trucos, desactivas los logros.",
-        author: "Minecraft",
-        meaning: "El camino fácil no siempre dará recompensas."
-      },
-      {
-        text: "Cada bloque cuenta en el camino hacia tus sueños.",
-        author: "Minecraft",
-        meaning: "Por insignificante que parezca, cada bloque sirve para crear algo más grande a futuro."
-      },
-      {
-        text: "Recuerda que no siempre necesitas una antorcha para ilumnar la cueva, también hay otras maneras de encontrar luz.",
-        author: "Minecraft",
-        meaning: "Aunque pueda parecer la más viable, no siempre es la más útil, ¡hay más personas que pueden servirte!"
-      },
-      {
-        text: "Es fácil confundir lapislazuli con los diamantes, son parecidos pero su valor es muy diferente.",
-        author: "Minecraft",
-        meaning: "No te dejes engañar por las apariencias en el amor; lo que parece valioso a primera vista puede no tener el mismo valor en profundidad."
-      },
-      {
-        text: "¡Si mueres en Modo Hardcore, no podrás volver a jugar!",
-        author: "Minecraft",
-        meaning: "Considera tus acciones y sus consecuencias."
-      },
-      {
-        text: "Si caminas solo, llegarás más rápido; Si caminas acompañado llegarás más lejos.",
-        author: "Minecraft",
-        meaning: "Aunque la soledad te aporte agilidad, siempre llegarás más lejos apoyándote en alguien, 2 son más que 1."
-      },
-      {
-        text: "¡Cuanto más desciendas, más común se vuelve el Diamante!",
-        author: "Minecraft",
-        meaning: "Esa persona no es la única que existe, si buscas encontrarás tesoros mejores."
-      },
-      {
-        text: "Cuidado al entrar en una cueva, puede que encuentres la entrada, pero no la salida.",
-        author: "Minecraft",
-        meaning: "Piensa con calma y sin estrés, adentrarse en tus pensamientos es fácil, pero no tanto salir de ellos."
-      },
-      {
-        text: "El Creeper fue un error y ahora es un icono internacional.",
-        author: "Minecraft",
-        meaning: "A veces hasta un error puede beneficiarte y enseñar. ¡De los errores también se aprende!"
-      },
-      {
-        text: "¡Si cavas hacia abajo puedes caer en la lava!",
-        author: "Minecraft",
-        meaning: "Actuar sin precaución puede acarrear problemas inesperados o peligrosos."
-      },
-      {
-        text: "Maravillas infinitas, posibilidades infinitas.",
-        author: "Minecraft",
-        meaning: "El mundo está lleno de oportunidades y maravillas esperando ser expliradas y aprovechadas."
-      },
-      {
-        text: "No todo lo que brilla es oro.",
-        author: "Minecraft",
-        meaning: "No te dejes engañar por la apariencia de alguien o algo, observa y conoce su utilidad antes de que pueda perjudicarte."
-      },
-      {
-        text: "No destruyas tu mundo por un mal momento.",
-        author: "Minecraft",
-        meaning: "No tomes decisiones en momentos de ira, importencia o tristeza, un mal mmento no tiene porqué echar atrás años de trabajo."
-      },
-      {
-        text: "Hay muchas pociones, usa la que más necesites.",
-        author: "Minecraft",
-        meaning: "Hay muchas maneras de sanar. usa la más útil para ti. (Y la más saludable!)."
-      },  
-      {
-        text: "No explores un barco por segunda vez si ya sabes que no hay nada.",
-        author: "Minecraft",
-        meaning: "Anímate a biscar nuevas oportunidades; no te encierres en un sitio donde viste que no hay nada que ganar, deja ir el pasado, reconoce que no merece la pena seguir luchando y avanza."
-      },
-      {
-        text: "Si tus amigos no se pueden unor a tu mundo, puede deberse a que no están en la versión adecuada.",
-        author: "Minecraft",
-        meaning: "La importancia de tener amigos compatibles con tu forma de ser."
-      },
-      {
-        text: "Las mejores librerías siempre ofrecen los mejores libros.",
-        author: "Minecraft",
-        meaning: "Rodearse de buenas personas puede beneficiarte tanto moral como anímicamente."
-      },
-      {
-        text: "¡No construyas sobre arena movediza!",
-        author: "Minecraft",
-        meaning: "Aconseja la importancia de establecer una base sólida antes de actuar o emprender."
-      },
-      {
-        text: "¿Quieres eliminar Tu Mundo? ¡Perderás este mundo para siempre! (Es muchísimo tiempo).",
-        author: "Minecraft",
-        meaning: "Tus acciones a veces no tienen retorno, valora lo que tienes antes de perderlo, posible arrepentimiento a futuro de perder lo que un día luchaste por conseguir."
-      },
-      {
-        text: "Besa el cielo.",
-        author: "Minecraft",
-        meaning: "Sé ambicioso, persigue tus sueños, los límites están en tu cabeza."
-      },
-      {
-        text: "No dejes árboles flotando.",
-        author: "Minecraft",
-        meaning: "No dejes nada a medias, termina lo que empezaste antes de seguir con cualquier cosa."
-      },
-      {
-        text: "Dale amor a un hombre y cambiará la corona por un beso.",
-        author: "Maquiavelo"
-      },
-      {
-        text: "Aquello que ya fue tuyo podrás recuperarlo de un zarpazo.",
-        author: "Maquiavelo"
-      },
-      {
-        text: "Nunca dejé de amarla, pero quizás, la noche que me fui la quise más que nunca.",
-        author: "Fiodor Dostoyevski"
-      },
-      {
-        text: "Aplasta por completo a tus enemigos o prepárate para ser aniquilado.",
-        author: "Robert Greene"
-      },
-      {
-        text: "Un mendigo sano siempre será más feliz que un rey enfermo.",
-        author: "Arthur Schipenhauer"
-      },
-      {
-        text: "Es precisamente porque te amo, que te atormento.",
-        author: "Fiodor Dostoyevski"
-      },
-      {
-        text: "Si juegas limpio en un mundo de tramposos estás condenado a perder.",
-        author: "Maquiavelo"
-      },
-      {
-        text: "Siempre hay tragedia en las amistades temidas por el romance.",
-        author: "Oscar Wilde"
-      },
-      {
-        text: "El egoísmo no tiene moral, tiene dueño.",
-        author: "Nietszche"
-      },
-      {
-        text: "No tienes enemigos, nadie tiene enemigos.",
-        author: "Vinland Saga"
-      },
-      {
-        text: "Hay sentimientos tan profundos, que recuerdan a la infinidad del universo.",
-        author: "General"
-      },
-      {
-        text: "Solo el diablo sabe, el precio de querer cuando te conviene.",
-        author: "Fiodor Dostoyevski"
-      },
-      {
-        text: "Prefiero traicionar al mundo entero, antes de que el mundo me traicione a mi.",
-        author: "Cao Cao"
-      },
-      {
-        text: "No destruyas lo que otros construyeron demuestra que puedes superarlo.",
-        author: "Alejandro Magno"
-      },
-      {
-        text: "No recites poemas para quien no es poeta.",
-        author: "Clasico Budista"
-      },
-      {
-        text: "Afronta cada acción comos si fuera la última y lo lograrás.",
-        author: "Marco Aurelio"
-      },
-      {
-        text: "Incluso cuando me critican, tengo mi cuota de fama.",
-        author: "Pietro Aretino"
-      },
-      {
-        text: "Podrán matarme, pero no hacerme daño.",
-        author: "General"
-      },
-      {
-        text: "Yo seré el bruto de los reyes y el cesar de la república.",
-        author: "Napoleón Bonaparte"
-      },
+      { text: "El fútbol no se juega solo con los pies. También se juega con lo que eres.", author: "RP Inazuma" },
+      { text: "Solo sé que no sé nada.", author: "Sócrates" },
+      { text: "El hombre está condenado a ser libre.", author: "Jean-Paul Sartre" },
+      { text: "Lo que no me mata, me hace más fuerte.", author: "Friedrich Nietzsche" },
+      { text: "Conócete a ti mismo.", author: "Templo de Delfos" },
+      { text: "La vida es lo que pasa mientras estás ocupado haciendo otros planes.", author: "John Lennon" },
+      { text: "El destino mezcla las cartas, pero nosotros jugamos la mano.", author: "Arthur Schopenhauer" },
+      { text: "La paciencia es amarga, pero su fruto es dulce.", author: "Aristóteles" },
+      { text: "Un héroe no es el que nunca cae, sino el que siempre se levanta.", author: "General" },
+      { text: "El poder revela quién eres cuando nadie puede detenerte.", author: "General" },
+      { text: "No hay gloria sin sacrificio.", author: "RP General" },
+      { text: "Los débiles esperan oportunidades. Los fuertes las crean.", author: "RP" },
+      { text: "Cada batalla perdida enseña algo que la victoria jamás podría.", author: "RP" },
+      { text: "El verdadero enemigo no siempre está enfrente. A veces está dentro.", author: "General" },
+      { text: "La voluntad es el arma más fuerte que existe.", author: "RP Dragon Ball" },
+      { text: "Un linaje no se mide por su origen, sino por lo que decide proteger.", author: "Árbol Familiar" },
+      { text: "Algunos nacen con poder, otros lo forjan.", author: "RP" },
+      { text: "Quien controla su mente, controla su destino.", author: "Filosofía" },
+      { text: "El miedo es natural. Rendirse es opcional.", author: "General" },
+      { text: "No luches para ganar, lucha para no perder quién eres.", author: "RP Inazuma" },
+      { text: "La historia recuerda a los que se atreven.", author: "General" },
+      { text: "El fin justifica los medios.", author: "Maquiavelo" },
+      { text: "Los hombres olvidan antes la muerte de su padre que la pérdida de su patrimonio.", author: "Maquiavelo" },
+      { text: "Es mejor ser temido que amado, si no puedes ser ambos.", author: "Maquiavelo" },
+      { text: "Quien desea obediencia debe saber mandar.", author: "Maquiavelo" },
+      { text: "La fortuna favorece a los audaces.", author: "Virgilio" },
+      { text: "Pienso, luego existo.", author: "René Descartes" },
+      { text: "El hombre que mueve montañas empieza apartando pequeñas piedras.", author: "Confucio" },
+      { text: "La libertad no es hacer lo que quieras, sino no tener que hacer lo que no quieres.", author: "Jean-Jacques Rousseau" },
+      { text: "Aquel que tiene un porqué para vivir puede soportar casi cualquier cómo.", author: "Nietzsche" },
+      { text: "La guerra es la continuación de la política por otros medios.", author: "Clausewitz" },
+      { text: "Y el universo te dijo: Te quiero.", author: "Minecraft" },
+      { text: "Eres más fuerte de lo que crees.", author: "Minecraft" },
+      { text: "El único límite es tu propia imaginación.", author: "Minecraft" },
+      { text: "Después de todo, sigues siendo tú.", author: "Undertale", meaning: "Aunque cambies, falles o te rompas un poco por el camino, sigues conservando tu identidad más profunda: tú." },
+      { text: "Determinación.", author: "Undertale" },
+      { text: "Hace un día hermoso, los pájaros cantan, las flores florecen.", author: "Sans" },
+      { text: "En este mundo, es matar o ser asesinado.", author: "Undertale" },
+      { text: "El hombre es libre en el momento en que desea serlo.", author: "Voltaire" },
+      { text: "La vida debe ser comprendida hacia atrás, pero debe ser vivida hacia adelante.", author: "Kierkegaard" },
+      { text: "¿Qué es un hombre, sino la suma de sus decisiones?", author: "Filosofía" },
+      { text: "No temo a la muerte, temo no haber vivido.", author: "Marco Aurelio" },
+      { text: "Quien mira hacia afuera sueña, quien mira hacia adentro despierta.", author: "Carl Jung" },
+      { text: "La duda es el origen de la sabiduría.", author: "Descartes" },
+      { text: "¿Quién eres cuando nadie te está mirando?", author: "General" },
+      { text: "Cada decisión crea un camino que no volverá a existir.", author: "General" },
+      { text: "¿Y si todo lo que recuerdas no fuera toda la historia?", author: "General" },
+      { text: "¿Hasta dónde llegarías por aquello que quieres proteger?", author: "General" },
+      { text: "Mantente con determinación.", author: "Undertale" },
+      { text: "Don't forget.", author: "Undertale" },
+      { text: "¿Es este el mundo que has elegido?", author: "Minecraft" },
+      { text: "La guerra nunca cambia.", author: "Fallout" },
+      { text: "¿Qué es mejor? ¿Nacer bueno, o superar tu naturaleza malvada?", author: "Skyrim" },
+      { text: "El hombre correcto en el lugar equivocado puede marcar la diferencia en el mundo.", author: "Half-Life" },
+      { text: "Ningún precio es demasiado alto.", author: "Hollow Knight" },
+      { text: "¿Recuerdas quién querías ser?", author: "General" },
+      { text: "Toda historia necesita alguien que se niegue a rendirse.", author: "General" },
+      { text: "No todos los finales son el final.", author: "General" },
+      { text: "But it refused.", author: "Undertale", meaning: "No te rindas." },
+      { text: "¿Alguien de verdad lee esto?", author: "Minecraft" },
+      { text: "El hombre sufre porque se toma en serio lo que los dioses hicieron para divertirse.", author: "Alan Watts" },
+      { text: "Nada es verdad, todo está permitido.", author: "Assassin's Creed" },
+      { text: "No puedes cambiar el pasado, pero puedes aprender de él.", author: "General" },
+      { text: "El tiempo que disfrutas perder no es tiempo perdido.", author: "John Lennon" },
+      { text: "El sabio no dice todo lo que piensa, pero siempre piensa todo lo que dice.", author: "Aristóteles" },
+      { text: "La realidad es aquello que, cuando dejas de creer en ella, sigue ahí.", author: "Philip K. Dick" },
+      { text: "Todo lo que somos es el resultado de lo que hemos pensado.", author: "Buda" },
+      { text: "No hay mejor victoria que vencerse a sí mismo.", author: "Platón" },
+      { text: "¿Y si el verdadero enemigo siempre fuiste tú?", author: "General" },
+      { text: "El silencio también es una respuesta.", author: "General" },
+      { text: "El mundo no cambia solo. Alguien decide cambiarlo.", author: "General" },
+      { text: "Cada jugador cree que es el protagonista.", author: "General" },
+      { text: "No todo el que camina está perdido.", author: "J.R.R. Tolkien" },
+      { text: "Las decisiones pequeñas crean futuros enormes.", author: "General" },
+      { text: "El universo no tiene obligación de tener sentido para ti.", author: "Neil deGrasse Tyson" },
+      { text: "¿Cuántas veces puedes empezar de nuevo?", author: "General" },
+      { text: "La esperanza es lo último que se pierde.", author: "General" },
+      { text: "No puedes salvar a todo el mundo.", author: "General" },
+      { text: "El mundo siempre seguirá hacia adelante, contigo o sin ti.", author: "General" },
+      { text: "Despierta.", author: "General" },
+      { text: "El viaje importa más que el destino.", author: "Filosofía" },
+      { text: "La voluntad es capaz de cambiar el resultado.", author: "General" },
+      { text: "A veces, incluso el héroe duda.", author: "General" },
+      { text: "No todo está escrito.", author: "General" },
+      { text: "El final depende de lo que hagas ahora.", author: "General" },
+      { text: "¿Elegiste este camino, o fue el camino quien te eligió a ti?", author: "General" },
+      { text: "Sigue adelante.", author: "Undertale" },
+      { text: "El jugador siempre vuelve.", author: "Minecraft" },
+      { text: "O mueres como un héroe, o vives lo suficiente para convertirte en un villano.", author: "El Caballero Oscuro" },
+      { text: "Un gran poder conlleva una gran responsabilidad.", author: "Tío Ben" },
+      { text: "Un héroe puede ser cualquiera, incluso alguien que hace algo tan simple como ponerse un abrigo para que un niño no tenga frío.", author: "Batman" },
+      { text: "La libertad es el derecho de todos los seres conscientes.", author: "Optimus Prime" },
+      { text: "La esperanza es lo que nos hace fuertes.", author: "Spider-Man" },
+      { text: "Incluso la persona más pequeña puede cambiar el curso del futuro.", author: "El Señor de los Anillos" },
+      { text: "El mundo no es perfecto, pero está ahí para nosotros, intentando lo mejor que puede.", author: "Fullmetal Alchemist" },
+      { text: "Levántate y avanza. Tienes dos piernas y un corazón.", author: "Edward Elric" },
+      { text: "La gente muere cuando se la olvida.", author: "One Piece" },
+      { text: "Si no puedes hacer algo, entonces no lo hagas. Concéntrate en lo que sí puedes.", author: "Attack on Titan" },
+      { text: "El dolor es inevitable, el sufrimiento es opcional.", author: "Buda" },
+      { text: "El infierno está vacío, todos los demonios están aquí.", author: "Shakespeare" },
+      { text: "La vida no es cuestión de encontrarse, sino de crearse.", author: "George Bernard Shaw" },
+      { text: "El hombre que teme sufrir, ya sufre por lo que teme.", author: "Montaigne" },
+      { text: "No importa lo lento que vayas, siempre que no te detengas.", author: "Confucio" },
+      { text: "La verdadera derrota es rendirse.", author: "General" },
+      { text: "El pasado puede doler; puedes aprender de él o huir.", author: "El Rey León" },
+      { text: "El verdadero poder está en la voluntad.", author: "Dragon Ball" },
+      { text: "No todos los que luchan son héroes, pero todos los héroes luchan.", author: "General" },
+      { text: "Nada dura para siempre, y por eso tiene valor.", author: "General" },
+      { text: "Solo con el corazón se puede ver bien; lo esencial es invisible para los ojos.", author: "El Principito" },
+      { text: "Fue el tiempo que pasaste con tu rosa lo que la hizo tan importante.", author: "El Principito" },
+      { text: "Todos los adultos fueron una vez niños, pero muy pocos lo recuerdan.", author: "El Principito" },
+      { text: "Es mucho más difícil juzgarse a sí mismo que juzgar a los demás.", author: "El Principito" },
+      { text: "Lo que embellece al desierto es que en alguna parte se esconde un pozo.", author: "El Principito" },
+      { text: "Avanzar da miedo porque no hay excusas.", author: "Celeste", meaning: "Mientras no avanzas, puedes culpar al mundo. Cuando avanzas, la responsabilidad es tuya." },
+      { text: "Da igual cuán oscuro sea el camino, siempre habrá alguien dispuesto a caminar contigo.", author: "Final Fantasy XV", meaning: "Nos recuerda el valor de la amistad y el apoyo mutuo." },
+      { text: "Un hombre elige, un esclavo obedece.", author: "BioShock", meaning: "La libertad no está en hacer lo que te dicen, sino en cuestionar y decidir por ti mismo." },
+      { text: "Al activar los trucos, desactivas los logros.", author: "Minecraft", meaning: "El camino fácil no siempre dará recompensas." },
+      { text: "Cada bloque cuenta en el camino hacia tus sueños.", author: "Minecraft", meaning: "Por insignificante que parezca, cada bloque sirve para crear algo más grande a futuro." },
+      { text: "No siempre necesitas una antorcha para iluminar la cueva; también hay otras maneras de encontrar luz.", author: "Minecraft", meaning: "Aunque una opción parezca la más obvia, no siempre es la única ni la mejor." },
+      { text: "Es fácil confundir lapislázuli con diamantes; son parecidos, pero su valor es muy diferente.", author: "Minecraft", meaning: "No te dejes engañar por las apariencias en el amor." },
+      { text: "¡Si mueres en Modo Hardcore, no podrás volver a jugar!", author: "Minecraft", meaning: "Considera tus acciones y sus consecuencias." },
+      { text: "Si caminas solo, llegarás más rápido; si caminas acompañado, llegarás más lejos.", author: "Minecraft", meaning: "La soledad da agilidad, pero el apoyo te lleva más lejos." },
+      { text: "¡Cuanto más desciendas, más común se vuelve el diamante!", author: "Minecraft", meaning: "Esa persona no es la única que existe; si buscas, encontrarás tesoros mejores." },
+      { text: "Cuidado al entrar en una cueva: puede que encuentres la entrada, pero no la salida.", author: "Minecraft", meaning: "Adentrarse en tus pensamientos es fácil; salir de ellos no tanto." },
+      { text: "El Creeper fue un error y ahora es un icono internacional.", author: "Minecraft", meaning: "A veces hasta un error puede beneficiarte y enseñar." },
+      { text: "¡Si cavas hacia abajo puedes caer en la lava!", author: "Minecraft", meaning: "Actuar sin precaución puede acarrear problemas inesperados." },
+      { text: "Maravillas infinitas, posibilidades infinitas.", author: "Minecraft", meaning: "El mundo está lleno de oportunidades esperando ser exploradas." },
+      { text: "No todo lo que brilla es oro.", author: "Minecraft", meaning: "No te dejes engañar por la apariencia de alguien o algo." },
+      { text: "No destruyas tu mundo por un mal momento.", author: "Minecraft", meaning: "No tomes decisiones en momentos de ira, impotencia o tristeza." },
+      { text: "Hay muchas pociones; usa la que más necesites.", author: "Minecraft", meaning: "Hay muchas maneras de sanar; usa la más útil para ti." },
+      { text: "No explores un barco por segunda vez si ya sabes que no hay nada.", author: "Minecraft", meaning: "Busca nuevas oportunidades y no te encierres donde ya viste que no había nada." },
+      { text: "Si tus amigos no se pueden unir a tu mundo, puede deberse a que no están en la versión adecuada.", author: "Minecraft", meaning: "La compatibilidad también importa en las amistades." },
+      { text: "Las mejores librerías siempre ofrecen los mejores libros.", author: "Minecraft", meaning: "Rodearte de buenas personas puede beneficiarte mucho." },
+      { text: "¡No construyas sobre arena movediza!", author: "Minecraft", meaning: "Establece una base sólida antes de actuar o emprender." },
+      { text: "¿Quieres eliminar tu mundo? ¡Lo perderás para siempre! (Es muchísimo tiempo).", author: "Minecraft", meaning: "Tus acciones a veces no tienen retorno." },
+      { text: "Besa el cielo.", author: "Minecraft", meaning: "Sé ambicioso; persigue tus sueños." },
+      { text: "No dejes árboles flotando.", author: "Minecraft", meaning: "No dejes nada a medias; termina lo que empezaste." },
+      { text: "Dale amor a un hombre y cambiará la corona por un beso.", author: "Maquiavelo" },
+      { text: "Aquello que ya fue tuyo podrás recuperarlo de un zarpazo.", author: "Maquiavelo" },
+      { text: "Nunca dejé de amarla, pero quizás, la noche que me fui la quise más que nunca.", author: "Fiódor Dostoyevski" },
+      { text: "Aplasta por completo a tus enemigos o prepárate para ser aniquilado.", author: "Robert Greene" },
+      { text: "Un mendigo sano siempre será más feliz que un rey enfermo.", author: "Arthur Schopenhauer" },
+      { text: "Es precisamente porque te amo, que te atormento.", author: "Fiódor Dostoyevski" },
+      { text: "Si juegas limpio en un mundo de tramposos estás condenado a perder.", author: "Maquiavelo" },
+      { text: "Siempre hay tragedia en las amistades temidas por el romance.", author: "Oscar Wilde" },
+      { text: "El egoísmo no tiene moral, tiene dueño.", author: "Nietzsche" },
+      { text: "No tienes enemigos, nadie tiene enemigos.", author: "Vinland Saga" },
+      { text: "Hay sentimientos tan profundos, que recuerdan a la infinidad del universo.", author: "General" },
+      { text: "Solo el diablo sabe el precio de querer cuando te conviene.", author: "Fiódor Dostoyevski" },
+      { text: "Prefiero traicionar al mundo entero, antes de que el mundo me traicione a mí.", author: "Cao Cao" },
+      { text: "No destruyas lo que otros construyeron; demuestra que puedes superarlo.", author: "Alejandro Magno" },
+      { text: "No recites poemas para quien no es poeta.", author: "Clásico budista" },
+      { text: "Afronta cada acción como si fuera la última y lo lograrás.", author: "Marco Aurelio" },
+      { text: "Incluso cuando me critican, tengo mi cuota de fama.", author: "Pietro Aretino" },
+      { text: "Podrán matarme, pero no hacerme daño.", author: "General" },
+      { text: "Yo seré el bruto de los reyes y el César de la república.", author: "Napoleón Bonaparte" }
     ];
 
     const quoteText = document.getElementById("quoteText");
-  const quoteAuthor = document.getElementById("quoteAuthor");
-  const quoteMeaning = document.getElementById("quoteMeaning");
-  const newQuoteBtn = document.getElementById("newQuoteBtn");
+    const quoteAuthor = document.getElementById("quoteAuthor");
+    const quoteMeaning = document.getElementById("quoteMeaning");
+    const newQuoteBtn = document.getElementById("newQuoteBtn");
+    const toggleButton = document.getElementById("themeToggle");
+    const favoritesContainer = document.getElementById("favoritesContainer");
+    const clearFavoritesBtn = document.getElementById("clearFavoritesBtn");
+    const FAVORITES_KEY = "rpHubFavorites";
 
-  let lastQuoteIndex = -1;
+    let lastQuoteIndex = -1;
 
-  function showRandomQuote() {
-    if (!quotes.length) return;
+    function showRandomQuote() {
+      if (!quotes.length) return;
 
-    let randomIndex;
+      let randomIndex;
 
-    if (quotes.length === 1) {
-      randomIndex = 0;
-    } else {
-      do {
-        randomIndex = Math.floor(Math.random() * quotes.length);
-      } while (randomIndex === lastQuoteIndex);
+      if (quotes.length === 1) {
+        randomIndex = 0;
+      } else {
+        do {
+          randomIndex = Math.floor(Math.random() * quotes.length);
+        } while (randomIndex === lastQuoteIndex);
+      }
+
+      lastQuoteIndex = randomIndex;
+      const randomQuote = quotes[randomIndex];
+
+      quoteText.textContent = `“${randomQuote.text}”`;
+      quoteAuthor.textContent = `— ${randomQuote.author}`;
+
+      if (randomQuote.meaning) {
+        quoteMeaning.textContent = randomQuote.meaning;
+        quoteMeaning.style.display = "block";
+      } else {
+        quoteMeaning.textContent = "";
+        quoteMeaning.style.display = "none";
+      }
     }
 
-    lastQuoteIndex = randomIndex;
-    const randomQuote = quotes[randomIndex];
-
-    quoteText.textContent = `“${randomQuote.text}”`;
-    quoteAuthor.textContent = `— ${randomQuote.author}`;
-
-    if (randomQuote.meaning) {
-      quoteMeaning.textContent = randomQuote.meaning;
-      quoteMeaning.style.display = "block";
-    } else {
-      quoteMeaning.textContent = "";
-      quoteMeaning.style.display = "none";
-    }
-  }
-
-  showRandomQuote();
-
-  newQuoteBtn.addEventListener("click", showRandomQuote);
-
-  const toggleButton = document.getElementById("themeToggle");
-  const savedTheme = localStorage.getItem("rpHubTheme");
-
-  if(savedTheme === "light"){
-    document.body.classList.add("light");
-    toggleButton.textContent = "☀️ Cambiar tema";
-  }
-
-  toggleButton.addEventListener("click", () => {
-    document.body.classList.toggle("light");
-
-    if(document.body.classList.contains("light")){
-      localStorage.setItem("rpHubTheme", "light");
-      toggleButton.textContent = "☀️ Cambiar tema";
-    } else {
-      localStorage.setItem("rpHubTheme", "dark");
-      toggleButton.textContent = "🌙 Cambiar tema";
-    }
-  });
-
-  const FAVORITES_KEY = "rpHubFavorites";
-  const allCards = [...document.querySelectorAll(".hub-card")];
-  const favoritesContainer = document.getElementById("favoritesContainer");
-  const clearFavoritesBtn = document.getElementById("clearFavoritesBtn");
-
-  function getFavorites(){
-    try{
-      const saved = JSON.parse(localStorage.getItem(FAVORITES_KEY));
-      return Array.isArray(saved) ? saved : [];
-    }catch{
-      return [];
-    }
-  }
-
-  function saveFavorites(favorites){
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-  }
-
-  function isFavorite(id){
-    return getFavorites().includes(id);
-  }
-
-  function toggleFavorite(id){
-    const favorites = getFavorites();
-
-    if(favorites.includes(id)){
-      saveFavorites(favorites.filter(fav => fav !== id));
-    }else{
-      saveFavorites([...favorites, id]);
+    function updateThemeButton(){
+      toggleButton.textContent = document.body.classList.contains("light")
+        ? "🌙 Modo oscuro"
+        : "☀️ Modo claro";
     }
 
-    syncFavoriteButtons();
-    renderFavorites();
-  }
-
-  function syncFavoriteButtons(){
-    allCards.forEach(card => {
-      const id = card.dataset.id;
-      const btn = card.querySelector(".favorite-toggle");
-      const active = isFavorite(id);
-
-      btn.classList.toggle("active", active);
-      btn.textContent = active ? "★" : "☆";
-      btn.setAttribute("aria-label", active ? "Quitar de favoritos" : "Añadir a favoritos");
-      btn.setAttribute("title", active ? "Quitar de favoritos" : "Añadir a favoritos");
-    });
-  }
-
-  function renderFavorites(){
-    const favorites = getFavorites();
-
-    if(!favorites.length){
-      favoritesContainer.innerHTML = `
-        <div class="favorites-empty">
-          No tienes favoritos todavía. Marca alguna tarjeta con la estrella y aparecerá aquí arriba, como si el hub por fin hubiese descubierto el concepto de comodidad.
-        </div>
-      `;
-      return;
+    function getFavorites(){
+      try{
+        const saved = JSON.parse(localStorage.getItem(FAVORITES_KEY));
+        return Array.isArray(saved) ? saved : [];
+      }catch{
+        return [];
+      }
     }
 
-    const favoriteCards = favorites
-      .map(id => allCards.find(card => card.dataset.id === id))
-      .filter(Boolean)
-      .map(card => {
-        const href = card.getAttribute("href");
-        const title = card.dataset.title || "";
-        const desc = card.dataset.desc || "";
-        const tag = card.dataset.tag || "";
-        const icon = card.dataset.icon || "⭐";
+    function saveFavorites(favorites){
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    }
 
-        return `
-          <a class="favorite-card" href="${href}">
-            <div class="favorite-top">
-              <h3 class="favorite-title">${title}</h3>
-              <span class="favorite-icon">${icon}</span>
-            </div>
-            <p class="favorite-desc">${desc}</p>
-            <span class="favorite-tag">${tag}</span>
-          </a>
+    function isFavorite(id){
+      return getFavorites().includes(id);
+    }
+
+    function toggleFavorite(id){
+      const favorites = getFavorites();
+
+      if(favorites.includes(id)){
+        saveFavorites(favorites.filter(fav => fav !== id));
+      }else{
+        saveFavorites([...favorites, id]);
+      }
+
+      syncFavoriteButtons();
+      renderFavorites();
+    }
+
+    function syncFavoriteButtons(){
+      document.querySelectorAll(".hub-card").forEach(card => {
+        const id = card.dataset.id;
+        const btn = card.querySelector(".favorite-toggle");
+        const active = isFavorite(id);
+
+        btn.classList.toggle("active", active);
+        btn.textContent = active ? "★" : "☆";
+        btn.setAttribute("aria-label", active ? "Quitar de favoritos" : "Añadir a favoritos");
+        btn.setAttribute("title", active ? "Quitar de favoritos" : "Añadir a favoritos");
+      });
+    }
+
+    function renderFavorites(){
+      const favorites = getFavorites();
+      const allCards = [...document.querySelectorAll(".hub-card")];
+
+      if(!favorites.length){
+        favoritesContainer.innerHTML = `
+          <div class="favorites-empty">
+            No tienes favoritos todavía. Marca alguna tarjeta con la estrella y aparecerá aquí arriba, como si el hub por fin hubiese descubierto el concepto de comodidad.
+          </div>
         `;
-      })
-      .join("");
+        return;
+      }
 
-    favoritesContainer.innerHTML = `<div class="favorites-grid">${favoriteCards}</div>`;
-  }
+      const favoriteCards = favorites
+        .map(id => allCards.find(card => card.dataset.id === id))
+        .filter(Boolean)
+        .map(card => {
+          const link = card.querySelector(".hub-card-link");
+          const href = link ? link.getAttribute("href") : "#";
+          const title = card.dataset.title || "";
+          const desc = card.dataset.desc || "";
+          const tag = card.dataset.tag || "";
+          const icon = card.dataset.icon || "⭐";
 
-  allCards.forEach(card => {
-    const btn = card.querySelector(".favorite-toggle");
+          return `
+            <a class="favorite-card" href="${href}">
+              <div class="favorite-top">
+                <h3 class="favorite-title">${title}</h3>
+                <span class="favorite-icon">${icon}</span>
+              </div>
+              <p class="favorite-desc">${desc}</p>
+              <span class="favorite-tag">${tag}</span>
+            </a>
+          `;
+        })
+        .join("");
 
-    btn.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      toggleFavorite(card.dataset.id);
-    });
-  });
+      favoritesContainer.innerHTML = `<div class="favorites-grid">${favoriteCards}</div>`;
+    }
 
-  clearFavoritesBtn.addEventListener("click", () => {
-    localStorage.removeItem(FAVORITES_KEY);
+    function setupFavoriteButtons(){
+      document.querySelectorAll(".hub-card").forEach(card => {
+        const btn = card.querySelector(".favorite-toggle");
+        btn.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          toggleFavorite(card.dataset.id);
+        });
+      });
+    }
+
+    const savedTheme = localStorage.getItem("rpHubTheme");
+    if(savedTheme === "light"){
+      document.body.classList.add("light");
+    }
+
+    updateThemeButton();
+    showRandomQuote();
+    setupFavoriteButtons();
     syncFavoriteButtons();
     renderFavorites();
-  });
 
-  syncFavoriteButtons();
-  renderFavorites();
+    newQuoteBtn.addEventListener("click", showRandomQuote);
+
+    toggleButton.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+      localStorage.setItem(
+        "rpHubTheme",
+        document.body.classList.contains("light") ? "light" : "dark"
+      );
+      updateThemeButton();
+    });
+
+    clearFavoritesBtn.addEventListener("click", () => {
+      localStorage.removeItem(FAVORITES_KEY);
+      syncFavoriteButtons();
+      renderFavorites();
+    });
   </script>
 </body>
 </html>
