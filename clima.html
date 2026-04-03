@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atlas Climático</title>
+  <style>
+    :root{
+      --bg-1:#07111f;
+      --bg-2:#0e2036;
+      --panel:rgba(10,18,31,.72);
+      --panel-strong:rgba(14,26,43,.92);
+      --line:rgba(255,255,255,.08);
+      --text:#ecf4ff;
+      --muted:#9fb3ca;
+      --accent:#70e1ff;
+      --accent-2:#9d7bff;
+      --good:#77f2b4;
+      --warn:#ffd76b;
+      --bad:#ff8f8f;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(112,225,255,.12), transparent 0 25%),
+        radial-gradient(circle at 85% 15%, rgba(157,123,255,.16), transparent 0 22%),
+        radial-gradient(circle at 50% 120%, rgba(47,106,255,.25), transparent 0 38%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2));
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size:32px 32px;
+      mask-image:linear-gradient(to bottom, rgba(0,0,0,.55), transparent 90%);
+    }
+
+    .app{
+      width:min(1200px, calc(100% - 32px));
+      margin:24px auto;
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      backdrop-filter: blur(16px);
+      box-shadow:var(--shadow);
+    }
+
+    .hero{
+      padding:28px;
+      position:relative;
+      overflow:hidden;
+      min-height:760px;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      width:540px;
+      height:540px;
+      right:-140px;
+      top:-140px;
+      background:radial-gradient(circle, rgba(112,225,255,.18), transparent 65%);
+      pointer-events:none;
+      filter:blur(8px);
+    }
+
+    .side{
+      display:grid;
+      gap:18px;
+      align-content:start;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border:1px solid rgba(255,255,255,.09);
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      color:#d6e4f6;
+      font-size:.8rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      margin:18px 0 12px;
+      font-size:clamp(2.3rem, 4vw, 4.5rem);
+      line-height:.95;
+      letter-spacing:-.04em;
+      max-width:8ch;
+    }
+
+    .hero p.lead{
+      margin:0;
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.6;
+      max-width:58ch;
+    }
+
+    .top-grid{
+      margin-top:28px;
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:18px;
+      align-items:stretch;
+    }
+
+    .generator{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      min-height:440px;
+    }
+
+    .meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .season-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .season-btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      padding:10px 14px;
+      border-radius:999px;
+      color:var(--text);
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.07);
+      transition:.25s transform, .25s background, .25s border-color;
+      font-weight:600;
+    }
+
+    .season-btn:hover{transform:translateY(-1px)}
+    .season-btn.active{
+      background:linear-gradient(135deg, rgba(112,225,255,.22), rgba(157,123,255,.22));
+      border-color:rgba(112,225,255,.45);
+      box-shadow:0 0 0 1px rgba(112,225,255,.15) inset;
+    }
+
+    .roulette{
+      flex:1;
+      display:grid;
+      place-items:center;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.07);
+      background:
+        radial-gradient(circle at center, rgba(112,225,255,.09), transparent 45%),
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      position:relative;
+      overflow:hidden;
+      padding:22px;
+      text-align:center;
+    }
+
+    .roulette::before{
+      content:"";
+      position:absolute;
+      inset:20px;
+      border-radius:50%;
+      border:1px dashed rgba(255,255,255,.08);
+      animation:spin 28s linear infinite;
+    }
+
+    .roulette::after{
+      content:"";
+      position:absolute;
+      width:160px;
+      height:160px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(112,225,255,.18), transparent 68%);
+      filter:blur(10px);
+      animation:pulse 4.5s ease-in-out infinite;
+    }
+
+    .result-core{
+      position:relative;
+      z-index:2;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+    }
+
+    .weather-emoji{
+      font-size:4rem;
+      filter:drop-shadow(0 10px 24px rgba(0,0,0,.35));
+    }
+
+    .condition-name{
+      font-size:clamp(1.7rem, 3.2vw, 3rem);
+      font-weight:800;
+      letter-spacing:-.03em;
+      margin:0;
+    }
+
+    .condition-sub{
+      color:var(--muted);
+      margin:0;
+      font-size:.96rem;
+    }
+
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .primary,.secondary,.ghost{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      padding:14px 18px;
+      border-radius:16px;
+      font-weight:700;
+      color:var(--text);
+      transition:.2s transform,.2s opacity,.2s background;
+    }
+
+    .primary{
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      color:#08111d;
+    }
+
+    .secondary{
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .ghost{
+      background:transparent;
+      border:1px dashed rgba(255,255,255,.12);
+      color:var(--muted);
+    }
+
+    .primary:hover,.secondary:hover,.ghost:hover{transform:translateY(-1px)}
+    .primary:disabled,.secondary:disabled,.ghost:disabled{opacity:.5; cursor:not-allowed; transform:none}
+
+    .mini-stats{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    .stat{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:20px;
+      padding:16px;
+    }
+
+    .stat .label{
+      font-size:.78rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .stat .value{
+      margin-top:8px;
+      font-size:1.35rem;
+      font-weight:800;
+    }
+
+    .detail-grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:18px;
+    }
+
+    .info-card{
+      padding:18px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      border-radius:20px;
+      min-height:160px;
+    }
+
+    .info-card h3{
+      margin:0 0 12px;
+      font-size:1rem;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:.82rem;
+      font-weight:700;
+      margin-bottom:10px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .badge.good{color:var(--good)}
+    .badge.warn{color:var(--warn)}
+    .badge.bad{color:var(--bad)}
+
+    .info-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.6;
+      font-size:.95rem;
+    }
+
+    .timeline-card,.history-card,.legend-card{
+      padding:22px;
+    }
+
+    .card-title{
+      margin:0 0 14px;
+      font-size:1.1rem;
+      letter-spacing:-.02em;
+    }
+
+    .prob-list,.history-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height:300px;
+      overflow:auto;
+      padding-right:4px;
+    }
+
+    .prob-item,.history-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.07);
+      background:rgba(255,255,255,.035);
+    }
+
+    .prob-item small,.history-item small{color:var(--muted)}
+    .history-item button{
+      border:none;
+      background:rgba(255,255,255,.07);
+      color:var(--text);
+      border-radius:10px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .legend-grid{
+      display:grid;
+      gap:10px;
+    }
+
+    .legend-row{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:10px;
+      align-items:start;
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .dot{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      margin-top:5px;
+      box-shadow:0 0 20px currentColor;
+    }
+
+    .footer{
+      width:min(1200px, calc(100% - 32px));
+      margin:0 auto 22px;
+      color:var(--muted);
+      font-size:.9rem;
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      opacity:.85;
+    }
+
+    .empty{
+      color:var(--muted);
+      padding:12px;
+      border-radius:16px;
+      border:1px dashed rgba(255,255,255,.08);
+      text-align:center;
+    }
+
+    @keyframes spin{
+      from{transform:rotate(0)}
+      to{transform:rotate(360deg)}
+    }
+
+    @keyframes pulse{
+      0%,100%{transform:scale(.9); opacity:.55}
+      50%{transform:scale(1.08); opacity:1}
+    }
+
+    @media (max-width: 980px){
+      .app{grid-template-columns:1fr}
+      .hero{min-height:auto}
+      .top-grid{grid-template-columns:1fr}
+      .detail-grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width: 680px){
+      .app{width:min(100% - 18px, 1200px); margin:10px auto}
+      .hero,.timeline-card,.history-card,.legend-card{padding:18px}
+      .mini-stats{grid-template-columns:1fr}
+      .actions{flex-direction:column}
+      .primary,.secondary,.ghost{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="panel hero">
+      <span class="eyebrow">✦ Simulador atmosférico reimaginado</span>
+      <h1>Atlas Climático</h1>
+      <p class="lead">
+        Un generador de clima rehacer-do desde cero: nueva estructura, nueva estética, nuevo flujo y todo integrado en un único HTML.
+        Elige estación, lanza el escáner y guarda un historial local para revisar resultados pasados sin depender de archivos externos.
+      </p>
+
+      <div class="top-grid">
+        <div class="generator">
+          <div class="meta">
+            <div class="season-pills" id="seasonPills"></div>
+            <div class="badge" id="seasonBadge">Estación activa: Primavera</div>
+          </div>
+
+          <div class="roulette" id="roulette">
+            <div class="result-core">
+              <div class="weather-emoji" id="emoji">🛰️</div>
+              <h2 class="condition-name" id="conditionName">Esperando escaneo</h2>
+              <p class="condition-sub" id="conditionSub">Pulsa el botón para revelar una condición meteorológica.</p>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="generateBtn">Generar clima</button>
+            <button class="secondary" id="historyToggleBtn">Mostrar historial</button>
+            <button class="ghost" id="clearHistoryBtn">Borrar historial</button>
+          </div>
+        </div>
+
+        <div class="mini-stats">
+          <article class="stat">
+            <div class="label">Estación</div>
+            <div class="value" id="currentSeasonLabel">Primavera</div>
+          </article>
+          <article class="stat">
+            <div class="label">Última tirada</div>
+            <div class="value" id="lastRoll">—</div>
+          </article>
+          <article class="stat">
+            <div class="label">Resultados guardados</div>
+            <div class="value" id="historyCount">0</div>
+          </article>
+          <article class="stat">
+            <div class="label">Modo</div>
+            <div class="value">LocalStorage</div>
+          </article>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <article class="info-card">
+          <div class="badge" id="probabilityBadge">Probabilidad: —</div>
+          <h3>Descripción</h3>
+          <p id="descriptionText">Aquí aparecerá la definición de la condición seleccionada.</p>
+        </article>
+
+        <article class="info-card">
+          <div class="badge" id="typeBadge">Clasificación: —</div>
+          <h3>Contexto estacional</h3>
+          <p id="seasonContext">Cada estación tiene su propio repertorio y peso de aparición.</p>
+        </article>
+
+        <article class="info-card">
+          <div class="badge" id="flavorBadge">Estado visual: inactivo</div>
+          <h3>Panel del sistema</h3>
+          <p id="systemMessage">Listo para comenzar. No hay girito raro: esto ahora parece una consola del clima y no una hoja de deberes con botón azul.</p>
+        </article>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel timeline-card">
+        <h2 class="card-title">Tabla de aparición por estación</h2>
+        <div class="prob-list" id="probabilityList"></div>
+      </section>
+
+      <section class="panel history-card" id="historyCard" hidden>
+        <h2 class="card-title">Historial interactivo</h2>
+        <div class="history-list" id="historyList"></div>
+      </section>
+
+      <section class="panel legend-card">
+        <h2 class="card-title">Leyenda de probabilidad</h2>
+        <div class="legend-grid">
+          <div class="legend-row">
+            <span class="dot" style="color:#77f2b4;background:#77f2b4"></span>
+            <div><strong>Muy alta</strong><br>Sale con frecuencia. Lo normal de esa estación.</div>
+          </div>
+          <div class="legend-row">
+            <span class="dot" style="color:#ffd76b;background:#ffd76b"></span>
+            <div><strong>Alta / neutra</strong><br>Puede aparecer con cierta soltura, sin ser dominante.</div>
+          </div>
+          <div class="legend-row">
+            <span class="dot" style="color:#ff8f8f;background:#ff8f8f"></span>
+            <div><strong>Baja / muy baja</strong><br>Evento raro. Cuando sale, te mira el dado y se ríe.</div>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <span>Atlas Climático · archivo único HTML</span>
+    <span>Rediseñado desde cero</span>
+  </footer>
+
+  <script>
+    const DATA = {
+      primavera: {
+        label: "Primavera",
+        context: "Mezcla de estabilidad, humedad y nieblas suaves. Ideal para cambios de humor atmosféricos.",
+        conditions: [
+          { name:"Despejado", emoji:"☀️", probability:"Muy alta", weight:40, type:"Estable", description:"Cielo limpio o con nubosidad mínima." },
+          { name:"Lluvia", emoji:"🌧️", probability:"Muy alta", weight:30, type:"Húmedo", description:"Precipitación de agua en forma de gotas continuas o moderadas." },
+          { name:"Niebla", emoji:"🌫️", probability:"Neutra", weight:18, type:"Visibilidad", description:"Suspensión de vapor o gotitas finas que reduce la visibilidad." },
+          { name:"Calima", emoji:"🌤️", probability:"Alta", weight:12, type:"Partículas", description:"Presencia de polvo o partículas en el aire que enturbian el cielo." }
+        ]
+      },
+      verano: {
+        label: "Verano",
+        context: "Predomina el calor, pero aún puede colarse una tormenta con ganas de liarla.",
+        conditions: [
+          { name:"Despejado", emoji:"☀️", probability:"Muy alta", weight:45, type:"Estable", description:"Cielos abiertos y gran presencia solar." },
+          { name:"Canícula", emoji:"🌡️", probability:"Neutra", weight:16, type:"Extremo", description:"Periodo de calor intenso y sostenido, bastante criminal." },
+          { name:"Tormenta", emoji:"⛈️", probability:"Alta", weight:18, type:"Convectivo", description:"Fenómeno con lluvia intensa, aparato eléctrico y ambiente revuelto." },
+          { name:"Lluvia", emoji:"🌦️", probability:"Muy alta", weight:21, type:"Húmedo", description:"Precipitación ocasional, normalmente breve o localizada." }
+        ]
+      },
+      otoño: {
+        label: "Otoño",
+        context: "La estación más de \"ahora sí, ahora no\". Nubes, lluvia y cambios rápidos.",
+        conditions: [
+          { name:"Despejado", emoji:"⛅", probability:"Muy alta", weight:28, type:"Variable", description:"Cielos relativamente tranquilos, pero no siempre duraderos." },
+          { name:"Lluvia intermitente", emoji:"🌦️", probability:"Muy alta", weight:32, type:"Húmedo", description:"Lluvia que aparece y desaparece por intervalos." },
+          { name:"Chubasco", emoji:"🌧️", probability:"Alta", weight:24, type:"Repentino", description:"Precipitación breve pero intensa." },
+          { name:"Niebla", emoji:"🌫️", probability:"Neutra", weight:16, type:"Visibilidad", description:"Bruma espesa o ligera que dificulta ver con claridad." }
+        ]
+      },
+      invierno: {
+        label: "Invierno",
+        context: "Aire frío, hielo, nieve y, muy de vez en cuando, una locura rara.",
+        conditions: [
+          { name:"Despejado", emoji:"❄️", probability:"Muy alta", weight:28, type:"Frío seco", description:"Cielo despejado con ambiente frío o helador." },
+          { name:"Nieve", emoji:"🌨️", probability:"Alta", weight:30, type:"Sólido", description:"Precipitación de cristales de hielo y copos." },
+          { name:"Helada", emoji:"🧊", probability:"Neutra", weight:26, type:"Temperatura", description:"Descenso térmico que congela superficies y humedad." },
+          { name:"Tornado", emoji:"🌪️", probability:"Muy baja", weight:6, type:"Extremo", description:"Columna de aire en rotación violenta. Poco común, pero da miedo de gratis." },
+          { name:"Granizo", emoji:"🌨️", probability:"Baja", weight:10, type:"Sólido", description:"Precipitación en forma de bolas de hielo." }
+        ]
+      }
+    };
+
+    const seasonOrder = ["primavera","verano","otoño","invierno"];
+
+    const state = {
+      season: "primavera",
+      spinning: false,
+      historyVisible: false
+    };
+
+    const seasonPills = document.getElementById("seasonPills");
+    const seasonBadge = document.getElementById("seasonBadge");
+    const currentSeasonLabel = document.getElementById("currentSeasonLabel");
+    const conditionName = document.getElementById("conditionName");
+    const conditionSub = document.getElementById("conditionSub");
+    const emoji = document.getElementById("emoji");
+    const descriptionText = document.getElementById("descriptionText");
+    const seasonContext = document.getElementById("seasonContext");
+    const systemMessage = document.getElementById("systemMessage");
+    const probabilityBadge = document.getElementById("probabilityBadge");
+    const typeBadge = document.getElementById("typeBadge");
+    const flavorBadge = document.getElementById("flavorBadge");
+    const probabilityList = document.getElementById("probabilityList");
+    const historyList = document.getElementById("historyList");
+    const historyCard = document.getElementById("historyCard");
+    const generateBtn = document.getElementById("generateBtn");
+    const historyToggleBtn = document.getElementById("historyToggleBtn");
+    const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+    const lastRoll = document.getElementById("lastRoll");
+    const historyCount = document.getElementById("historyCount");
+
+    function makeSeasonButtons(){
+      seasonPills.innerHTML = "";
+      seasonOrder.forEach(key => {
+        const btn = document.createElement("button");
+        btn.className = "season-btn" + (state.season === key ? " active" : "");
+        btn.textContent = DATA[key].label;
+        btn.addEventListener("click", () => {
+          if(state.spinning) return;
+          state.season = key;
+          refreshSeasonUI();
+        });
+        seasonPills.appendChild(btn);
+      });
+    }
+
+    function refreshSeasonUI(){
+      makeSeasonButtons();
+      const season = DATA[state.season];
+      seasonBadge.textContent = `Estación activa: ${season.label}`;
+      currentSeasonLabel.textContent = season.label;
+      seasonContext.textContent = season.context;
+      renderProbabilityTable();
+    }
+
+    function renderProbabilityTable(){
+      const season = DATA[state.season];
+      probabilityList.innerHTML = "";
+      season.conditions
+        .slice()
+        .sort((a,b) => b.weight - a.weight)
+        .forEach(item => {
+          const row = document.createElement("div");
+          row.className = "prob-item";
+          row.innerHTML = `
+            <div>
+              <strong>${item.emoji} ${item.name}</strong><br>
+              <small>${item.type} · peso ${item.weight}</small>
+            </div>
+            <strong>${item.probability}</strong>
+          `;
+          probabilityList.appendChild(row);
+        });
+    }
+
+    function pickWeighted(arr){
+      const total = arr.reduce((sum, item) => sum + item.weight, 0);
+      let random = Math.random() * total;
+      for(const item of arr){
+        random -= item.weight;
+        if(random <= 0) return item;
+      }
+      return arr[arr.length - 1];
+    }
+
+    function getHistory(){
+      try{
+        return JSON.parse(localStorage.getItem("atlas-climatico-history")) || [];
+      }catch{
+        return [];
+      }
+    }
+
+    function saveHistory(history){
+      localStorage.setItem("atlas-climatico-history", JSON.stringify(history));
+      updateHistoryCounter();
+    }
+
+    function updateHistoryCounter(){
+      historyCount.textContent = getHistory().length;
+    }
+
+    function addToHistory(entry){
+      const history = getHistory();
+      history.unshift(entry);
+      saveHistory(history.slice(0, 30));
+      if(state.historyVisible) renderHistory();
+    }
+
+    function renderHistory(){
+      const history = getHistory();
+      historyList.innerHTML = "";
+      if(history.length === 0){
+        historyList.innerHTML = `<div class="empty">No hay resultados guardados todavía.</div>`;
+        return;
+      }
+
+      history.forEach((entry, index) => {
+        const row = document.createElement("div");
+        row.className = "history-item";
+        row.innerHTML = `
+          <div>
+            <strong>${entry.emoji} ${entry.name}</strong><br>
+            <small>${entry.season} · ${entry.time}</small>
+          </div>
+          <button type="button" data-index="${index}">Ver</button>
+        `;
+        row.querySelector("button").addEventListener("click", () => {
+          showResult(entry, false);
+        });
+        historyList.appendChild(row);
+      });
+    }
+
+    function toggleHistory(){
+      state.historyVisible = !state.historyVisible;
+      historyCard.hidden = !state.historyVisible;
+      historyToggleBtn.textContent = state.historyVisible ? "Ocultar historial" : "Mostrar historial";
+      if(state.historyVisible) renderHistory();
+    }
+
+    function clearHistory(){
+      localStorage.removeItem("atlas-climatico-history");
+      updateHistoryCounter();
+      renderHistory();
+      systemMessage.textContent = "Historial borrado. La memoria local ha quedado limpia como si aquí no hubiese pasado nada.";
+    }
+
+    function getBadgeClass(probability){
+      if(probability.toLowerCase().includes("muy alta")) return "good";
+      if(probability.toLowerCase().includes("alta") || probability.toLowerCase().includes("neutra")) return "warn";
+      return "bad";
+    }
+
+    function showResult(result, save = true){
+      emoji.textContent = result.emoji;
+      conditionName.textContent = result.name;
+      conditionSub.textContent = result.type;
+      descriptionText.textContent = result.description;
+      probabilityBadge.className = "badge " + getBadgeClass(result.probability);
+      probabilityBadge.textContent = `Probabilidad: ${result.probability}`;
+      typeBadge.className = "badge";
+      typeBadge.textContent = `Clasificación: ${result.type}`;
+      flavorBadge.className = "badge";
+      flavorBadge.textContent = "Estado visual: resultado generado";
+      lastRoll.textContent = result.name;
+      systemMessage.textContent = `Escaneo completado para ${result.season || DATA[state.season].label}. Resultado registrado correctamente.`;
+      if(save){
+        addToHistory({
+          ...result,
+          season: result.season || DATA[state.season].label,
+          time: new Date().toLocaleString("es-ES", {
+            day:"2-digit", month:"2-digit", year:"numeric",
+            hour:"2-digit", minute:"2-digit"
+          })
+        });
+      }
+    }
+
+    function animateGeneration(){
+      if(state.spinning) return;
+      state.spinning = true;
+      generateBtn.disabled = true;
+      flavorBadge.className = "badge warn";
+      flavorBadge.textContent = "Estado visual: escaneando";
+      systemMessage.textContent = "Analizando patrones atmosféricos... sí, suena dramático, porque ahora tiene que sonar dramático.";
+      probabilityBadge.className = "badge";
+      probabilityBadge.textContent = "Probabilidad: calculando...";
+      typeBadge.className = "badge";
+      typeBadge.textContent = "Clasificación: escaneo activo";
+
+      const pool = DATA[state.season].conditions;
+      let ticks = 0;
+      const totalTicks = 22;
+      const interval = setInterval(() => {
+        const preview = pool[Math.floor(Math.random() * pool.length)];
+        emoji.textContent = preview.emoji;
+        conditionName.textContent = preview.name;
+        conditionSub.textContent = "Procesando...";
+        descriptionText.textContent = "El sistema está barajando condiciones meteorológicas de la estación seleccionada.";
+        ticks++;
+        if(ticks >= totalTicks){
+          clearInterval(interval);
+          const picked = pickWeighted(pool);
+          showResult({ ...picked, season: DATA[state.season].label }, true);
+          state.spinning = false;
+          generateBtn.disabled = false;
+        }
+      }, 85);
+    }
+
+    generateBtn.addEventListener("click", animateGeneration);
+    historyToggleBtn.addEventListener("click", toggleHistory);
+    clearHistoryBtn.addEventListener("click", clearHistory);
+
+    refreshSeasonUI();
+    updateHistoryCounter();
+  </script>
+</body>
+</html>
