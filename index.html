@@ -3,40 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RP Hub</title>
-
+  <title>RP Hub — Dragon Ball Style</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
     :root{
-      --bg-1:#0b1020;
-      --bg-2:#121833;
-      --bg-3:#1a2245;
-      --card:#141a30cc;
-      --card-hover:#1b2342ee;
-      --text:#f5f7ff;
-      --muted:#b9c0dd;
-      --accent:#8ea2ff;
-      --accent-2:#ff8bd6;
-      --border:rgba(255,255,255,0.09);
-      --shadow:0 10px 35px rgba(0,0,0,0.35);
-      --gold:#ffd76a;
+      --bg:#08111f;
+      --bg-2:#101c33;
+      --panel:#132442;
+      --panel-2:#182d52;
+      --card:#1a315a;
+      --card-hover:#224073;
+      --text:#f7f7ff;
+      --muted:#b8c3df;
+      --orange:#ff8a1d;
+      --orange-2:#ffb347;
+      --blue:#59b8ff;
+      --blue-2:#1f7dff;
+      --gold:#ffd45d;
+      --red:#ff5b5b;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 18px 40px rgba(0,0,0,.34);
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:18px;
+      --radius-sm:14px;
+      --container:1320px;
     }
 
     body.light{
-      --bg-1:#eef3ff;
-      --bg-2:#dfe8ff;
-      --bg-3:#f8fbff;
-      --card:#ffffffd9;
-      --card-hover:#ffffff;
-      --text:#10162b;
-      --muted:#5f6888;
-      --accent:#4d6bff;
-      --accent-2:#d94cb0;
-      --border:rgba(16,22,43,0.08);
-      --shadow:0 10px 30px rgba(50,70,120,0.15);
-      --gold:#d99a00;
+      --bg:#eef6ff;
+      --bg-2:#dcecff;
+      --panel:#ffffff;
+      --panel-2:#f5f9ff;
+      --card:#ffffff;
+      --card-hover:#eef5ff;
+      --text:#12203a;
+      --muted:#5f6e8d;
+      --orange:#f06b00;
+      --orange-2:#ffb347;
+      --blue:#2e83ff;
+      --blue-2:#005ee6;
+      --gold:#d8a100;
+      --red:#db4040;
+      --border:rgba(18,32,58,.09);
+      --shadow:0 16px 32px rgba(52,88,148,.16);
     }
 
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
 
     html,body{
       margin:0;
@@ -45,394 +59,596 @@
     }
 
     body{
-      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       color:var(--text);
       background:
-        radial-gradient(circle at top left, rgba(142,162,255,0.14), transparent 30%),
-        radial-gradient(circle at top right, rgba(255,139,214,0.10), transparent 28%),
-        linear-gradient(270deg,var(--bg-1),var(--bg-2),var(--bg-3),var(--bg-1));
-      background-size:400% 400%;
-      animation:gradientShift 18s ease infinite;
+        radial-gradient(circle at 10% 10%, rgba(255,138,29,.16), transparent 20%),
+        radial-gradient(circle at 90% 12%, rgba(89,184,255,.16), transparent 22%),
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 220px),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
       overflow-x:hidden;
+      position:relative;
     }
 
-    @keyframes gradientShift{
-      0%{background-position:0% 50%;}
-      50%{background-position:100% 50%;}
-      100%{background-position:0% 50%;}
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(transparent 96%, rgba(255,255,255,.03) 96%),
+        linear-gradient(90deg, transparent 96%, rgba(255,255,255,.025) 96%);
+      background-size:34px 34px;
+      opacity:.22;
+      mask-image:linear-gradient(180deg, rgba(0,0,0,.55), transparent 85%);
     }
+
+    a{color:inherit}
 
     .page{
-      width:min(1200px, calc(100% - 32px));
+      width:min(var(--container), calc(100% - 22px));
       margin:0 auto;
-      padding:28px 0 40px;
-      animation:fadeUp .8s ease;
+      padding:24px 0 42px;
     }
 
-    @keyframes fadeUp{
-      from{
-        opacity:0;
-        transform:translateY(18px);
-      }
-      to{
-        opacity:1;
-        transform:translateY(0);
-      }
+    .masthead{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:34px;
+      background:
+        linear-gradient(135deg, rgba(255,138,29,.28), rgba(255,138,29,.10) 30%, rgba(89,184,255,.12) 75%, rgba(89,184,255,.2)),
+        var(--panel);
+      box-shadow:var(--shadow);
+      padding:28px;
+      margin-bottom:20px;
+    }
+
+    .masthead::before,
+    .masthead::after{
+      content:"";
+      position:absolute;
+      border-radius:50%;
+      filter:blur(8px);
+      opacity:.55;
+      pointer-events:none;
+    }
+
+    .masthead::before{
+      width:220px;
+      height:220px;
+      background:radial-gradient(circle, rgba(255,210,93,.45), transparent 70%);
+      top:-70px;
+      right:-60px;
+    }
+
+    .masthead::after{
+      width:180px;
+      height:180px;
+      background:radial-gradient(circle, rgba(89,184,255,.35), transparent 70%);
+      bottom:-70px;
+      left:-50px;
     }
 
     .topbar{
       display:flex;
+      align-items:flex-start;
       justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      margin-bottom:20px;
-      flex-wrap:wrap;
+      gap:18px;
+      position:relative;
+      z-index:1;
     }
 
     .brand{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
+      min-width:0;
+      max-width:900px;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.15);
+      font-weight:900;
+      font-size:.78rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:14px;
+      color:var(--gold);
+      backdrop-filter:blur(10px);
     }
 
     .brand h1{
       margin:0;
-      font-size:clamp(2rem, 4vw, 3rem);
-      line-height:1.05;
-      letter-spacing:.5px;
+      font-family:"Bangers", Impact, fantasy;
+      font-size:clamp(3rem, 7vw, 5.6rem);
+      line-height:.92;
+      letter-spacing:.05em;
+      color:#fff4df;
       text-shadow:
-        0 0 10px rgba(142,162,255,.25),
-        0 0 20px rgba(255,139,214,.15);
+        -3px -3px 0 #0e1b30,
+        3px -3px 0 #0e1b30,
+        -3px 3px 0 #0e1b30,
+        3px 3px 0 #0e1b30,
+        0 8px 18px rgba(0,0,0,.25),
+        0 0 28px rgba(255,138,29,.22);
+    }
+
+    body.light .brand h1{
+      color:#fff;
+      text-shadow:
+        -3px -3px 0 #0c4fba,
+        3px -3px 0 #0c4fba,
+        -3px 3px 0 #0c4fba,
+        3px 3px 0 #0c4fba,
+        0 6px 14px rgba(0,0,0,.16);
     }
 
     .brand p{
-      margin:0;
-      color:var(--muted);
-      font-size:0.98rem;
+      margin:10px 0 0;
+      max-width:760px;
+      color:#e7eeff;
+      font-size:1rem;
+      line-height:1.7;
+      font-weight:600;
+    }
+
+    body.light .brand p{
+      color:#274169;
     }
 
     .theme-toggle{
+      flex-shrink:0;
+      align-self:flex-start;
       border:none;
-      border-radius:999px;
-      padding:12px 18px;
-      background:var(--card);
+      border-radius:16px;
+      padding:14px 16px;
+      min-width:150px;
+      background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
       color:var(--text);
-      cursor:pointer;
-      font-size:0.95rem;
-      font-weight:700;
+      border:1px solid rgba(255,255,255,.18);
       box-shadow:var(--shadow);
-      border:1px solid var(--border);
+      cursor:pointer;
+      font-size:.92rem;
+      font-weight:900;
       transition:.2s ease;
       backdrop-filter:blur(12px);
     }
 
     .theme-toggle:hover{
-      transform:translateY(-2px);
-      background:var(--card-hover);
+      transform:translateY(-3px) scale(1.01);
     }
 
-    .hero,
-    .favorites-panel{
-      background:var(--card);
+    .hero-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);
+      gap:18px;
+      margin-bottom:18px;
+    }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01)), var(--panel);
       border:1px solid var(--border);
-      border-radius:24px;
-      padding:24px;
+      border-radius:var(--radius-xl);
       box-shadow:var(--shadow);
-      backdrop-filter:blur(16px);
-      margin-bottom:24px;
-      overflow:hidden;
       position:relative;
+      overflow:hidden;
+      isolation:isolate;
     }
 
-    .hero::before,
-    .favorites-panel::before{
+    .panel::before{
       content:"";
       position:absolute;
       inset:0;
-      background:
-        linear-gradient(120deg, rgba(142,162,255,0.08), transparent 40%, rgba(255,139,214,0.07));
+      background:linear-gradient(135deg, rgba(255,138,29,.11), transparent 45%, rgba(89,184,255,.09));
       pointer-events:none;
+      z-index:0;
     }
 
-    .hero-inner,
-    .favorites-inner{
+    .panel::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      border-radius:inherit;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .panel-inner{
       position:relative;
       z-index:1;
+      padding:24px;
     }
 
-    .quote-label,
-    .favorites-label{
+    .section-label{
       display:inline-block;
-      font-size:0.8rem;
-      font-weight:800;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--accent);
-      margin-bottom:12px;
+      font-family:"Bangers", Impact, fantasy;
+      font-size:1.15rem;
+      letter-spacing:.08em;
+      color:var(--gold);
+      margin-bottom:10px;
+      text-shadow:1px 1px 0 rgba(0,0,0,.35);
     }
 
     .quote{
-      font-size:clamp(1.05rem, 2vw, 1.35rem);
-      line-height:1.6;
-      margin:0 0 8px;
-      font-weight:600;
+      margin:0;
+      font-size:clamp(1.08rem, 2vw, 1.34rem);
+      line-height:1.75;
+      font-weight:800;
     }
 
     .quote-author{
-      color:var(--muted);
-      margin:0;
-      font-size:0.95rem;
+      margin:14px 0 0;
+      color:var(--orange-2);
+      font-size:.96rem;
+      font-weight:800;
     }
 
     .quote-meaning{
+      margin:16px 0 0;
+      padding:14px 16px;
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
       color:var(--muted);
-      margin:12px 0 0;
-      font-size:0.93rem;
-      line-height:1.6;
-      opacity:0.95;
-      padding-top:10px;
-      border-top:1px solid var(--border);
+      line-height:1.65;
+      font-size:.94rem;
     }
 
-    .favorites-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:14px;
-    }
-
-    .favorites-title{
-      margin:0;
-      font-size:1.2rem;
-    }
-
-    .favorites-sub{
-      margin:4px 0 0;
-      color:var(--muted);
-      font-size:0.95rem;
-    }
-
+    .hero-actions,
     .favorites-actions{
       display:flex;
-      gap:10px;
       flex-wrap:wrap;
+      gap:10px;
     }
 
-    .favorites-btn{
+    .hero-actions{margin-top:18px}
+
+    .btn{
       border:none;
-      border-radius:999px;
-      padding:10px 14px;
-      background:rgba(255,255,255,0.05);
-      color:var(--text);
+      border-radius:14px;
+      padding:12px 16px;
+      background:linear-gradient(180deg, var(--orange), #ef6b00);
+      color:white;
       cursor:pointer;
-      font-size:0.9rem;
-      font-weight:700;
-      border:1px solid var(--border);
+      border:1px solid rgba(255,255,255,.14);
+      font-size:.9rem;
+      font-weight:900;
+      letter-spacing:.02em;
+      box-shadow:0 10px 20px rgba(239,107,0,.22);
       transition:.2s ease;
     }
 
-    .favorites-btn:hover{
-      transform:translateY(-2px);
-      background:var(--card-hover);
+    .btn:hover{
+      transform:translateY(-3px);
+      filter:brightness(1.06);
+    }
+
+    .btn.secondary{
+      background:linear-gradient(180deg, var(--blue), var(--blue-2));
+      box-shadow:0 10px 20px rgba(31,125,255,.2);
+    }
+
+    .puzzle-card{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      text-decoration:none;
+      min-height:100%;
+    }
+
+    .puzzle-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+    }
+
+    .puzzle-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:linear-gradient(180deg, #ffe289, #ffb547);
+      color:#341a00;
+      font-size:.78rem;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.07em;
+      margin-bottom:10px;
+      box-shadow:0 8px 20px rgba(255,181,71,.2);
+    }
+
+    .puzzle-title{
+      margin:0;
+      font-family:"Bangers", Impact, fantasy;
+      font-size:1.9rem;
+      line-height:1;
+      letter-spacing:.04em;
+      color:#fff2dd;
+    }
+
+    body.light .puzzle-title{ color:#18335c; }
+
+    .puzzle-icon{
+      font-size:2.4rem;
+      filter:drop-shadow(0 0 16px rgba(255,212,93,.2));
+      flex-shrink:0;
+    }
+
+    .puzzle-desc{
+      margin:0;
+      color:var(--muted);
+      line-height:1.75;
+      font-size:.96rem;
+    }
+
+    .chip-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:auto;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      color:var(--text);
+      font-size:.82rem;
+      font-weight:800;
+    }
+
+    .favorites-panel,
+    .stats-wrap,
+    .sections-wrap{
+      margin-bottom:18px;
+    }
+
+    .favorites-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .favorites-head h2,
+    .section-header h2{
+      margin:0 0 6px;
+      font-family:"Bangers", Impact, fantasy;
+      letter-spacing:.05em;
+      font-size:1.9rem;
+      line-height:1;
+      color:#fff1d0;
+      text-shadow:2px 2px 0 rgba(0,0,0,.22);
+    }
+
+    body.light .favorites-head h2,
+    body.light .section-header h2{
+      color:#18417a;
+      text-shadow:none;
+    }
+
+    .favorites-head p,
+    .section-header p{
+      margin:0;
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.65;
     }
 
     .favorites-grid{
       display:grid;
-      grid-template-columns:repeat(3, minmax(0,1fr));
+      grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
       gap:14px;
     }
 
-    .favorite-card{
-      display:block;
-      text-decoration:none;
-      color:inherit;
-      background:rgba(255,255,255,0.03);
+    .favorite-card,
+    .hub-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)), var(--card);
       border:1px solid var(--border);
-      border-radius:18px;
-      padding:16px;
-      transition:.22s ease;
+      border-radius:var(--radius-md);
+      transition:.2s ease;
       position:relative;
       overflow:hidden;
     }
 
-    .favorite-card:hover{
-      transform:translateY(-4px);
+    .favorite-card:hover,
+    .hub-card:hover{
+      transform:translateY(-5px) scale(1.005);
       background:var(--card-hover);
-      border-color:rgba(255,215,106,0.35);
+      box-shadow:0 18px 30px rgba(0,0,0,.18);
     }
 
-    .favorite-card::after{
+    .favorite-card::before,
+    .hub-card::before{
       content:"";
       position:absolute;
       inset:0;
-      background:linear-gradient(135deg, rgba(255,215,106,.08), transparent 50%, rgba(142,162,255,.08));
+      background:linear-gradient(135deg, rgba(255,138,29,.12), transparent 40%, rgba(89,184,255,.1));
       opacity:0;
-      transition:.22s ease;
+      transition:.2s ease;
       pointer-events:none;
     }
 
-    .favorite-card:hover::after{
-      opacity:1;
+    .favorite-card:hover::before,
+    .hub-card:hover::before{ opacity:1; }
+
+    .favorite-card{
+      display:block;
+      text-decoration:none;
+      padding:16px;
     }
 
-    .favorite-top{
+    .favorite-top,
+    .hub-card-top{
       display:flex;
       justify-content:space-between;
-      gap:12px;
       align-items:flex-start;
-      margin-bottom:8px;
+      gap:12px;
+      margin-bottom:10px;
       position:relative;
       z-index:1;
     }
 
-    .favorite-title{
+    .favorite-title,
+    .hub-card-title{
       margin:0;
       font-size:1rem;
-      font-weight:800;
+      font-weight:900;
+      line-height:1.35;
     }
 
-    .favorite-icon{
+    .favorite-icon,
+    .hub-card-icon{
       font-size:1.2rem;
       flex-shrink:0;
     }
 
-    .favorite-desc{
+    .favorite-desc,
+    .hub-card-desc{
       margin:0;
       color:var(--muted);
-      line-height:1.5;
-      font-size:0.92rem;
+      line-height:1.65;
+      font-size:.92rem;
       position:relative;
       z-index:1;
     }
 
-    .favorite-tag{
+    .favorite-tag,
+    .hub-card-tag{
       display:inline-block;
-      margin-top:10px;
-      font-size:0.78rem;
-      font-weight:800;
-      letter-spacing:.08em;
+      margin-top:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:.78rem;
+      font-weight:900;
       text-transform:uppercase;
-      color:var(--gold);
+      letter-spacing:.06em;
       position:relative;
       z-index:1;
+      color:#fff;
+      background:linear-gradient(180deg, var(--blue), var(--blue-2));
     }
 
     .favorites-empty{
-      padding:18px;
       border:1px dashed var(--border);
-      border-radius:18px;
+      border-radius:var(--radius-md);
+      padding:18px;
       color:var(--muted);
-      background:rgba(255,255,255,0.02);
-      line-height:1.6;
+      line-height:1.7;
+      background:rgba(255,255,255,.03);
     }
 
     .stats{
       display:grid;
       grid-template-columns:repeat(4, minmax(0,1fr));
-      gap:16px;
-      margin:24px 0 28px;
-    }
-
-    .stat{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:18px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(12px);
-      text-align:center;
-    }
-
-    .stat .icon{
-      font-size:1.4rem;
-      display:block;
-      margin-bottom:8px;
-    }
-
-    .stat .num{
-      display:block;
-      font-size:1.6rem;
-      font-weight:800;
-      margin-bottom:6px;
-    }
-
-    .stat .label{
-      color:var(--muted);
-      font-size:0.95rem;
-    }
-
-    .columns{
-      display:grid;
-      grid-template-columns:repeat(3, minmax(0,1fr));
-      gap:20px;
-    }
-
-    .column{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:24px;
-      padding:20px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(14px);
-      min-width:0;
-    }
-
-    .column-header{
-      margin-bottom:16px;
-      padding-bottom:14px;
-      border-bottom:1px solid var(--border);
-    }
-
-    .column-header h2{
-      margin:0 0 6px;
-      font-size:1.35rem;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .column-header p{
-      margin:0;
-      color:var(--muted);
-      font-size:0.95rem;
-      line-height:1.5;
-    }
-
-    .card-list{
-      display:flex;
-      flex-direction:column;
       gap:14px;
     }
 
-    .hub-card{
-      background:rgba(255,255,255,0.03);
+    .stat{
+      padding:18px;
+      border-radius:var(--radius-lg);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+        var(--panel-2);
       border:1px solid var(--border);
-      border-radius:18px;
-      transition:.22s ease;
+      box-shadow:var(--shadow);
       position:relative;
       overflow:hidden;
     }
 
-    .hub-card::after{
+    .stat::before{
       content:"";
       position:absolute;
-      inset:0;
-      background:linear-gradient(135deg, rgba(142,162,255,.08), transparent 50%, rgba(255,139,214,.08));
-      opacity:0;
-      transition:.22s ease;
-      pointer-events:none;
+      inset:auto -20% -40% auto;
+      width:110px;
+      height:110px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,255,255,.12), transparent 70%);
     }
 
-    .hub-card:hover{
-      transform:translateY(-4px);
-      background:var(--card-hover);
-      border-color:rgba(142,162,255,0.28);
+    .stat .icon{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      background:linear-gradient(180deg, var(--orange), #ef6b00);
+      margin-bottom:12px;
+      font-size:1.2rem;
+      box-shadow:0 10px 20px rgba(239,107,0,.18);
     }
 
-    .hub-card:hover::after{
-      opacity:1;
+    .stat .num{
+      display:block;
+      font-family:"Bangers", Impact, fantasy;
+      font-size:2rem;
+      line-height:1;
+      letter-spacing:.04em;
+      margin-bottom:6px;
+      color:#fff1d0;
+    }
+
+    body.light .stat .num{ color:#15366c; }
+
+    .stat .label{
+      display:block;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:.93rem;
+      font-weight:700;
+      max-width:16ch;
+    }
+
+    .hub-sections{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:18px;
+    }
+
+    .section-box{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)), var(--panel);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      padding:20px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .section-box::before{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      top:0;
+      height:5px;
+      background:linear-gradient(90deg, var(--orange), var(--gold), var(--blue));
+    }
+
+    .section-header{
+      margin-bottom:16px;
+      padding-bottom:14px;
+      border-bottom:1px solid var(--border);
+      position:relative;
+      z-index:1;
+    }
+
+    .card-list{
+      display:grid;
+      gap:14px;
+      position:relative;
+      z-index:1;
     }
 
     .hub-card-link{
@@ -440,25 +656,6 @@
       text-decoration:none;
       color:inherit;
       padding:16px;
-      position:relative;
-      z-index:1;
-    }
-
-    .hub-card-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:10px;
-      position:relative;
-      z-index:2;
-    }
-
-    .hub-card-title{
-      font-size:1.05rem;
-      font-weight:800;
-      margin:0;
-      padding-right:8px;
     }
 
     .hub-card-actions{
@@ -467,264 +664,81 @@
       gap:8px;
       flex-shrink:0;
       position:relative;
-      z-index:3;
-    }
-
-    .hub-card-icon{
-      font-size:1.35rem;
-      flex-shrink:0;
+      z-index:2;
     }
 
     .favorite-toggle{
-      width:36px;
-      height:36px;
+      width:38px;
+      height:38px;
       border-radius:12px;
       border:1px solid var(--border);
-      background:rgba(255,255,255,0.04);
-      color:var(--muted);
+      background:rgba(255,255,255,.05);
+      color:#ffe8a0;
+      cursor:pointer;
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      cursor:pointer;
-      transition:.2s ease;
       font-size:1rem;
-      position:relative;
-      z-index:4;
+      transition:.2s ease;
+      box-shadow:0 6px 14px rgba(0,0,0,.12);
     }
 
     .favorite-toggle:hover{
       transform:translateY(-2px) scale(1.03);
-      color:var(--gold);
-      border-color:rgba(255,215,106,0.35);
-      background:rgba(255,215,106,0.08);
+      background:rgba(255,212,93,.12);
+      border-color:rgba(255,212,93,.42);
     }
 
     .favorite-toggle.active{
-      color:var(--gold);
-      border-color:rgba(255,215,106,0.45);
-      background:rgba(255,215,106,0.12);
-      box-shadow:0 0 0 3px rgba(255,215,106,0.08);
-    }
-
-    .hub-card-desc{
-      margin:0;
-      color:var(--muted);
-      line-height:1.5;
-      font-size:0.94rem;
-      position:relative;
-      z-index:1;
-    }
-
-    .hub-card-tag{
-      display:inline-block;
-      margin-top:12px;
-      font-size:0.78rem;
-      font-weight:800;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:var(--accent);
-      background:rgba(142,162,255,0.15);
-      padding:4px 10px;
-      border-radius:999px;
-      position:relative;
-      z-index:1;
+      color:#fff;
+      background:linear-gradient(180deg, #ffd45d, #ff9b21);
+      border-color:rgba(255,212,93,.48);
+      text-shadow:0 1px 2px rgba(0,0,0,.25);
     }
 
     footer{
-      margin-top:28px;
+      margin-top:24px;
+      padding:20px 16px 0;
       text-align:center;
       color:var(--muted);
-      font-size:0.92rem;
-      line-height:1.7;
-      padding:12px 8px 0;
+      font-size:.92rem;
+      line-height:1.75;
     }
 
     footer strong{
       color:var(--text);
+      font-family:"Bangers", Impact, fantasy;
+      letter-spacing:.05em;
+      font-size:1.15rem;
+      font-weight:400;
     }
 
-    #newQuoteBtn{
-      margin-top:16px;
-    }
-
-    .weekly-panel{
-      background:
-        linear-gradient(135deg, rgba(142,162,255,0.16), rgba(255,139,214,0.12)),
-        var(--card);
-      border:1px solid rgba(255,215,106,0.22);
-      border-radius:24px;
-      padding:24px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(16px);
-      margin-bottom:24px;
-      overflow:hidden;
-      position:relative;
-    }
-
-    .weekly-panel::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        radial-gradient(circle at 15% 20%, rgba(255,215,106,0.18), transparent 24%),
-        radial-gradient(circle at 85% 25%, rgba(142,162,255,0.16), transparent 26%),
-        linear-gradient(120deg, rgba(255,255,255,0.05), transparent 45%, rgba(255,255,255,0.02));
-      pointer-events:none;
-    }
-
-    .weekly-inner{
-      position:relative;
-      z-index:1;
-    }
-
-    .weekly-label{
-      display:inline-block;
-      font-size:0.8rem;
-      font-weight:800;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--gold);
-      margin-bottom:12px;
-    }
-
-    .weekly-card{
-      display:block;
-      text-decoration:none;
-      color:inherit;
-      background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,215,106,0.22);
-      border-radius:22px;
-      padding:20px;
-      position:relative;
-      overflow:hidden;
-      transition:.22s ease;
-    }
-
-    .weekly-card:hover{
-      transform:translateY(-4px) scale(1.01);
-      background:var(--card-hover);
-      border-color:rgba(255,215,106,0.4);
-      box-shadow:0 0 0 1px rgba(255,215,106,0.08), 0 18px 40px rgba(0,0,0,0.22);
-    }
-
-    .weekly-card::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(135deg, rgba(255,215,106,.10), transparent 45%, rgba(255,139,214,.08));
-      opacity:0;
-      transition:.22s ease;
-      pointer-events:none;
-    }
-
-    .weekly-card:hover::after{
-      opacity:1;
-    }
-
-    .weekly-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:16px;
-      margin-bottom:10px;
-      position:relative;
-      z-index:1;
-    }
-
-    .weekly-kicker{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size:.78rem;
-      font-weight:900;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:#201500;
-      background:linear-gradient(180deg, #ffd76a, #ffb84d);
-      padding:8px 12px;
-      border-radius:999px;
-      box-shadow:0 8px 20px rgba(255,184,77,0.22);
-    }
-
-    .weekly-icon{
-      font-size:2.2rem;
-      flex-shrink:0;
-      filter:drop-shadow(0 0 10px rgba(255,215,106,.18));
-    }
-
-    .weekly-title{
-      margin:0 0 8px;
-      font-size:1.35rem;
-      font-weight:900;
-    }
-
-    .weekly-desc{
-      margin:0;
-      color:var(--muted);
-      line-height:1.65;
-      font-size:0.97rem;
-      position:relative;
-      z-index:1;
-      max-width:70ch;
-    }
-
-    .weekly-meta{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:14px;
-      position:relative;
-      z-index:1;
-    }
-
-    .weekly-chip{
-      display:inline-block;
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:.82rem;
-      font-weight:800;
-      color:var(--text);
-      border:1px solid var(--border);
-      background:rgba(255,255,255,0.05);
-    }
-
-    @media (min-width:1200px){
-      .columns{
-        grid-template-columns:repeat(4, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width:980px){
-      .columns{
+    @media (max-width:1100px){
+      .hero-grid,
+      .hub-sections{
         grid-template-columns:1fr;
       }
 
       .stats{
-        grid-template-columns:1fr;
-      }
-
-      .favorites-grid{
-        grid-template-columns:1fr;
-      }
-
-      .page{
-        width:min(100% - 20px, 1200px);
-        padding-top:20px;
-      }
-
-      .hero,
-      .favorites-panel,
-      .weekly-panel{
-        padding:20px;
-      }
-
-      .column{
-        padding:18px;
+        grid-template-columns:repeat(2, minmax(0,1fr));
       }
     }
 
-    @media (max-width:560px){
-      .topbar{
+    @media (max-width:720px){
+      .page{
+        width:min(100% - 14px, var(--container));
+        padding-top:14px;
+      }
+
+      .masthead,
+      .panel-inner,
+      .section-box{
+        padding:18px;
+      }
+
+      .topbar,
+      .favorites-head{
+        flex-direction:column;
         align-items:stretch;
       }
 
@@ -733,74 +747,103 @@
       }
 
       .brand h1{
-        font-size:2rem;
+        font-size:clamp(2.6rem, 16vw, 4rem);
+      }
+    }
+
+    @media (max-width:520px){
+      .stats{
+        grid-template-columns:1fr;
       }
 
-      .quote{
-        font-size:1rem;
+      .favorites-grid{
+        grid-template-columns:1fr;
       }
 
-      .hub-card-link{
-        padding:15px;
-      }
-
-      .hub-card-top{
-        gap:10px;
-      }
-
-      .favorite-toggle{
-        width:34px;
-        height:34px;
-      }
-
-      .weekly-top{
+      .puzzle-top{
         flex-direction:column;
         align-items:flex-start;
       }
 
-      .weekly-icon{
-        font-size:1.9rem;
+      .puzzle-title,
+      .favorites-head h2,
+      .section-header h2{
+        font-size:1.55rem;
       }
 
-      .weekly-title{
-        font-size:1.15rem;
+      .hub-card-link,
+      .favorite-card{
+        padding:14px;
       }
     }
   </style>
 </head>
 <body>
   <main class="page">
-    <div class="topbar">
-      <div class="brand">
-        <h1>🌸 RP HUB</h1>
-        <p>Centro principal de navegación para tu universo de rol</p>
-      </div>
+    <header class="masthead">
+      <div class="topbar">
+        <div class="brand">
+          <span class="eyebrow">🐉 Kame House Navigation System</span>
+          <h1>RP HUB</h1>
+          <p>Centro principal de navegación para tu universo de rol, rehecho con una vibra más Dragon Ball: más contraste, más energía, más personalidad y menos apariencia de hoja de Excel con ansiedad.</p>
+        </div>
 
-      <button class="theme-toggle" id="themeToggle">☀️ Modo claro</button>
-    </div>
-
-    <section class="hero">
-      <div class="hero-inner">
-        <span class="quote-label">Cita del día</span>
-        <p class="quote" id="quoteText">Cargando frase...</p>
-        <p class="quote-author" id="quoteAuthor"></p>
-        <p class="quote-meaning" id="quoteMeaning"></p>
-        <button class="favorites-btn" id="newQuoteBtn" type="button">🔄 Nueva cita</button>
+        <button class="theme-toggle" id="themeToggle">☀️ Modo claro</button>
       </div>
+    </header>
+
+    <section class="hero-grid">
+      <article class="panel">
+        <div class="panel-inner">
+          <span class="section-label">Cita del día</span>
+          <p class="quote" id="quoteText">Cargando frase...</p>
+          <p class="quote-author" id="quoteAuthor"></p>
+          <p class="quote-meaning" id="quoteMeaning"></p>
+
+          <div class="hero-actions">
+            <button class="btn" id="newQuoteBtn" type="button">🔄 Nueva cita</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-inner">
+          <a class="puzzle-card" href="puzzle.html">
+            <div class="puzzle-top">
+              <div>
+                <span class="puzzle-badge">🆕 Nuevo desafío</span>
+                <h2 class="puzzle-title">🐺🐑 Lobos y Ovejas — Puzzle del Río</h2>
+              </div>
+              <span class="puzzle-icon">🧩</span>
+            </div>
+
+            <p class="puzzle-desc">
+              El clásico rompecabezas del río ya está disponible en el hub. Cruza a todos sin que las ovejas acaben descubriendo demasiado tarde por qué los lobos no montan ONGs.
+              Si lo resuelves en menos de 13 movimientos, desbloqueas una pista para el siguiente desafío.
+            </p>
+
+            <div class="chip-row">
+              <span class="chip">⛵ Interactivo</span>
+              <span class="chip">🎯 Semanal</span>
+              <span class="chip">🔓 Recompensa</span>
+            </div>
+          </a>
+        </div>
+      </article>
     </section>
 
-    <section class="favorites-panel">
-      <div class="favorites-inner">
-        <span class="favorites-label">Accesos rápidos</span>
+    <section class="panel favorites-panel">
+      <div class="panel-inner">
+        <span class="section-label">Accesos rápidos</span>
 
-        <div class="favorites-header">
+        <div class="favorites-head">
           <div>
-            <h2 class="favorites-title">⭐ Tus favoritos</h2>
-            <p class="favorites-sub">Marca cualquier sección con la estrella para tenerla aquí arriba.</p>
+            <h2>⭐ Tus favoritos</h2>
+            <p>Marca cualquier sección con la estrella para dejarla arriba y entrar sin tener que recorrer medio Namek cada vez.</p>
           </div>
 
           <div class="favorites-actions">
-            <button class="favorites-btn" id="clearFavoritesBtn" type="button">Vaciar favoritos</button>
+            <button class="btn secondary" id="clearFavoritesBtn" type="button">Vaciar favoritos</button>
           </div>
         </div>
 
@@ -808,242 +851,217 @@
       </div>
     </section>
 
-    <section class="weekly-panel">
-      <div class="weekly-inner">
-        <span class="weekly-label">Puzzle de la semana</span>
+    <section class="stats-wrap">
+      <div class="stats">
+        <article class="stat">
+          <span class="icon">⚡</span>
+          <span class="num">2</span>
+          <span class="label">Secciones de Inazuma</span>
+        </article>
 
-        <a class="weekly-card" href="puzzle.html">
-          <div class="weekly-top">
-            <div>
-              <span class="weekly-kicker">🆕 Nuevo desafío</span>
-              <h2 class="weekly-title">🐺🐑 Lobos y Ovejas — Puzzle del Río</h2>
-            </div>
+        <article class="stat">
+          <span class="icon">🐉</span>
+          <span class="num">3</span>
+          <span class="label">Secciones de Dragon Ball</span>
+        </article>
 
-            <span class="weekly-icon">🧩</span>
-          </div>
+        <article class="stat">
+          <span class="icon">📚</span>
+          <span class="num">3</span>
+          <span class="label">Secciones generales</span>
+        </article>
 
-          <p class="weekly-desc">
-            El clásico rompecabezas del río ya está disponible en el hub.
-            Cruza a todos sin que las ovejas acaben en un comité de empresa gestionado por lobos.
-            Además, si lo resuelves en menos de 13 movimientos, desbloqueas una pista para el siguiente desafío.
-          </p>
-
-          <div class="weekly-meta">
-            <span class="weekly-chip">⛵ Interactivo</span>
-            <span class="weekly-chip">🎯 Desafío semanal</span>
-            <span class="weekly-chip">🔓 Recompensa oculta</span>
-          </div>
-        </a>
+        <article class="stat">
+          <span class="icon">🎮</span>
+          <span class="num">2</span>
+          <span class="label">Juegos disponibles</span>
+        </article>
       </div>
     </section>
 
-    <section class="stats">
-      <div class="stat">
-        <span class="icon">⚡</span>
-        <span class="num">2</span>
-        <span class="label">Secciones de Inazuma</span>
+    <section class="sections-wrap">
+      <div class="hub-sections">
+        <article class="section-box">
+          <div class="section-header">
+            <h2>⚽ RP Inazuma</h2>
+            <p>Todo lo relacionado con fútbol, equipos, linajes y posiciones dentro del universo Inazuma.</p>
+          </div>
+
+          <div class="card-list">
+            <article class="hub-card" data-id="arbol-inazuma" data-title="🌳 Árbol Familiar" data-desc="Explora familias, descendencia, conexiones y relaciones entre personajes." data-tag="RP Inazuma" data-icon="🧬">
+              <a class="hub-card-link" href="arbol.html">
+                <div class="hub-card-top">
+                  <h3 class="hub-card-title">🌳 Árbol Familiar</h3>
+                  <div class="hub-card-actions">
+                    <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                    <span class="hub-card-icon">🧬</span>
+                  </div>
+                </div>
+                <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
+                <span class="hub-card-tag">RP Inazuma</span>
+              </a>
+            </article>
+
+            <article class="hub-card" data-id="posiciones-inazuma" data-title="⚽ Posiciones" data-desc="Consulta los roles de cada personaje en el campo y su distribución táctica." data-tag="RP Inazuma" data-icon="📍">
+              <a class="hub-card-link" href="posiciones.html">
+                <div class="hub-card-top">
+                  <h3 class="hub-card-title">⚽ Posiciones</h3>
+                  <div class="hub-card-actions">
+                    <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                    <span class="hub-card-icon">📍</span>
+                  </div>
+                </div>
+                <p class="hub-card-desc">Consulta los roles de cada personaje en el campo y su distribución táctica.</p>
+                <span class="hub-card-tag">RP Inazuma</span>
+              </a>
+            </article>
+          </div>
+        </article>
+
+        <article class="section-box">
+          <div class="section-header">
+            <h2>🐉 RP DB</h2>
+            <p>La parte más bestia del hub: combatientes, escalas, transformaciones y todo el power system.</p>
+          </div>
+
+          <div class="card-list">
+            <article class="hub-card" data-id="heroes-db" data-title="🦸 Héroes" data-desc="Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP." data-tag="RP DB" data-icon="🔥">
+              <a class="hub-card-link" href="heroes.html">
+                <div class="hub-card-top">
+                  <h3 class="hub-card-title">🦸 Héroes</h3>
+                  <div class="hub-card-actions">
+                    <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                    <span class="hub-card-icon">🔥</span>
+                  </div>
+                </div>
+                <p class="hub-card-desc">Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP.</p>
+                <span class="hub-card-tag">RP DB</span>
+              </a>
+            </article>
+
+            <article class="hub-card" data-id="poder-db" data-title="💥 Poder" data-desc="Consulta escalas, niveles, formas, estados y evolución de poder de los personajes." data-tag="RP DB" data-icon="⚔️">
+              <a class="hub-card-link" href="poder.html">
+                <div class="hub-card-top">
+                  <h3 class="hub-card-title">💥 Poder</h3>
+                  <div class="hub-card-actions">
+                    <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                    <span class="hub-card-icon">⚔️</span>
+                  </div>
+                </div>
+                <p class="hub-card-desc">Consulta escalas, niveles, formas, estados y evolución de poder de los personajes.</p>
+                <span class="hub-card-tag">RP DB</span>
+              </a>
+            </article>
+
+            <article class="hub-card" data-id="arbol-db" data-title="🌳 Árbol Familiar" data-desc="Explora familias, descendencia, conexiones y relaciones entre personajes." data-tag="RP DB" data-icon="🧬">
+              <a class="hub-card-link" href="parejasdragonball.html">
+                <div class="hub-card-top">
+                  <h3 class="hub-card-title">🌳 Árbol Familiar</h3>
+                  <div class="hub-card-actions">
+                    <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                    <span class="hub-card-icon">🧬</span>
+                  </div>
+                </div>
+                <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
+                <span class="hub-card-tag">RP DB</span>
+              </a>
+            </article>
+          </div>
+        </article>
+
+        <article class="section-box">
+          <div class="section-header">
+            <h2>📖 General</h2>
+            <p>La base central del proyecto: personajes, referencias y acceso transversal al resto del universo.</p>
+          </div>
+
+          <div class="card-list">
+            <article class="hub-card" data-id="personajes-general" data-title="👥 Personajes" data-desc="Índice general de personajes del RP, útil como puerta de entrada a toda la wiki." data-tag="General" data-icon="🗂️">
+              <a class="hub-card-link" href="personajes.html">
+                <div class="hub-card-top">
+                  <h3 class="hub-card-title">👥 Personajes</h3>
+                  <div class="hub-card-actions">
+                    <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                    <span class="hub-card-icon">🗂️</span>
+                  </div>
+                </div>
+                <p class="hub-card-desc">Índice general de personajes del RP, útil como puerta de entrada a toda la wiki.</p>
+                <span class="hub-card-tag">General</span>
+              </a>
+            </article>
+
+            <article class="hub-card" data-id="embarazos-inazuma" data-title="🤰 Embarazos" data-desc="Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia." data-tag="General" data-icon="🍼">
+              <a class="hub-card-link" href="embarazos.html">
+                <div class="hub-card-top">
+                  <h3 class="hub-card-title">🤰 Embarazos</h3>
+                  <div class="hub-card-actions">
+                    <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                    <span class="hub-card-icon">🍼</span>
+                  </div>
+                </div>
+                <p class="hub-card-desc">Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia.</p>
+                <span class="hub-card-tag">General</span>
+              </a>
+            </article>
+
+            <article class="hub-card" data-id="clima" data-title="☀️ Clima" data-desc="Roll general para el clima en el RP." data-tag="General" data-icon="☀️">
+              <a class="hub-card-link" href="clima.html">
+                <div class="hub-card-top">
+                  <h3 class="hub-card-title">☀️ Clima</h3>
+                  <div class="hub-card-actions">
+                    <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                    <span class="hub-card-icon">☀️</span>
+                  </div>
+                </div>
+                <p class="hub-card-desc">Roll general para el clima en el RP.</p>
+                <span class="hub-card-tag">General</span>
+              </a>
+            </article>
+          </div>
+        </article>
+
+        <article class="section-box">
+          <div class="section-header">
+            <h2>🎮 Juegos</h2>
+            <p>Puzzles y minijuegos interactivos para descansar entre rol y rol.</p>
+          </div>
+
+          <div class="card-list">
+            <article class="hub-card" data-id="puzzle-rio" data-title="🐺🐑 Lobos y Ovejas" data-desc="El clásico puzzle del río: lleva a todos al otro lado sin que las ovejas se conviertan en comida." data-tag="Juegos" data-icon="⛵">
+              <a class="hub-card-link" href="puzzle.html">
+                <div class="hub-card-top">
+                  <h3 class="hub-card-title">🐺🐑 Lobos y Ovejas</h3>
+                  <div class="hub-card-actions">
+                    <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                    <span class="hub-card-icon">⛵</span>
+                  </div>
+                </div>
+                <p class="hub-card-desc">El clásico puzzle del río: lleva a todos al otro lado sin que las ovejas se conviertan en comida.</p>
+                <span class="hub-card-tag">Juegos</span>
+              </a>
+            </article>
+
+            <article class="hub-card" data-id="lightsout" data-title="💡 Luces Fuera" data-desc="Apaga todas las luces pulsando las correctas. Cada clic afecta a la luz y sus vecinas." data-tag="Juegos" data-icon="🔦">
+              <a class="hub-card-link" href="lightsout.html">
+                <div class="hub-card-top">
+                  <h3 class="hub-card-title">💡 Luces Fuera</h3>
+                  <div class="hub-card-actions">
+                    <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
+                    <span class="hub-card-icon">🔦</span>
+                  </div>
+                </div>
+                <p class="hub-card-desc">Apaga todas las luces pulsando las correctas. Cada clic afecta a la luz y sus vecinas.</p>
+                <span class="hub-card-tag">Juegos</span>
+              </a>
+            </article>
+          </div>
+        </article>
       </div>
-
-      <div class="stat">
-        <span class="icon">🐉</span>
-        <span class="num">3</span>
-        <span class="label">Secciones de Dragon Ball</span>
-      </div>
-
-      <div class="stat">
-        <span class="icon">📚</span>
-        <span class="num">3</span>
-        <span class="label">Secciones Generales</span>
-      </div>
-
-      <div class="stat">
-        <span class="icon">🎮</span>
-        <span class="num">2</span>
-        <span class="label">Juegos</span>
-      </div>
-    </section>
-
-    <section class="columns">
-      <article class="column">
-        <div class="column-header">
-          <h2>⚽ RP Inazuma</h2>
-          <p>Todo lo relacionado con fútbol, equipos, linajes y posiciones dentro del universo Inazuma.</p>
-        </div>
-
-        <div class="card-list">
-          <article class="hub-card" data-id="arbol-inazuma" data-title="🌳 Árbol Familiar" data-desc="Explora familias, descendencia, conexiones y relaciones entre personajes." data-tag="RP Inazuma" data-icon="🧬">
-            <a class="hub-card-link" href="arbol.html">
-              <div class="hub-card-top">
-                <h3 class="hub-card-title">🌳 Árbol Familiar</h3>
-                <div class="hub-card-actions">
-                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                  <span class="hub-card-icon">🧬</span>
-                </div>
-              </div>
-              <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
-              <span class="hub-card-tag">RP Inazuma</span>
-            </a>
-          </article>
-
-          <article class="hub-card" data-id="posiciones-inazuma" data-title="⚽ Posiciones" data-desc="Consulta los roles de cada personaje en el campo y su distribución táctica." data-tag="RP Inazuma" data-icon="📍">
-            <a class="hub-card-link" href="posiciones.html">
-              <div class="hub-card-top">
-                <h3 class="hub-card-title">⚽ Posiciones</h3>
-                <div class="hub-card-actions">
-                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                  <span class="hub-card-icon">📍</span>
-                </div>
-              </div>
-              <p class="hub-card-desc">Consulta los roles de cada personaje en el campo y su distribución táctica.</p>
-              <span class="hub-card-tag">RP Inazuma</span>
-            </a>
-          </article>
-        </div>
-      </article>
-
-      <article class="column">
-        <div class="column-header">
-          <h2>🐉 RP DB</h2>
-          <p>La parte más bestia del hub: combatientes, escalas, transformaciones y todo el power system.</p>
-        </div>
-
-        <div class="card-list">
-          <article class="hub-card" data-id="heroes-db" data-title="🦸 Héroes" data-desc="Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP." data-tag="RP DB" data-icon="🔥">
-            <a class="hub-card-link" href="heroes.html">
-              <div class="hub-card-top">
-                <h3 class="hub-card-title">🦸 Héroes</h3>
-                <div class="hub-card-actions">
-                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                  <span class="hub-card-icon">🔥</span>
-                </div>
-              </div>
-              <p class="hub-card-desc">Listado de héroes, guerreros y personajes clave del universo Dragon Ball RP.</p>
-              <span class="hub-card-tag">RP DB</span>
-            </a>
-          </article>
-
-          <article class="hub-card" data-id="poder-db" data-title="💥 Poder" data-desc="Consulta escalas, niveles, formas, estados y evolución de poder de los personajes." data-tag="RP DB" data-icon="⚔️">
-            <a class="hub-card-link" href="poder.html">
-              <div class="hub-card-top">
-                <h3 class="hub-card-title">💥 Poder</h3>
-                <div class="hub-card-actions">
-                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                  <span class="hub-card-icon">⚔️</span>
-                </div>
-              </div>
-              <p class="hub-card-desc">Consulta escalas, niveles, formas, estados y evolución de poder de los personajes.</p>
-              <span class="hub-card-tag">RP DB</span>
-            </a>
-          </article>
-
-          <article class="hub-card" data-id="arbol-db" data-title="🌳 Árbol Familiar" data-desc="Explora familias, descendencia, conexiones y relaciones entre personajes." data-tag="RP DB" data-icon="🧬">
-            <a class="hub-card-link" href="parejasdragonball.html">
-              <div class="hub-card-top">
-                <h3 class="hub-card-title">🌳 Árbol Familiar</h3>
-                <div class="hub-card-actions">
-                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                  <span class="hub-card-icon">🧬</span>
-                </div>
-              </div>
-              <p class="hub-card-desc">Explora familias, descendencia, conexiones y relaciones entre personajes.</p>
-              <span class="hub-card-tag">RP DB</span>
-            </a>
-          </article>
-        </div>
-      </article>
-
-      <article class="column">
-        <div class="column-header">
-          <h2>📖 General</h2>
-          <p>La base central del proyecto: personajes, referencias y acceso transversal al resto del universo.</p>
-        </div>
-
-        <div class="card-list">
-          <article class="hub-card" data-id="personajes-general" data-title="👥 Personajes" data-desc="Índice general de personajes del RP, útil como puerta de entrada a toda la wiki." data-tag="General" data-icon="🗂️">
-            <a class="hub-card-link" href="personajes.html">
-              <div class="hub-card-top">
-                <h3 class="hub-card-title">👥 Personajes</h3>
-                <div class="hub-card-actions">
-                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                  <span class="hub-card-icon">🗂️</span>
-                </div>
-              </div>
-              <p class="hub-card-desc">Índice general de personajes del RP, útil como puerta de entrada a toda la wiki.</p>
-              <span class="hub-card-tag">General</span>
-            </a>
-          </article>
-
-          <article class="hub-card" data-id="embarazos-inazuma" data-title="🤰 Embarazos" data-desc="Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia." data-tag="General" data-icon="🍼">
-            <a class="hub-card-link" href="embarazos.html">
-              <div class="hub-card-top">
-                <h3 class="hub-card-title">🤰 Embarazos</h3>
-                <div class="hub-card-actions">
-                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                  <span class="hub-card-icon">🍼</span>
-                </div>
-              </div>
-              <p class="hub-card-desc">Seguimiento de embarazos dentro del RP: progreso, semanas, fecha estimada y evolución de cada historia.</p>
-              <span class="hub-card-tag">General</span>
-            </a>
-          </article>
-
-          <article class="hub-card" data-id="clima" data-title="☀️ Clima" data-desc="Roll general para el clima en el RP." data-tag="General" data-icon="☀️">
-            <a class="hub-card-link" href="clima.html">
-              <div class="hub-card-top">
-                <h3 class="hub-card-title">☀️ Clima</h3>
-                <div class="hub-card-actions">
-                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                  <span class="hub-card-icon">☀️</span>
-                </div>
-              </div>
-              <p class="hub-card-desc">Roll general para el clima en el RP.</p>
-              <span class="hub-card-tag">General</span>
-            </a>
-          </article>
-        </div>
-      </article>
-
-      <article class="column">
-        <div class="column-header">
-          <h2>🎮 Juegos</h2>
-          <p>Puzzles y minijuegos interactivos para descansar entre rol y rol.</p>
-        </div>
-
-        <div class="card-list">
-          <article class="hub-card" data-id="puzzle-rio" data-title="🐺🐑 Lobos y Ovejas" data-desc="El clásico puzzle del río: lleva a todos al otro lado sin que las ovejas se conviertan en comida." data-tag="Juegos" data-icon="⛵">
-            <a class="hub-card-link" href="puzzle.html">
-              <div class="hub-card-top">
-                <h3 class="hub-card-title">🐺🐑 Lobos y Ovejas</h3>
-                <div class="hub-card-actions">
-                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                  <span class="hub-card-icon">⛵</span>
-                </div>
-              </div>
-              <p class="hub-card-desc">El clásico puzzle del río: lleva a todos al otro lado sin que las ovejas se conviertan en comida.</p>
-              <span class="hub-card-tag">Juegos</span>
-            </a>
-          </article>
-
-          <article class="hub-card" data-id="lightsout" data-title="💡 Luces Fuera" data-desc="Apaga todas las luces pulsando las correctas. Cada clic afecta a la luz y sus vecinas." data-tag="Juegos" data-icon="🔦">
-            <a class="hub-card-link" href="lightsout.html">
-              <div class="hub-card-top">
-                <h3 class="hub-card-title">💡 Luces Fuera</h3>
-                <div class="hub-card-actions">
-                  <button class="favorite-toggle" type="button" aria-label="Añadir a favoritos" title="Añadir a favoritos">☆</button>
-                  <span class="hub-card-icon">🔦</span>
-                </div>
-              </div>
-              <p class="hub-card-desc">Apaga todas las luces pulsando las correctas. Cada clic afecta a la luz y sus vecinas.</p>
-              <span class="hub-card-tag">Juegos</span>
-            </a>
-          </article>
-        </div>
-      </article>
     </section>
 
     <footer>
       <p><strong>© 2026 Eternal Corp.</strong> Todos los derechos reservados.</p>
-      <p>Hecho para GitHub Pages, sin imágenes y sin dramas raros de rutas rotas.</p>
+      <p>Hecho para GitHub Pages, con más aura saiyan que antes y sin romper tu JS de tema, citas ni favoritos.</p>
     </footer>
   </main>
 
@@ -1302,7 +1320,7 @@
       if(!favorites.length){
         favoritesContainer.innerHTML = `
           <div class="favorites-empty">
-            No tienes favoritos todavía. Marca alguna tarjeta con la estrella y aparecerá aquí arriba, como si el hub por fin hubiese descubierto el concepto de comodidad.
+            No tienes favoritos todavía. Marca alguna tarjeta con la estrella y aparecerá aquí arriba.
           </div>
         `;
         return;
