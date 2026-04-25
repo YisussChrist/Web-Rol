@@ -283,6 +283,25 @@ img { image-rendering: -webkit-optimize-contrast; }
   .meta .power { font-size: .85rem; }
 }
 
+
+.multiplier {
+  font-weight: 800;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: all .2s ease;
+}
+
+.multiplier.glow {
+  box-shadow: 0 0 8px currentColor, 0 0 14px currentColor;
+  animation: pulseGlow 1.5s infinite alternate;
+}
+
+@keyframes pulseGlow {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
 </style>
 </head>
 <body class="light-mode">
@@ -1374,7 +1393,34 @@ function renderList(){
         tDiv.className = "transformation-item";
         const tImg = makeAvatar(t.name, "avatar");
         const tMeta = document.createElement("div");
-        tMeta.innerHTML = `<strong>${t.name}</strong> — ${t.strength==="???" ? "Fuerza: ???" : "Fuerza: " + formatNumber(t.strength)}`;
+        
+let multiplierText = "";
+
+if (character.strength !== "???" && t.strength !== "???") {
+  const mult = t.strength / character.strength;
+
+  let hue = 200;
+  let glow = "";
+
+  if (mult >= 50) { hue = 55; glow = "glow"; }
+  else if (mult >= 25) hue = 280;
+  else if (mult >= 10) hue = 200;
+  else if (mult >= 5) hue = 180;
+  else hue = 0;
+
+  const color = `hsl(${hue}, 90%, 60%)`;
+
+  multiplierText = `<span class="multiplier ${glow}" style="color:${color}; border:1px solid ${color};">
+    x${mult.toFixed(1)}
+  </span>`;
+}
+
+tMeta.innerHTML = `
+  <strong>${t.name}</strong> — 
+  ${t.strength==="???" ? "Fuerza: ???" : "Fuerza: " + formatNumber(t.strength)}
+  ${multiplierText}
+`;
+
         tDiv.appendChild(tImg); tDiv.appendChild(tMeta);
         tContainer.appendChild(tDiv);
       });
