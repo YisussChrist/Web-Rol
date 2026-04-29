@@ -158,6 +158,7 @@
             font-size: clamp(2.2rem, 8vw, 4rem);
             letter-spacing: 4px;
             background: linear-gradient(90deg, var(--primary), #fff, var(--accent));
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 20px rgba(0,245,255,0.14));
@@ -417,38 +418,120 @@
             background: rgba(15, 18, 35, 0.98);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(0,245,255,0.55);
-            padding: 14px 16px 22px;
+            padding: 10px 12px 14px;
             z-index: 1000;
             display: none;
             flex-direction: column;
-            gap: 10px;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.38);
+            gap: 8px;
+            box-shadow: 0 -18px 50px rgba(0,0,0,0.38);
         }
 
         .global-player.show { display: flex; }
-        .player-top { display: flex; align-items: center; gap: 12px; }
-        .player-top img { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; }
+        .global-player.minimized {
+            padding: 8px 10px 10px;
+            gap: 6px;
+            min-height: 0;
+        }
+        .global-player.minimized .player-top { gap: 8px; }
+        .global-player.minimized .player-top img { width: 44px; height: 44px; }
+        .global-player.minimized #playerTitle { font-size: 0.95rem; }
+        .global-player.minimized #playerCharacter,
+        .global-player.minimized #playerMode { font-size: 0.78rem; }
+        .global-player.minimized canvas#visualizer,
+        .global-player.minimized .progress-container,
+        .global-player.minimized .player-bottom-row,
+        .global-player.minimized .volume-container { display: none; }
+        .global-player.minimized .controls { justify-content: center; }
+        .global-player.minimized .controls .control-btn:not(.big) { display: none; }
+        .global-player.minimized .control-btn.big { width: 48px; height: 48px; font-size: 1.4rem; }
+        .global-player.minimized .player-top img { box-shadow: 0 0 18px rgba(0,245,255,0.18); }
+        .global-player.audio-only canvas#visualizer,
+        .global-player.audio-only .player-top img,
+        .global-player.audio-only .queue-panel { display: none; }
+        .player-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .player-top img { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; }
         .player-info { min-width: 0; flex: 1; }
-        #playerTitle { font-weight:800; font-size:1.12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #playerCharacter { color:var(--primary); font-size: 0.95rem; }
-        #playerMode { color: var(--gold); font-size: 0.78rem; font-weight: 800; margin-top: 2px; }
+        #playerTitle { font-weight:800; font-size:1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #playerCharacter { color:var(--primary); font-size: 0.9rem; }
+        #playerMode { color: var(--gold); font-size: 0.75rem; font-weight: 800; margin-top: 2px; }
 
-        canvas#visualizer { width: 100%; height: 76px; border-radius: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); }
+        canvas#visualizer { width: 100%; height: 56px; border-radius: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); }
 
-        .progress-bar { width: 100%; height: 7px; background: rgba(255,255,255,0.15); border-radius: 999px; position: relative; cursor: pointer; }
+        .progress-container { display: flex; flex-direction: column; gap: 4px; }
+        .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.15); border-radius: 999px; position: relative; cursor: pointer; }
         .progress { height: 100%; background: linear-gradient(to right, var(--primary), var(--accent)); border-radius: 999px; width: 0%; }
+        .time { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+        .player-bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        .player-volume {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-end;
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .queue-panel {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .queue-panel.open { display: flex; }
+
+        .queue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .queue-item span { color: #fff; font-size: 0.92rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .queue-item small { color: var(--muted); font-size: 0.78rem; }
         .time { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
 
-        .controls { display: flex; justify-content: center; gap: 12px; align-items: center; margin: 4px 0; flex-wrap: wrap; }
+        .controls { display: flex; justify-content: center; gap: 10px; align-items: center; margin: 3px 0; flex-wrap: wrap; }
 
         .control-btn {
             border: none;
             background: rgba(255,255,255,0.1);
             color: white;
-            width: 46px;
-            height: 46px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            font-size: 1.28rem;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -457,7 +540,7 @@
         }
 
         .control-btn:hover, .control-btn.active { background: rgba(0,245,255,0.18); color: var(--primary); }
-        .control-btn.big { width: 62px; height: 62px; font-size: 2rem; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #061018; }
+        .control-btn.big { width: 52px; height: 52px; font-size: 1.6rem; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #061018; }
 
         .volume-container { display: flex; align-items: center; gap: 10px; justify-content: center; }
         .volume-slider { width: min(220px, 45vw); accent-color: var(--primary); }
@@ -480,8 +563,8 @@
         @media (max-width: 900px) {
             body { display: block; }
             .sidebar { display: none; }
-            .global-player { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
-            .main-content { padding-bottom: 310px; }
+            .global-player { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+            .main-content { padding-bottom: 270px; }
             .card-content { grid-template-columns: 94px 1fr; }
             .character-face { width: 94px; height: 94px; }
             .battle-grid { grid-template-columns: 1fr; text-align: center; }
@@ -499,6 +582,10 @@
             .track-row { grid-template-columns: 62px 1fr; }
             .track-row img { width: 62px; height: 62px; }
             .track-row .actions-row { grid-column: 1 / -1; justify-content: flex-start; }
+            .player-top img { width: 46px; height: 46px; }
+            canvas#visualizer { height: 44px; }
+            .control-btn { width: 34px; height: 34px; font-size: 1rem; }
+            .control-btn.big { width: 44px; height: 44px; font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -535,7 +622,13 @@
         <div class="top-actions">
             <button class="pill-btn" id="showAllBtn">🎧 Biblioteca</button>
             <button class="pill-btn" id="showFavBtn">⭐ Favoritos</button>
+            <select class="select-input" id="characterSelect">
+                <option value="all">Todos los personajes</option>
+            </select>
             <button class="pill-btn" id="toggleBattleBtn">⚔️ Battle Mode</button>
+            <button class="pill-btn" id="toggleAudioOnlyBtn">🎧 Solo audio</button>
+            <button class="pill-btn" id="toggleQueueBtn">📜 Cola</button>
+            <button class="pill-btn" id="toggleMiniBtn">📉 Compacto</button>
         </div>
 
         <section class="battle-zone" id="battleZone"></section>
@@ -570,23 +663,26 @@
             <div class="time"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
         </div>
 
-        <div class="controls">
-            <button class="control-btn" id="shuffleBtn" title="Aleatorio">🔀</button>
-            <button class="control-btn" onclick="prevTrack()" title="Anterior">⏮</button>
-            <button class="control-btn big" id="playPauseBtn" onclick="togglePlay()">▶</button>
-            <button class="control-btn" onclick="nextTrack()" title="Siguiente">⏭</button>
-            <button class="control-btn" id="repeatBtn" title="Repetir">🔁</button>
-            <button class="control-btn" onclick="fadeOutAndNext()" title="Crossfade">🌊</button>
-        </div>
+        <div class="queue-panel" id="queuePanel"></div>
 
-        <div class="volume-container">
-            <span class="volume-icon">🔊</span>
-            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="1">
-            <select id="intensitySelect" class="intensity-select">
-                <option value="normal">Normal</option>
-                <option value="rage">Rage Mode</option>
-                <option value="finalboss">Final Boss</option>
-            </select>
+        <div class="player-bottom-row">
+            <div class="player-controls controls">
+                <button class="control-btn" id="shuffleBtn" title="Aleatorio">🔀</button>
+                <button class="control-btn" onclick="prevTrack()" title="Anterior">⏮</button>
+                <button class="control-btn big" id="playPauseBtn" onclick="togglePlay()">▶</button>
+                <button class="control-btn" onclick="nextTrack()" title="Siguiente">⏭</button>
+                <button class="control-btn" id="repeatBtn" title="Repetir">🔁</button>
+                <button class="control-btn" onclick="fadeOutAndNext()" title="Crossfade">🌊</button>
+            </div>
+            <div class="player-volume volume-container">
+                <span class="volume-icon">🔊</span>
+                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="1">
+                <select id="intensitySelect" class="intensity-select">
+                    <option value="normal">Normal</option>
+                    <option value="rage">Rage Mode</option>
+                    <option value="finalboss">Final Boss</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -778,8 +874,16 @@
         const repeatBtn = document.getElementById('repeatBtn');
         const shuffleTopBtn = document.getElementById('shuffleTopBtn');
         const battleTopBtn = document.getElementById('battleTopBtn');
+        const toggleMiniBtn = document.getElementById('toggleMiniBtn');
+        const toggleAudioOnlyBtn = document.getElementById('toggleAudioOnlyBtn');
+        const toggleQueueBtn = document.getElementById('toggleQueueBtn');
+        const characterSelect = document.getElementById('characterSelect');
         const battleZone = document.getElementById('battleZone');
+        const queuePanel = document.getElementById('queuePanel');
         const intensitySelect = document.getElementById('intensitySelect');
+        let miniPlayer = JSON.parse(localStorage.getItem('miniPlayer') || 'false');
+        let audioOnly = JSON.parse(localStorage.getItem('audioOnly') || 'false');
+        let queueOpen = JSON.parse(localStorage.getItem('queueOpen') || 'false');
 
         function initVisualizer() {
             canvasEl.width = 800;
@@ -938,7 +1042,8 @@
         }
 
         window.playSpecific = async function(index) {
-            loadTrack(index);
+            const playableIndex = getPlayableIndex(index);
+            loadTrack(playableIndex);
             setupAudioContext();
             try {
                 await audioPlayer.play();
@@ -1021,6 +1126,70 @@
 
         function tagHTML(tags) {
             return (tags || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+        }
+
+        function populateCharacterSelect() {
+            const uniqueCharacters = [...new Set(soundtracks.map(track => track.character))];
+            characterSelect.innerHTML = '<option value="all">Todos los personajes</option>' +
+                uniqueCharacters.map(name => `<option value="${name}">${name}</option>`).join('');
+        }
+
+        function getQueueTracks() {
+            return soundtracks.slice(currentIndex + 1).concat(soundtracks.slice(0, currentIndex + 1));
+        }
+
+        function renderQueue() {
+            const queueTracks = getQueueTracks();
+            queuePanel.innerHTML = queueTracks.map((track, i) => `
+                <div class="queue-item ${track.characterIndex === soundtracks[currentIndex].characterIndex && track.trackIndex === soundtracks[currentIndex].trackIndex ? 'playing-row' : ''}">
+                    <div>
+                        <strong>${track.songTitle}</strong>
+                        <p>${track.character}</p>
+                    </div>
+                    <button class="icon-btn" onclick="playSpecific(${track.characterIndex * 1000 + track.trackIndex})">▶</button>
+                </div>
+            `).join('');
+
+            if (queueTracks.length === 0) {
+                queuePanel.innerHTML = '<div class="queue-item">No hay pistas en la cola</div>';
+            }
+
+            queuePanel.classList.toggle('open', queueOpen);
+        }
+
+        function toggleAudioOnly() {
+            audioOnly = !audioOnly;
+            localStorage.setItem('audioOnly', JSON.stringify(audioOnly));
+            if (audioOnly) {
+                globalPlayer.classList.add('audio-only');
+                toggleAudioOnlyBtn.textContent = '🎧 Visualizador off';
+            } else {
+                globalPlayer.classList.remove('audio-only');
+                toggleAudioOnlyBtn.textContent = '🎧 Solo audio';
+            }
+        }
+
+        function toggleQueuePanel() {
+            queueOpen = !queueOpen;
+            localStorage.setItem('queueOpen', JSON.stringify(queueOpen));
+            queuePanel.classList.toggle('open', queueOpen);
+            toggleQueueBtn.textContent = queueOpen ? '📜 Ocultar cola' : '📜 Cola';
+        }
+
+        function normalizeQueueIndex(value) {
+            const characterIndex = Math.floor(value / 1000);
+            const trackIndex = value % 1000;
+            return soundtracks.findIndex(track => track.characterIndex === characterIndex && track.trackIndex === trackIndex);
+        }
+
+        function resolveQueuePlay(value) {
+            const index = Number(value);
+            if (index >= 1000) return normalizeQueueIndex(index);
+            return index;
+        }
+
+        function getPlayableIndex(value) {
+            return resolveQueuePlay(value);
         }
 
         function renderList() {
@@ -1108,9 +1277,21 @@
             document.getElementById('toggleBattleBtn').classList.toggle('active', battleMode);
             document.body.classList.toggle('battle-mode-active', battleMode);
             intensitySelect.value = intensity;
+            toggleMiniBtn.classList.toggle('active', miniPlayer);
+            toggleMiniBtn.textContent = miniPlayer ? '⬆️ Expandir' : '📉 Compacto';
+            toggleAudioOnlyBtn.classList.toggle('active', audioOnly);
+            toggleAudioOnlyBtn.textContent = audioOnly ? '🎧 Visualizador off' : '🎧 Solo audio';
+            toggleQueueBtn.classList.toggle('active', queueOpen);
+            toggleQueueBtn.textContent = queueOpen ? '📜 Ocultar cola' : '📜 Cola';
+            globalPlayer.classList.toggle('minimized', miniPlayer);
+            globalPlayer.classList.toggle('audio-only', audioOnly);
+            queuePanel.classList.toggle('open', queueOpen);
             localStorage.setItem('shuffle', JSON.stringify(shuffle));
             localStorage.setItem('repeat', JSON.stringify(repeat));
             localStorage.setItem('intensity', intensity);
+            localStorage.setItem('miniPlayer', JSON.stringify(miniPlayer));
+            localStorage.setItem('audioOnly', JSON.stringify(audioOnly));
+            localStorage.setItem('queueOpen', JSON.stringify(queueOpen));
         }
 
         function renderAll() {
@@ -1118,6 +1299,7 @@
             renderSidebar();
             renderFeatured();
             renderList();
+            renderQueue();
             renderBattleZone();
         }
 
@@ -1154,6 +1336,10 @@
 
         document.getElementById('showFavBtn').onclick = () => { filterSelect.value = 'favorites'; renderAll(); };
         document.getElementById('showAllBtn').onclick = () => { filterSelect.value = 'all'; searchInput.value = ''; renderAll(); };
+        toggleMiniBtn.onclick = () => { miniPlayer = !miniPlayer; renderAll(); };
+        toggleAudioOnlyBtn.onclick = () => { toggleAudioOnly(); renderAll(); };
+        toggleQueueBtn.onclick = () => { toggleQueuePanel(); renderAll(); };
+        characterSelect.addEventListener('change', renderAll);
 
         searchInput.addEventListener('input', renderAll);
         filterSelect.addEventListener('change', renderAll);
@@ -1186,6 +1372,7 @@
         });
 
         initVisualizer();
+        populateCharacterSelect();
         loadTrack(currentIndex, true);
         renderAll();
     </script>
