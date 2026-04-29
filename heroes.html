@@ -2,244 +2,426 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lista de Héroes — Dex MHA</title>
-  <meta name="description" content="Registro editable de héroes al estilo My Hero Academia. Añade fotos, roles y stats, con fichas detalladas.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Registro de Guerreros — Dragon Dex</title>
+  <meta name="description" content="Dex editable de personajes estilo Dragon Ball + cómic. Compatible con JSON exportado de la Dex MHA anterior." />
   <style>
-  /* dembelengue.css — Estilo MHA "LISTA DE HÉROES" (inlined)
-     Hecho con cariño. Puedes editar colores y tamaños desde :root. */
-  :root{
-    --bg:#0e0f13; --panel:#151823; --ink:#0a0b0e; --paper:#f7f7f7;
-    --mha-yellow:#f6e84b; --mha-red:#ff2d55; --mha-teal:#10d5c2; --mha-green:#35dc64;
-    --mha-blue:#2aa9ff; --mha-orange:#ff9f1c; --text:#e9ecf1; --muted:#a6b0c3;
-    --shadow:#000000; --outline:#0a0b0e; --radius:18px; --gap:14px;
-    --card-shadow: 8px 8px 0 var(--outline); --thick:4px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    background: radial-gradient(1200px 800px at 10% -10%, #1f2433 0%, transparent 60%),
-                radial-gradient(1000px 800px at 110% 10%, #1c2231 0%, transparent 60%),
-                var(--bg);
-    color:var(--text);
-    font: 500 16px/1.4 "Segoe UI", Roboto, system-ui, Arial, sans-serif;
-  }
-  .header{ position:sticky; top:0; z-index:50; background:
-      repeating-linear-gradient(135deg, transparent 0 12px, rgba(0,0,0,.08) 12px 24px),
-      linear-gradient(0deg, #141825, #121526);
-    border-bottom: var(--thick) solid var(--outline); box-shadow: 0 10px 0 #0006; }
-  .wrap{max-width:1200px;margin:0 auto;padding:18px}
-  .brand{ display:flex;align-items:center;gap:14px; }
-  .brand__badge{ background: var(--mha-yellow); color:#111; padding:8px 12px; border: var(--thick) solid var(--outline);
-    border-radius: 999px; box-shadow: var(--card-shadow); font-weight:900; letter-spacing:1px; }
-  .brand__title{ font-size: clamp(22px, 3vw, 34px); margin:0; text-transform:uppercase; font-weight:1000; letter-spacing:.5px; text-shadow: 0 3px 0 #000; display:flex; align-items:center; gap:10px; }
-  .brand__subtitle{ color:var(--muted); margin:4px 0 0 0; font-size:14px; }
+    :root{
+      --bg:#080b12;
+      --bg2:#11182a;
+      --panel:#131a2c;
+      --panel2:#1d2741;
+      --paper:#fff6df;
+      --paper2:#ffe9ad;
+      --ink:#08090d;
+      --text:#f5f7ff;
+      --muted:#b7c0d8;
+      --outline:#05060a;
+      --orange:#ff8a00;
+      --orange2:#ffb000;
+      --blue:#21a8ff;
+      --blue2:#136cff;
+      --red:#ff334e;
+      --yellow:#ffe44d;
+      --green:#36e077;
+      --purple:#a35cff;
+      --thick:4px;
+      --radius:20px;
+      --shadow:8px 8px 0 var(--outline);
+      --gap:14px;
+      --safe-top:env(safe-area-inset-top);
+      --safe-left:env(safe-area-inset-left);
+      --safe-right:env(safe-area-inset-right);
+    }
 
-  .toolbar{ margin-top:16px; display:grid; grid-template-columns: 1fr repeat(7, max-content); gap:var(--gap); align-items:center; }
-  .input, .select, .button{ height:44px; border-radius:999px; border: var(--thick) solid var(--outline); background: var(--paper); color:#111; padding:0 14px; box-shadow: var(--card-shadow); display:flex; align-items:center; gap:8px; font-weight:700; }
-  .input input{ all:unset; width:100%; color:#111; font-weight:700; }
-  .select select{ appearance:none; background:transparent; border:none; outline:none; font-weight:800; }
-  .button{ background: linear-gradient(180deg, var(--mha-yellow), #ffd643); cursor:pointer; user-select:none; }
-  .button--ghost{ background:#fff; color:#111; }
-  .button--danger{ background: linear-gradient(180deg, #ff6a6a, #ff3b3b); color:#111; }
-  .button--info{ background: linear-gradient(180deg, #b9fffb, var(--mha-teal)); color:#111; }
-  .button--blue{ background: linear-gradient(180deg, #d7ecff, var(--mha-blue)); color:#111; }
-  .button--green{ background: linear-gradient(180deg, #d8ffe6, var(--mha-green)); color:#111; }
-  .button--warn{ background: linear-gradient(180deg, #ffe9c9, #ffb64b); color:#111; }
+    *{box-sizing:border-box}
+    html,body{min-height:100%}
+    body{
+      margin:0;
+      color:var(--text);
+      font:600 16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at 12% 6%, rgba(255,138,0,.28), transparent 26%),
+        radial-gradient(circle at 90% 8%, rgba(33,168,255,.22), transparent 28%),
+        radial-gradient(circle at 50% 100%, rgba(163,92,255,.18), transparent 32%),
+        linear-gradient(180deg, #080b12 0%, #10182a 60%, #070910 100%);
+      overflow-x:hidden;
+    }
 
-  .grid{ max-width:1200px; margin:22px auto; padding:0 18px 80px; display:grid; grid-template-columns: repeat( auto-fill, minmax(260px, 1fr) ); gap:22px; }
-  .card{ background: linear-gradient(180deg, #1b2030 0%, #0f1320 100%); border: var(--thick) solid var(--outline); border-radius: var(--radius); box-shadow: var(--card-shadow); overflow:hidden; position:relative; transition:.2s transform; }
-  .card:hover{ transform: translateY(-4px) }
-  .card__media{ position:relative; height:180px; overflow:hidden; background:
-      radial-gradient( circle at 20% 10%, rgba(255,255,255,.15), transparent 50% ),
-      repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 6px, rgba(255,255,255,0) 6px 12px);
-    border-bottom: var(--thick) solid var(--outline); }
-  .card__media img{ width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.95) contrast(1.05);  object-position:50% 0%;}
-  .badges{ position:absolute; left:10px; top:10px; display:flex; flex-wrap:wrap; gap:8px; }
-  .badge{ background: var(--mha-yellow); color:#111; padding:6px 10px; border-radius:999px; border: var(--thick) solid var(--outline); font-weight:900; box-shadow: 4px 4px 0 var(--outline); text-transform:uppercase; font-size:12px; }
-  .card__body{ padding:14px 14px 16px; }
-  .alias{ margin:0; font-size:21px; font-weight:1000; letter-spacing:.3px; }
-  .realname{ margin:2px 0 8px; color:var(--muted); font-size:13px; font-weight:700; }
-  .stats{ display:grid; grid-template-columns: 1fr; gap:8px; margin:10px 0 12px; }
-  .stat{ display:grid; grid-template-columns: 100px 1fr 52px; gap:8px; align-items:center; }
-  .stat__name{ font: 800 12px/1 "Segoe UI",sans-serif; color:#d5def0; text-transform:uppercase; letter-spacing:.4px;}
-  .progress{ height:12px; background:#222839; border: var(--thick) solid var(--outline); border-radius:999px; position:relative; overflow:hidden; }
-  .progress__bar{ height:100%; width:0%; background: repeating-linear-gradient(135deg, rgba(255,255,255,.35) 0 10px, rgba(255,255,255,0) 10px 20px), linear-gradient(90deg, var(--mha-teal), var(--mha-blue)); border-right: var(--thick) solid var(--outline); transition: width .6s ease; }
-  .stat__val{ font: 900 12px/1 "Segoe UI",sans-serif; color:#fff; text-align:right; }
-  .card__cta{ display:flex; gap:10px; }
-  .card__cta .button{ height:38px; padding:0 12px; font-size:14px; box-shadow: 5px 5px 0 var(--outline);}
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:-2;
+      background:
+        radial-gradient(circle, rgba(255,255,255,.08) 0 1px, transparent 1px 100%) 0 0/22px 22px,
+        repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 8px, transparent 8px 18px);
+      mix-blend-mode:screen;
+    }
 
-  .modal{ position:fixed; inset:0; background: rgba(0,0,0,.65); display:none; align-items:center; justify-content:center; padding:20px; z-index:100; }
-  .modal.is-open{ display:flex }
-  .modal__panel{ width:min(100%, 900px); background: linear-gradient(180deg, #20263a, #101626); border: var(--thick) solid var(--outline); border-radius: 22px; box-shadow: 14px 14px 0 var(--outline); overflow:hidden; }
-  .modal__head{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 16px; border-bottom: var(--thick) solid var(--outline); background: linear-gradient(180deg, var(--mha-yellow), #ffd643); color:#111; }
-  .modal__title{ font:1000 20px/1 "Segoe UI",sans-serif; text-transform:uppercase; }
-  .modal__close{ all:unset; cursor:pointer; font-weight:1000; border: var(--thick) solid var(--outline); background:#fff; padding:6px 10px; border-radius:999px; box-shadow: 4px 4px 0 var(--outline); }
-  .modal__body{ padding:16px; max-height:70vh; overflow:auto; }
+    body::after{
+      content:"";
+      position:fixed;
+      inset:-25%;
+      pointer-events:none;
+      z-index:-1;
+      opacity:.12;
+      background:
+        conic-gradient(from 90deg at 50% 50%, transparent 0 10deg, #fff 10deg 11deg, transparent 11deg 24deg);
+      animation: auraSpin 35s linear infinite;
+    }
 
-  .tabs{ display:flex; gap:10px; margin-bottom:12px; }
-  .tab{ all:unset; cursor:pointer; padding:10px 14px; border: var(--thick) solid var(--outline); border-radius:999px; background:#fff; color:#111; font-weight:900; }
-  .tab.is-active{ background: var(--mha-yellow); }
-  .tabpanes > section{ display:none }
-  .tabpanes > section.is-active{ display:block }
-
-  .form{ display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; }
-  .form .col-6{ grid-column: span 6; } .form .col-12{ grid-column: span 12; }
-  .label{ font:900 12px/1 "Segoe UI",sans-serif; text-transform:uppercase; margin:4px 0; color:#dfe7ff; }
-  .inputish, .textarea, .multiselect{ width:100%; background:#fff; border: var(--thick) solid var(--outline); border-radius:12px; padding:10px; color:#111; font-weight:700; }
-  .textarea{ min-height:80px; resize:vertical }
-  .multiselect{ display:flex; gap:8px; flex-wrap:wrap }
-  .chip{ background:var(--paper); border: var(--thick) solid var(--outline); border-radius:999px; padding:8px 10px; cursor:pointer; user-select:none; }
-  .chip.is-selected{ background: var(--mha-green); color:#111 }
-
-  .sheet{ display:grid; grid-template-columns: 240px 1fr; gap:16px; }
-  .sheet__avatar{ border: var(--thick) solid var(--outline); border-radius:14px; overflow:hidden; background:#0b0f1a; height:260px; display:flex; align-items:center; justify-content:center; }
-  .sheet__avatar img{ width:100%; height:100%; object-fit:cover;  object-position:50% 0%;}
-  .kv{ display:grid; grid-template-columns: 160px 1fr; gap:6px 10px; }
-  .kv b{ color:#eef2ff }
-  .kv span{ color:#d0d6ea; font-weight:700 }
-
-  .footer{ text-align:center; color:#a9b6d0; padding:30px 16px 60px; font-size:12px; }
-  .hidden{display:none}
-  
-/* === Minimal / Compact / List view (merge from v0.3) === */
-body.is-minimal{ --thick:2px; --card-shadow: 4px 4px 0 var(--outline); background: var(--bg); }
-body.is-minimal .header{ box-shadow:none; }
-body.is-minimal .button{ box-shadow:none; }
-body.is-minimal .card{ background:#141a2a; }
-body.is-minimal .badge{ box-shadow:none; }
-
-body.is-compact .grid{ gap:14px }
-body.is-compact .card__media{ height:140px }
-body.is-compact .stat{ grid-template-columns: 90px 1fr 40px }
-
-body[data-view="list"] .grid{ grid-template-columns: 1fr; }
-body[data-view="list"] .card{ display:grid; grid-template-columns: 180px 1fr; align-items:stretch; }
-body[data-view="list"] .card__media{ height:auto; border-right: var(--thick) solid var(--outline); border-bottom:none; }
-body[data-view="list"] .stats{ grid-template-columns: repeat(3,1fr); }
-
-@keyframes pulseAct { 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.12) } }
-.button--warn.is-active{ animation: pulseAct .8s infinite; }
-
-
-/* ===========================
-   Responsive (móvil + PC)
-   =========================== */
-
-/* Mejoras generales de interacción */
-.button, .tab, .chip, .modal__close, .input, .select { touch-action: manipulation; }
-.card__cta { flex-wrap: wrap; }
-.card__cta .button { flex: 1 1 auto; min-width: 110px; }
-
-/* Evitar que el header "se coma" contenido en iOS con notch */
-.header { padding-top: env(safe-area-inset-top); }
-.wrap { padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right)); }
-
-/* Tablet y abajo: toolbar más flexible */
-@media (max-width: 980px){
-  .toolbar{ grid-template-columns: 1fr 1fr 1fr; }
-  .toolbar > .input{ grid-column: 1 / -1; }
-}
-
-/* Móvil */
-@media (max-width: 720px){
-  :root{
-    --radius:16px;
-    --gap:10px;
-  }
-
-  body{ font-size: 15px; }
-
-  .wrap{ padding: 14px; }
-  .brand{ gap:12px; align-items:flex-start; }
-  .brand__badge{ padding:7px 10px; }
-  .brand__subtitle{ font-size: 13px; line-height: 1.35; }
-
-  /* Toolbar: todo apilado y proporcional */
-  .toolbar{
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .toolbar > .input{ grid-column: 1 / -1; }
-  #roleFilter{ width:100%; }
-  #sortBy{ width:100%; }
-  #addBtn{ grid-column: 1 / -1; justify-content:center; }
-
-  /* Botones compactos */
-  .input, .select, .button{ height: 42px; padding: 0 12px; }
-  .button{ justify-content:center; }
-
-  /* Cards: 1 columna; lista adaptada */
-  .grid{ padding: 0 14px 72px; gap: 16px; grid-template-columns: 1fr; }
-  .card__media{ height: 170px; }
-  body[data-view="list"] .card{ grid-template-columns: 1fr; }
-  body[data-view="list"] .card__media{
-    height: 170px;
-    border-right: none;
-    border-bottom: var(--thick) solid var(--outline);
-  }
-  body[data-view="list"] .stats{ grid-template-columns: repeat(2,1fr); }
-
-  /* Modal: que no "reviente" en móvil */
-  .modal{ padding: 14px; }
-  .modal__panel{ width: 100%; border-radius: 18px; box-shadow: 10px 10px 0 var(--outline); }
-  .modal__body{ max-height: 78vh; }
-
-  /* Ficha detallada: en columna */
-  .sheet{ grid-template-columns: 1fr; }
-  .sheet__avatar{ height: 220px; }
-  .kv{ grid-template-columns: 1fr; }
-  .kv b{ margin-top: 8px; display:block; }
-  .kv span{ display:block; }
-
-  /* Formularios: 1 columna real */
-  .form{ grid-template-columns: 1fr; }
-  .form .col-6, .form .col-12{ grid-column: 1 / -1; }
-
-  /* Tabs: que no se salgan */
-  .tabs{ flex-wrap: wrap; }
-  .tab{ flex: 1 1 auto; text-align:center; }
-
-  /* Evitar zoom raro en iOS al tocar inputs */
-  .inputish, .textarea, .select select, .input input{ font-size: 16px; }
-}
-
-/* Ultra pequeño */
-@media (max-width: 380px){
-  .toolbar{ grid-template-columns: 1fr; }
-  #addBtn{ grid-column: auto; }
-  body[data-view="list"] .stats{ grid-template-columns: 1fr; }
-}
+    @keyframes auraSpin{to{transform:rotate(1turn)}}
 
     .back-menu{
-  position:fixed;
-  top:15px;
-  left:15px;
+      position:fixed;
+      top:calc(14px + var(--safe-top));
+      left:calc(14px + var(--safe-left));
+      z-index:999;
+      padding:10px 14px;
+      border:2px solid rgba(255,255,255,.22);
+      border-radius:14px;
+      background:rgba(9,13,25,.74);
+      color:#fff;
+      text-decoration:none;
+      font-weight:900;
+      backdrop-filter:blur(10px);
+      box-shadow:0 10px 24px rgba(0,0,0,.32);
+      transition:.2s;
+    }
+    .back-menu:hover{transform:translateY(-2px);background:rgba(24,35,65,.86)}
 
-  padding:10px 14px;
-  border-radius:12px;
+    .header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      padding-top:var(--safe-top);
+      background:
+        linear-gradient(90deg, rgba(255,138,0,.18), transparent 28%, rgba(33,168,255,.16)),
+        linear-gradient(180deg, #151d30, #0e1322);
+      border-bottom:var(--thick) solid var(--outline);
+      box-shadow:0 10px 0 rgba(0,0,0,.38);
+    }
 
-  background:rgba(20,25,50,0.85);
-  border:1px solid rgba(255,255,255,0.15);
+    .wrap{max-width:1220px;margin:0 auto;padding:18px max(18px,var(--safe-right)) 18px max(18px,var(--safe-left))}
 
-  color:white;
-  text-decoration:none;
-  font-weight:600;
+    .brand{display:flex;align-items:center;gap:16px;padding-left:94px}
+    .brand__badge{
+      min-width:78px;
+      width:78px;height:78px;
+      display:grid;place-items:center;
+      border-radius:50%;
+      border:var(--thick) solid var(--outline);
+      background:radial-gradient(circle at 35% 28%, #fff4ad 0 9%, #ffb000 10% 48%, #ff6a00 49% 100%);
+      box-shadow:var(--shadow);
+      color:#111;
+      font-weight:1000;
+      line-height:1;
+      text-align:center;
+      letter-spacing:.5px;
+      transform:rotate(-8deg);
+    }
+    .brand__title{
+      margin:0;
+      font-size:clamp(25px,4vw,48px);
+      line-height:1;
+      text-transform:uppercase;
+      font-weight:1000;
+      letter-spacing:.5px;
+      text-shadow:4px 4px 0 #000, 0 0 18px rgba(255,176,0,.35);
+    }
+    .brand__title small{
+      display:inline-block;
+      vertical-align:middle;
+      margin-left:8px;
+      font-size:13px;
+      color:#111;
+      background:var(--yellow);
+      border:var(--thick) solid var(--outline);
+      border-radius:999px;
+      padding:6px 10px;
+      box-shadow:4px 4px 0 var(--outline);
+      text-shadow:none;
+      transform:rotate(2deg);
+    }
+    .brand__subtitle{margin:8px 0 0;color:var(--muted);font-size:14px;font-weight:700}
 
-  backdrop-filter:blur(10px);
+    .toolbar{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:1fr repeat(8,max-content);
+      gap:var(--gap);
+      align-items:center;
+    }
 
-  transition:0.2s;
-  z-index:999;
-}
+    .input,.select,.button{
+      min-height:44px;
+      border:var(--thick) solid var(--outline);
+      border-radius:999px;
+      background:var(--paper);
+      color:#111;
+      padding:0 14px;
+      box-shadow:var(--shadow);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-weight:1000;
+    }
+    .input input{all:unset;width:100%;color:#111;font-weight:900}
+    .select select{appearance:none;border:0;outline:0;background:transparent;color:#111;font-weight:1000;max-width:170px}
+    .button{cursor:pointer;user-select:none;justify-content:center;transition:.16s transform,.16s filter;background:linear-gradient(180deg,#fff0a8,var(--orange2) 52%,var(--orange));}
+    .button:hover{transform:translateY(-2px);filter:saturate(1.12)}
+    .button:active{transform:translateY(1px)}
+    .button--ghost{background:linear-gradient(180deg,#fff,#e9edf8)}
+    .button--danger{background:linear-gradient(180deg,#ff9aa7,#ff334e)}
+    .button--info{background:linear-gradient(180deg,#c8f7ff,#21a8ff)}
+    .button--blue{background:linear-gradient(180deg,#d7ecff,#136cff);color:#07101e}
+    .button--green{background:linear-gradient(180deg,#d8ffe6,#36e077)}
+    .button--warn{background:linear-gradient(180deg,#fff2a8,#ffe44d)}
+    .button--purple{background:linear-gradient(180deg,#ead6ff,#a35cff)}
 
-.back-menu:hover{
-  background:rgba(40,50,100,0.9);
-  transform:translateY(-2px);
-}
+    .stats-strip{
+      max-width:1220px;
+      margin:18px auto 0;
+      padding:0 18px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+    .mini-panel{
+      border:var(--thick) solid var(--outline);
+      border-radius:18px;
+      background:linear-gradient(180deg,rgba(255,246,223,.96),rgba(255,233,173,.96));
+      color:#111;
+      box-shadow:var(--shadow);
+      padding:12px 14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .mini-panel::after{
+      content:"";
+      position:absolute;
+      inset:auto -20px -35px auto;
+      width:110px;height:110px;
+      border-radius:50%;
+      background:rgba(255,138,0,.22);
+      border:3px solid rgba(0,0,0,.12);
+    }
+    .mini-panel b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#3c4254}
+    .mini-panel span{display:block;font-size:24px;line-height:1;font-weight:1000;margin-top:5px}
 
+    .grid{
+      max-width:1220px;
+      margin:22px auto;
+      padding:0 18px 90px;
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+      gap:22px;
+    }
 
-</style>
+    .card{
+      position:relative;
+      overflow:hidden;
+      border:var(--thick) solid var(--outline);
+      border-radius:var(--radius);
+      background:
+        linear-gradient(180deg,rgba(29,39,65,.95),rgba(10,13,24,.98));
+      box-shadow:var(--shadow);
+      transition:.2s transform,.2s filter;
+    }
+    .card:hover{transform:translateY(-5px);filter:saturate(1.08)}
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-40% -30% auto auto;
+      width:190px;height:190px;
+      border-radius:50%;
+      background:radial-gradient(circle,#ffe44d 0 8%,#ff8a00 9% 46%,transparent 47%);
+      opacity:.18;
+      pointer-events:none;
+    }
+    .card__media{
+      position:relative;
+      height:190px;
+      overflow:hidden;
+      border-bottom:var(--thick) solid var(--outline);
+      background:
+        radial-gradient(circle at center, rgba(255,228,77,.22), transparent 42%),
+        repeating-radial-gradient(circle at center, rgba(255,255,255,.08) 0 2px, transparent 2px 10px),
+        linear-gradient(135deg,#17213a,#0d1220);
+    }
+    .card__media img{width:100%;height:100%;object-fit:cover;object-position:50% 0%;display:block;filter:saturate(1.04) contrast(1.06)}
+    .badges{
+      position:absolute;
+      right:8px;
+      top:8px;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:6px;
+      z-index:2;
+      pointer-events:none; /* no bloquea clicks en la imagen */
+    }
+    .badge{
+      background:rgba(255,228,77,.92);
+      color:#111;
+      padding:4px 8px; /* más pequeño */
+      border-radius:999px;
+      border:2px solid var(--outline);
+      font-weight:900;
+      box-shadow:2px 2px 0 var(--outline);
+      text-transform:uppercase;
+      font-size:10px; /* más pequeño */
+      backdrop-filter:blur(4px);
+    }
+    .badge--ki{background:rgba(33,168,255,.9)}
+    .badge--role2{background:rgba(255,255,255,.92)}
+
+    .card__body{padding:15px 15px 17px}
+    .alias{margin:0;font-size:23px;line-height:1.05;font-weight:1000;letter-spacing:.2px;text-transform:uppercase}
+    .realname{margin:4px 0 10px;color:var(--muted);font-size:13px;font-weight:800}
+    .quirk-line{font-size:13px;color:#f1dca5;font-weight:800;margin:0 0 11px;min-height:18px}
+    .stats{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0 13px}
+    .stat{display:grid;grid-template-columns:104px 1fr 44px;gap:8px;align-items:center}
+    .stat__name{font-size:11px;line-height:1;text-transform:uppercase;font-weight:1000;color:#e5ecff;letter-spacing:.35px}
+    .progress{height:13px;border:var(--thick) solid var(--outline);border-radius:999px;background:#252b3d;overflow:hidden}
+    .progress__bar{height:100%;width:0%;border-right:var(--thick) solid var(--outline);background:repeating-linear-gradient(135deg,rgba(255,255,255,.4) 0 8px,transparent 8px 16px),linear-gradient(90deg,var(--orange),var(--yellow),var(--blue));transition:width .55s ease}
+    .stat__val{text-align:right;color:#fff;font-size:12px;font-weight:1000}
+    .card__cta{display:flex;gap:10px;flex-wrap:wrap}
+    .card__cta .button{min-height:38px;padding:0 12px;font-size:14px;box-shadow:5px 5px 0 var(--outline);flex:1 1 auto}
+
+    .empty{
+      grid-column:1/-1;
+      border:var(--thick) solid var(--outline);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg,var(--paper),var(--paper2));
+      color:#111;
+      box-shadow:var(--shadow);
+      padding:26px;
+      text-align:center;
+      font-weight:900;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      z-index:100;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px max(20px,var(--safe-right)) 20px max(20px,var(--safe-left));
+      background:rgba(0,0,0,.68);
+      backdrop-filter:blur(3px);
+    }
+    .modal.is-open{display:flex}
+    .modal__panel{
+      width:min(100%,940px);
+      max-height:88vh;
+      overflow:hidden;
+      border:var(--thick) solid var(--outline);
+      border-radius:24px;
+      background:linear-gradient(180deg,#1f2b48,#101729);
+      box-shadow:14px 14px 0 var(--outline);
+    }
+    .modal__head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      border-bottom:var(--thick) solid var(--outline);
+      background:linear-gradient(90deg,var(--orange),var(--yellow));
+      color:#111;
+    }
+    .modal__title{font-size:20px;line-height:1;text-transform:uppercase;font-weight:1000}
+    .modal__close{all:unset;cursor:pointer;border:var(--thick) solid var(--outline);border-radius:999px;background:#fff;padding:7px 11px;box-shadow:4px 4px 0 var(--outline);font-weight:1000}
+    .modal__body{padding:16px;overflow:auto;max-height:calc(88vh - 66px)}
+
+    .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+    .tab{all:unset;cursor:pointer;padding:10px 14px;border:var(--thick) solid var(--outline);border-radius:999px;background:#fff;color:#111;font-weight:1000}
+    .tab.is-active{background:var(--yellow)}
+    .tabpanes>section{display:none}.tabpanes>section.is-active{display:block}
+
+    .form{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+    .form-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+    .legend-panel{
+      position:sticky;
+      top:12px;
+      border:var(--thick) solid var(--outline);
+      border-radius:18px;
+      background:linear-gradient(180deg,var(--paper),var(--paper2));
+      color:#111;
+      box-shadow:6px 6px 0 var(--outline);
+      padding:13px;
+      max-height:65vh;
+      overflow:auto;
+    }
+    .legend-panel h3{margin:0 0 8px;font-size:17px;text-transform:uppercase;font-weight:1000}
+    .legend-panel h4{margin:14px 0 7px;font-size:13px;text-transform:uppercase;font-weight:1000;color:#293044}
+    .legend-panel ul{margin:0;padding-left:18px}
+    .legend-panel li{margin:0 0 7px;font-size:12.5px;line-height:1.3;font-weight:750}
+    .legend-panel b{font-weight:1000}
+    .col-6{grid-column:span 6}.col-12{grid-column:span 12}
+    .label{font-size:12px;line-height:1;text-transform:uppercase;margin:4px 0 7px;color:#e9efff;font-weight:1000;letter-spacing:.35px}
+    .inputish,.textarea{
+      width:100%;
+      border:var(--thick) solid var(--outline);
+      border-radius:14px;
+      background:#fff;
+      color:#111;
+      padding:11px;
+      font-weight:850;
+      outline:none;
+    }
+    .textarea{min-height:82px;resize:vertical}
+    .multiselect{display:flex;gap:8px;flex-wrap:wrap;border:var(--thick) solid var(--outline);border-radius:14px;background:rgba(255,255,255,.08);padding:10px}
+    .chip{background:#fff;color:#111;border:var(--thick) solid var(--outline);border-radius:999px;padding:8px 10px;cursor:pointer;user-select:none;font-weight:1000}
+    .chip.is-selected{background:var(--green)}
+
+    .sheet{display:grid;grid-template-columns:250px 1fr;gap:18px}
+    .sheet__avatar{height:280px;border:var(--thick) solid var(--outline);border-radius:18px;overflow:hidden;background:#0b1020;box-shadow:6px 6px 0 var(--outline)}
+    .sheet__avatar img{width:100%;height:100%;object-fit:cover;object-position:50% 0%}
+    .sheet h2{margin:0;font-size:31px;line-height:1;text-transform:uppercase;text-shadow:3px 3px 0 #000}
+    .kv{display:grid;grid-template-columns:170px 1fr;gap:7px 12px;margin-top:12px}
+    .kv b{color:#fff}.kv span{color:#d8e0f6;font-weight:800}
+
+    .footer{text-align:center;color:#aeb9d4;padding:30px 16px 65px;font-size:12px;font-weight:700}
+    .hidden{display:none!important}
+
+    body.is-minimal{--thick:2px;--shadow:4px 4px 0 var(--outline)}
+    body.is-minimal .header{box-shadow:none}
+    body.is-minimal .badge,.button,.card__cta .button{box-shadow:calc(var(--thick) * 2) calc(var(--thick) * 2) 0 var(--outline)}
+    body.is-compact .grid{gap:14px}
+    body.is-compact .card__media{height:145px}
+    body.is-compact .stat{grid-template-columns:92px 1fr 38px}
+    body[data-view="list"] .grid{grid-template-columns:1fr}
+    body[data-view="list"] .card{display:grid;grid-template-columns:190px 1fr}
+    body[data-view="list"] .card__media{height:auto;border-bottom:0;border-right:var(--thick) solid var(--outline)}
+    body[data-view="list"] .stats{grid-template-columns:repeat(3,1fr)}
+
+    @keyframes pulseAct{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+    .button--warn.is-active{animation:pulseAct .85s infinite}
+
+    @media (max-width:1060px){
+      .toolbar{grid-template-columns:1fr 1fr 1fr}
+      .toolbar>.input{grid-column:1/-1}
+      .stats-strip{grid-template-columns:repeat(2,1fr)}
+      .brand{padding-left:92px}
+    }
+
+    @media (max-width:720px){$1.form-layout{grid-template-columns:1fr}.legend-panel{position:static;max-height:none;order:-1}.form{grid-template-columns:1fr}.col-6,.col-12{grid-column:1/-1}
+      .inputish,.textarea,.input input,.select select{font-size:16px}
+      .sheet{grid-template-columns:1fr}.sheet__avatar{height:230px}.kv{grid-template-columns:1fr}.kv b{margin-top:8px}
+      .tabs .tab{flex:1 1 auto;text-align:center}
+      .card__cta .button{min-width:100px}
+    }
+
+    @media (max-width:390px){
+      .toolbar{grid-template-columns:1fr}
+      .stats-strip{grid-template-columns:1fr}
+    }
+  </style>
 </head>
 <body>
   <a href="index.html" class="back-menu">← Volver al menú</a>
@@ -247,205 +429,219 @@ body[data-view="list"] .stats{ grid-template-columns: repeat(3,1fr); }
   <header class="header">
     <div class="wrap">
       <div class="brand">
-        <span class="brand__badge">PLUS ULTRA</span>
+        <div class="brand__badge">KI<br>DEX</div>
         <div>
-          <h1 class="brand__title">LISTA DE HÉROES <small style="font-size:14px;background:#fff;border:4px solid #0a0b0e;border-radius:999px;padding:4px 8px;color:#111;box-shadow:4px 4px 0 #0a0b0e">Dex MHA</small></h1>
-          <p class="brand__subtitle">Añade tus héroes, sube sus fotos por URL, clasifícalos por rol y mide sus stats con criterios claros.</p>
+          <h1 class="brand__title">Registro de Guerreros <small>Dragon Comic Dex</small></h1>
+          <p class="brand__subtitle">Personajes, Dones, técnicas y poder total. Mantiene compatibilidad con tu JSON anterior de héroes MHA.</p>
         </div>
       </div>
 
       <div class="toolbar">
-        <label class="input" title="Buscar por alias o nombre real">
-          🔎 <input id="q" placeholder="Buscar héroe..." />
+        <label class="input" title="Buscar por alias, nombre o Don">
+          🔍 <input id="q" placeholder="Buscar guerrero..." />
         </label>
-        <label class="select" title="Filtrar por rol principal">
+        <label class="select" title="Filtrar por rol">
           <select id="roleFilter">
             <option value="">Todos los roles</option>
-            <option>Rescate</option>
-            <option>Combate</option>
-            <option>Apoyo</option>
-            <option>Control</option>
-            <option>Investigación</option>
-            <option>Logística</option>
-            <option>Sigilo</option>
-            <option>Sanación</option>
           </select>
         </label>
         <label class="select" title="Ordenar">
           <select id="sortBy">
             <option value="nameAZ">Nombre A–Z</option>
             <option value="powerZA">Poder total ↓</option>
+            <option value="kiZA">Ki ofensivo ↓</option>
             <option value="recent">Recientes</option>
           </select>
         </label>
         <button class="button" id="minimalBtn" title="Modo minimal">—</button>
-<button class="button" id="compactBtn" title="Modo compacto">≡</button>
-<button class="button" id="viewBtn" title="Vista lista / tarjetas">▤</button>
-<button class="button button--warn" id="actBtn" title="Aviso de actualización">ACT</button>
-<button class="button button--info" id="infoBtn" title="Guía de roles y stats">i</button>
-        <button class="button" id="addBtn">+ Añadir héroe</button>
-        <button class="button button--blue" id="exportBtn" title="Exportar lista como JSON">Exportar</button>
-        <button class="button button--green" id="importBtn" title="Importar JSON (fusiona)">Importar</button>
-        <button class="button button--warn" id="clearBtn" title="Vaciar la Dex (requiere confirmación)">Vaciar Dex</button>
-        <input type="file" id="importFile" accept="application/json" class="hidden">
+        <button class="button" id="compactBtn" title="Modo compacto">≡</button>
+        <button class="button" id="viewBtn" title="Vista lista / tarjetas">▤</button>
+        <button class="button button--warn" id="actBtn" title="Actualizaciones">ACT</button>
+        <button class="button button--info" id="infoBtn" title="Guía">i</button>
+        <button class="button" id="addBtn">+ Añadir</button>
+        <button class="button button--blue" id="exportBtn">Exportar</button>
+        <button class="button button--green" id="importBtn">Importar</button>
+        <button class="button button--danger" id="clearBtn">Vaciar</button>
+        <input type="file" id="importFile" accept="application/json" class="hidden" />
       </div>
     </div>
   </header>
+
+  <section class="stats-strip" aria-label="Resumen de la Dex">
+    <div class="mini-panel"><b>Guerreros</b><span id="countHeroes">0</span></div>
+    <div class="mini-panel"><b>Poder medio</b><span id="avgPower">0</span></div>
+    <div class="mini-panel"><b>Top actual</b><span id="topHero">—</span></div>
+    <div class="mini-panel"><b>Rol dominante</b><span id="topRole">—</span></div>
+  </section>
 
   <main>
     <section class="grid" id="grid"></section>
   </main>
 
   <footer class="footer">
-    Tus datos se guardan en <b>localStorage</b>. Usa <b>Exportar/Importar</b> para copia de seguridad o mover tu Dex.
+    Guardado local en <b>localStorage</b>. Exporta tu JSON para copia de seguridad o para moverlo a otro dispositivo.
   </footer>
 
-  <!-- Modal INFO: Roles + Stats -->
   <div class="modal" id="infoModal" aria-hidden="true">
     <div class="modal__panel">
       <div class="modal__head">
-        <div class="modal__title">Guía rápida — Roles & Stats</div>
+        <div class="modal__title">Guía rápida — Roles, Stats y compatibilidad</div>
         <button class="modal__close" data-close="#infoModal">Cerrar</button>
       </div>
       <div class="modal__body">
         <div class="tabs">
           <button class="tab is-active" data-tab="#roles">Roles</button>
           <button class="tab" data-tab="#stats">Stats</button>
-          <button class="tab" data-tab="#rangos">Rangos (1–100)</button>
+          <button class="tab" data-tab="#compat">JSON</button>
         </div>
         <div class="tabpanes">
           <section id="roles" class="is-active">
             <ul>
-              <li><b>Rescate:</b> Prioriza salvar civiles y evacuar. <i>Tips:</i> movilidad, percepción, resistencia a entornos hostiles, primeros auxilios.</li>
-              <li><b>Combate:</b> Neutraliza amenazas de forma directa. <i>Tips:</i> fuerza, técnica, control del Don, resiliencia.</li>
-              <li><b>Apoyo:</b> Potencia a aliados o debilita enemigos. <i>Tips:</i> inteligencia táctica, versatilidad, trabajo en equipo.</li>
-              <li><b>Control:</b> Contención/aislamiento del área o del objetivo. <i>Tips:</i> control fino, alcance, mitigación de daños colaterales.</li>
-              <li><b>Investigación:</b> Reúne pruebas, rastreo, análisis. <i>Tips:</i> inteligencia, técnica, discreción.</li>
-              <li><b>Logística:</b> Transporte, suministros, comunicaciones. <i>Tips:</i> fiabilidad, planificación, aguante.</li>
-              <li><b>Sigilo:</b> Operaciones encubiertas. <i>Tips:</i> sigilo real, movilidad silenciosa, precisión, sangre fría.</li>
-              <li><b>Sanación:</b> Estabiliza y recupera aliados. <i>Tips:</i> control biológico/energético, concentración, ética.</li>
+              <li><b>Combate:</b> luchadores directos, tanques, duelistas o destructores.</li>
+              <li><b>Rescate:</b> personajes centrados en proteger, evacuar o salvar civiles.</li>
+              <li><b>Apoyo:</b> buffs, curación, escudos, sensores o asistencia táctica.</li>
+              <li><b>Control:</b> contención, sellado, trampas, zonas de presión o inmovilización.</li>
+              <li><b>Investigación:</b> análisis, rastreo, infiltración y deducción.</li>
+              <li><b>Sigilo:</b> operaciones ocultas, velocidad limpia y golpes precisos.</li>
             </ul>
           </section>
           <section id="stats">
-            <p>Recomendación de stats (1–100), medidos con criterio consistente:</p>
+            <p>Los nombres internos siguen siendo los mismos que en tu Dex anterior para no romper el JSON:</p>
             <ul>
-              <li><b>Fuerza:</b> Potencia física bruta.</li>
-              <li><b>Velocidad:</b> Rapidez de desplazamiento y reacción.</li>
-              <li><b>Resistencia:</b> Aguante a daño y fatiga.</li>
-              <li><b>Técnica:</b> Habilidad/mecánica en el uso del Don y combate.</li>
-              <li><b>Inteligencia:</b> Táctica, análisis, resolución de problemas.</li>
-              <li><b>Carisma:</b> Liderazgo, influencia, manejo social.</li>
-              <li><b>Control del Don:</b> Precisión/estabilidad del poder.</li>
-              <li><b>Versatilidad:</b> Adaptación a distintos contextos.</li>
+              <li><b>Fuerza:</b> potencia física / daño cuerpo a cuerpo.</li>
+              <li><b>Velocidad:</b> desplazamiento, reacción y ráfagas.</li>
+              <li><b>Resistencia:</b> aguante, defensa y stamina.</li>
+              <li><b>Técnica:</b> artes marciales, dominio del estilo y precisión.</li>
+              <li><b>Inteligencia:</b> táctica, lectura del rival y estrategia.</li>
+              <li><b>Control:</b> control del Don / ki / energía.</li>
+              <li><b>Versatilidad:</b> adaptación a combates raros.</li>
             </ul>
-            <p><small>Nota: El <b>Poder total</b> se calcula como media ponderada (Fuerza/Velocidad/Resistencia 50% + Técnica/Control 30% + Inteligencia/Carisma/Versatilidad 20%).</small></p>
           </section>
-          <section id="rangos">
-            <table style="width:100%;border-collapse:separate;border-spacing:0 8px">
-              <tr><td><b>1–10</b></td><td>Fuerza común: humano sin Don.</td></tr>
-              <tr><td><b>11–20</b></td><td>Humano entrenado/atleta.</td></tr>
-              <tr><td><b>21–30</b></td><td>Cadete/aspirante con Don básico.</td></tr>
-              <tr><td><b>31–40</b></td><td>Héroe en prácticas competente.</td></tr>
-              <tr><td><b>41–60</b></td><td>Héroe Pro estándar.</td></tr>
-              <tr><td><b>61–80</b></td><td>Élite/alto rendimiento.</td></tr>
-              <tr><td><b>81–95</b></td><td>Top nacional/Top 20.</td></tr>
-              <tr><td><b>96–100</b></td><td>Top 10/élite absoluta. "Plus Ultra".</td></tr>
-            </table>
+          <section id="compat">
+            <p>Esta página lee y exporta el mismo formato base: <b>alias, realname, role, role2, affiliation, quirk, summary, photo, stats y createdAt</b>.</p>
+            <p>También intenta migrar datos viejos si faltan campos, así que el JSON exportado desde tu Dex MHA debería importarse sin drama. Literalmente, Goku no tendrá que pegarle al archivo.</p>
           </section>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal ADD/EDIT -->
   <div class="modal" id="formModal" data-backdrop="static" aria-hidden="true">
     <div class="modal__panel">
       <div class="modal__head">
-        <div class="modal__title"><span id="formTitle">Añadir héroe</span></div>
+        <div class="modal__title"><span id="formTitle">Añadir guerrero</span></div>
         <button class="modal__close" data-close="#formModal">Cerrar</button>
       </div>
       <div class="modal__body">
+        <div class="form-layout">
         <form id="heroForm" class="form" autocomplete="off">
-          <input type="hidden" name="role" id="formRole" value="Combate">
+          <input type="hidden" name="role" id="formRole" value="Combate" />
+          <input type="hidden" name="role2" id="formRole2" value="" />
+
           <div class="col-6">
-            <div class="label">Alias</div>
-            <input class="inputish" name="alias" placeholder="Ej.: Red Riot" required>
+            <div class="label">Alias / Nombre de héroe</div>
+            <input class="inputish" name="alias" placeholder="Ej.: Son Goku, Red Riot, Nova Surge" required />
           </div>
           <div class="col-6">
             <div class="label">Nombre real</div>
-            <input class="inputish" name="realname" placeholder="Ej.: Eijiro Kirishima">
+            <input class="inputish" name="realname" placeholder="Ej.: Kakarotto, Eijiro Kirishima" />
           </div>
+
           <div class="col-12">
-            <div class="label">Rol principal (elige uno)</div>
+            <div class="label">Rol principal</div>
             <div class="multiselect" id="roleChips"></div>
           </div>
-<div class="col-12">
-  <div class="label">Rol secundario (opcional)</div>
-  <input type="hidden" name="role2" id="formRole2" value="">
-  <div class="multiselect" id="role2Chips"></div>
-</div>
+          <div class="col-12">
+            <div class="label">Rol secundario</div>
+            <div class="multiselect" id="role2Chips"></div>
+          </div>
+
           <div class="col-6">
-            <div class="label">Agencia / Afiliación</div>
-            <input class="inputish" name="affiliation" placeholder="Ej.: UA, Agencia Endeavor">
+            <div class="label">Afiliación / Equipo</div>
+            <input class="inputish" name="affiliation" placeholder="Ej.: Patrulla Galáctica, UA, Ejército Saiyan" />
           </div>
           <div class="col-6">
-            <div class="label">Don (Quirk)</div>
-            <input class="inputish" name="quirk" placeholder="Describe el poder principal">
+            <div class="label">Don / Ki / Técnica principal</div>
+            <input class="inputish" name="quirk" placeholder="Ej.: Kamehameha, Hardening, Fulgor Plasmático" />
           </div>
+
           <div class="col-12">
             <div class="label">Resumen</div>
-            <textarea class="textarea" name="summary" placeholder="Breve descripción del héroe"></textarea>
+            <textarea class="textarea" name="summary" placeholder="Descripción breve del personaje"></textarea>
           </div>
           <div class="col-12">
             <div class="label">URL de foto</div>
-            <input class="inputish" name="photo" placeholder="https://... (o deja vacío para placeholder)">
+            <input class="inputish" name="photo" placeholder="https://..." />
           </div>
 
-          <!-- Stats -->
-          <div class="col-12"><div class="label">Stats (1–100)</div></div>
-          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="fuerza" placeholder="Fuerza"></div>
-          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="velocidad" placeholder="Velocidad"></div>
-          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="resistencia" placeholder="Resistencia"></div>
-          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="tecnica" placeholder="Técnica"></div>
-          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="inteligencia" placeholder="Inteligencia"></div>
-          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="carisma" placeholder="Carisma"></div>
-          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="control" placeholder="Control del Don"></div>
-          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="versatilidad" placeholder="Versatilidad"></div>
+          <div class="col-12"><div class="label">Stats 1–100</div></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="fuerza" placeholder="Fuerza" /></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="velocidad" placeholder="Velocidad" /></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="resistencia" placeholder="Resistencia" /></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="tecnica" placeholder="Técnica" /></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="inteligencia" placeholder="Inteligencia" /></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="carisma" placeholder="Carisma" /></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="control" placeholder="Control del Don / Ki" /></div>
+          <div class="col-6"><input class="inputish" type="number" min="1" max="100" name="versatilidad" placeholder="Versatilidad" /></div>
 
-          <div class="col-12" style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px">
+          <div class="col-12" style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px">
             <button type="button" class="button button--ghost" id="resetBtn">Reset</button>
             <button class="button" type="submit">Guardar</button>
           </div>
         </form>
+
+        <aside class="legend-panel" aria-label="Leyenda de roles y stats">
+          <h3>📘 Leyenda rápida</h3>
+          <h4>Roles</h4>
+          <ul>
+            <li><b>Combate:</b> daño directo, duelos, presión ofensiva y aguante en pelea.</li>
+            <li><b>Rescate:</b> salvar civiles, movilidad segura, evacuación y protección.</li>
+            <li><b>Apoyo:</b> potenciar aliados, cubrir debilidades, curar, escudar o asistir.</li>
+            <li><b>Control:</b> atrapar, sellar, frenar, limitar zonas o reducir daños colaterales.</li>
+            <li><b>Investigación:</b> análisis, rastreo, deducción, pruebas e información.</li>
+            <li><b>Logística:</b> transporte, recursos, planificación, comunicaciones y soporte operativo.</li>
+            <li><b>Sigilo:</b> infiltración, sorpresa, precisión silenciosa y desaparición del radar.</li>
+            <li><b>Sanación:</b> estabilizar, curar, regenerar o mantener vivo al equipo.</li>
+          </ul>
+          <h4>Stats</h4>
+          <ul>
+            <li><b>Fuerza:</b> potencia física y daño cuerpo a cuerpo.</li>
+            <li><b>Velocidad:</b> movimiento, reacción y cambios de ritmo.</li>
+            <li><b>Resistencia:</b> aguante al daño, cansancio y presión prolongada.</li>
+            <li><b>Técnica:</b> habilidad marcial, precisión y uso inteligente del estilo.</li>
+            <li><b>Inteligencia:</b> estrategia, lectura del rival y resolución de problemas.</li>
+            <li><b>Carisma:</b> liderazgo, presencia, inspiración e influencia social.</li>
+            <li><b>Control:</b> dominio del Don, ki o energía sin perder estabilidad.</li>
+            <li><b>Versatilidad:</b> adaptación a rivales, terrenos y situaciones raras.</li>
+          </ul>
+        </aside>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal DETALLE -->
   <div class="modal" id="detailModal" aria-hidden="true">
     <div class="modal__panel">
       <div class="modal__head">
-        <div class="modal__title">Ficha detallada</div>
+        <div class="modal__title">Ficha del guerrero</div>
         <button class="modal__close" data-close="#detailModal">Cerrar</button>
       </div>
       <div class="modal__body">
         <div class="sheet">
-          <div class="sheet__avatar"><img id="dPhoto" alt="Foto de héroe"/></div>
+          <div class="sheet__avatar"><img id="dPhoto" alt="Foto del personaje" /></div>
           <div>
-            <h2 id="dAlias" style="margin:0;font-size:28px">Alias</h2>
-            <p id="dReal" style="margin:4px 0 12px;color:#aab6d6;font-weight:700">Nombre real</p>
+            <h2 id="dAlias">Alias</h2>
+            <p id="dReal" style="margin:6px 0 0;color:#b8c3dd;font-weight:900">Nombre real</p>
             <div class="kv">
-              <b>Rol principal</b> <span id="dRol"></span>
-<b>Rol secundario</b> <span id="dRol2"></span>
-              <b>Agencia</b> <span id="dAff"></span>
-              <b>Don</b> <span id="dQuirk"></span>
-              <b>Poder total</b> <span id="dPower"></span>
+              <b>Rol principal</b><span id="dRol"></span>
+              <b>Rol secundario</b><span id="dRol2"></span>
+              <b>Afiliación</b><span id="dAff"></span>
+              <b>Don / Ki</b><span id="dQuirk"></span>
+              <b>Poder total</b><span id="dPower"></span>
             </div>
-            <div style="height:10px"></div>
-            <div class="label">Resumen</div>
-            <p id="dSummary" style="margin-top:6px"></p>
-
-            <div class="label" style="margin-top:12px">Stats</div>
+            <div class="label" style="margin-top:14px">Resumen</div>
+            <p id="dSummary" style="margin-top:6px;color:#e9edf8"></p>
+            <div class="label" style="margin-top:14px">Stats</div>
             <div id="dStats"></div>
           </div>
         </div>
@@ -453,297 +649,6 @@ body[data-view="list"] .stats{ grid-template-columns: repeat(3,1fr); }
     </div>
   </div>
 
-<script>
-// ===== Utilidades =====
-const $ = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-
-const ROLES = ["Rescate","Combate","Apoyo","Control","Investigación","Logística","Sigilo","Sanación"];
-const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-  <svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
-    <defs>
-      <pattern id="dots" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
-        <circle cx="1.5" cy="1.5" r="1.5" fill="#0a0b0e" opacity=".18"/>
-      </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill="#cfd7ea"/>
-    <rect width="100%" height="100%" fill="url(#dots)"/>
-    <g font-family="Segoe UI, Arial" font-weight="900" text-anchor="middle" fill="#0a0b0e">
-      <text x="400" y="235" font-size="40">SIN FOTO</text>
-      <text x="400" y="280" font-size="20">Sube una URL en la ficha</text>
-    </g>
-  </svg>`);
-
-// Peso para poder total
-const WEIGHTS = { fuerza:.17, velocidad:.17, resistencia:.16, tecnica:.18, control:.12, inteligencia:.08, carisma:.06, versatilidad:.06 };
-
-function computePower(h){
-  const s = h.stats || {};
-  let total = 0;
-  for (const k in WEIGHTS){ total += (Number(s[k]||0) * WEIGHTS[k]); }
-  return Math.round(total);
-}
-
-function statRow(name, val){
-  const safe = Math.max(1, Math.min(100, Number(val||0)));
-  return `<div class="stat">
-    <div class="stat__name">${name}</div>
-    <div class="progress"><div class="progress__bar" style="width:${safe}%"></div></div>
-    <div class="stat__val">${safe}</div>
-  </div>`;
-}
-
-// ===== Estado =====
-const STORAGE_KEY = "mha_heroes";
-let HEROES = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-
-// Preseed algunos ejemplos si está vacío
-if(HEROES.length === 0){
-  HEROES = [
-    {
-      id: crypto.randomUUID(),
-      alias: "Nova Surge",
-      realname: "Aya Saitō",
-      role: "Rescate",
-      affiliation: "Agencia Aster",
-      quirk: "Fulgor Plasmático — convierte aire ionizado en estallidos de luz/impulso",
-      summary: "Especialista en evacuación urbana y señalización luminosa. Puede crear rutas seguras con barridos de plasma.",
-      photo: "",
-      stats: { fuerza:38, velocidad:82, resistencia:55, tecnica:71, inteligencia:67, carisma:62, control:78, versatilidad:74 },
-      createdAt: Date.now()-200000
-    },
-    {
-      id: crypto.randomUUID(),
-      alias: "Iron Hush",
-      realname: "Diego Ramos",
-      role: "Sigilo",
-      affiliation: "Unidad Silente",
-      quirk: "Manto Acústico — absorbe/niega vibraciones sonoras en un radio corto",
-      summary: "Infiltración y detención limpia. Ideal para rescates sin daños colaterales en zonas sensibles.",
-      photo: "",
-      stats: { fuerza:46, velocidad:68, resistencia:59, tecnica:77, inteligencia:71, carisma:48, control:83, versatilidad:69 },
-      createdAt: Date.now()-100000
-    }
-  ];
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(HEROES));
-}
-
-// ===== Render =====
-function renderGrid(){
-  const q = $("#q").value.trim().toLowerCase();
-  const f = $("#roleFilter").value;
-  const sort = $("#sortBy").value;
-
-  let list = HEROES.filter(h => {
-  const hit = (h.alias + ' ' + (h.realname||'')).toLowerCase().includes(q);
-  const rf = !f || h.role === f || (h.role2 && h.role2 === f);
-  return hit && rf;
-});
-
-  if(sort === "nameAZ") list.sort((a,b)=> a.alias.localeCompare(b.alias));
-  if(sort === "powerZA") list.sort((a,b)=> computePower(b)-computePower(a));
-  if(sort === "recent") list.sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
-
-  $("#grid").innerHTML = list.map(h => {
-    const p = computePower(h);
-    const img = (h.photo && h.photo.trim()) ? h.photo.trim() : PLACEHOLDER;
-    return `<article class="card" data-id="${h.id}">
-      <div class="card__media">
-        <img src="${img}" alt="${h.alias}">
-        <div class="badges"><span class="badge">${h.role}</span>${h.role2?`<span class=\"badge\" style=\"background:#fff\">${h.role2}</span>`:''}<span class="badge">Power ${p}</span></div>
-      </div>
-      <div class="card__body">
-        <h3 class="alias">${h.alias}</h3>
-        <div class="realname">${h.realname||""}</div>
-        <div class="stats">
-          ${statRow('Fuerza', h.stats.fuerza)}
-          ${statRow('Velocidad', h.stats.velocidad)}
-          ${statRow('Resistencia', h.stats.resistencia)}
-        </div>
-        <div class="card__cta">
-          <button class="button button--ghost" onclick="openDetail('${h.id}')">Ver ficha</button>
-          <button class="button" onclick="editHero('${h.id}')">Editar</button>
-          <button class="button button--danger" onclick="delHero('${h.id}')">Borrar</button>
-        </div>
-      </div>
-    </article>`;
-  }).join("");
-}
-
-// ===== Modales =====
-function openModal(id){ const m=$(id); m.classList.add("is-open"); m.setAttribute("aria-hidden","false"); }
-function closeModal(id){ const m=$(id); m.classList.remove("is-open"); m.setAttribute("aria-hidden","true"); }
-
-$$("[data-close]").forEach(btn=> btn.addEventListener("click", e=> closeModal(btn.dataset.close)));
-
-// Tabs info
-$$(".tab").forEach(t=> t.addEventListener("click", e=> {
-  $$(".tab").forEach(x=> x.classList.remove("is-active"));
-  t.classList.add("is-active");
-  $$(".tabpanes > section").forEach(sec=> sec.classList.remove("is-active"));
-  const pane = $(t.dataset.tab); if(pane) pane.classList.add("is-active");
-}));
-
-// ==== Chips de Rol (single-select con input hidden) ====
-const rolesBox = $("#roleChips");
-const formRole = $("#formRole");
-
-function buildRoleChips(){
-  rolesBox.innerHTML = "";
-  ROLES.forEach(r=>{
-    const chip = document.createElement("div");
-    chip.className="chip"; chip.textContent=r; chip.dataset.role=r;
-    chip.addEventListener("click", ()=> selectRole(r));
-    rolesBox.appendChild(chip);
-  });
-}
-function selectRole(role){
-  formRole.value = role;
-  $$("#roleChips .chip").forEach(c=> c.classList.toggle("is-selected", c.dataset.role===role));
-}
-
-buildRoleChips();
-selectRole(formRole.value || "Combate");
-
-// Abrir/cerrar info
-$("#infoBtn").addEventListener("click", ()=> openModal("#infoModal"));
-
-// Buscar/filtrar/ordenar
-$("#q").addEventListener("input", renderGrid);
-$("#roleFilter").addEventListener("change", renderGrid);
-$("#sortBy").addEventListener("change", renderGrid);
-
-// ===== Export / Import / Clear =====
-function exportJSON(list = HEROES){
-  const data = JSON.stringify(list, null, 2);
-  const blob = new Blob([data], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const ts = new Date().toISOString().slice(0,10);
-  a.href = url; a.download = `heroes_mha_${ts}.json`;
-  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-}
-function importJSON(file){
-  const reader = new FileReader();
-  reader.onload = e => {
-    try{
-      const arr = JSON.parse(e.target.result);
-      if(!Array.isArray(arr)) throw new Error("Formato inválido: se esperaba un array de héroes.");
-      let processed = 0;
-      arr.forEach(raw => {
-        if(!raw || typeof raw !== 'object' || !raw.alias) return;
-        raw.id = raw.id || crypto.randomUUID();
-        raw.createdAt = raw.createdAt || Date.now();
-        raw.stats = raw.stats || {};
-        const idx = HEROES.findIndex(h=> h.id === raw.id);
-        if(idx >= 0){ HEROES[idx] = raw; }
-        else{
-          const idx2 = HEROES.findIndex(h => (h.alias||'').toLowerCase() === (raw.alias||'').toLowerCase() && (h.realname||'') === (raw.realname||''));
-          if(idx2 >= 0) HEROES[idx2] = raw; else HEROES.push(raw);
-        }
-        processed++;
-      });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(HEROES));
-      renderGrid();
-      alert(`Importación completada. Entradas procesadas: ${processed}.`);
-    }catch(err){ alert('No se pudo importar: ' + err.message); }
-  };
-  reader.readAsText(file);
-}
-$("#exportBtn").addEventListener("click", ()=> exportJSON());
-$("#importBtn").addEventListener("click", ()=> $("#importFile").click());
-$("#importFile").addEventListener("change", (e)=>{ const file = e.target.files[0]; if(file) importJSON(file); e.target.value = ""; });
-$("#clearBtn").addEventListener("click", ()=>{ if(confirm("¿Seguro que quieres vaciar por completo la Dex? Esta acción no se puede deshacer.")){ HEROES = []; localStorage.removeItem(STORAGE_KEY); renderGrid(); } });
-
-// ===== Añadir héroe
-$("#addBtn").addEventListener("click", ()=>{
-  $("#formTitle").textContent="Añadir héroe";
-  $("#heroForm").reset();
-  buildRoleChips();
-  selectRole("Combate");
-  $("#resetBtn").onclick = ()=> { $("#heroForm").reset(); buildRoleChips(); selectRole("Combate"); };
-  $("#heroForm").dataset.mode="create";
-  $("#heroForm").dataset.id="";
-  openModal("#formModal");
-});
-
-// Guardar formulario
-$("#heroForm").addEventListener("submit", e=>{
-  e.preventDefault();
-  const fd = new FormData(e.target);
-  const roleVal = (fd.get("role") || "Combate").toString();
-  const hero = {
-    id: $("#heroForm").dataset.mode==="edit" ? $("#heroForm").dataset.id : crypto.randomUUID(),
-    alias: fd.get("alias").trim(),
-    realname: (fd.get("realname")||"").trim(),
-    role: roleVal,
-    affiliation: (fd.get("affiliation")||"").trim(),
-    quirk: (fd.get("quirk")||"").trim(),
-    summary: (fd.get("summary")||"").trim(),
-    photo: (fd.get("photo")||"").trim(),
-    stats: {
-      fuerza: Number(fd.get("fuerza")||0), velocidad: Number(fd.get("velocidad")||0), resistencia: Number(fd.get("resistencia")||0),
-      tecnica: Number(fd.get("tecnica")||0), inteligencia: Number(fd.get("inteligencia")||0), carisma: Number(fd.get("carisma")||0),
-      control: Number(fd.get("control")||0), versatilidad: Number(fd.get("versatilidad")||0),
-    },
-    createdAt: $("#heroForm").dataset.mode==="edit" ? (HEROES.find(x=>x.id===$("#heroForm").dataset.id)?.createdAt||Date.now()) : Date.now()
-  };
-  if($("#heroForm").dataset.mode==="edit"){ HEROES = HEROES.map(h=> h.id===hero.id ? hero : h); }
-  else{ HEROES.push(hero); }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(HEROES));
-  closeModal("#formModal");
-  renderGrid();
-});
-
-// Editar
-window.editHero = (id)=>{
-  const h = HEROES.find(x=> x.id===id);
-  if(!h) return;
-  $("#formTitle").textContent="Editar héroe";
-  $("#heroForm").dataset.mode="edit";
-  $("#heroForm").dataset.id=h.id;
-  const set = (name,val)=> $("#heroForm [name='"+name+"']").value = val ?? "";
-  set("alias",h.alias); set("realname",h.realname||""); set("affiliation",h.affiliation||""); set("quirk",h.quirk||""); set("summary",h.summary||""); set("photo",h.photo||"");
-  set("fuerza",h.stats.fuerza||""); set("velocidad",h.stats.velocidad||""); set("resistencia",h.stats.resistencia||""); set("tecnica",h.stats.tecnica||""); set("inteligencia",h.stats.inteligencia||""); set("carisma",h.stats.carisma||""); set("control",h.stats.control||""); set("versatilidad",h.stats.versatilidad||"");
-  buildRoleChips();
-  selectRole(h.role || "Combate");
-  $("#resetBtn").onclick = ()=> { window.editHero(id); };
-  openModal("#formModal");
-};
-
-// Borrar
-window.delHero = (id)=>{ if(!confirm("¿Borrar este héroe?")) return; HEROES = HEROES.filter(h=> h.id!==id); localStorage.setItem(STORAGE_KEY, JSON.stringify(HEROES)); renderGrid(); };
-
-// Detalle
-window.openDetail = (id)=>{
-  const h = HEROES.find(x=> x.id===id); if(!h) return;
-  $("#dPhoto").src = (h.photo && h.photo.trim()) ? h.photo.trim() : PLACEHOLDER;
-  $("#dAlias").textContent = h.alias; $("#dReal").textContent = h.realname||""; $("#dRol").textContent = h.role||""; $("#dAff").textContent = h.affiliation||"";
-  $("#dQuirk").textContent = h.quirk||""; $("#dSummary").textContent = h.summary||""; $("#dPower").textContent = computePower(h);
-  const S = h.stats||{};
-  $("#dStats").innerHTML = [ ['Fuerza',S.fuerza],['Velocidad',S.velocidad],['Resistencia',S.resistencia], ['Técnica',S.tecnica],['Inteligencia',S.inteligencia],['Carisma',S.carisma], ['Control del Don',S.control],['Versatilidad',S.versatilidad] ].map(([n,v])=> statRow(n,v)).join("");
-  openModal("#detailModal");
-};
-
-// Cerrar modal al hacer click fuera
-$$(".modal").forEach(m => { m.addEventListener("click", (e)=> { if (m.dataset.backdrop === "static") return; if (e.target===m) closeModal("#"+m.id); }); });
-// ===== Inicial =====
-
-// === Responsive helper: si es móvil y no hay preferencia guardada, preestablece vista "list" ===
-(function(){
-  try{
-    const hasPrefs = localStorage.getItem('mha_ui_prefs');
-    const isMobile = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
-    if(isMobile && !hasPrefs){
-      localStorage.setItem('mha_ui_prefs', JSON.stringify({ view: 'list', compact: true, minimal: false }));
-    }
-  }catch(e){}
-})();
-
-renderGrid();
-</script>
-
-  <!-- Modal ACT (actualizaciones) -->
   <div class="modal" id="actModal" aria-hidden="true">
     <div class="modal__panel">
       <div class="modal__head">
@@ -751,8 +656,8 @@ renderGrid();
         <button class="modal__close" data-close="#actModal">Cerrar</button>
       </div>
       <div class="modal__body">
-        <p style="margin-top:0;color:#cfd7f7">Resumen de los últimos cambios guardados.</p>
-        <ul id="actList" style="margin:0;padding-left:18px;line-height:1.5"></ul>
+        <p style="margin-top:0;color:#dbe5ff;font-weight:800">Cambios guardados en esta Dex.</p>
+        <ul id="actList" style="margin:0;padding-left:18px;line-height:1.55"></ul>
         <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
           <button class="button button--ghost" id="actClearBtn">Marcar como visto</button>
         </div>
@@ -760,138 +665,388 @@ renderGrid();
     </div>
   </div>
 
-<script>
-// === Merge features from v0.3 ===
+  <script>
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
 
-// UI prefs
-const PREFS_KEY = 'mha_ui_prefs';
-let PREFS = {}; try{ PREFS = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}'); }catch{ PREFS = {}; }
-function applyPrefs(){ document.body.classList.toggle('is-minimal', !!PREFS.minimal); document.body.classList.toggle('is-compact', !!PREFS.compact); document.body.setAttribute('data-view', PREFS.view || 'cards'); }
-applyPrefs();
-document.getElementById('minimalBtn')?.addEventListener('click', ()=>{ PREFS.minimal=!PREFS.minimal; localStorage.setItem(PREFS_KEY, JSON.stringify(PREFS)); applyPrefs(); });
-document.getElementById('compactBtn')?.addEventListener('click', ()=>{ PREFS.compact=!PREFS.compact; localStorage.setItem(PREFS_KEY, JSON.stringify(PREFS)); applyPrefs(); });
-document.getElementById('viewBtn')?.addEventListener('click', ()=>{ PREFS.view = (PREFS.view==='list'?'cards':'list'); localStorage.setItem(PREFS_KEY, JSON.stringify(PREFS)); applyPrefs(); });
+    const ROLES = ["Rescate","Combate","Apoyo","Control","Investigación","Logística","Sigilo","Sanación"];
+    const STORAGE_KEY = "mha_heroes";
+    const PREFS_KEY = "mha_ui_prefs_db_comic";
+    const UPD_KEY = "mha_updates_db_comic";
 
-// Role2 chips
-function buildSingleSelectChips(containerSel, inputSel, rolesArray, allowNone=false){
-  const box = document.querySelector(containerSel); const hidden = document.querySelector(inputSel);
-  if(!box || !hidden) return;
-  box.innerHTML = '';
-  const val = hidden.value || '';
-  const list = allowNone ? ['Ninguno', ...ROLES] : [...ROLES];
-  list.forEach(r=>{
-    const chip = document.createElement('div');
-    chip.className = 'chip' + (r==='Ninguno' ? ' is-none' : '');
-    chip.textContent = r;
-    chip.dataset.role = r==='Ninguno' ? '' : r;
-    if((r==='Ninguno' && !val) || chip.dataset.role===val) chip.classList.add('is-selected');
-    chip.addEventListener('click', ()=>{
-      hidden.value = chip.dataset.role;
-      document.querySelectorAll(containerSel+' .chip').forEach(c=> c.classList.remove('is-selected'));
-      chip.classList.add('is-selected');
-    });
-    box.appendChild(chip);
-  });
-}
-function buildRoleChipsAll(){ buildSingleSelectChips('#roleChips', '#formRole', ROLES, false); buildSingleSelectChips('#role2Chips', '#formRole2', ROLES, true); }
+    const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+        <defs>
+          <radialGradient id="g" cx="50%" cy="50%" r="65%">
+            <stop offset="0" stop-color="#ffe44d"/>
+            <stop offset="0.45" stop-color="#ff8a00"/>
+            <stop offset="1" stop-color="#14213d"/>
+          </radialGradient>
+          <pattern id="dots" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
+            <circle cx="3" cy="3" r="2" fill="#08090d" opacity=".18"/>
+          </pattern>
+        </defs>
+        <rect width="900" height="560" fill="url(#g)"/>
+        <rect width="900" height="560" fill="url(#dots)"/>
+        <g fill="#08090d" font-family="Arial, sans-serif" text-anchor="middle" font-weight="900">
+          <text x="450" y="250" font-size="54">SIN FOTO</text>
+          <text x="450" y="305" font-size="24">Añade una URL en la ficha</text>
+        </g>
+      </svg>`);
 
-// Override add button behavior to init both role selectors
-const addBtn = document.getElementById('addBtn');
-if(addBtn){
-  addBtn.addEventListener('click', ()=>{
-    document.getElementById('formTitle').textContent = 'Añadir héroe';
-    const f = document.getElementById('heroForm');
-    f.reset();
-    f.dataset.mode='create'; f.dataset.id='';
-    document.getElementById('formRole').value='Combate';
-    const r2 = document.getElementById('formRole2'); if(r2) r2.value='';
-    buildRoleChipsAll();
-    const resetBtn = document.getElementById('resetBtn');
-    if(resetBtn){ resetBtn.onclick = ()=>{ f.reset(); document.getElementById('formRole').value='Combate'; if(r2) r2.value=''; buildRoleChipsAll(); }; }
-    if(typeof openModal==='function') openModal('#formModal');
-  }, { once: true }); // ensure we don't stack multiple identical listeners
-}
+    const WEIGHTS = { fuerza:.17, velocidad:.17, resistencia:.16, tecnica:.18, control:.12, inteligencia:.08, carisma:.06, versatilidad:.06 };
 
-// Edit flow: ensure role2 is set and chips rebuilt
-if(typeof window.editHero === 'function'){
-  const originalEdit = window.editHero;
-  window.editHero = (id)=>{
-    originalEdit(id);
-    const hId = id;
-    const h = (window.HEROES||[]).find(x=> x.id===hId);
-    const r2 = document.getElementById('formRole2'); if(r2){ r2.value = (h && h.role2) || ''; }
-    buildRoleChipsAll();
-    const resetBtn = document.getElementById('resetBtn');
-    if(resetBtn){ resetBtn.onclick = ()=>{ window.editHero(id); }; }
-  };
-}
+    let HEROES = safeParse(localStorage.getItem(STORAGE_KEY), []);
+    let PREFS = safeParse(localStorage.getItem(PREFS_KEY), {});
 
-// Detail: set rol secundario if function exists
-if(typeof window.openDetail === 'function'){
-  const originalDetail = window.openDetail;
-  window.openDetail = (id)=>{
-    originalDetail(id);
-    const h = (window.HEROES||[]).find(x=> x.id===id);
-    const el = document.getElementById('dRol2');
-    if(el) el.textContent = (h && h.role2) ? h.role2 : '—';
-  };
-}
-
-// Submit patch: enhance existing submit to include role2 & ACT
-(function(){
-  const form = document.getElementById('heroForm');
-  if(!form) return;
-  form.addEventListener('submit', function(e){
-    // We assume the original handler already ran; we adjust latest hero in storage to inject role2 if missing
-    try{
-      const data = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
-      const id = form.dataset.mode==='edit' ? form.dataset.id : (data[data.length-1]?.id);
-      const idx = data.findIndex(h=> h.id===id);
-      if(idx>=0){
-        const r2 = document.getElementById('formRole2'); if(r2) data[idx].role2 = r2.value || '';
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        window.HEROES = data;
-        // ACT record
-        const hero = data[idx];
-        const kind = form.dataset.mode==='edit' ? 'edit' : 'create';
-        if(typeof pushUpdate==='function'){ pushUpdate(kind, hero); }
-        if(typeof markUpdated==='function'){ markUpdated(); }
-      }
-    }catch(_e){}
-  }, false);
-})();
-
-// ACT modal logic
-const UPD_KEY = 'mha_updates';
-function loadUpdates(){ try{ return JSON.parse(localStorage.getItem(UPD_KEY) || '[]'); }catch{ return []; } }
-function saveUpdates(list){ localStorage.setItem(UPD_KEY, JSON.stringify(list)); }
-function markUpdated(){ const b=document.getElementById('actBtn'); if(b) b.classList.add('is-active'); }
-function pushUpdate(kind, hero){
-  const list = loadUpdates(); const ts = new Date().toISOString();
-  const msg = (kind==='create' ? 'Creado: ' : 'Editado: ') + hero.alias + (hero.realname? ' ('+hero.realname+')':'');
-  list.unshift({ ts, kind, id: hero.id, alias: hero.alias, realname: hero.realname||'', msg });
-  saveUpdates(list.slice(0,50)); markUpdated();
-}
-document.getElementById('actBtn')?.addEventListener('click', ()=>{
-  const ul = document.getElementById('actList'); const list = loadUpdates();
-  ul.innerHTML = list.length ? list.map(u=> `<li><b>${u.msg}</b> · <small>${new Date(u.ts).toLocaleString()}</small></li>`).join('') : '<li>Se ha añadido el botón "ACT" para mostrar las actualizaciones realizadas.</li><br><li>Se ha arreglado el problema del cerrado tras clicar fuera del model al actualizar y/o crear una nueva ficha.</li><br><li>Se ha solucionado el problema de las imágenes y no adición de las nuevas features de la anterior versión, implementándose a esta</li><br><li><b>AVISO:</b> El botón "Cerrar" de la pestaña "ACT" aún no funciona, desconozco el motivo y estoy arreglandolo.</li><br><li><b>Nuevas Features:</b> Estoy intentando implementar un botón en la pestaña "Ver Ficha" que te guíe directamente a la wiki del personaje, y que la misma pueda implementarse sin necesidad de editar directamente el código fuente.</li>';
-  openModal('#actModal');
-});
-document.getElementById('actClearBtn')?.addEventListener('click', ()=>{ saveUpdates([]); document.getElementById('actBtn')?.classList.remove('is-active'); closeModal('#actModal'); });
-
-// Backdrop blocker (capture) for static modals
-(function(){
-  const fm = document.getElementById('formModal');
-  if(!fm) return;
-  fm.addEventListener('click', (e)=>{
-    if(e.currentTarget.dataset.backdrop==='static' && e.target===e.currentTarget){
-      e.stopPropagation();
-      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-      // do nothing (block close)
+    function safeParse(raw, fallback){
+      try{return raw ? JSON.parse(raw) : fallback}catch{return fallback}
     }
-  }, true); // capture
-})();
 
-</script>
+    function uid(){
+      return (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+    }
+
+    function cleanNumber(v){
+      const n = Number(v || 0);
+      if(!Number.isFinite(n)) return 0;
+      return Math.max(0, Math.min(100, Math.round(n)));
+    }
+
+    function normalizeHero(raw){
+      const h = raw && typeof raw === 'object' ? raw : {};
+      const stats = h.stats && typeof h.stats === 'object' ? h.stats : {};
+      return {
+        id: h.id || uid(),
+        alias: String(h.alias || 'Guerrero sin nombre').trim(),
+        realname: String(h.realname || '').trim(),
+        role: ROLES.includes(h.role) ? h.role : 'Combate',
+        role2: ROLES.includes(h.role2) ? h.role2 : '',
+        affiliation: String(h.affiliation || '').trim(),
+        quirk: String(h.quirk || '').trim(),
+        summary: String(h.summary || '').trim(),
+        photo: String(h.photo || '').trim(),
+        stats: {
+          fuerza: cleanNumber(stats.fuerza),
+          velocidad: cleanNumber(stats.velocidad),
+          resistencia: cleanNumber(stats.resistencia),
+          tecnica: cleanNumber(stats.tecnica),
+          inteligencia: cleanNumber(stats.inteligencia),
+          carisma: cleanNumber(stats.carisma),
+          control: cleanNumber(stats.control),
+          versatilidad: cleanNumber(stats.versatilidad)
+        },
+        createdAt: Number(h.createdAt || Date.now())
+      };
+    }
+
+    function saveHeroes(){
+      HEROES = HEROES.map(normalizeHero);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(HEROES));
+      window.HEROES = HEROES;
+    }
+
+    if(!Array.isArray(HEROES)) HEROES = [];
+    HEROES = HEROES.map(normalizeHero);
+
+    if(HEROES.length === 0){
+      HEROES = [
+        {
+          id:uid(), alias:'Nova Surge', realname:'Aya Saitō', role:'Rescate', role2:'Apoyo', affiliation:'Agencia Aster',
+          quirk:'Fulgor Plasmático', summary:'Especialista en evacuación urbana. Usa impulsos de luz y plasma para abrir rutas seguras.', photo:'',
+          stats:{fuerza:38,velocidad:82,resistencia:55,tecnica:71,inteligencia:67,carisma:62,control:78,versatilidad:74}, createdAt:Date.now()-200000
+        },
+        {
+          id:uid(), alias:'Iron Hush', realname:'Diego Ramos', role:'Sigilo', role2:'Control', affiliation:'Unidad Silente',
+          quirk:'Manto Acústico', summary:'Infiltración y detención limpia. Perfecto para misiones donde el ruido sería sentencia de muerte.', photo:'',
+          stats:{fuerza:46,velocidad:68,resistencia:59,tecnica:77,inteligencia:71,carisma:48,control:83,versatilidad:69}, createdAt:Date.now()-100000
+        }
+      ];
+    }
+    saveHeroes();
+
+    function computePower(h){
+      const s = h.stats || {};
+      let total = 0;
+      for(const k in WEIGHTS) total += cleanNumber(s[k]) * WEIGHTS[k];
+      return Math.round(total);
+    }
+
+    function statRow(name,val){
+      const safe = Math.max(1, cleanNumber(val));
+      return `<div class="stat">
+        <div class="stat__name">${escapeHTML(name)}</div>
+        <div class="progress"><div class="progress__bar" style="width:${safe}%"></div></div>
+        <div class="stat__val">${safe}</div>
+      </div>`;
+    }
+
+    function escapeHTML(str){
+      return String(str ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    }
+
+    function buildRoleFilter(){
+      const sel = $('#roleFilter');
+      sel.innerHTML = '<option value="">Todos los roles</option>' + ROLES.map(r=>`<option>${r}</option>`).join('');
+    }
+
+    function updateSummaryPanels(list){
+      $('#countHeroes').textContent = HEROES.length;
+      const avg = HEROES.length ? Math.round(HEROES.reduce((a,h)=>a+computePower(h),0)/HEROES.length) : 0;
+      $('#avgPower').textContent = avg;
+      const top = [...HEROES].sort((a,b)=>computePower(b)-computePower(a))[0];
+      $('#topHero').textContent = top ? top.alias : '—';
+      const counts = {};
+      HEROES.forEach(h=>{counts[h.role]=(counts[h.role]||0)+1;if(h.role2)counts[h.role2]=(counts[h.role2]||0)+1});
+      const topRole = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+      $('#topRole').textContent = topRole ? topRole[0] : '—';
+    }
+
+    function renderGrid(){
+      const q = $('#q').value.trim().toLowerCase();
+      const f = $('#roleFilter').value;
+      const sort = $('#sortBy').value;
+
+      let list = HEROES.filter(h=>{
+        const haystack = [h.alias,h.realname,h.quirk,h.affiliation,h.summary].join(' ').toLowerCase();
+        const hit = haystack.includes(q);
+        const roleHit = !f || h.role === f || h.role2 === f;
+        return hit && roleHit;
+      });
+
+      if(sort === 'nameAZ') list.sort((a,b)=>a.alias.localeCompare(b.alias));
+      if(sort === 'powerZA') list.sort((a,b)=>computePower(b)-computePower(a));
+      if(sort === 'kiZA') list.sort((a,b)=>cleanNumber(b.stats.control)-cleanNumber(a.stats.control));
+      if(sort === 'recent') list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+
+      updateSummaryPanels(list);
+
+      if(list.length === 0){
+        $('#grid').innerHTML = '<div class="empty">No hay guerreros que coincidan con la búsqueda. Aquí no aparece ni Yamcha.</div>';
+        return;
+      }
+
+      $('#grid').innerHTML = list.map(h=>{
+        const p = computePower(h);
+        const img = h.photo ? h.photo : PLACEHOLDER;
+        return `<article class="card" data-id="${escapeHTML(h.id)}">
+          <div class="card__media">
+            <img src="${escapeHTML(img)}" alt="${escapeHTML(h.alias)}" loading="lazy" onerror="this.src='${PLACEHOLDER}'">
+            <div class="badges">
+              <span class="badge">${escapeHTML(h.role)}</span>
+              ${h.role2 ? `<span class="badge badge--role2">${escapeHTML(h.role2)}</span>` : ''}
+              <span class="badge badge--ki">Power ${p}</span>
+            </div>
+          </div>
+          <div class="card__body">
+            <h3 class="alias">${escapeHTML(h.alias)}</h3>
+            <div class="realname">${escapeHTML(h.realname || '—')}</div>
+            <p class="quirk-line">⚡ ${escapeHTML(h.quirk || 'Técnica no registrada')}</p>
+            <div class="stats">
+              ${statRow('Fuerza',h.stats.fuerza)}
+              ${statRow('Velocidad',h.stats.velocidad)}
+              ${statRow('Control Ki',h.stats.control)}
+            </div>
+            <div class="card__cta">
+              <button class="button button--ghost" onclick="openDetail('${h.id}')">Ficha</button>
+              <button class="button" onclick="editHero('${h.id}')">Editar</button>
+              <button class="button button--danger" onclick="delHero('${h.id}')">Borrar</button>
+            </div>
+          </div>
+        </article>`;
+      }).join('');
+    }
+
+    function openModal(id){const m=$(id);if(!m)return;m.classList.add('is-open');m.setAttribute('aria-hidden','false')}
+    function closeModal(id){const m=$(id);if(!m)return;m.classList.remove('is-open');m.setAttribute('aria-hidden','true')}
+
+    function buildSingleSelectChips(containerSel,inputSel,allowNone=false){
+      const box=$(containerSel), input=$(inputSel);
+      if(!box||!input)return;
+      box.innerHTML='';
+      const list = allowNone ? ['Ninguno',...ROLES] : [...ROLES];
+      list.forEach(r=>{
+        const chip=document.createElement('div');
+        const value = r === 'Ninguno' ? '' : r;
+        chip.className='chip';
+        chip.textContent=r;
+        chip.dataset.role=value;
+        chip.classList.toggle('is-selected', input.value === value || (r==='Ninguno' && !input.value));
+        chip.addEventListener('click',()=>{
+          input.value=value;
+          box.querySelectorAll('.chip').forEach(c=>c.classList.remove('is-selected'));
+          chip.classList.add('is-selected');
+        });
+        box.appendChild(chip);
+      });
+    }
+
+    function buildRoleChipsAll(){
+      buildSingleSelectChips('#roleChips','#formRole',false);
+      buildSingleSelectChips('#role2Chips','#formRole2',true);
+    }
+
+    function fillForm(h){
+      const f=$('#heroForm');
+      f.alias.value=h.alias||''; f.realname.value=h.realname||''; f.affiliation.value=h.affiliation||''; f.quirk.value=h.quirk||''; f.summary.value=h.summary||''; f.photo.value=h.photo||'';
+      $('#formRole').value=h.role||'Combate'; $('#formRole2').value=h.role2||'';
+      for(const k of Object.keys(WEIGHTS)) f[k].value = h.stats?.[k] || '';
+      buildRoleChipsAll();
+    }
+
+    function emptyHero(){
+      return normalizeHero({alias:'',role:'Combate',role2:'',stats:{}});
+    }
+
+    function openCreate(){
+      const f=$('#heroForm');
+      f.reset(); f.dataset.mode='create'; f.dataset.id='';
+      $('#formTitle').textContent='Añadir guerrero';
+      $('#formRole').value='Combate'; $('#formRole2').value='';
+      buildRoleChipsAll();
+      $('#resetBtn').onclick=()=>openCreate();
+      openModal('#formModal');
+    }
+
+    window.editHero = id => {
+      const h=HEROES.find(x=>x.id===id); if(!h)return;
+      const f=$('#heroForm');
+      f.dataset.mode='edit'; f.dataset.id=id;
+      $('#formTitle').textContent='Editar guerrero';
+      fillForm(h);
+      $('#resetBtn').onclick=()=>window.editHero(id);
+      openModal('#formModal');
+    };
+
+    window.delHero = id => {
+      const h=HEROES.find(x=>x.id===id);
+      if(!h || !confirm(`¿Borrar a ${h.alias}?`)) return;
+      HEROES=HEROES.filter(x=>x.id!==id); saveHeroes(); pushUpdate('delete',h); renderGrid();
+    };
+
+    window.openDetail = id => {
+      const h=HEROES.find(x=>x.id===id); if(!h)return;
+      $('#dPhoto').src=h.photo||PLACEHOLDER;
+      $('#dPhoto').onerror=function(){this.src=PLACEHOLDER};
+      $('#dAlias').textContent=h.alias;
+      $('#dReal').textContent=h.realname||'—';
+      $('#dRol').textContent=h.role||'—';
+      $('#dRol2').textContent=h.role2||'—';
+      $('#dAff').textContent=h.affiliation||'—';
+      $('#dQuirk').textContent=h.quirk||'—';
+      $('#dPower').textContent=computePower(h);
+      $('#dSummary').textContent=h.summary||'Sin resumen registrado.';
+      const S=h.stats||{};
+      $('#dStats').innerHTML=[['Fuerza',S.fuerza],['Velocidad',S.velocidad],['Resistencia',S.resistencia],['Técnica',S.tecnica],['Inteligencia',S.inteligencia],['Carisma',S.carisma],['Control del Don / Ki',S.control],['Versatilidad',S.versatilidad]].map(([n,v])=>statRow(n,v)).join('');
+      openModal('#detailModal');
+    };
+
+    $('#heroForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const f=e.currentTarget;
+      const fd=new FormData(f);
+      const existing = f.dataset.mode==='edit' ? HEROES.find(x=>x.id===f.dataset.id) : null;
+      const hero = normalizeHero({
+        id: existing ? existing.id : uid(),
+        alias: fd.get('alias'), realname: fd.get('realname'), role: fd.get('role') || 'Combate', role2: fd.get('role2') || '',
+        affiliation: fd.get('affiliation'), quirk: fd.get('quirk'), summary: fd.get('summary'), photo: fd.get('photo'),
+        stats:{
+          fuerza:fd.get('fuerza'), velocidad:fd.get('velocidad'), resistencia:fd.get('resistencia'), tecnica:fd.get('tecnica'),
+          inteligencia:fd.get('inteligencia'), carisma:fd.get('carisma'), control:fd.get('control'), versatilidad:fd.get('versatilidad')
+        },
+        createdAt: existing ? existing.createdAt : Date.now()
+      });
+      if(f.dataset.mode==='edit') HEROES = HEROES.map(h=>h.id===hero.id?hero:h); else HEROES.push(hero);
+      saveHeroes(); pushUpdate(f.dataset.mode==='edit'?'edit':'create',hero);
+      closeModal('#formModal'); renderGrid();
+    });
+
+    function exportJSON(){
+      saveHeroes();
+      const data=JSON.stringify(HEROES,null,2);
+      const blob=new Blob([data],{type:'application/json'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download=`dragon_comic_dex_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    function importJSON(file){
+      const reader=new FileReader();
+      reader.onload=e=>{
+        try{
+          const arr=JSON.parse(e.target.result);
+          if(!Array.isArray(arr)) throw new Error('El archivo debe contener un array de personajes.');
+          let processed=0;
+          arr.map(normalizeHero).forEach(raw=>{
+            const byId=HEROES.findIndex(h=>h.id===raw.id);
+            const byName=HEROES.findIndex(h=>(h.alias||'').toLowerCase()===(raw.alias||'').toLowerCase() && (h.realname||'')===(raw.realname||''));
+            if(byId>=0) HEROES[byId]=raw;
+            else if(byName>=0) HEROES[byName]=raw;
+            else HEROES.push(raw);
+            processed++;
+          });
+          saveHeroes(); pushUpdate('import',{alias:`Importados ${processed} personajes`,id:'import'}); renderGrid();
+          alert(`Importación completada. Entradas procesadas: ${processed}.`);
+        }catch(err){alert('No se pudo importar: '+err.message)}
+      };
+      reader.readAsText(file);
+    }
+
+    function loadUpdates(){return safeParse(localStorage.getItem(UPD_KEY),[])}
+    function saveUpdates(list){localStorage.setItem(UPD_KEY,JSON.stringify(list))}
+    function markUpdated(){ $('#actBtn')?.classList.add('is-active') }
+    function pushUpdate(kind,hero){
+      const list=loadUpdates();
+      const labels={create:'Creado',edit:'Editado',delete:'Borrado',import:'Importación'};
+      list.unshift({ts:new Date().toISOString(),kind,msg:`${labels[kind]||'Cambio'}: ${hero.alias}${hero.realname?' ('+hero.realname+')':''}`});
+      saveUpdates(list.slice(0,60)); markUpdated();
+    }
+
+    function applyPrefs(){
+      document.body.classList.toggle('is-minimal',!!PREFS.minimal);
+      document.body.classList.toggle('is-compact',!!PREFS.compact);
+      document.body.setAttribute('data-view',PREFS.view||'cards');
+    }
+    function savePrefs(){localStorage.setItem(PREFS_KEY,JSON.stringify(PREFS));applyPrefs()}
+
+    $$('[data-close]').forEach(btn=>btn.addEventListener('click',()=>closeModal(btn.dataset.close)));
+    $$('.modal').forEach(m=>m.addEventListener('click',e=>{if(m.dataset.backdrop==='static')return;if(e.target===m)closeModal('#'+m.id)}));
+    $$('.tab').forEach(t=>t.addEventListener('click',()=>{
+      const panel=t.closest('.modal__body');
+      panel.querySelectorAll('.tab').forEach(x=>x.classList.remove('is-active'));
+      panel.querySelectorAll('.tabpanes>section').forEach(x=>x.classList.remove('is-active'));
+      t.classList.add('is-active');
+      panel.querySelector(t.dataset.tab)?.classList.add('is-active');
+    }));
+
+    $('#infoBtn').addEventListener('click',()=>openModal('#infoModal'));
+    $('#addBtn').addEventListener('click',openCreate);
+    $('#exportBtn').addEventListener('click',exportJSON);
+    $('#importBtn').addEventListener('click',()=>$('#importFile').click());
+    $('#importFile').addEventListener('change',e=>{const file=e.target.files[0];if(file)importJSON(file);e.target.value=''});
+    $('#clearBtn').addEventListener('click',()=>{if(confirm('¿Vaciar por completo la Dex? Exporta antes si no quieres perder los datos.')){HEROES=[];saveHeroes();renderGrid()}});
+    $('#q').addEventListener('input',renderGrid);
+    $('#roleFilter').addEventListener('change',renderGrid);
+    $('#sortBy').addEventListener('change',renderGrid);
+    $('#minimalBtn').addEventListener('click',()=>{PREFS.minimal=!PREFS.minimal;savePrefs()});
+    $('#compactBtn').addEventListener('click',()=>{PREFS.compact=!PREFS.compact;savePrefs()});
+    $('#viewBtn').addEventListener('click',()=>{PREFS.view=PREFS.view==='list'?'cards':'list';savePrefs()});
+    $('#actBtn').addEventListener('click',()=>{
+      const list=loadUpdates();
+      $('#actList').innerHTML=list.length?list.map(u=>`<li><b>${escapeHTML(u.msg)}</b> · <small>${new Date(u.ts).toLocaleString()}</small></li>`).join(''):'<li>No hay cambios recientes guardados.</li>';
+      openModal('#actModal');
+    });
+    $('#actClearBtn').addEventListener('click',()=>{saveUpdates([]);$('#actBtn').classList.remove('is-active');closeModal('#actModal')});
+
+    if(window.matchMedia && window.matchMedia('(max-width:720px)').matches && !localStorage.getItem(PREFS_KEY)){
+      PREFS={view:'list',compact:true,minimal:false};
+    }
+
+    buildRoleFilter();
+    applyPrefs();
+    buildRoleChipsAll();
+    renderGrid();
+  </script>
 </body>
 </html>
