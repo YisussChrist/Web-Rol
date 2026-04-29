@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soundtracks de Pelea</title>
+    <style>
+        :root {
+            --primary: #00f5ff;
+            --accent: #ff2a6d;
+            --dark: #0b0e1a;
+            --card: #12151f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(rgba(11,14,26,0.88), rgba(11,14,26,0.95)),
+                        url('https://images.unsplash.com/photo-1614613535308-eb5fbd3a3c3a?q=80&w=2070') center/cover fixed;
+            color: #e0e0ff;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 18, 35, 0.95);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--primary);
+            padding: 2rem 1rem;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-left: 12px;
+            font-size: 1.1rem;
+        }
+
+        .char-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .char-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .char-item:hover, .char-item.active {
+            background: rgba(0, 245, 255, 0.15);
+        }
+
+        .char-item img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 200px;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 2rem 2.5rem;
+            background: linear-gradient(to bottom, rgba(11,14,26,0.9), transparent);
+        }
+
+        h1 {
+            font-size: 3.8rem;
+            letter-spacing: 6px;
+            background: linear-gradient(90deg, var(--primary), #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle { color: #8892b0; font-size: 1.4rem; margin-top: 0.5rem; }
+
+        .featured, .soundtrack-list {
+            padding: 0 2rem;
+        }
+
+        .soundtrack-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 28px;
+        }
+
+        .soundtrack-card {
+            background: var(--card);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(0,245,255,0.12);
+            transition: all 0.4s;
+        }
+
+        .soundtrack-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 30px 60px -10px rgba(0, 245, 255, 0.4);
+        }
+
+        .card-content {
+            padding: 22px;
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .character-face {
+            width: 130px;
+            height: 130px;
+            border-radius: 20px;
+            object-fit: cover;
+            box-shadow: 0 0 25px rgba(0,245,255,0.4);
+        }
+
+        .play-btn {
+            background: var(--primary);
+            color: black;
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            font-size: 1.7rem;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        /* REPRODUCTOR */
+        .global-player {
+            position: fixed;
+            bottom: 0;
+            left: 280px;
+            right: 0;
+            background: rgba(15, 18, 35, 0.98);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--primary);
+            padding: 16px 24px 20px;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .global-player.show { display: flex; }
+
+        .player-top {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .player-top img {
+            width: 70px;
+            height: 70px;
+            border-radius: 14px;
+            object-fit: cover;
+        }
+
+        .progress-container {
+            margin: 8px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 999px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 999px;
+            width: 0%;
+        }
+
+        .time {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #8892b0;
+            margin-top: 4px;
+        }
+
+        canvas#visualizer { 
+            width: 100%; 
+            height: 85px; 
+            border-radius: 12px; 
+            background: rgba(0,0,0,0.4); 
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .control-btn {
+            background: rgba(255,255,255,0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .control-btn.big { 
+            width: 70px; 
+            height: 70px; 
+            font-size: 2.4rem; 
+        }
+
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .global-player { left: 0; }
+        }
+
+        /* Volumen */
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .volume-icon {
+            font-size: 1.3rem;
+            color: #8892b0;
+        }
+
+        .volume-slider {
+            width: 120px;
+            accent-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .volume-slider { width: 90px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h3>PERSONAJES</h3>
+        <div class="char-list" id="sidebarChars"></div>
+    </aside>
+
+    <div class="main-content">
+        <header>
+            <h1>SOUNDTRACKS DE PELEA</h1>
+            <p class="subtitle">La banda sonora de tus batallas favoritas</p>
+        </header>
+
+        <!-- Featured -->
+        <section class="featured" id="featured"></section>
+
+        <!-- Lista de soundtracks -->
+        <section class="soundtrack-list" id="soundtrackList"></section>
+    </div>
+
+    <!-- Reproductor Global -->
+    <div class="global-player" id="globalPlayer">
+        <div class="player-top">
+            <img id="playerCover" src="" alt="">
+            <div>
+                <div id="playerTitle" style="font-weight:700; font-size:1.25rem;"></div>
+                <div id="playerCharacter" style="color:var(--primary);"></div>
+            </div>
+        </div>
+
+        <canvas id="visualizer" width="800" height="85"></canvas>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="time">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="prevTrack()">⫻</button>
+            <button class="control-btn big" id="playPauseBtn" onclick="togglePlay()">▶</button>
+            <button class="control-btn" onclick="nextTrack()">⫽</button>
+        </div>
+
+        <div class="volume-container">
+            <span class="volume-icon">🔊</span>
+            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="1">
+        </div>
+    </div>
+
+    <script>
+        const soundtracks = [
+            {
+                character: "Freyja Kane",
+                characterFace: "img/FreyjaKane.webp",
+                songTitle: "Hammer of Justice",
+                songDescription: "La canción de una guerrera que ha aprendido la agilidad de la Tortuga Justiciera.",
+                songCover: "img/FreyjaCover.jpg",
+                audio: "audio/Hammer Of Justice.mp3"
+            },
+            {
+                character: "Kael Kane",
+                characterFace: "img/KaelKane.jpg",
+                songTitle: "Born Wrong",
+                songDescription: "La canción de alguien que fue desterrado de una familia y ahora busca venganza.",
+                songCover: "img/KaelCover.png",
+                audio: "audio/Born Wrong.mp3"
+            },
+            {
+                character: "Nara Midori (Corrupta)",
+                characterFace: "img/NaraMidoriCorrupta.jpg",
+                songTitle: "SAVE her Soul",
+                songDescription: "Ella salvaba a quien podía, ahora la tenemos que salvar su alma de ella misma.",
+                songCover: "img/NaraCorruptaCover.png",
+                audio: "audio/SAVE Her Soul.mp3"
+            }
+        ];
+
+        let currentIndex = 0;
+        let isPlaying = false;
+        let audioContext, analyser, source, dataArray;
+
+        const audioPlayer = document.createElement('audio');
+        document.body.appendChild(audioPlayer);
+
+        const globalPlayer = document.getElementById('globalPlayer');
+        const playerCover = document.getElementById('playerCover');
+        const playerTitle = document.getElementById('playerTitle');
+        const playerCharacter = document.getElementById('playerCharacter');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const canvasEl = document.getElementById('visualizer');
+
+        // Visualizer
+        function initVisualizer() {
+            const canvas = canvasEl;
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 85;
+            return {canvas, ctx};
+        }
+
+        function drawVisualizer() {
+            if (!analyser) return;
+            requestAnimationFrame(drawVisualizer);
+            analyser.getByteFrequencyData(dataArray);
+
+            const ctx = canvasEl.getContext('2d');
+            ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+
+            const barWidth = (canvasEl.width / dataArray.length) * 1.8;
+            for (let i = 0; i < dataArray.length; i++) {
+                const barHeight = (dataArray[i] / 255) * canvasEl.height * 0.75;
+                const hue = 180 + (i / dataArray.length) * 80;
+                ctx.fillStyle = `hsl(${hue}, 100%, 65%)`;
+                ctx.fillRect(i * barWidth, canvasEl.height - barHeight, barWidth - 3, barHeight);
+            }
+        }
+
+        // Progress Bar
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        function updateProgress() {
+            if (!audioPlayer.duration) return;
+            const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progress.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+        }
+
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            audioPlayer.currentTime = pos * audioPlayer.duration;
+        });
+
+        function loadTrack(index) {
+            const track = soundtracks[index];
+            currentIndex = index;
+
+            playerCover.src = track.songCover;
+            playerTitle.textContent = track.songTitle;
+            playerCharacter.textContent = track.character;
+
+            audioPlayer.src = track.audio;
+            globalPlayer.classList.add('show');
+        }
+
+        function togglePlay() {
+            if (!audioPlayer.src) loadTrack(0);
+
+            if (isPlaying) {
+                audioPlayer.pause();
+                playPauseBtn.textContent = '▶';
+            } else {
+                audioPlayer.play();
+                playPauseBtn.textContent = '❚❚';
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 128;
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    source = audioContext.createMediaElementSource(audioPlayer);
+                    source.connect(analyser);
+                    analyser.connect(audioContext.destination);
+                }
+                drawVisualizer();
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function nextTrack() {
+            currentIndex = (currentIndex + 1) % soundtracks.length;
+            loadTrack(currentIndex);
+            if (isPlaying) audioPlayer.play();
+        }
+
+        function prevTrack() {
+            currentIndex = (currentIndex - 1 + soundtracks.length) % soundtracks.length;
+            loadTrack(currentIndex);
+            if (isPlaying) audioPlayer.play();
+        }
+
+        // Render Sidebar
+        const sidebar = document.getElementById('sidebarChars');
+        soundtracks.forEach((track, i) => {
+            const div = document.createElement('div');
+            div.className = 'char-item';
+            div.innerHTML = `<img src="${track.characterFace}" alt=""> <span>${track.character}</span>`;
+            div.onclick = () => playSpecific(i);
+            sidebar.appendChild(div);
+        });
+
+        // Render Featured
+        document.getElementById('featured').innerHTML = `
+            <div class="soundtrack-card" style="grid-column: span 2; padding: 20px;">
+                <div class="card-content" style="grid-template-columns: 180px 1fr; gap: 30px;">
+                    <img class="character-face" src="${soundtracks[0].characterFace}" style="width:180px;height:180px;">
+                    <div>
+                        <h2 style="font-size:2.1rem;">${soundtracks[0].songTitle}</h2>
+                        <p style="font-size:1.2rem; color:var(--primary);">${soundtracks[0].character}</p>
+                        <p style="margin:15px 0;">${soundtracks[0].songDescription}</p>
+                        <button class="play-btn" onclick="playSpecific(0)">▶</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Render Lista principal
+        const list = document.getElementById('soundtrackList');
+        soundtracks.forEach((track, index) => {
+            const card = document.createElement("article");
+            card.className = "soundtrack-card";
+            card.innerHTML = `
+                <div class="card-content">
+                    <img class="character-face" src="${track.characterFace}">
+                    <div>
+                        <div style="color:var(--primary); font-weight:600;">${track.character}</div>
+                        <h2>${track.songTitle}</h2>
+                        <p>${track.songDescription}</p>
+                        <button class="play-btn" onclick="playSpecific(${index})">▶</button>
+                    </div>
+                </div>
+            `;
+            list.appendChild(card);
+        });
+
+        window.playSpecific = function(index) {
+            loadTrack(index);
+            isPlaying = true;
+            playPauseBtn.textContent = '❚❚';
+            audioPlayer.play();
+        };
+
+        // Eventos
+        audioPlayer.addEventListener('timeupdate', updateProgress);
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audioPlayer.duration);
+        });
+        audioPlayer.addEventListener('ended', nextTrack);
+
+        // Inicialización
+        initVisualizer();
+
+        // Volumen
+        const volumeSlider = document.getElementById('volumeSlider');
+
+        volumeSlider.addEventListener('input', () => {
+            audioPlayer.volume = volumeSlider.value;
+        });
+
+        // Opcional: cambiar icono según volumen
+        volumeSlider.addEventListener('input', () => {
+            const icon = document.querySelector('.volume-icon');
+            if (volumeSlider.value == 0) icon.textContent = '🔇';
+            else if (volumeSlider.value < 0.4) icon.textContent = '🔈';
+            else if (volumeSlider.value < 0.7) icon.textContent = '🔉';
+            else icon.textContent = '🔊';
+        });
+    </script>
+</body>
+</html>
