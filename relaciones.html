@@ -562,7 +562,7 @@
         icon: "🔥",
         image: "https://cdn.polyspeak.ai/speakmaster/44684906541e82a2213588e6c53521c1.webp",
         x: 10,
-        y: 16
+        y: 39
       },
       {
         id: "dan",
@@ -572,7 +572,7 @@
         icon: "🌪️",
         image: "https://static.wikia.nocookie.net/inazuma-eleven-eternal-thunder/images/2/24/DanNuevo.jpg/revision/latest?cb=20241112220422&path-prefix=es",
         x: 22,
-        y: 6
+        y: 26
       },
       {
         id: "hikaru",
@@ -582,7 +582,7 @@
         icon: "🤺",
         image: "https://static.wikia.nocookie.net/inazuma-eleven-eternal-thunder/images/a/a5/Hikaru_Hoshihara.png/revision/latest?cb=20250107013330&path-prefix=es",
         x: 34,
-        y: 16
+        y: 36
       },
       {
         id: "candace",
@@ -592,17 +592,50 @@
         icon: "❄️",
         image: "https://static.wikia.nocookie.net/inazuma-eleven-eternal-thunder/images/b/bd/Candace.jpg/revision/latest?cb=20240330152210&path-prefix=es",
         x: 22,
-        y: 28
+        y: 55
       },
       {
-        id: "nara",
+        id: "serena",
+        name: "Serena Kitagawa",
+        universe: "inazuma",
+        role: "Modelo y Futbolísta",
+        icon: "💡",
+        image: "https://i.pinimg.com/736x/0b/d3/13/0bd3138c5acaae90a18667a0da118892.jpg",
+        x: 26,
+        y: 5
+      },
+      {
+        id: "wangqing",
+        name: "Wang Qing",
+        universe: "inazuma",
+        role: "Modelo",
+        icon: "👲",
+        image: "https://i.pinimg.com/736x/8b/69/b2/8b69b20b1b5f8cb8c76fdb6996d9c272.jpg",
+        x: 9,
+        y: 15
+      },
+
+      //====================== DRAGON BALL ====================
+
+      {
+        id: "freyja",
+        name: "Freyja Kane",
+        universe: "dragonball",
+        role: "Heredera de los Kane",
+        icon: "⚔️",
+        image: "https://i.pinimg.com/1200x/2b/62/07/2b620780b4b1cc11a5f26a855822ee1d.jpg",
+        x: 50,
+        y: 54
+      },
+      {
+        id: "",
         name: "Nara Midori",
         universe: "dragonball",
         role: "Majin protectora",
         icon: "💚",
         image: "https://static.wikia.nocookie.net/dragon-ball-eternal-warriors/images/d/d6/Nara.png/revision/latest?cb=20250614182618&path-prefix=es",
         x: 58,
-        y: 14
+        y: 40
       },
     ];
 
@@ -661,6 +694,55 @@
         label: "",
         description: "Ren y Candace lideraban la delantera junto a Dan, y tenían una riña los 2 por ver quién metía más goles, si el guepardo o el león."
       },
+      {
+        from: "ren",
+        to: "wangqing",
+        type: "love",
+        title: "Destellos de un Futuro Perfecto",
+        label: "",
+        description: "Fue la persona que le sacó de una penumbra tenebrosa que acechaba la cabeza de Ren"
+      },
+      {
+        from: "wangqing",
+        to: "serena",
+        type: "friendship",
+        title: "Trabajo en equipo",
+        label: "",
+        description: "Se conocieron en la sede de modelaje y se han convertido, juntas, en las mejores de Japón"
+      },
+      {
+        from: "serena",
+        to: "dan",
+        type: "love",
+        title: "Amor de Modelo",
+        label: "",
+        description: "No la enamoró su belleza, si no lo bello que es su corazón."
+      },
+      {
+        from: "dan",
+        to: "wangqing",
+        type: "friendship",
+        title: "Amigo de mis Amigos",
+        label: "",
+        description: "Novia de Ren y mejor amiga de Serena, es una conexión simple, pero de buen rollo."
+      },
+      {
+        from: "serena",
+        to: "hikaru",
+        type: "friendship",
+        title: "Sí, capitán! ",
+        label: "",
+        description: "Se conocen al aparecer juntos con los campeones japoneses, pero le guarda respeto por ser el capitán del Raimon."
+      },
+      {
+        from: "ren",
+        to: "serena",
+        type: "friendship",
+        title: "Modelo x Modelo",
+        label: "",
+        description: "Es la mejor amiga de su novia y compañera de equipo."
+      },
+
       
     ];
 
