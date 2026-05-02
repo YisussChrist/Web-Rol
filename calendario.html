@@ -1,0 +1,3246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendario de Cumpleaños y Aniversarios</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+    :root {
+      --paper: #fff8dc;
+      --paper-dark: #f4e7ba;
+      --ink: #2f2a24;
+      --muted: #756c5d;
+      --line: rgba(65, 90, 140, 0.20);
+      --red-line: rgba(230, 92, 92, 0.48);
+      --spiral: #6d5d4a;
+
+      --birthday: #ffb347;
+      --anniversary: #c084fc;
+
+      --db: #ff9f1c;
+      --inazuma: #3b82f6;
+      --pokemon: #ef4444;
+      --other: #64748b;
+
+      --shadow: 0 28px 80px rgba(48, 34, 16, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Nunito', sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255,255,255,.55), transparent 26%),
+        radial-gradient(circle at 80% 20%, rgba(255,210,140,.34), transparent 30%),
+        linear-gradient(135deg, #caa574, #8f6741 55%, #62462e);
+      padding: 30px;
+    }
+
+    .app {
+      max-width: 1680px;
+      margin: 0 auto;
+      position: relative;
+      border-radius: 32px;
+      padding: 42px 42px 52px 86px;
+      background:
+        linear-gradient(90deg, transparent 0 56px, var(--red-line) 57px, transparent 60px),
+        repeating-linear-gradient(0deg, var(--paper) 0 36px, var(--line) 37px),
+        linear-gradient(135deg, var(--paper), var(--paper-dark));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 2px solid rgba(84, 54, 26, .25);
+    }
+
+    .app::before {
+      content: "";
+      position: absolute;
+      left: 24px;
+      top: 28px;
+      bottom: 28px;
+      width: 22px;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent 0 20px,
+        var(--spiral) 21px 34px,
+        transparent 35px 54px
+      );
+      filter: drop-shadow(2px 2px 0 rgba(0,0,0,.18));
+      opacity: .92;
+    }
+
+    .app::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 30%, transparent, rgba(80, 45, 10, .10));
+      pointer-events: none;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 22px;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .title-block h1 {
+      font-family: 'Patrick Hand', cursive;
+      font-size: clamp(3.1rem, 5.8vw, 6.4rem);
+      line-height: .92;
+      color: #36291f;
+      text-shadow: 2px 2px 0 rgba(255,255,255,.45);
+      transform: rotate(-1deg);
+    }
+
+    .title-block p {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1.25rem;
+      font-weight: 900;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 12px;
+      max-width: 650px;
+    }
+
+    .chip,
+    .tool {
+      border: 2px solid rgba(60, 44, 28, .25);
+      background: rgba(255,255,255,.48);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      font-size: 1rem;
+      box-shadow: 0 6px 0 rgba(69, 48, 24, .13);
+      backdrop-filter: blur(6px);
+      outline: none;
+    }
+
+    .tool {
+      min-width: 180px;
+    }
+
+    #searchInput {
+      min-width: 260px;
+    }
+
+    .legend {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 18px;
+      margin-bottom: 26px;
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 1.08rem;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.25);
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(80,55,30,.14);
+    }
+
+    .dot {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 2px solid rgba(0,0,0,.12);
+    }
+
+    .birthday-dot { background: var(--birthday); }
+    .anniversary-dot { background: var(--anniversary); }
+    .db-dot { background: var(--db); }
+    .inazuma-dot { background: var(--inazuma); }
+    .pokemon-dot { background: var(--pokemon); }
+
+    .months-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 26px;
+    }
+
+    .months-grid.single-month {
+      grid-template-columns: 1fr;
+    }
+
+    .view-controls {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .view-controls .chip {
+      margin: 0;
+    }
+
+    .view-controls .tool {
+      min-width: auto;
+    }
+
+    .month {
+      background: rgba(255, 252, 235, .66);
+      border: 2px solid rgba(86, 61, 35, .18);
+      border-radius: 26px;
+      padding: 24px;
+      box-shadow: 9px 11px 0 rgba(105, 72, 35, .12);
+      position: relative;
+      overflow: visible;
+    }
+
+    .month::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: linear-gradient(90deg, #e96b81, #5ba8ff, #ffcb47);
+      opacity: .72;
+    }
+
+    .month h2 {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 2.45rem;
+      margin: 4px 0 14px;
+      color: #493326;
+      text-transform: capitalize;
+    }
+
+    .weekdays,
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      grid-auto-rows: minmax(94px, auto);
+      gap: 10px;
+    }
+
+    .weekdays div {
+      text-align: center;
+      font-size: .94rem;
+      color: var(--muted);
+      font-weight: 1000;
+    }
+
+    .day {
+      min-height: 94px;
+      width: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      border-radius: 18px;
+      padding: 10px;
+      background: rgba(255,255,255,.45);
+      border: 1px dashed rgba(88, 66, 42, .18);
+      position: relative;
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+      cursor: default;
+      font-family: 'Nunito', sans-serif;
+      text-align: left;
+      color: var(--ink);
+    }
+
+    .day.has-events {
+      cursor: pointer;
+    }
+
+    .day.has-events:hover {
+      transform: translateY(-3px) rotate(-.35deg);
+      background: rgba(255,255,255,.80);
+      box-shadow: 0 10px 20px rgba(83, 55, 27, .14);
+    }
+
+    .day.empty {
+      background: transparent;
+      border-color: transparent;
+      pointer-events: none;
+    }
+
+    .number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 32px;
+      padding: 0 8px;
+      font-weight: 1000;
+      font-size: 1.05rem;
+      border-radius: 999px;
+      color: #453528;
+    }
+
+    .today .number {
+      background: #2f2a24;
+      color: #fff8dc;
+    }
+
+    .events {
+      margin-top: 6px;
+      display: grid;
+      gap: 5px;
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 5px;
+      width: 100%;
+      border-radius: 11px;
+      padding: 5px 7px;
+      text-align: left;
+      font-size: .77rem;
+      font-weight: 1000;
+      line-height: 1.05;
+      color: #33281f;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: inset 0 -2px rgba(0,0,0,.10);
+      border-left: 6px solid var(--other);
+    }
+
+    .event-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .event.birthday {
+      background: var(--birthday);
+    }
+
+    .event.anniversary {
+      background: var(--anniversary);
+      color: white;
+    }
+
+    .event.universe-dragonball { border-left-color: var(--db); }
+    .event.universe-inazuma { border-left-color: var(--inazuma); }
+    .event.universe-pokemon { border-left-color: var(--pokemon); }
+    .event.universe-other { border-left-color: var(--other); }
+
+    .event.hidden-by-filter {
+      display: none;
+    }
+
+    .universe-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.45);
+      border: 1px solid rgba(0,0,0,.12);
+      font-size: .78rem;
+      flex-shrink: 0;
+    }
+
+    dialog {
+      width: min(620px, calc(100vw - 32px));
+      border: 0;
+      border-radius: 28px;
+      padding: 0;
+      background: transparent;
+      position: fixed;
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -50%);
+      margin: 0;
+    }
+
+    dialog::backdrop {
+      background: rgba(33, 24, 16, .58);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-card {
+      background:
+        linear-gradient(90deg, transparent 0 44px, rgba(230,92,92,.36) 45px, transparent 48px),
+        repeating-linear-gradient(0deg, #fff9df 0 34px, rgba(65,90,140,.18) 35px),
+        #fff9df;
+      border: 2px solid rgba(54, 38, 24, .25);
+      border-radius: 28px;
+      padding: 34px 34px 34px 68px;
+      box-shadow: 0 28px 80px rgba(0,0,0,.38);
+      color: var(--ink);
+      position: relative;
+    }
+
+    .modal-card h3 {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 3rem;
+      margin-bottom: 6px;
+    }
+
+    .modal-date {
+      font-weight: 1000;
+      color: var(--muted);
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+    }
+
+    .modal-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .modal-event {
+      border-radius: 20px;
+      padding: 16px;
+      border: 2px solid rgba(70, 49, 29, .16);
+      background: rgba(255,255,255,.50);
+      border-left: 10px solid var(--other);
+    }
+
+    .modal-event.universe-dragonball { border-left-color: var(--db); }
+    .modal-event.universe-inazuma { border-left-color: var(--inazuma); }
+    .modal-event.universe-pokemon { border-left-color: var(--pokemon); }
+    .modal-event.universe-other { border-left-color: var(--other); }
+
+    .modal-event strong {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.28rem;
+      margin-bottom: 6px;
+    }
+
+    .modal-event p {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(47,42,36,.08);
+      font-weight: 1000;
+      font-size: .9rem;
+    }
+
+    .close-btn {
+      margin-top: 22px;
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 14px 18px;
+      background: #2f2a24;
+      color: white;
+      font-size: 1.03rem;
+      font-weight: 1000;
+      cursor: pointer;
+      box-shadow: 0 7px 0 rgba(0,0,0,.18);
+    }
+
+    .close-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .footer-note {
+      position: relative;
+      z-index: 1;
+      margin-top: 30px;
+      color: rgba(47, 42, 36, .76);
+      font-weight: 900;
+      text-align: center;
+      font-size: 1.05rem;
+    }
+
+    @media (max-width: 1360px) {
+      .months-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 980px) {
+      body {
+        padding: 16px;
+      }
+
+      .app {
+        padding: 30px 20px 40px 58px;
+      }
+
+      header {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+      }
+
+      .months-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tool,
+      #searchInput {
+        min-width: 100%;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        padding-left: 44px;
+        border-radius: 22px;
+      }
+
+      .app::before {
+        left: 13px;
+      }
+
+      .months-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .day {
+        min-height: 82px;
+      }
+
+      .title-block h1 {
+        font-size: 3.5rem;
+      }
+
+      .modal-card {
+        padding: 28px 22px 28px 52px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header>
+      <div class="title-block">
+        <h1>Calendario de Recuerdos</h1>
+        <p>Cumpleaños, aniversarios y fechas importantes de todo el año.</p>
+      </div>
+
+      <div class="toolbar">
+        <span class="chip" id="yearLabel"></span>
+
+        <select class="tool" id="typeFilter" aria-label="Filtrar por tipo de evento">
+          <option value="all">Todo</option>
+          <option value="birthday">Cumpleaños</option>
+          <option value="anniversary">Aniversarios</option>
+        </select>
+
+        <select class="tool" id="universeFilter" aria-label="Filtrar por universo">
+          <option value="all">Todos los universos</option>
+          <option value="dragonball">Dragon Ball</option>
+          <option value="inazuma">Inazuma Eleven</option>
+          <option value="pokemon">Pokémon</option>
+          <option value="other">Otros</option>
+        </select>
+
+        <input class="tool" id="searchInput" type="search" placeholder="Buscar personaje..." />
+      </div>
+    </header>
+
+    <section class="legend" aria-label="Leyenda">
+      <span><i class="dot birthday-dot"></i> Cumpleaños</span>
+      <span><i class="dot anniversary-dot"></i> Aniversario</span>
+      <span><i class="dot db-dot"></i> Dragon Ball</span>
+      <span><i class="dot inazuma-dot"></i> Inazuma</span>
+      <span><i class="dot pokemon-dot"></i> Pokémon</span>
+      <span><i class="dot" style="background:#2f2a24"></i> Hoy</span>
+    </section>
+
+    <div class="view-controls">
+      <button class="tool" id="viewModeButton" type="button">Vista mes</button>
+      <button class="tool" id="prevMonth" type="button">Anterior</button>
+      <span class="chip" id="activeMonthLabel"></span>
+      <button class="tool" id="nextMonth" type="button">Siguiente</button>
+    </div>
+
+    <section class="months-grid" id="calendar" aria-label="Calendario anual"></section>
+
+    <p class="footer-note">
+      Edita el array <strong>EVENTOS</strong> del JavaScript para añadir tus fechas desde el código.
+    </p>
+  </main>
+
+  <dialog id="eventModal">
+    <div class="modal-card">
+      <h3 id="modalTitle">Fecha</h3>
+      <p class="modal-date" id="modalDate"></p>
+      <div class="modal-list" id="modalList"></div>
+      <button class="close-btn" id="closeModal">Cerrar libreta</button>
+    </div>
+  </dialog>
+
+  <script>
+    // =====================================================
+    // AQUÍ AÑADES TUS CUMPLEAÑOS Y ANIVERSARIOS
+    //
+    // month: 1 = enero, 2 = febrero, 3 = marzo...
+    // type: "birthday" o "anniversary"
+    // universe: "dragonball", "inazuma", "pokemon" u "other"
+    //
+    // Ejemplo:
+    // {
+    //   name: "Nombre del personaje",
+    //   day: 12,
+    //   month: 5,
+    //   type: "birthday",
+    //   universe: "dragonball",
+    //   note: "Texto que sale al abrir el modal."
+    // }
+    // =====================================================
+
+    const EVENTOS = [
+      {
+        name: "Renzu Itō",
+        day: 4,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Ren. El león solar reclama tarta."
+      },
+      {
+        name: "Rumi Kurogane",
+        day: 7,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Rumi."
+      },
+      {
+        name: "Nara Midori",
+        day: 15,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Nara."
+      },
+      {
+        name: "Candace Foster",
+        day: 3,
+        month: 5,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Candace."
+      },
+      {
+        name: "Rebecca Whitering",
+        day: 30,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Rebecca."
+      },
+      {
+        name: "Jikan Alonso",
+        day: 12,
+        month: 10,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Jikan."
+      },
+      {
+        name: "Serena Kitagawa",
+        day: 6,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Serena."
+      },
+      {
+        name: "Irina Greenway",
+        day: 21,
+        month: 4,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Irina."
+      },
+      {
+        name: "Sen Kaibara",
+        day: 12,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Sen."
+      },
+      {
+        name: "Ayane Kurogane",
+        day: 17,
+        month: 4,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Ayane."
+      },
+      {
+        name: "Xavier Foster",
+        day: 16,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Xavier."
+      },
+      {
+        name: "Ethan Whitering",
+        day: 22,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Ethan."
+      },
+      {
+        name: "Claire Lesnow",
+        day: 20,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Claire."
+      },
+      {
+        name: "Icy Scarf",
+        day: 22,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Icy."
+      },
+      {
+        name: "Celeste Foster",
+        day: 11,
+        month: 2,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Celeste."
+      },
+      {
+        name: "Iker Fernando Alonso",
+        day: 25,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Iker."
+      },
+      {
+        name: "Candela Alonso",
+        day: 24,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Candela."
+      },
+      {
+        name: "Alice Berardi",
+        day: 17,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Alice."
+      },
+      {
+        name: "Isabelle Trick",
+        day: 1,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Bellatrick."
+      },
+      {
+        name: "Yuito Sumeragi",
+        day: 1,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Yuito."
+      },
+      {
+        name: "Nagi Karman",
+        day: 5,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Nagi."
+      },
+      {
+        name: "Kodama Melone",
+        day: 1,
+        month: 4,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Kodama."
+      },
+      {
+        name: "Kurumi Tokisaki",
+        day: 10,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Kurumi."
+      },
+      {
+        name: "Carlos Arroyo",
+        day: 20,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Carlos."
+      },
+      {
+        name: "Chisato Nishikigi",
+        day: 23,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Chisato."
+      },
+      {
+        name: "Ryuji Sakamoto",
+        day: 3,
+        month: 7,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Ryuji."
+      },
+      {
+        name: "Rubí Arroyo",
+        day: 21,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Rubí."
+      },
+      {
+        name: "Dan Karman",
+        day: 7,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Dan."
+      },
+      {
+        name: "Dark Walker",
+        day: 20,
+        month: 7,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Dark Walker."
+      },
+      {
+        name: "Diamond White",
+        day: 9,
+        month: 2,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Diamond."
+      },
+      {
+        name: "Shu Ogata",
+        day: 2,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Shu."
+      },
+      {
+        name: "Chiaki Nanami",
+        day: 14,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Chiaki."
+      },
+      {
+        name: "Peko Pekoyama",
+        day: 30,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Peko."
+      },
+      {
+        name: "Akane Owari",
+        day: 15,
+        month: 7,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Akane."
+      },
+      {
+        name: "Nalu Tanaka",
+        day: 16,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Nalu."
+      },
+      {
+        name: "Rin Tohsaka",
+        day: 3,
+        month: 2,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Rin."
+      },
+      {
+        name: "Nagito Komaeda",
+        day: 28,
+        month: 4,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Nagito."
+      },
+      {
+        name: "Miu Iruma",
+        day: 16,
+        month: 11,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Miu."
+      },
+      {
+        name: "Kuro Fujimoto",
+        day: 8,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Kuro."
+      },
+      {
+        name: "Shiro Harukawa",
+        day: 7,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Shiro."
+      },
+      {
+        name: "Bronya Wingate",
+        day: 11,
+        month: 11,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Bronya."
+      },
+      {
+        name: "Aika Wingate",
+        day: 30,
+        month: 11,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Aika."
+      },
+      {
+        name: "Shin Wolford",
+        day: 2,
+        month: 2,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Shin."
+      },
+      {
+        name: "Hina Heartless",
+        day: 21,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Hina."
+      },
+      {
+        name: "Delta Hervieux",
+        day: 29,
+        month: 4,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Delta."
+      },
+      {
+        name: "Lambda Zinaida",
+        day: 26,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Lambda."
+      },
+      {
+        name: "Lylia Cardson",
+        day: 4,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Lylia."
+      },
+      {
+        name: "James Smith",
+        day: 15,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de James."
+      },
+      {
+        name: "Akira Tendou",
+        day: 14,
+        month: 5,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Akira."
+      },
+      {
+        name: "Ciro Castañeda",
+        day: 13,
+        month: 2,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Ciro."
+      },
+      {
+        name: "Irene Villa",
+        day: 20,
+        month: 2,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Irene."
+      },
+      {
+        name: "Jesús Murcia",
+        day: 4,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Jesús."
+      },
+      {
+        name: "Jiro Yakuin",
+        day: 26,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Jiro."
+      },
+      {
+        name: "Kaito Momota",
+        day: 12,
+        month: 4,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Kaito."
+      },
+      {
+        name: "Alejandro Luna",
+        day: 30,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Alejandro."
+      },
+      {
+        name: "David Villa",
+        day: 3,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de David."
+      },
+      {
+        name: "Gonta Gokuhara",
+        day: 23,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Gonta."
+      },
+      {
+        name: "Kokichi Oma",
+        day: 21,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Kokichi."
+      },
+      {
+        name: "Lee Yeowoon",
+        day: 14,
+        month: 5,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Lee."
+      },
+      {
+        name: "Mavuika Heartless",
+        day: 22,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Mavuika."
+      },
+      {
+        name: "Mikan Tsumiki",
+        day: 12,
+        month: 5,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Mikan."
+      },
+      {
+        name: "Shuichi Saihara",
+        day: 7,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Shuichi."
+      },
+      {
+        name: "Kaito Takahashi",
+        day: 3,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Kaito."
+      },
+      {
+        name: "Kyouka Uzen",
+        day: 4,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Kyouka."
+      },
+      {
+        name: "Maki Harukawa",
+        day: 2,
+        month: 2,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Maki."
+      },
+      {
+        name: "Mateo Luna",
+        day: 9,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Mateo."
+      },
+      {
+        name: "Leii Ishikawa",
+        day: 25,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Leii."
+      },
+      {
+        name: "Tenka Izumo",
+        day: 1,
+        month: 10,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Tenka."
+      },
+      {
+        name: "Yokoya Hitoyoshi",
+        day: 1,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Hitoyoshi."
+      },
+      {
+        name: "Yae Miko",
+        day: 27,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Yae."
+      },
+      {
+        name: "Zaira Altamira",
+        day: 2,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Zaira."
+      },
+      {
+        name: "Marceline Abadeer",
+        day: 27,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Marceline."
+      },
+      {
+        name: "Hikaru Hoshihara",
+        day: 9,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Hikaru."
+      },
+      {
+        name: "Justin Kaido",
+        day: 11,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Justin."
+      },
+      {
+        name: "Siete de Marzo",
+        day: 7,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Marzo."
+      },
+      {
+        name: "Kiyoka Sendou",
+        day: 6,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Kiyoka."
+      },
+      {
+        name: "Victor Koga",
+        day: 16,
+        month: 10,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Victor."
+      },
+      {
+        name: "Jeanne d'Arc",
+        day: 6,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Jeanne."
+      },
+      {
+        name: "Joanna d'Arc",
+        day: 6,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Joanna."
+      },
+      {
+        name: "Jibril Foster",
+        day: 25,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Jibril."
+      },
+      {
+        name: "Akari Foster",
+        day: 25,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Akari."
+      },
+      {
+        name: "Lidia Foster",
+        day: 12,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Lidia."
+      },
+      {
+        name: "Yachiho Azuma",
+        day: 14,
+        month: 2,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Yachiho."
+      },
+      {
+        name: "Riko Wingate",
+        day: 6,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Riko."
+      },
+      {
+        name: "Jordan Greenway",
+        day: 26,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Jordan."
+      },
+      {
+        name: "Phil Wingate",
+        day: 6,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Phil."
+      },
+      {
+        name: "Axel Heartless",
+        day: 28,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Axel."
+      },
+      {
+        name: "Nakaoka Foster",
+        day: 8,
+        month: 11,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Nakaoka."
+      },
+      {
+        name: "Katya Felis",
+        day: 14,
+        month: 2,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Katya."
+      },
+      {
+        name: "Dayann Midford",
+        day: 15,
+        month: 7,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Dayann."
+      },
+      {
+        name: "Nico Koga",
+        day: 19,
+        month: 10,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Nico."
+      },
+      {
+        name: "Waru Walker",
+        day: 3,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Waru."
+      },
+      {
+        name: "Tetora Karashina",
+        day: 5,
+        month: 4,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Tetora."
+      },
+      {
+        name: "Jewls Pyrite",
+        day: 15,
+        month: 11,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Jewls."
+      },
+      {
+        name: "Mountain Skalin",
+        day: 1,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Mountain."
+      },
+      {
+        name: "Fubuki Sumiye",
+        day: 22,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Fubuki."
+      },
+      {
+        name: "Jenny Heart",
+        day: 14,
+        month: 11,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Jenny."
+      },
+      {
+        name: "Corvus Cardson",
+        day: 14,
+        month: 10,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Corvus."
+      },
+      {
+        name: "Syon Blaze",
+        day: 30,
+        month: 5,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Syon."
+      },
+      {
+        name: "Himari Azuma",
+        day: 28,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Himari."
+      },
+      {
+        name: "Dan Heng",
+        day: 3,
+        month: 7,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Dan Heng."
+      },
+      {
+        name: "Alya Mikhailovna",
+        day: 7,
+        month: 11,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Alya."
+      },
+      {
+        name: "Norman Heartless",
+        day: 15,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Norman."
+      },
+      {
+        name: "Yuichiro Hyakuya",
+        day: 16,
+        month: 10,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Yuichiro."
+      },
+      {
+        name: "Shinoa Hiragi",
+        day: 25,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Shinoa."
+      },
+      {
+        name: "Shinbad Ramírez",
+        day: 9,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Shinbad."
+      },
+      {
+        name: "Yuuki Wakura",
+        day: 12,
+        month: 3,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Yuuki."
+      },
+      {
+        name: "Power Aoyama",
+        day: 29,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Power."
+      },
+      {
+        name: "Tadashi Fukino",
+        day: 3,
+        month: 4,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Tadashi."
+      },
+      {
+        name: "Gundham Tanaka",
+        day: 14,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Gundham."
+      },
+      {
+        name: "Wang Qing",
+        day: 13,
+        month: 10,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Wang Qing."
+      },
+      {
+        name: "Abigail Jones",
+        day: 2,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Abigail."
+      },
+      {
+        name: "Fran Castillo",
+        day: 19,
+        month: 10,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Fran."
+      },
+      {
+        name: "Senku Ishigami",
+        day: 4,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Senku."
+      },
+      {
+        name: "Judar Ramírez",
+        day: 9,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Judar."
+      },
+      {
+        name: "Kaede Blue",
+        day: 4,
+        month: 7,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Kaede."
+      },
+      {
+        name: "Suzu Blue",
+        day: 4,
+        month: 7,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Suzu."
+      },
+      {
+        name: "Rikuo Nura",
+        day: 23,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Rikuo."
+      },
+      {
+        name: "Serval Hoshihara",
+        day: 1,
+        month: 11,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Serval."
+      },
+      {
+        name: "Shizuka Mikazuki",
+        day: 9,
+        month: 7,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Shizuka."
+      },
+      {
+        name: "Thiago Valverde",
+        day: 25,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Thiago."
+      },
+      {
+        name: "Top Blaze",
+        day: 21,
+        month: 8,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Top."
+      },
+      {
+        name: "Hiro Ryugasaki",
+        day: 19,
+        month: 12,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Hiro."
+      },
+      {
+        name: "Bisco Akaboshi",
+        day: 10,
+        month: 6,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Bisco."
+      },
+      {
+        name: "Lucyna Tanaka",
+        day: 26,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Lucyna."
+      },
+      {
+        name: "Shushu Withering",
+        day: 2,
+        month: 1,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Shushu."
+      },
+      {
+        name: "Nerea Alonso",
+        day: 26,
+        month: 9,
+        type: "birthday",
+        universe: "inazuma",
+        note: "Cumpleaños de Nerea."
+      },
+      {
+        name: "David Martínez",
+        day: 25,
+        month: 8,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de David."
+      },
+      {
+        name: "Jibril Hellsdothir",
+        day: 6,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Jibril."
+      },
+      {
+        name: "Izuna Hatsuse",
+        day: 28,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Izuna."
+      },
+      {
+        name: "Waru Shintarou",
+        day: 18,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Waru."
+      },
+      {
+        name: "Garou Silverfang",
+        day: 9,
+        month: 4,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Garou."
+      },
+      {
+        name: "Zafir Midori",
+        day: 24,
+        month: 2,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Zafir."
+      },
+      {
+        name: "Shuvi Karashina",
+        day: 27,
+        month: 6,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Shuvi."
+      },
+      {
+        name: "Gogo Karashina",
+        day: 19,
+        month: 12,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Gogo."
+      },
+      {
+        name: "Sawa Yamuchi",
+        day: 13,
+        month: 11,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Queen."
+      },
+      {
+        name: "Feixiao Hatsuse",
+        day: 10,
+        month: 9,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Feixiao."
+      },
+      {
+        name: "Skadi Dragenfelt",
+        day: 16,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Skadi."
+      },
+      {
+        name: "Ryuko Matoi",
+        day: 23,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Ryuko."
+      },
+      {
+        name: "Killua Zoldyck",
+        day: 7,
+        month: 7,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Plasma."
+      },
+      {
+        name: "Yoruichi Shihouin",
+        day: 1,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Yoruichi."
+      },
+      {
+        name: "Scar",
+        day: 18,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Scar."
+      },
+      {
+        name: "Shoto Todoroki",
+        day: 11,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Shoto."
+      },
+      {
+        name: "Kurokami Medaka",
+        day: 28,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kurokami."
+      },
+      {
+        name: "Kaoruko Awata",
+        day: 23,
+        month: 4,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kaoruko."
+      },
+      {
+        name: "Hakuryuu Ren",
+        day: 10,
+        month: 11,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Hakuryuu."
+      },
+      {
+        name: "Juri Han",
+        day: 1,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Juri."
+      },
+      {
+        name: "Khrome Ryugu",
+        day: 16,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Khrome."
+      },
+      {
+        name: "Qingy Hatsume",
+        day: 14,
+        month: 8,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Qingy."
+      },
+      {
+        name: "Mei Hatsume",
+        day: 18,
+        month: 4,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Mei."
+      },
+      {
+        name: "Shiva Kane",
+        day: 27,
+        month: 3,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Shiva."
+      },
+      {
+        name: "Zenos Shochiku",
+        day: 3,
+        month: 4,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Zenos."
+      },
+      {
+        name: "Zeo Thorzeus",
+        day: 7,
+        month: 7,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Zeo."
+      },
+      {
+        name: "Zelda Hellsdothir",
+        day: 21,
+        month: 12,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Zelda."
+      },
+      {
+        name: "Kinboshi Shintarou",
+        day: 12,
+        month: 8,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kinboshi."
+      },
+      {
+        name: "Freyja Kane",
+        day: 7,
+        month: 12,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Freyja."
+      },
+      {
+        name: "Billy Kid",
+        day: 25,
+        month: 11,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Billy."
+      },
+      {
+        name: "Alma Azkaban",
+        day: 16,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Alma."
+      },
+      {
+        name: "Kael Kane",
+        day: 28,
+        month: 6,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kael."
+      },
+      {
+        name: "Lancelot Tsukue",
+        day: 5,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Lancelot."
+      },
+      {
+        name: "Hak Aethereon",
+        day: 9,
+        month: 8,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Hak."
+      },
+      {
+        name: "Tao Saotome",
+        day: 6,
+        month: 12,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Tao."
+      },
+      {
+        name: "Albedo Dautherelle",
+        day: 13,
+        month: 9,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Albedo."
+      },
+      {
+        name: "Cheelai",
+        day: 4,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Cheelai."
+      },
+      {
+        name: "Roxy Migurdia",
+        day: 31,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Roxy."
+      },
+      {
+        name: "Baiken Tatakai",
+        day: 5,
+        month: 3,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Baiken."
+      },
+      {
+        name: "Jin Mori",
+        day: 12,
+        month: 12,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Jin."
+      },
+      {
+        name: "Grimmjow Jaegerjaquez",
+        day: 31,
+        month: 7,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Grimmjow."
+      },
+      {
+        name: "Tier Harribel",
+        day: 25,
+        month: 7,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Tier."
+      },
+      {
+        name: "Mikado Akira",
+        day: 22,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Mikado."
+      },
+      {
+        name: "Changli Lawrence",
+        day: 8,
+        month: 7,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Changli."
+      },
+      {
+        name: "Zani Diabolos",
+        day: 29,
+        month: 4,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Zani."
+      },
+      {
+        name: "Kuusetsu Dautherelle",
+        day: 25,
+        month: 3,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kuusetsu."
+      },
+      {
+        name: "Arthur Boyle",
+        day: 10,
+        month: 7,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Arthur."
+      },
+      {
+        name: "Rai Komazawa",
+        day: 21,
+        month: 3,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Rai."
+      },
+      {
+        name: "Yuno Grinberryal",
+        day: 4,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Yuno."
+      },
+      {
+        name: "Dax Aethereon",
+        day: 25,
+        month: 4,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Dax."
+      },
+      {
+        name: "Uzui Tengen",
+        day: 31,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Uzui."
+      },
+      {
+        name: "Rin Drayton",
+        day: 27,
+        month: 12,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Rin."
+      },
+      {
+        name: "Eula Lawrence",
+        day: 25,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Eula."
+      },
+      {
+        name: "Eijiro Kirishima",
+        day: 16,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Eijiro."
+      },
+      {
+        name: "Momo Yaoyorozu",
+        day: 23,
+        month: 9,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Momo."
+      },
+      {
+        name: "Toru Hagakure",
+        day: 16,
+        month: 6,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Toru."
+      },
+      {
+        name: "Himiko Toga",
+        day: 7,
+        month: 8,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Himiko."
+      },
+      {
+        name: "Gilthunder Rainford",
+        day: 26,
+        month: 8,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Gilthunder."
+      },
+      {
+        name: "Ryomen Sukuna",
+        day: 1,
+        month: 11,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Ryomen."
+      },
+      {
+        name: "Derieri Sukuna",
+        day: 30,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Derieri."
+      },
+      {
+        name: "Colombina Hiposelenia",
+        day: 14,
+        month: 1 ,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Colombina."
+      },
+      {
+        name: "Moe Kamiji",
+        day: 18,
+        month: 1 ,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Moe."
+      },
+      {
+        name: "Yao Guang",
+        day: 13,
+        month: 2,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Yao."
+      },
+      {
+        name: "Kaedehara Kazuha",
+        day: 29,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kazuha."
+      },
+      {
+        name: "Mereoleona Vermillion",
+        day: 26,
+        month: 6,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Mereoleona."
+      },
+      {
+        name: "Motoko Kusanagi",
+        day: 15,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Motoko."
+      },
+      {
+        name: "Kurumi Tokisaki",
+        day: 10,
+        month: 6,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kurumi."
+      },
+      {
+        name: "YoRHa No.9 Type S",
+        day: 30,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de 9S."
+      },
+      {
+        name: "Beelzebub",
+        day: 22,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Beelzebub."
+      },
+      {
+        name: "Exusiai",
+        day: 24,
+        month: 12,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Exusiai."
+      },
+      {
+        name: "Law Vireon",
+        day: 16,
+        month: 3,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Law."
+      },
+      {
+        name: "Shionne Imeris",
+        day: 25,
+        month: 3,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Shionne."
+      },
+      {
+        name: "Tokishikko Dannar",
+        day: 18,
+        month: 4,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Tokishikko."
+      },
+      {
+        name: "Ares Kane",
+        day: 3,
+        month: 3,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Ares."
+      },
+      {
+        name: "Addvok Vileborne",
+        day: 2,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Add."
+      },
+      {
+        name: "Mina Ashido",
+        day: 30,
+        month: 7,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Mina."
+      },
+      {
+        name: "Wiš'adel Kal'zen",
+        day: 1,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de W."
+      },
+      {
+        name: "Simon Drayton",
+        day: 28,
+        month: 7,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Simon."
+      },
+      {
+        name: "Magilou Maivyn",
+        day: 1,
+        month: 4,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Magilou."
+      },
+      {
+        name: "Velvet Crowe",
+        day: 22,
+        month: 9,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Velvet."
+      },
+      {
+        name: "Crownslayer",
+        day: 11,
+        month: 11,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Crownslayer."
+      },
+      {
+        name: "Yelena Vetrova",
+        day: 2,
+        month: 12,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Frostleaf."
+      },
+      {
+        name: "Gerson Boom",
+        day: 23,
+        month: 4,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Gerson."
+      },
+      {
+        name: "Hawks",
+        day: 28,
+        month: 12,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Hawks."
+      },
+      {
+        name: "Aya Tademaru",
+        day: 22,
+        month: 11,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Aya."
+      },
+      {
+        name: "Rias Gremory",
+        day: 17,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Rias."
+      },
+      {
+        name: "Koneko Tojo",
+        day: 3,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Koneko."
+      },
+      {
+        name: "Asia Argento",
+        day: 6,
+        month: 12,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Asia."
+      },
+      {
+        name: "Yuuto Kiba",
+        day: 30,
+        month: 6,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kiba."
+      },
+      {
+        name: "Gasper Vladi",
+        day: 23,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Gasper."
+      },
+      {
+        name: "Undyne",
+        day: 10,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Undyne."
+      },
+      {
+        name: "Justicia",
+        day: 15,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Adalet."
+      },
+      {
+        name: "Sentencia",
+        day: 23,
+        month: 11,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Sentencia."
+      },
+      {
+        name: "Rokurou Rangetsu",
+        day: 21,
+        month: 8,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Rokurou."
+      },
+      {
+        name: "Basara Tojo",
+        day: 10,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Basara."
+      },
+      {
+        name: "Hugo Vega",
+        day: 27,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Vega."
+      },
+      {
+        name: "Hitoshi Shinso",
+        day: 1,
+        month: 7,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Shinso."
+      },
+      {
+        name: "Keigo Magami",
+        day: 3,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Keigo."
+      },
+      {
+        name: "Grillby Kamiji",
+        day: 5,
+        month: 8,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Grillby."
+      },
+      {
+        name: "Glorio Daimo",
+        day: 18,
+        month: 10,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Glorio."
+      },
+      {
+        name: "Kiriya Azkaban",
+        day: 23,
+        month: 8,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kiriya."
+      },
+      {
+        name: "Kanabe Tsukue",
+        day: 15,
+        month: 6,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kanabe."
+      },
+      {
+        name: "Utena Vileborne",
+        day: 27,
+        month: 8,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Utena."
+      },
+      {
+        name: "Deborah Gollini",
+        day: 8,
+        month: 2,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Deborah."
+      },
+      {
+        name: "Kamin",
+        day: 10,
+        month: 1,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Kamin."
+      },
+      {
+        name: "Marl Barrock",
+        day: 3,
+        month: 5,
+        type: "birthday",
+        universe: "dragonball",
+        note: "Cumpleaños de Marl."
+      },
+      {
+        name: "Mencía Scarlett",
+        day: 12,
+        month: 2,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Mencía."
+      },
+      {
+        name: "Link Ordon",
+        day: 21,
+        month: 12,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Link."
+      },
+      {
+        name: "Serena Vaniville",
+        day: 2,
+        month: 2,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Serena."
+      },
+      {
+        name: "Judith",
+        day: 27,
+        month: 8,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Judith."
+      },
+      {
+        name: "Gama Sazare",
+        day: 19,
+        month: 8,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Gama."
+      },
+      {
+        name: "Aoyagi Toya",
+        day: 25,
+        month: 5,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Toya."
+      },
+      {
+        name: "Mogari Shishikuno",
+        day: 19,
+        month: 4,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Mogari."
+      },
+      {
+        name: "Matís Hugh",
+        day: 12,
+        month: 10,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Matís."
+      },
+      {
+        name: "Pyra Magnum",
+        day: 1,
+        month: 12,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Pyra."
+      },
+      {
+        name: "Justin Kaido",
+        day: 4,
+        month: 9,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Justin."
+      },
+      {
+        name: "Verónica Collins",
+        day: 14,
+        month: 7,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Verónica."
+      },
+      {
+        name: "Gabriel Pegaso",
+        day: 4,
+        month: 8,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Gabriel."
+      },
+      {
+        name: "Carla Black",
+        day: 28,
+        month: 5,
+        type: "birthday",
+        universe: "pokemon",
+        note: "Cumpleaños de Carla."
+      },
+      {
+        name: "Link & Shin",
+        day: 1,
+        month: 12,
+        type: "anniversary",
+        universe: "pokemon",
+        note: "Aniversario de Link y Shin."
+      },
+      {
+        name: "Mogari & Verónica",
+        day: 28,
+        month: 4,
+        type: "anniversary",
+        universe: "pokemon",
+        note: "Aniversario de Mogari y Verónica."
+      },
+      {
+        name: "Akari & Jiro",
+        day: 23,
+        month: 8,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Akari y Jiro."
+      },
+      {
+        name: "Candace & Hikaru",
+        day: 26,
+        month: 8,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Candace y Hikaru."
+      },
+      {
+        name: "Sen & Jibril",
+        day: 11,
+        month: 6,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Sen y Jibril."
+      },
+      {
+        name: "Justin & Rumi",
+        day: 21,
+        month: 7,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Justin y Rumi."
+      },
+      {
+        name: "Dan & Serena",
+        day: 27,
+        month: 9,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Dan y Serena."
+      },
+      {
+        name: "Rebecca & Victor",
+        day: 2,
+        month: 9,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Rebecca y Victor."
+      },
+      {
+        name: "Marzo & Ryuji",
+        day: 21,
+        month: 8,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Marzo y Ryuji."
+      },
+      {
+        name: "Xavier & Dayann",
+        day: 31,
+        month: 7,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Xavier y Dayann."
+      },
+      {
+        name: "Chisato & Shu",
+        day: 29,
+        month: 11,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Chisato y Shu."
+      },
+      {
+        name: "Hitoyoshi & Shinoa",
+        day: 11,
+        month: 1,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Hitoyoshi y Shinoa."
+      },
+      {
+        name: "Dan Heng & Kyoko",
+        day: 12,
+        month: 1,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Dan Heng y Kyoko."
+      },
+      {
+        name: "Nalu & Alya",
+        day: 23,
+        month: 1,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Nalu y Alya."
+      },
+      {
+        name: "Jikan & Yachiho",
+        day: 25,
+        month: 1,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Jikan y Yachiho."
+      },
+      {
+        name: "Fubuki & Mavuika",
+        day: 15,
+        month: 2,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Fubuki y Mavuika."
+      },
+      {
+        name: "Norman e Irina",
+        day: 16,
+        month: 2,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Norman e Irina."
+      },
+      {
+        name: "Aika & Yuichiro",
+        day: 13,
+        month: 3,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Aika y Yuichiro."
+      },
+      {
+        name: "Shinbad & Delta",
+        day: 18,
+        month: 3,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Shinbad y Delta."
+      },
+      {
+        name: "Tsumiki & Top",
+        day: 14,
+        month: 4,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Tsumiki y Top."
+      },
+      {
+        name: "Shin & Bronya",
+        day: 10,
+        month: 5,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Shin y Bronya."
+      },
+      {
+        name: "Kuro & Kiyoka",
+        day: 12,
+        month: 5,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Kuro y Kiyoka."
+      },
+      {
+        name: "Shuichi & Miu",
+        day: 28,
+        month: 5,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Shuichi y Miu."
+      },
+      {
+        name: "Nanami & Senku",
+        day: 7,
+        month: 7,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Nanami y Senku."
+      },
+      {
+        name: "Waru & Diamond",
+        day: 9,
+        month: 3,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Waru y Diamond."
+      },
+      {
+        name: "Shiro & Lambda",
+        day: 9,
+        month: 8,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Shiro y Lambda."
+      },
+      {
+        name: "Rikuo & Owari",
+        day: 11,
+        month: 8,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Rikuo y Owari."
+      },
+      {
+        name: "Leii & Lylia",
+        day: 7,
+        month: 9,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Leii y Lylia."
+      },
+      {
+        name: "Giyuu & Peko",
+        day: 5,
+        month: 9,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Tomioka y Pekoyama."
+      },
+      {
+        name: "Lee & Shizuka",
+        day: 17,
+        month: 11,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Lee y Shizuka."
+      },
+      {
+        name: "Ciro & Power",
+        day: 21,
+        month: 11,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Ciro y Power."
+      },
+      {
+        name: "Ren & Wang Qing",
+        day: 2,
+        month: 1,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de Ren y Wang Qing."
+      },
+      {
+        name: "James & Abigail",
+        day: 23,
+        month: 2,
+        type: "anniversary",
+        universe: "inazuma",
+        note: "Aniversario de James y Abigail."
+      },
+      {
+        name: "Alma & Exusiai",
+        day: 9,
+        month: 4,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Alma y Exusiai."
+      },
+      {
+        name: "David & Kurumi",
+        day: 22,
+        month: 12,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Alma y Kurumi."
+      },
+      {
+        name: "Lancelot & Tokishikko",
+        day: 9,
+        month: 6,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Lancelot y Toki."
+      },
+      {
+        name: "Law & Gogo",
+        day: 25,
+        month: 4,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Law y Gogo."
+      },
+      {
+        name: "Skadi & Beelze",
+        day: 3,
+        month: 6,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Skadi y Beelzebub."
+      },
+      {
+        name: "Hak & Yoruichi",
+        day: 31,
+        month: 10,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Hak y Yoruichi."
+      },
+      {
+        name: "Ares & Tao",
+        day: 3,
+        month: 11,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Ares y Tao."
+      },
+      {
+        name: "Ryuko & Simon",
+        day: 31,
+        month: 12,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Ryuko y Simon."
+      },
+      {
+        name: "Add & Albedo",
+        day: 20,
+        month: 11,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Add y Albedo."
+      },
+      {
+        name: "Todoroki & Mina",
+        day: 31,
+        month: 3,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Todoroki y Mina."
+      },
+      {
+        name: "Hakuryuu & Velvet",
+        day: 3,
+        month: 4,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Hakuryuu y Velvet."
+      },
+      {
+        name: "Nara & Khrome",
+        day: 16,
+        month: 4,
+        type: "anniversary",
+        universe: "dragonball",
+        note: "Aniversario de Nara y Khrome."
+      },
+      
+    ];
+
+    const calendar = document.getElementById('calendar');
+    const yearLabel = document.getElementById('yearLabel');
+    const typeFilter = document.getElementById('typeFilter');
+    const universeFilter = document.getElementById('universeFilter');
+    const searchInput = document.getElementById('searchInput');
+    const viewModeButton = document.getElementById('viewModeButton');
+    const prevMonth = document.getElementById('prevMonth');
+    const nextMonth = document.getElementById('nextMonth');
+    const activeMonthLabel = document.getElementById('activeMonthLabel');
+
+    const modal = document.getElementById('eventModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDate = document.getElementById('modalDate');
+    const modalList = document.getElementById('modalList');
+    const closeModal = document.getElementById('closeModal');
+
+    const CURRENT_YEAR = new Date().getFullYear();
+    const TODAY = new Date();
+
+    const MONTHS = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+
+    const WEEKDAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+
+    const TYPE_INFO = {
+      birthday: {
+        label: 'Cumpleaños',
+        icon: '🎂'
+      },
+      anniversary: {
+        label: 'Aniversario',
+        icon: '💜'
+      }
+    };
+
+    const UNIVERSE_INFO = {
+      dragonball: {
+        label: 'Dragon Ball',
+        icon: '🐉',
+        className: 'universe-dragonball'
+      },
+      inazuma: {
+        label: 'Inazuma Eleven',
+        icon: '⚽',
+        className: 'universe-inazuma'
+      },
+      pokemon: {
+        label: 'Pokémon',
+        icon: '🌟',
+        className: 'universe-pokemon'
+      },
+      other: {
+        label: 'Otro',
+        icon: '📌',
+        className: 'universe-other'
+      }
+    };
+
+    yearLabel.textContent = CURRENT_YEAR;
+
+    function normalizeText(text) {
+      return String(text)
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function getTypeInfo(type) {
+      return TYPE_INFO[type] || TYPE_INFO.birthday;
+    }
+
+    function getUniverseInfo(universe) {
+      return UNIVERSE_INFO[universe] || UNIVERSE_INFO.other;
+    }
+
+    function getEventsForDay(day, month) {
+      return EVENTOS.filter(event => event.day === day && event.month === month);
+    }
+
+    function eventMatchesFilters(event) {
+      const selectedType = typeFilter.value;
+      const selectedUniverse = universeFilter.value;
+      const search = normalizeText(searchInput.value.trim());
+
+      const typeMatches = selectedType === 'all' || event.type === selectedType;
+      const universeMatches = selectedUniverse === 'all' || event.universe === selectedUniverse;
+      const searchMatches = !search || normalizeText(event.name + ' ' + (event.note || '')).includes(search);
+
+      return typeMatches && universeMatches && searchMatches;
+    }
+
+    function openDayModal(day, month, events) {
+      const visibleEvents = events.filter(eventMatchesFilters);
+      if (!visibleEvents.length) return;
+
+      modalTitle.textContent = `${day} de ${MONTHS[month - 1]}`;
+      modalDate.textContent = `${visibleEvents.length} recuerdo${visibleEvents.length === 1 ? '' : 's'} apuntado${visibleEvents.length === 1 ? '' : 's'}`;
+      modalList.innerHTML = '';
+
+      visibleEvents.forEach(event => {
+        const typeInfo = getTypeInfo(event.type);
+        const universeInfo = getUniverseInfo(event.universe);
+
+        const article = document.createElement('article');
+        article.className = `modal-event ${universeInfo.className}`;
+        article.innerHTML = `
+          <strong>
+            <span>${typeInfo.icon}</span>
+            <span>${event.name}</span>
+          </strong>
+
+          <p>${event.note || 'Sin nota añadida.'}</p>
+
+          <div class="meta-row">
+            <span class="pill">${typeInfo.icon} ${typeInfo.label}</span>
+            <span class="pill">${universeInfo.icon} ${universeInfo.label}</span>
+          </div>
+        `;
+
+        modalList.appendChild(article);
+      });
+
+      modal.showModal();
+    }
+
+    function createMonth(monthIndex) {
+      const monthNumber = monthIndex + 1;
+      const firstDate = new Date(CURRENT_YEAR, monthIndex, 1);
+      const totalDays = new Date(CURRENT_YEAR, monthIndex + 1, 0).getDate();
+
+      // JS empieza la semana en domingo. Lo convertimos para que lunes sea 0.
+      const startOffset = (firstDate.getDay() + 6) % 7;
+
+      const monthCard = document.createElement('article');
+      monthCard.className = 'month';
+
+      const title = document.createElement('h2');
+      title.textContent = MONTHS[monthIndex];
+      monthCard.appendChild(title);
+
+      const weekdayRow = document.createElement('div');
+      weekdayRow.className = 'weekdays';
+
+      WEEKDAYS.forEach(day => {
+        const cell = document.createElement('div');
+        cell.textContent = day;
+        weekdayRow.appendChild(cell);
+      });
+
+      monthCard.appendChild(weekdayRow);
+
+      const daysGrid = document.createElement('div');
+      daysGrid.className = 'days';
+
+      for (let i = 0; i < startOffset; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'day empty';
+        daysGrid.appendChild(empty);
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dayCell = document.createElement('button');
+        dayCell.className = 'day';
+        dayCell.type = 'button';
+
+        const isToday =
+          TODAY.getFullYear() === CURRENT_YEAR &&
+          TODAY.getMonth() === monthIndex &&
+          TODAY.getDate() === day;
+
+        if (isToday) dayCell.classList.add('today');
+
+        const number = document.createElement('span');
+        number.className = 'number';
+        number.textContent = day;
+        dayCell.appendChild(number);
+
+        const events = getEventsForDay(day, monthNumber);
+
+        if (events.length) {
+          dayCell.classList.add('has-events');
+
+          const eventBox = document.createElement('div');
+          eventBox.className = 'events';
+
+          events.forEach(event => {
+            const typeInfo = getTypeInfo(event.type);
+            const universeInfo = getUniverseInfo(event.universe);
+
+            const eventLabel = document.createElement('span');
+            eventLabel.className = `event ${event.type} ${universeInfo.className}`;
+            eventLabel.dataset.type = event.type;
+            eventLabel.dataset.universe = event.universe;
+            eventLabel.dataset.name = event.name;
+            eventLabel.dataset.note = event.note || '';
+
+            eventLabel.innerHTML = `
+              <span class="universe-badge" title="${universeInfo.label}">${universeInfo.icon}</span>
+              <span class="event-name">${typeInfo.icon} ${event.name}</span>
+            `;
+
+            eventBox.appendChild(eventLabel);
+          });
+
+          dayCell.appendChild(eventBox);
+          dayCell.addEventListener('click', () => openDayModal(day, monthNumber, events));
+        }
+
+        daysGrid.appendChild(dayCell);
+      }
+
+      monthCard.appendChild(daysGrid);
+      return monthCard;
+    }
+
+    let viewMode = 'all';
+    let activeMonthIndex = TODAY.getMonth();
+
+    function updateMonthControls() {
+      activeMonthLabel.textContent = MONTHS[activeMonthIndex].charAt(0).toUpperCase() + MONTHS[activeMonthIndex].slice(1);
+      const isMonthView = viewMode === 'month';
+      calendar.classList.toggle('single-month', isMonthView);
+      Array.from(calendar.children).forEach((monthCard, index) => {
+        monthCard.hidden = isMonthView && index !== activeMonthIndex;
+      });
+      viewModeButton.textContent = isMonthView ? 'Vista anual' : 'Vista mes';
+      prevMonth.style.display = isMonthView ? 'inline-flex' : 'none';
+      nextMonth.style.display = isMonthView ? 'inline-flex' : 'none';
+      activeMonthLabel.style.display = isMonthView ? 'inline-flex' : 'none';
+    }
+
+    function changeMonth(offset) {
+      activeMonthIndex = (activeMonthIndex + offset + 12) % 12;
+      updateMonthControls();
+    }
+
+    function renderCalendar() {
+      calendar.innerHTML = '';
+      MONTHS.forEach((_, index) => calendar.appendChild(createMonth(index)));
+      applyFilters();
+      updateMonthControls();
+    }
+
+    function applyFilters() {
+      const selectedType = typeFilter.value;
+      const selectedUniverse = universeFilter.value;
+      const search = normalizeText(searchInput.value.trim());
+
+      document.querySelectorAll('.event').forEach(eventElement => {
+        const type = eventElement.dataset.type;
+        const universe = eventElement.dataset.universe;
+        const text = normalizeText(`${eventElement.dataset.name} ${eventElement.dataset.note}`);
+
+        const typeMatches = selectedType === 'all' || type === selectedType;
+        const universeMatches = selectedUniverse === 'all' || universe === selectedUniverse;
+        const searchMatches = !search || text.includes(search);
+
+        eventElement.classList.toggle('hidden-by-filter', !(typeMatches && universeMatches && searchMatches));
+      });
+    }
+
+    typeFilter.addEventListener('change', applyFilters);
+    universeFilter.addEventListener('change', applyFilters);
+    searchInput.addEventListener('input', applyFilters);
+    viewModeButton.addEventListener('click', () => {
+      viewMode = viewMode === 'all' ? 'month' : 'all';
+      updateMonthControls();
+    });
+    prevMonth.addEventListener('click', () => changeMonth(-1));
+    nextMonth.addEventListener('click', () => changeMonth(1));
+
+    closeModal.addEventListener('click', () => modal.close());
+
+    modal.addEventListener('click', event => {
+      const modalCard = event.target.closest('.modal-card');
+      if (!modalCard) modal.close();
+    });
+
+    renderCalendar();
+  </script>
+</body>
+</html>
