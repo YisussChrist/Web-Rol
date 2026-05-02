@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa de Relaciones RP</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+    :root {
+      --bg: #201510;
+      --cork-1: #a66c3f;
+      --cork-2: #8d572f;
+      --paper: #fff5d4;
+      --paper-dark: #ead8a9;
+      --ink: #2f241c;
+      --muted: #705e4c;
+      --pin: #ef4444;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .35);
+
+      --dragonball: #ff9f1c;
+      --inazuma: #3b82f6;
+      --pokemon: #ef4444;
+      --other: #64748b;
+
+      --love: #e84393;
+      --family: #f59e0b;
+      --friendship: #22c55e;
+      --rivalry: #ef4444;
+      --mentor: #8b5cf6;
+      --enemy: #111827;
+      --conflict: #06b6d4;
+      --team: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Nunito', sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255, 230, 160, .18), transparent 28%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, .08), transparent 26%),
+        linear-gradient(135deg, #2b1a12, #100a07);
+      padding: 26px;
+      overflow-x: hidden;
+    }
+
+    .app {
+      max-width: 100%;
+      margin: 0 auto;
+      position: relative;
+      border-radius: 32px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle, rgba(255,255,255,.08) 0 2px, transparent 3px),
+        linear-gradient(135deg, var(--cork-1), var(--cork-2));
+      background-size: 26px 26px, auto;
+      box-shadow: var(--shadow);
+      border: 10px solid #5d3720;
+      min-height: calc(100vh - 52px);
+    }
+
+    .app::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.06), transparent 20%, rgba(0,0,0,.09)),
+        radial-gradient(circle at 50% 20%, transparent, rgba(0,0,0,.22));
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 28px;
+      background: rgba(54, 31, 18, .28);
+      backdrop-filter: blur(7px);
+      border-bottom: 2px solid rgba(255,255,255,.12);
+    }
+
+    .title-card {
+      display: inline-block;
+      width: fit-content;
+      background:
+        repeating-linear-gradient(0deg, var(--paper) 0 31px, rgba(65,90,140,.14) 32px),
+        var(--paper);
+      padding: 18px 24px;
+      border-radius: 18px;
+      box-shadow: 10px 12px 0 rgba(0,0,0,.18);
+      transform: rotate(-1deg);
+      border: 2px solid rgba(68, 44, 24, .18);
+      position: relative;
+    }
+
+    .title-card::before,
+    .title-card::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      width: 17px;
+      height: 17px;
+      background: var(--pin);
+      border-radius: 50%;
+      box-shadow: inset -3px -3px 0 rgba(0,0,0,.18), 0 3px 0 rgba(0,0,0,.20);
+    }
+
+    .title-card::before { left: 12px; }
+    .title-card::after { right: 12px; background: #3b82f6; }
+
+    h1 {
+      font-family: 'Patrick Hand', cursive;
+      font-size: clamp(2.6rem, 5vw, 5.5rem);
+      line-height: .9;
+      margin-top: 6px;
+    }
+
+    .title-card p {
+      margin-top: 8px;
+      font-weight: 900;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+      max-width: 650px;
+    }
+
+    .tool {
+      border: 2px solid rgba(0,0,0,.18);
+      background: rgba(255, 245, 212, .9);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 12px 15px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 900;
+      outline: none;
+      box-shadow: 0 6px 0 rgba(0,0,0,.18);
+    }
+
+    #searchInput {
+      min-width: 250px;
+    }
+
+    .board-wrap {
+      position: relative;
+      z-index: 1;
+      padding: 30px;
+      overflow: auto;
+      max-height: calc(100vh - 250px);
+      scrollbar-color: rgba(255,245,212,.75) rgba(55,31,18,.45);
+      scrollbar-width: thin;
+    }
+
+    .board-wrap::-webkit-scrollbar {
+      width: 14px;
+      height: 14px;
+    }
+
+    .board-wrap::-webkit-scrollbar-track {
+      background: rgba(55,31,18,.45);
+      border-radius: 999px;
+    }
+
+    .board-wrap::-webkit-scrollbar-thumb {
+      background: rgba(255,245,212,.75);
+      border-radius: 999px;
+      border: 3px solid rgba(55,31,18,.45);
+    }
+
+    .board {
+      position: relative;
+      width: 3600px;
+      height: 2400px;
+      min-height: 2400px;
+      border-radius: 26px;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px),
+        radial-gradient(circle at 18% 24%, rgba(255,255,255,.08), transparent 24%),
+        radial-gradient(circle at 88% 76%, rgba(0,0,0,.12), transparent 26%);
+      background-size: 120px 120px, 120px 120px, auto, auto;
+    }
+
+    svg.links {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .relationship-line {
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-dasharray: 10 8;
+      filter: drop-shadow(0 4px 3px rgba(0,0,0,.35));
+      opacity: .9;
+    }
+
+    .relationship-label {
+      position: absolute;
+      z-index: 4;
+      transform: translate(-50%, -50%);
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 1000;
+      font-size: .86rem;
+      color: white;
+      box-shadow: 0 8px 20px rgba(0,0,0,.24);
+      cursor: pointer;
+      transition: transform .15s ease, filter .15s ease;
+      white-space: nowrap;
+    }
+
+    .relationship-label:hover {
+      transform: translate(-50%, -50%) scale(1.08) rotate(-1deg);
+      filter: brightness(1.08);
+    }
+
+    .person {
+      position: absolute;
+      z-index: 3;
+      width: 170px;
+      min-height: 220px;
+      transform: translate(-50%, -50%) rotate(var(--rotate));
+      background:
+        linear-gradient(90deg, transparent 0 24px, rgba(230,92,92,.22) 25px, transparent 27px),
+        repeating-linear-gradient(0deg, var(--paper) 0 24px, rgba(65,90,140,.11) 25px),
+        var(--paper);
+      border-radius: 16px;
+      border: 2px solid rgba(70, 45, 25, .18);
+      padding: 14px;
+      box-shadow: 10px 12px 0 rgba(0,0,0,.16);
+      transition: transform .18s ease, filter .18s ease, opacity .18s ease;
+    }
+
+    .person:hover {
+      transform: translate(-50%, -50%) rotate(0deg) scale(1.045);
+      z-index: 8;
+    }
+
+    .person.hidden {
+      opacity: .18;
+      filter: grayscale(1);
+    }
+
+    .person::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--pin-color);
+      box-shadow: inset -3px -3px 0 rgba(0,0,0,.2), 0 4px 0 rgba(0,0,0,.18);
+    }
+
+    .photo {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.35), rgba(0,0,0,.08)),
+        var(--photo-bg);
+      border: 3px solid rgba(255,255,255,.55);
+      display: grid;
+      place-items: center;
+      font-size: 3.35rem;
+      margin-top: 10px;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.08);
+      overflow: hidden;
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .person h2 {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 1.55rem;
+      line-height: .95;
+      margin-top: 10px;
+      color: #34271f;
+    }
+
+    .person p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-weight: 900;
+      font-size: .78rem;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 999px;
+      padding: 4px 7px;
+      font-size: .66rem;
+      font-weight: 1000;
+      color: white;
+      background: var(--badge-color);
+    }
+
+    .hidden-line {
+      opacity: .08 !important;
+    }
+
+    .hidden-label {
+      opacity: .15;
+      pointer-events: none;
+    }
+
+    dialog {
+      width: min(620px, calc(100vw - 28px));
+      border: 0;
+      border-radius: 28px;
+      padding: 0;
+      background: transparent;
+      position: fixed;
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -50%);
+      margin: 0;
+      z-index: 20;
+    }
+
+    dialog::backdrop {
+      background: rgba(20, 12, 8, .62);
+      backdrop-filter: blur(6px);
+    }
+
+    .modal-card {
+      background:
+        linear-gradient(90deg, transparent 0 44px, rgba(230,92,92,.35) 45px, transparent 48px),
+        repeating-linear-gradient(0deg, #fff8dc 0 32px, rgba(65,90,140,.15) 33px),
+        #fff8dc;
+      border-radius: 28px;
+      padding: 34px 34px 34px 68px;
+      border: 2px solid rgba(50, 32, 19, .22);
+      box-shadow: 0 26px 80px rgba(0,0,0,.4);
+      color: var(--ink);
+    }
+
+    .modal-card h3 {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 3.2rem;
+      line-height: .92;
+      margin-bottom: 10px;
+    }
+
+    .modal-card p {
+      font-weight: 800;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    .modal-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .modal-pill {
+      border-radius: 999px;
+      padding: 8px 11px;
+      color: white;
+      font-weight: 1000;
+      background: #2f241c;
+    }
+
+    .close-btn {
+      margin-top: 22px;
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 14px 18px;
+      background: #2f241c;
+      color: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.04rem;
+      font-weight: 1000;
+      cursor: pointer;
+      box-shadow: 0 7px 0 rgba(0,0,0,.18);
+    }
+
+    .mini-help {
+      position: relative;
+      z-index: 3;
+      margin: 0 30px 28px;
+      padding: 16px 20px;
+      border-radius: 18px;
+      background: rgba(255, 245, 212, .82);
+      border: 2px solid rgba(0,0,0,.14);
+      box-shadow: 0 8px 0 rgba(0,0,0,.15);
+      font-weight: 900;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1050px) {
+      header {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        justify-content: flex-start;
+      }
+
+      .board {
+        min-height: 1150px;
+      }
+
+      .person {
+        width: 185px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 12px;
+      }
+
+      .app {
+        border-width: 6px;
+        border-radius: 22px;
+      }
+
+      header,
+      .board-wrap {
+        padding: 18px;
+      }
+
+      .tool,
+      #searchInput {
+        width: 100%;
+        min-width: 100%;
+      }
+
+      .board {
+        min-height: 1450px;
+      }
+
+      .person {
+        width: 165px;
+        min-height: 235px;
+        padding: 14px;
+      }
+
+      .person h2 {
+        font-size: 1.55rem;
+      }
+
+      .relationship-label {
+        font-size: .75rem;
+        padding: 7px 9px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header>
+      <div class="title-card">
+        <h1>Mapa de Relaciones</h1>
+        <p>Un panel para conectar personajes, vínculos, traumas y movidas del lore.</p>
+      </div>
+
+      <div class="controls">
+        <input class="tool" id="searchInput" type="search" placeholder="Buscar personaje..." />
+
+        <select class="tool" id="universeFilter" aria-label="Filtrar por universo">
+          <option value="all">Todos los universos</option>
+          <option value="inazuma">Inazuma Eleven</option>
+          <option value="dragonball">Dragon Ball</option>
+          <option value="pokemon">Pokémon</option>
+          <option value="other">Otros</option>
+        </select>
+
+        <select class="tool" id="relationFilter" aria-label="Filtrar por relación">
+          <option value="all">Todas las relaciones</option>
+          <option value="love">Pareja</option>
+          <option value="family">Familia</option>
+          <option value="friendship">Amistad</option>
+          <option value="rivalry">Rivalidad</option>
+          <option value="mentor">Mentor</option>
+          <option value="enemy">Enemigo</option>
+          <option value="conflict">Conflicto</option>
+          <option value="team">Equipo</option>
+        </select>
+      </div>
+    </header>
+
+    <section class="board-wrap">
+      <div class="board" id="board">
+        <svg class="links" id="linksSvg"></svg>
+      </div>
+    </section>
+
+    <p class="mini-help">
+      Consejo: el tablero ahora es gigante y desplazable. Mantén pulsado el scroll horizontal/vertical para moverte por el mapa. Edita <strong>PERSONAJES</strong> y <strong>RELACIONES</strong> para añadir tus conexiones desde el código.
+    </p>
+  </main>
+
+  <dialog id="relationModal">
+    <div class="modal-card">
+      <h3 id="modalTitle">Relación</h3>
+      <div class="modal-meta" id="modalMeta"></div>
+      <p id="modalDescription"></p>
+      <button class="close-btn" id="closeModal">Cerrar informe</button>
+    </div>
+  </dialog>
+
+  <script>
+    // =====================================================
+    // PERSONAJES
+    // x e y son porcentajes dentro del tablero.
+    // image es opcional. Si no pones imagen, usa icon.
+    // universe: "inazuma", "dragonball", "pokemon" u "other"
+    // =====================================================
+
+    const PERSONAJES = [
+      {
+        id: "ren",
+        name: "Renzu Itō",
+        universe: "inazuma",
+        role: "Delantero Solar",
+        icon: "🔥",
+        image: "https://cdn.polyspeak.ai/speakmaster/44684906541e82a2213588e6c53521c1.webp",
+        x: 10,
+        y: 16
+      },
+      {
+        id: "dan",
+        name: "Dan Karman",
+        universe: "inazuma",
+        role: "Francia / Raimon",
+        icon: "🌪️",
+        image: "https://static.wikia.nocookie.net/inazuma-eleven-eternal-thunder/images/2/24/DanNuevo.jpg/revision/latest?cb=20241112220422&path-prefix=es",
+        x: 22,
+        y: 6
+      },
+      {
+        id: "hikaru",
+        name: "Hikaru Hoshihara",
+        universe: "inazuma",
+        role: "Capitán del Raimon",
+        icon: "🤺",
+        image: "https://static.wikia.nocookie.net/inazuma-eleven-eternal-thunder/images/a/a5/Hikaru_Hoshihara.png/revision/latest?cb=20250107013330&path-prefix=es",
+        x: 34,
+        y: 16
+      },
+      {
+        id: "candace",
+        name: "Candace Foster",
+        universe: "inazuma",
+        role: "Ex-Capitana del Raimon",
+        icon: "❄️",
+        image: "https://static.wikia.nocookie.net/inazuma-eleven-eternal-thunder/images/b/bd/Candace.jpg/revision/latest?cb=20240330152210&path-prefix=es",
+        x: 22,
+        y: 28
+      },
+      {
+        id: "nara",
+        name: "Nara Midori",
+        universe: "dragonball",
+        role: "Majin protectora",
+        icon: "💚",
+        image: "https://static.wikia.nocookie.net/dragon-ball-eternal-warriors/images/d/d6/Nara.png/revision/latest?cb=20250614182618&path-prefix=es",
+        x: 58,
+        y: 14
+      },
+    ];
+
+    // =====================================================
+    // RELACIONES
+    // from y to usan el id de cada personaje.
+    // type: love, family, friendship, rivalry, mentor, enemy, conflict, team
+    // =====================================================
+
+    const RELACIONES = [
+      {
+        from: "ren",
+        to: "dan",
+        type: "friendship",
+        title: "Duelo en punta",
+        label: "",
+        description: "Son muy buenos amigos que se conocen desde que Ren llegó al equipo. Quieren demostrar quién de los dos merece ser llamado el pichichi del Raimon."
+      },
+      {
+        from: "ren",
+        to: "hikaru",
+        type: "friendship",
+        title: "Respeto al capitán",
+        label: "",
+        description: "Desde que lo nombraron capitán se ha hecho de respetar, y esa actitud hace que Ren le tenga cierto respeto."
+      },
+      {
+        from: "dan",
+        to: "hikaru",
+        type: "friendship",
+        title: "Desde el inicio",
+        label: "🤝 Amistad",
+        description: "Se conocen desde que ambos se unieron al Raimon, la amistad vino con los años."
+      },
+      {
+        from: "hikaru",
+        to: "candace",
+        type: "love",
+        title: "Diosa y Mortal",
+        label: "",
+        description: "Unidos por el fútbol y la confianza, Candace profesa un amor divino hacia Hikaru inquebrantable."
+      },
+      {
+        from: "candace",
+        to: "dan",
+        type: "friendship",
+        title: "Dioses del viento",
+        label: "",
+        description: "Cuando Dan se unió al Raimon, Candace aún era la capitana, se conocen por el respeto mutuo."
+      },
+      {
+        from: "ren",
+        to: "candace",
+        type: "friendship",
+        title: "Sabana Africana",
+        label: "",
+        description: "Ren y Candace lideraban la delantera junto a Dan, y tenían una riña los 2 por ver quién metía más goles, si el guepardo o el león."
+      },
+      
+    ];
+
+    const UNIVERSE_INFO = {
+      inazuma: { label: "Inazuma Eleven", icon: "⚽", color: "var(--inazuma)" },
+      dragonball: { label: "Dragon Ball", icon: "🐉", color: "var(--dragonball)" },
+      pokemon: { label: "Pokémon", icon: "🌟", color: "var(--pokemon)" },
+      other: { label: "Otro", icon: "📌", color: "var(--other)" }
+    };
+
+    const RELATION_INFO = {
+      love: { label: "Pareja", icon: "❤️", color: "var(--love)" },
+      family: { label: "Familia", icon: "👨‍👩‍👧", color: "var(--family)" },
+      friendship: { label: "Amistad", icon: "🤝", color: "var(--friendship)" },
+      rivalry: { label: "Rivalidad", icon: "⚔️", color: "var(--rivalry)" },
+      mentor: { label: "Mentor", icon: "🧑‍🏫", color: "var(--mentor)" },
+      enemy: { label: "Enemigo", icon: "☠️", color: "var(--enemy)" },
+      conflict: { label: "Conflicto", icon: "⚡", color: "var(--conflict)" },
+      team: { label: "Equipo", icon: "🌐", color: "var(--team)" }
+    };
+
+    const board = document.getElementById('board');
+    const linksSvg = document.getElementById('linksSvg');
+    const searchInput = document.getElementById('searchInput');
+    const universeFilter = document.getElementById('universeFilter');
+    const relationFilter = document.getElementById('relationFilter');
+
+    const relationModal = document.getElementById('relationModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMeta = document.getElementById('modalMeta');
+    const modalDescription = document.getElementById('modalDescription');
+    const closeModal = document.getElementById('closeModal');
+
+    function normalizeText(text) {
+      return String(text)
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function getPerson(id) {
+      return PERSONAJES.find(person => person.id === id);
+    }
+
+    function getUniverseInfo(universe) {
+      return UNIVERSE_INFO[universe] || UNIVERSE_INFO.other;
+    }
+
+    function getRelationInfo(type) {
+      return RELATION_INFO[type] || RELATION_INFO.team;
+    }
+
+    function createPersonCard(person, index) {
+      const universe = getUniverseInfo(person.universe);
+      const card = document.createElement('article');
+      card.className = 'person';
+      card.id = `person-${person.id}`;
+      card.dataset.id = person.id;
+      card.dataset.name = person.name;
+      card.dataset.universe = person.universe;
+      card.style.left = `${person.x}%`;
+      card.style.top = `${person.y}%`;
+      card.style.setProperty('--rotate', `${[-3, 2, -1, 3, -2, 1][index % 6]}deg`);
+      card.style.setProperty('--pin-color', universe.color);
+      card.style.setProperty('--photo-bg', universe.color);
+
+      const photoContent = person.image
+        ? `<img src="${person.image}" alt="${person.name}">`
+        : `<span>${person.icon || universe.icon}</span>`;
+
+      card.innerHTML = `
+        <div class="photo">${photoContent}</div>
+        <h2>${person.name}</h2>
+        <p>${person.role || 'Sin rol definido'}</p>
+        <div class="badges">
+          <span class="badge" style="--badge-color:${universe.color}">${universe.icon} ${universe.label}</span>
+        </div>
+      `;
+
+      board.appendChild(card);
+    }
+
+    function drawRelationship(relation, index) {
+      const from = getPerson(relation.from);
+      const to = getPerson(relation.to);
+      if (!from || !to) return;
+
+      const relationInfo = getRelationInfo(relation.type);
+
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', `${from.x}%`);
+      line.setAttribute('y1', `${from.y}%`);
+      line.setAttribute('x2', `${to.x}%`);
+      line.setAttribute('y2', `${to.y}%`);
+      line.setAttribute('stroke', relationInfo.color);
+      line.classList.add('relationship-line');
+      line.dataset.index = index;
+      line.dataset.type = relation.type;
+      line.dataset.from = relation.from;
+      line.dataset.to = relation.to;
+      linksSvg.appendChild(line);
+
+      const label = document.createElement('button');
+      label.type = 'button';
+      label.className = 'relationship-label';
+      label.textContent = relation.label || `${relationInfo.icon} ${relationInfo.label}`;
+      label.style.left = `${(from.x + to.x) / 2}%`;
+      label.style.top = `${(from.y + to.y) / 2}%`;
+      label.style.background = relationInfo.color;
+      label.dataset.index = index;
+      label.dataset.type = relation.type;
+      label.dataset.from = relation.from;
+      label.dataset.to = relation.to;
+      label.addEventListener('click', () => openRelationshipModal(relation));
+      board.appendChild(label);
+    }
+
+    function openRelationshipModal(relation) {
+      const from = getPerson(relation.from);
+      const to = getPerson(relation.to);
+      const relationInfo = getRelationInfo(relation.type);
+
+      modalTitle.textContent = relation.title || `${from.name} y ${to.name}`;
+      modalMeta.innerHTML = `
+        <span class="modal-pill" style="background:${relationInfo.color}">${relationInfo.icon} ${relationInfo.label}</span>
+        <span class="modal-pill">${from.name}</span>
+        <span class="modal-pill">${to.name}</span>
+      `;
+      modalDescription.textContent = relation.description || 'Sin descripción añadida.';
+      relationModal.showModal();
+    }
+
+    function renderBoard() {
+      document.querySelectorAll('.person, .relationship-label').forEach(element => element.remove());
+      linksSvg.innerHTML = '';
+
+      PERSONAJES.forEach(createPersonCard);
+      RELACIONES.forEach(drawRelationship);
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const search = normalizeText(searchInput.value.trim());
+      const selectedUniverse = universeFilter.value;
+      const selectedRelation = relationFilter.value;
+
+      const visiblePersonIds = new Set();
+
+      document.querySelectorAll('.person').forEach(card => {
+        const name = normalizeText(card.dataset.name);
+        const universe = card.dataset.universe;
+
+        const searchMatches = !search || name.includes(search);
+        const universeMatches = selectedUniverse === 'all' || universe === selectedUniverse;
+        const visible = searchMatches && universeMatches;
+
+        card.classList.toggle('hidden', !visible);
+        if (visible) visiblePersonIds.add(card.dataset.id);
+      });
+
+      document.querySelectorAll('.relationship-line').forEach(line => {
+        const relationMatches = selectedRelation === 'all' || line.dataset.type === selectedRelation;
+        const peopleMatch = visiblePersonIds.has(line.dataset.from) && visiblePersonIds.has(line.dataset.to);
+        line.classList.toggle('hidden-line', !(relationMatches && peopleMatch));
+      });
+
+      document.querySelectorAll('.relationship-label').forEach(label => {
+        const relationMatches = selectedRelation === 'all' || label.dataset.type === selectedRelation;
+        const peopleMatch = visiblePersonIds.has(label.dataset.from) && visiblePersonIds.has(label.dataset.to);
+        label.classList.toggle('hidden-label', !(relationMatches && peopleMatch));
+      });
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    universeFilter.addEventListener('change', applyFilters);
+    relationFilter.addEventListener('change', applyFilters);
+
+    closeModal.addEventListener('click', () => relationModal.close());
+
+    relationModal.addEventListener('click', event => {
+      const card = event.target.closest('.modal-card');
+      if (!card) relationModal.close();
+    });
+
+    window.addEventListener('resize', () => {
+      // Las líneas usan porcentajes, así que no necesitan recálculo real.
+      // Esto queda por si luego añadimos modo arrastrable.
+    });
+
+    renderBoard();
+  </script>
+</body>
+</html>
