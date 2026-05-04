@@ -469,6 +469,151 @@
       .modal-head img { width:100%; height:260px; }
     }
 
+
+    /* =========================
+       MODO OSCURO + ACTUALIZACIONES
+       ========================= */
+    body { transition: background .25s ease, color .25s ease; }
+
+    body.dark-mode {
+      --bg:#020817;
+      --bg2:#07142d;
+      --card:rgba(7,20,45,.94);
+      --ink:#eef7ff;
+      --muted:#a7b8d3;
+      --line:rgba(255,255,255,.16);
+      --shadow:0 24px 70px rgba(0,0,0,.52);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,159,28,.18), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(34,167,255,.20), transparent 30%),
+        linear-gradient(135deg, #020817, #07142d 52%, #020617);
+    }
+
+    body.dark-mode .topbar {
+      background:rgba(2,8,23,.82);
+      border-bottom-color:rgba(255,255,255,.12);
+    }
+
+    body.dark-mode .hero-card,
+    body.dark-mode .index-panel,
+    body.dark-mode .stat {
+      background:rgba(255,255,255,.07);
+      border-color:rgba(255,255,255,.13);
+    }
+
+    body.dark-mode .family-card {
+      background:rgba(7,20,45,.92);
+      color:#eef7ff;
+      border-color:rgba(255,255,255,.13);
+    }
+
+    body.dark-mode .family-header {
+      background:
+        linear-gradient(135deg, rgba(34,167,255,.20), rgba(255,159,28,.12)),
+        rgba(8,22,48,.96);
+    }
+
+    body.dark-mode .children-grid {
+      background:linear-gradient(180deg, rgba(8,22,48,.98), rgba(3,10,26,.98));
+    }
+
+    body.dark-mode .child-card,
+    body.dark-mode .parent-card {
+      background:rgba(255,255,255,.08);
+      color:#eef7ff;
+      border-color:rgba(255,255,255,.12);
+      box-shadow:0 16px 34px rgba(0,0,0,.28);
+    }
+
+    body.dark-mode .parent-card.empty { background:rgba(255,255,255,.05); color:#9fb3d2; }
+    body.dark-mode .parent-card img { border-color:rgba(255,255,255,.85); }
+    body.dark-mode .family-title p,
+    body.dark-mode .ref,
+    body.dark-mode .desc { color:#a7b8d3; }
+
+    body.dark-mode .child-card::after { background:rgba(34,167,255,.13); }
+
+    body.dark-mode dialog {
+      background:#07142d;
+      color:#eef7ff;
+    }
+
+    body.dark-mode .modal-head {
+      background:linear-gradient(135deg, rgba(34,167,255,.22), rgba(255,159,28,.14)), #081630;
+    }
+
+    body.dark-mode .modal-body { background:#07142d; }
+    body.dark-mode .modal-body p,
+    body.dark-mode .modal-head p { color:#a7b8d3 !important; }
+    body.dark-mode .modal-close { background:rgba(255,255,255,.12); color:white; }
+
+    body.dark-mode .control option { color:#f8fafc; background:#07142d; }
+
+    .btn.update-btn {
+      background:linear-gradient(135deg, rgba(46,229,157,.95), rgba(34,167,255,.95));
+      color:#061127;
+      font-weight:950;
+      border-color:rgba(255,255,255,.24);
+    }
+
+    .updates-dialog {
+      width:min(760px, calc(100vw - 24px));
+      border:0;
+      border-radius:32px;
+      padding:0;
+      overflow:hidden;
+      color:#11213d;
+      background:#fff;
+      box-shadow:0 30px 90px rgba(0,0,0,.55);
+    }
+
+    .updates-head {
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+      padding:22px;
+      background:linear-gradient(135deg, #eaf5ff, #fff3dc);
+      border-bottom:1px solid rgba(17,33,61,.08);
+    }
+
+    .updates-head h2 { margin:0; font-size:28px; letter-spacing:-.6px; }
+    .updates-head p { margin:6px 0 0; color:#5b6b82; }
+    .updates-body { padding:18px 22px 22px; max-height:min(62vh, 540px); overflow:auto; background:#fff; }
+
+    .update-item {
+      border:1px solid rgba(17,33,61,.08);
+      background:linear-gradient(180deg, #f8fbff, #eef6ff);
+      border-radius:24px;
+      padding:16px;
+      margin-bottom:12px;
+    }
+
+    .update-date {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:1000;
+      color:#1167d8;
+      margin-bottom:10px;
+    }
+
+    .update-item ul { margin:0; padding-left:20px; color:#34445c; line-height:1.55; }
+
+    body.dark-mode .updates-dialog { background:#07142d; color:#eef7ff; }
+    body.dark-mode .updates-head {
+      background:linear-gradient(135deg, rgba(34,167,255,.22), rgba(255,159,28,.14)), #081630;
+      border-bottom-color:rgba(255,255,255,.12);
+    }
+    body.dark-mode .updates-head p { color:#a7b8d3; }
+    body.dark-mode .updates-body { background:#07142d; }
+    body.dark-mode .update-item {
+      background:rgba(255,255,255,.07);
+      border-color:rgba(255,255,255,.12);
+    }
+    body.dark-mode .update-item ul { color:#c8d6ef; }
+    body.dark-mode .update-date { color:#7dd3fc; }
+
     .badge-nacido {
       position: absolute;
       top: 10px;
@@ -484,9 +629,8 @@
       box-shadow: 0 8px 18px rgba(46,229,157,.35);
     }
 
-.child-card.is-born {
-  border-color: rgba(46,229,157,.45);
-}
+    .child-card.is-born { border-color: rgba(46,229,157,.45); }
+
   </style>
 </head>
 <body>
@@ -496,7 +640,7 @@
         <div class="logo">⚽</div>
         <div>
           <h1>Árbol Familiar</h1>
-          <p>Registro oficial de familias para GO 2</p>
+          <p>Vista Inazuma Eleven · ordenada por código</p>
         </div>
       </a>
 
@@ -523,6 +667,8 @@
           <option value="all">Todas las series</option>
         </select></span>
         <button id="resetBtn" class="btn orange">Limpiar</button>
+        <button id="themeToggle" class="btn" type="button">🌙 Modo oscuro</button>
+        <button id="updatesBtn" class="btn update-btn" type="button">🛈 Actualizaciones</button>
       </div>
     </div>
   </header>
@@ -530,8 +676,8 @@
   <section class="hero">
     <div class="hero-card">
       <div class="eyebrow">⚡ Family Eleven Database</div>
-      <h2>Registro oficial para GO2</h2>
-      <p>Nueva versión con optimización en el código (mayor comodidad para mi) y un mayor impacto visual cómodo, añadiendo como features principales las animaciones, filtros, control de cuantos hijos hay, descripciones, fotos, ordenado por orden alfabético entre otros.</p>
+      <h2>Familias ordenadas, limpias y con flow.</h2>
+      <p>Ahora todo se edita desde un único bloque de datos. Pones género con <strong>M</strong> o <strong>F</strong>, añades foto, descripción y referencia, y la web lo pinta sola. Sin pelearse con 300 divs como si fuese un jefe final de Dark Souls.</p>
     </div>
     <div class="stats" id="stats"></div>
   </section>
@@ -548,6 +694,18 @@
   <dialog id="childModal">
     <button class="modal-close" onclick="childModal.close()">×</button>
     <div id="modalContent"></div>
+  </dialog>
+
+  <dialog id="updatesDialog" class="updates-dialog">
+    <button class="modal-close" onclick="updatesDialog.close()">×</button>
+    <div class="updates-head">
+      <div>
+        <div class="eyebrow" style="color:#1167d8">⚡ Novedades del árbol</div>
+        <h2>Actualizaciones</h2>
+        <p>Últimos cambios añadidos a la página.</p>
+      </div>
+    </div>
+    <div class="updates-body" id="updatesContent"></div>
   </dialog>
 
   <script>
@@ -2199,7 +2357,7 @@
   }
 ];
 
-    const $ = (id) => document.getElementById(id);
+        const $ = (id) => document.getElementById(id);
     const searchInput = $("searchInput");
     const genderFilter = $("genderFilter");
     const statusFilter = $("statusFilter");
@@ -2209,6 +2367,29 @@
     const stats = $("stats");
     const childModal = $("childModal");
     const modalContent = $("modalContent");
+    const themeToggle = $("themeToggle");
+    const updatesBtn = $("updatesBtn");
+    const updatesDialog = $("updatesDialog");
+    const updatesContent = $("updatesContent");
+
+    const ACTUALIZACIONES = [
+      {
+        fecha: "2026-05-04",
+        cambios: [
+          "Añadido botón de modo oscuro con guardado automático.",
+          "Añadido panel de actualizaciones para enseñar las novedades a quienes entren.",
+          "Preparada la estructura para editar futuras novedades desde el array ACTUALIZACIONES."
+        ]
+      },
+      {
+        fecha: "2026-05-03",
+        cambios: [
+          "Rediseño visual estilo Inazuma Eleven.",
+          "Índice alfabético lateral, filtros y fichas de hijos.",
+          "Soporte para fotos separadas de madre y padre."
+        ]
+      }
+    ];
 
     const PLACEHOLDER_FAMILY = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'><defs><linearGradient id='g' x1='0' x2='1'><stop stop-color='#22a7ff'/><stop offset='1' stop-color='#ff9f1c'/></linearGradient></defs><rect width='300' height='300' rx='60' fill='url(#g)'/><circle cx='105' cy='118' r='42' fill='white' opacity='.88'/><circle cx='194' cy='118' r='42' fill='white' opacity='.72'/><path d='M55 238c18-54 78-72 112-38 30-32 86-20 105 38' fill='white' opacity='.86'/><text x='150' y='275' text-anchor='middle' font-size='28' font-family='Arial' font-weight='900' fill='#07142d'>FAMILY</text></svg>`);
     const PLACEHOLDER_CHILD = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 280'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#dbeafe'/><stop offset='1' stop-color='#fff3dc'/></linearGradient></defs><rect width='220' height='280' rx='42' fill='url(#g)'/><circle cx='110' cy='92' r='48' fill='#ffffff'/><path d='M39 242c10-61 132-61 142 0' fill='#ffffff'/><path d='M68 35l24 30-38 5 50 68' fill='none' stroke='#ff9f1c' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/></svg>`);
@@ -2401,6 +2582,29 @@
 
     window.openChild = openChild;
 
+
+    function renderUpdates() {
+      updatesContent.innerHTML = ACTUALIZACIONES.map(update => `
+        <article class="update-item">
+          <div class="update-date">📅 ${escapeHTML(update.fecha)}</div>
+          <ul>${update.cambios.map(cambio => `<li>${escapeHTML(cambio)}</li>`).join("")}</ul>
+        </article>
+      `).join("");
+    }
+
+    function applyTheme(theme) {
+      const dark = theme === "dark";
+      document.body.classList.toggle("dark-mode", dark);
+      themeToggle.textContent = dark ? "☀️ Modo claro" : "🌙 Modo oscuro";
+      themeToggle.setAttribute("aria-pressed", dark ? "true" : "false");
+      localStorage.setItem("familyTreeTheme", theme);
+    }
+
+    function toggleTheme() {
+      const nextTheme = document.body.classList.contains("dark-mode") ? "light" : "dark";
+      applyTheme(nextTheme);
+    }
+
     function resetFilters() {
       searchInput.value = "";
       genderFilter.value = "all";
@@ -2411,11 +2615,16 @@
 
     [searchInput, genderFilter, statusFilter, seriesFilter].forEach(el => el.addEventListener("input", renderFamilies));
     $("resetBtn").addEventListener("click", resetFilters);
+    themeToggle.addEventListener("click", toggleTheme);
+    updatesBtn.addEventListener("click", () => updatesDialog.showModal());
     document.addEventListener("keydown", e => {
       if (e.key === "/" && document.activeElement !== searchInput) { e.preventDefault(); searchInput.focus(); }
       if (e.key === "Escape" && childModal.open) childModal.close();
+      if (e.key === "Escape" && updatesDialog.open) updatesDialog.close();
     });
 
+    applyTheme(localStorage.getItem("familyTreeTheme") || "light");
+    renderUpdates();
     populateSeries();
     renderFamilies();
   </script>
