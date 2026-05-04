@@ -1325,7 +1325,7 @@
     }
   },
   {
-    "familia": "Leii y Lilya",
+    "familia": "Leii y Lylia",
     "foto": "",
     "descripcion": "",
     "hijos": [
@@ -1696,7 +1696,7 @@
         "genero": "F",
         "referencia": "Onikata Kayoko - Blue Archive",
         "estado": "L",
-        "foto": "InaHijos/Justin y Rumi/Amykaido.jpg",
+        "foto": "InaHijos/Justin y Rumi/AmyKaido.jpg",
         "descripcion": ""
       },
       {
@@ -2363,7 +2363,31 @@
       "nombre": "Kyouka Uzen",
       "foto": "pjs/Kyouka Uzen.jpg"
     }
-  }
+  },
+  {
+    "familia": "Natsu y Flora",
+    "foto": "",
+    "descripcion": "",
+    "hijos": [
+      {
+        "numero": "",
+        "nombre": "Cargando Hijo...",
+        "genero": "?",
+        "referencia": "Aquí no conocemos ni al papá XD",
+        "estado": "?",
+        "foto": "",
+        "descripcion": ""
+      }
+    ],
+    "padre": {
+      "nombre": "Natsu Dragneel",
+      "foto": "pjs/Natsu Dragneel.jpg"
+    },
+    "madre": {
+      "nombre": "Flora Sprigan",
+      "foto": "pjs/Flora Sprigan.jpg"
+    }
+  },
 ];
 
         const $ = (id) => document.getElementById(id);
@@ -2383,21 +2407,17 @@
 
     const ACTUALIZACIONES = [
       {
-        fecha: "2026-05-04",
+        fecha: "04-05-2026",
         cambios: [
           "Añadido botón de modo oscuro con guardado automático.",
           "Añadido panel de actualizaciones para enseñar las novedades a quienes entren.",
-          "Preparada la estructura para editar futuras novedades desde el array ACTUALIZACIONES."
-        ]
-      },
-      {
-        fecha: "2026-05-03",
-        cambios: [
+          "Preparada la estructura para editar futuras novedades desde el array ACTUALIZACIONES.",
           "Rediseño visual estilo Inazuma Eleven.",
           "Índice alfabético lateral, filtros y fichas de hijos.",
-          "Soporte para fotos separadas de madre y padre."
+          "Soporte para fotos separadas de madre y padre.",
+          "Añadidas la familia de Natsu y Flora así como Yoruichi en la familia de James y Abigail."
         ]
-      }
+      },
     ];
 
     const PLACEHOLDER_FAMILY = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'><defs><linearGradient id='g' x1='0' x2='1'><stop stop-color='#22a7ff'/><stop offset='1' stop-color='#ff9f1c'/></linearGradient></defs><rect width='300' height='300' rx='60' fill='url(#g)'/><circle cx='105' cy='118' r='42' fill='white' opacity='.88'/><circle cx='194' cy='118' r='42' fill='white' opacity='.72'/><path d='M55 238c18-54 78-72 112-38 30-32 86-20 105 38' fill='white' opacity='.86'/><text x='150' y='275' text-anchor='middle' font-size='28' font-family='Arial' font-weight='900' fill='#07142d'>FAMILY</text></svg>`);
