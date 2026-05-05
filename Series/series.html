@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Series — RP HUB</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fredoka:wght@500;600;700&display=swap');
+
+    :root {
+      --bg: #08111f;
+      --bg-2: #0d1830;
+      --card: rgba(255,255,255,.075);
+      --card-strong: rgba(255,255,255,.12);
+      --line: rgba(255,255,255,.14);
+      --text: #f5f7fb;
+      --muted: #aab6cc;
+      --accent: #ffd84d;
+      --accent-2: #ff7a3d;
+      --blue: #61a8ff;
+      --green: #60f2b2;
+      --red: #ff6b7a;
+      --purple: #b48cff;
+      --shadow: 0 24px 80px rgba(0,0,0,.36);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    body.light {
+      --bg: #f4f7ff;
+      --bg-2: #eaf0ff;
+      --card: rgba(255,255,255,.75);
+      --card-strong: rgba(255,255,255,.95);
+      --line: rgba(15, 23, 42, .12);
+      --text: #111827;
+      --muted: #5f6b7c;
+      --shadow: 0 20px 60px rgba(31, 41, 55, .12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255,216,77,.22), transparent 34rem),
+        radial-gradient(circle at 80% 10%, rgba(97,168,255,.18), transparent 32rem),
+        radial-gradient(circle at 50% 100%, rgba(180,140,255,.14), transparent 34rem),
+        linear-gradient(145deg, var(--bg), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.6), transparent 80%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 14px;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 10px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      min-width: 0;
+    }
+
+    .brand-badge {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #1a1200;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.45);
+      flex: 0 0 auto;
+    }
+
+    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .pill-button {
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .pill-button:hover { transform: translateY(-2px); background: var(--card-strong); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 24px;
+      align-items: stretch;
+      padding: 54px 0 28px;
+    }
+
+    .hero-card, .side-card, .control-panel, .series-card, .modal-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--card-strong), var(--card));
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+
+    .hero-card { padding: clamp(26px, 4vw, 48px); overflow: hidden; position: relative; }
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      right: -90px;
+      top: -90px;
+      background: radial-gradient(circle, rgba(255,216,77,.32), transparent 70%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,216,77,.12);
+      color: var(--accent);
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-family: Fredoka, Inter, sans-serif;
+      margin: 0;
+      font-size: clamp(3rem, 7vw, 6.2rem);
+      line-height: .9;
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: 1.06rem;
+      line-height: 1.75;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .stat {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+    }
+    .stat strong { display:block; font-size: 1.6rem; }
+    .stat span { color: var(--muted); font-size: .88rem; font-weight: 800; }
+
+    .side-card { padding: 24px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; }
+    .side-card h2 { margin: 0; font-family: Fredoka, Inter, sans-serif; font-size: 1.9rem; letter-spacing: -.04em; }
+    .side-card p { margin: 10px 0 0; color: var(--muted); line-height: 1.65; }
+
+    .legend { display: grid; gap: 10px; }
+    .legend-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.055); }
+    .legend-item b { font-size: 1.05rem; }
+    .mini-avatar { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 12px; font-weight: 900; color: #111827; }
+    .avatar-y { background: var(--accent); }
+    .avatar-s { background: var(--blue); }
+    .avatar-l { background: var(--green); }
+
+    .control-panel {
+      display: grid;
+      grid-template-columns: 1fr repeat(3, minmax(150px, auto));
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      margin: 8px 0 22px;
+    }
+
+    .field { position: relative; }
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(255,255,255,.07);
+      border-radius: 999px;
+      padding: 13px 16px;
+      outline: none;
+      font-weight: 800;
+    }
+    .field input::placeholder { color: var(--muted); }
+    .field select option { background: #111827; color: #fff; }
+    body.light .field select option { background: #fff; color: #111827; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; margin: -4px 0 20px; }
+    .chip {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+    .chip:hover, .chip.active { color: var(--text); background: rgba(255,216,77,.15); border-color: rgba(255,216,77,.35); }
+
+    .series-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+      gap: 18px;
+    }
+
+    .series-card {
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      transition: .22s ease;
+      position: relative;
+    }
+    .series-card:hover { transform: translateY(-6px); background: linear-gradient(180deg, var(--card-strong), rgba(255,255,255,.09)); }
+
+    .poster-wrap {
+      position: relative;
+      aspect-ratio: 2/3;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+    .poster-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: .3s ease; }
+    .series-card:hover .poster-wrap img { transform: scale(1.04); }
+    .poster-fallback { display: grid; place-items: center; height: 100%; font-size: 4rem; background: linear-gradient(135deg, rgba(255,216,77,.22), rgba(97,168,255,.18)); }
+
+    .poster-top {
+      position: absolute;
+      inset: 12px 12px auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .tag, .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(8,17,31,.72);
+      border: 1px solid rgba(255,255,255,.16);
+      color: #fff;
+      font-weight: 900;
+      font-size: .78rem;
+      backdrop-filter: blur(12px);
+    }
+    .status.completed { color: var(--green); }
+    .status.watching { color: var(--accent); }
+    .status.paused { color: var(--blue); }
+    .status.pending { color: var(--muted); }
+    .status.dropped { color: var(--red); }
+
+    .fav {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(8,17,31,.72);
+      color: #fff;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      font-weight: 900;
+    }
+    .fav.active { color: var(--accent); }
+
+    .series-body { padding: 16px; }
+    .series-body h3 { margin: 0; font-size: 1.15rem; letter-spacing: -.03em; }
+    .meta { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 7px; color: var(--muted); font-size: .82rem; font-weight: 800; }
+    .desc { color: var(--muted); line-height: 1.55; font-size: .92rem; margin: 12px 0 14px; min-height: 44px; }
+
+    .ratings { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .rating-box {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.055);
+      border-radius: 15px;
+      padding: 9px 7px;
+      text-align: center;
+    }
+    .rating-box span { display: block; font-size: .72rem; color: var(--muted); font-weight: 900; }
+    .rating-box strong { display: block; margin-top: 3px; font-size: 1.04rem; }
+    .rating-box.avg { background: rgba(255,216,77,.13); border-color: rgba(255,216,77,.28); }
+
+    .progress-line { margin-top: 14px; }
+    .progress-info { display:flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: .78rem; font-weight: 900; margin-bottom: 7px; }
+    .progress-track { height: 9px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden; border: 1px solid var(--line); }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: inherit; }
+
+    .card-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .small-btn {
+      flex: 1;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .small-btn:hover { background: var(--card-strong); }
+
+    .empty {
+      display: none;
+      text-align: center;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius-xl);
+      padding: 36px;
+      color: var(--muted);
+      font-weight: 800;
+      background: rgba(255,255,255,.04);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(0,0,0,.58);
+      backdrop-filter: blur(12px);
+    }
+    .modal.show { display: grid; }
+    .modal-card {
+      width: min(860px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      padding: 18px;
+    }
+    .modal-grid { display: grid; grid-template-columns: 220px 1fr; gap: 20px; }
+    .modal-poster { width: 100%; aspect-ratio: 2/3; border-radius: 22px; overflow:hidden; border: 1px solid var(--line); background: rgba(255,255,255,.06); }
+    .modal-poster img { width:100%; height:100%; object-fit:cover; display:block; }
+    .modal-content h2 { margin: 0; font-family: Fredoka, Inter, sans-serif; font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -.06em; }
+    .modal-content p { color: var(--muted); line-height: 1.7; }
+    .modal-close { float: right; margin-bottom: 8px; }
+    .detail-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 16px; }
+    .detail-item { border: 1px solid var(--line); border-radius: 16px; padding: 12px; background: rgba(255,255,255,.055); }
+    .detail-item span { display:block; color: var(--muted); font-size: .78rem; font-weight: 900; }
+    .detail-item strong { display:block; margin-top: 3px; }
+
+    footer {
+      margin-top: 42px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255,255,255,.05);
+      font-weight: 800;
+    }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; padding-top: 34px; }
+      .control-panel { grid-template-columns: 1fr 1fr; }
+      .control-panel .field:first-child { grid-column: 1 / -1; }
+      .modal-grid { grid-template-columns: 1fr; }
+      .modal-poster { max-width: 260px; }
+    }
+
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 22px, 1180px); padding-top: 14px; }
+      .topbar { border-radius: 24px; align-items: flex-start; flex-direction: column; }
+      .top-actions { width: 100%; }
+      .pill-button { flex: 1; }
+      .stats { grid-template-columns: 1fr; }
+      .control-panel { grid-template-columns: 1fr; border-radius: 24px; }
+      .series-grid { grid-template-columns: 1fr; }
+      .ratings { grid-template-columns: repeat(2, 1fr); }
+      .detail-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <nav class="topbar" aria-label="Navegación principal">
+      <a class="brand" href="index.html">
+        <span class="brand-badge">🎥</span>
+        <span>Series · RP HUB</span>
+      </a>
+      <div class="top-actions">
+        <a class="pill-button" href="index.html">← Volver al HUB</a>
+        <button class="pill-button" id="themeBtn" type="button">🌙 Modo oscuro</button>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <article class="hero-card">
+        <span class="eyebrow">🎬 Biblioteca compartida</span>
+        <h1>Series</h1>
+        <p>Registro de series vistas, pendientes o a medias. Las notas de <strong>Y</strong>, <strong>S</strong> y <strong>L</strong> quedan visibles en cada tarjeta, junto a la media, progreso, estado, plataforma y comentarios.</p>
+        <div class="stats" aria-label="Estadísticas de series">
+          <div class="stat"><strong id="totalSeries">0</strong><span>Series registradas</span></div>
+          <div class="stat"><strong id="avgScore">0.0</strong><span>Media general</span></div>
+          <div class="stat"><strong id="watchingCount">0</strong><span>En emisión / viendo</span></div>
+        </div>
+      </article>
+
+      <aside class="side-card">
+        <div>
+          <h2>Notas rápidas</h2>
+          <p>Edita el array <strong>SERIES</strong> dentro del script para añadir nuevas series. Las imágenes van en rutas normales, por ejemplo <strong>img/series/nombre.jpg</strong>.</p>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span><span class="mini-avatar avatar-y">Y</span> Nota de Y</span><b>0-10</b></div>
+          <div class="legend-item"><span><span class="mini-avatar avatar-s">S</span> Nota de S</span><b>0-10</b></div>
+          <div class="legend-item"><span><span class="mini-avatar avatar-l">L</span> Nota de L</span><b>0-10</b></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="control-panel" aria-label="Filtros de series">
+      <label class="field">
+        <input id="searchInput" type="search" placeholder="Buscar serie, género, plataforma..." />
+      </label>
+      <label class="field">
+        <select id="statusFilter">
+          <option value="all">Todos los estados</option>
+          <option value="Viendo">Viendo</option>
+          <option value="Completa">Completa</option>
+          <option value="Pausada">Pausada</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Abandonada">Abandonada</option>
+        </select>
+      </label>
+      <label class="field">
+        <select id="genreFilter">
+          <option value="all">Todos los géneros</option>
+        </select>
+      </label>
+      <label class="field">
+        <select id="sortSelect">
+          <option value="title">Orden: A-Z</option>
+          <option value="score">Mejor media</option>
+          <option value="progress">Más progreso</option>
+          <option value="recent">Más reciente</option>
+          <option value="favorites">Favoritos primero</option>
+        </select>
+      </label>
+    </section>
+
+    <div class="chips" id="platformChips" aria-label="Filtro por plataforma"></div>
+
+    <section class="series-grid" id="seriesGrid" aria-live="polite"></section>
+    <div class="empty" id="emptyState">No hay ninguna serie con esos filtros. El buscador está haciendo un “no encuentro na” nivel NPC.</div>
+
+    <footer>
+      <strong>Consejo:</strong> para añadir una serie nueva, copia un bloque del array SERIES, cambia título, portada, notas y progreso. Easy, clean, sin invocar demonios de JavaScript.
+    </footer>
+  </main>
+
+  <div class="modal" id="seriesModal" aria-hidden="true">
+    <article class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="pill-button modal-close" id="closeModal" type="button">Cerrar ✕</button>
+      <div class="modal-grid" id="modalContent"></div>
+    </article>
+  </div>
+
+  <script>
+    /*
+      CÓMO AÑADIR SERIES:
+      1. Copia uno de los bloques de ejemplo dentro de SERIES.
+      2. Cambia title, poster, status, platform, genre, seasons, episodes, watchedEpisodes y ratings.
+      3. Las portadas pueden ir en una carpeta tipo: img/series/nombre.jpg
+      4. Si alguien no ha puesto nota aún, deja null. Ejemplo: ratings: { Y: 8, S: null, L: 7 }
+    */
+
+    const SERIES = [
+      {
+        title: "Yakusoku no Neverland",
+        poster: "fotos/Yakusoku.jpg",
+        status: "Viendo",
+        platform: "Animeninja",
+        genre: ["Aventura", "Drama"],
+        seasons: 2,
+        episodes: 23,
+        watchedEpisodes: 12,
+        year: 2019,
+        universe: "Anime",
+        ratings: { Y: 8, S: null, L: null },
+        favorite: true,
+        notes: "Emma, Norman y Ray, tres niños superdotados en un orfanato idílico, descubren que su hogar es en realidad una granja de humanos criada para alimentar a monstruos. Al conocer la siniestra verdad, planean escapar junto a sus hermanos para sobrevivir"
+      },
+      {
+        title: "Dragon Ball Z Kai",
+        poster: "fotos/dragonballzkai.jpg",
+        status: "Viendo",
+        platform: "Netflix",
+        genre: ["Acción", "Drama", "Shonen"],
+        seasons: 2,
+        episodes: 169,
+        watchedEpisodes: 32,
+        year: 2022,
+        universe: "Anime",
+        ratings: { Y: 8.5, S: null, L: null },
+        favorite: true,
+        notes: "A medida que las fuerzas de los confines del universo descienden sobre la Tierra, Goku y sus aliados son los únicos que se interponen entre la paz y el fin de la humanidad."
+      },
+    ];
+
+    const STORAGE_KEYS = {
+      theme: "rpHubSeriesTheme",
+      favorites: "rpHubSeriesFavorites"
+    };
+
+    const els = {
+      body: document.body,
+      themeBtn: document.getElementById("themeBtn"),
+      searchInput: document.getElementById("searchInput"),
+      statusFilter: document.getElementById("statusFilter"),
+      genreFilter: document.getElementById("genreFilter"),
+      sortSelect: document.getElementById("sortSelect"),
+      platformChips: document.getElementById("platformChips"),
+      seriesGrid: document.getElementById("seriesGrid"),
+      emptyState: document.getElementById("emptyState"),
+      totalSeries: document.getElementById("totalSeries"),
+      avgScore: document.getElementById("avgScore"),
+      watchingCount: document.getElementById("watchingCount"),
+      modal: document.getElementById("seriesModal"),
+      modalContent: document.getElementById("modalContent"),
+      closeModal: document.getElementById("closeModal")
+    };
+
+    let activePlatform = "all";
+    let favoriteOverrides = JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites) || "{}");
+
+    function slugify(text) {
+      return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>'"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#039;", '"': "&quot;" }[char]));
+    }
+
+    function getFavorite(series) {
+      const id = slugify(series.title);
+      return favoriteOverrides[id] ?? Boolean(series.favorite);
+    }
+
+    function saveFavorite(series, value) {
+      favoriteOverrides[slugify(series.title)] = value;
+      localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(favoriteOverrides));
+    }
+
+    function averageRating(series) {
+      const values = Object.values(series.ratings || {}).filter(value => typeof value === "number");
+      if (!values.length) return null;
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
+    }
+
+    function progressPercent(series) {
+      if (!series.episodes) return 0;
+      return Math.min(100, Math.round((series.watchedEpisodes / series.episodes) * 100));
+    }
+
+    function statusClass(status) {
+      return {
+        "Completa": "completed",
+        "Viendo": "watching",
+        "Pausada": "paused",
+        "Pendiente": "pending",
+        "Abandonada": "dropped"
+      }[status] || "pending";
+    }
+
+    function ratingHTML(label, value) {
+      return `<div class="rating-box"><span>${label}</span><strong>${typeof value === "number" ? value.toFixed(value % 1 ? 1 : 0) : "—"}</strong></div>`;
+    }
+
+    function getFilteredSeries() {
+      const query = els.searchInput.value.trim().toLowerCase();
+      const status = els.statusFilter.value;
+      const genre = els.genreFilter.value;
+      const sort = els.sortSelect.value;
+
+      let result = SERIES.filter(series => {
+        const searchable = [
+          series.title,
+          series.status,
+          series.platform,
+          series.universe,
+          series.year,
+          ...(series.genre || [])
+        ].join(" ").toLowerCase();
+
+        const matchesQuery = !query || searchable.includes(query);
+        const matchesStatus = status === "all" || series.status === status;
+        const matchesGenre = genre === "all" || (series.genre || []).includes(genre);
+        const matchesPlatform = activePlatform === "all" || series.platform === activePlatform;
+
+        return matchesQuery && matchesStatus && matchesGenre && matchesPlatform;
+      });
+
+      result.sort((a, b) => {
+        if (sort === "score") return (averageRating(b) ?? -1) - (averageRating(a) ?? -1);
+        if (sort === "progress") return progressPercent(b) - progressPercent(a);
+        if (sort === "recent") return (b.year || 0) - (a.year || 0);
+        if (sort === "favorites") return Number(getFavorite(b)) - Number(getFavorite(a)) || a.title.localeCompare(b.title);
+        return a.title.localeCompare(b.title);
+      });
+
+      return result;
+    }
+
+    function renderStats() {
+      const rated = SERIES.map(averageRating).filter(value => typeof value === "number");
+      const avg = rated.length ? rated.reduce((sum, value) => sum + value, 0) / rated.length : 0;
+      els.totalSeries.textContent = SERIES.length;
+      els.avgScore.textContent = avg.toFixed(1);
+      els.watchingCount.textContent = SERIES.filter(series => series.status === "Viendo").length;
+    }
+
+    function renderFilters() {
+      const genres = [...new Set(SERIES.flatMap(series => series.genre || []))].sort();
+      els.genreFilter.innerHTML = `<option value="all">Todos los géneros</option>` + genres.map(genre => `<option value="${escapeHTML(genre)}">${escapeHTML(genre)}</option>`).join("");
+
+      const platforms = ["all", ...new Set(SERIES.map(series => series.platform).filter(Boolean))];
+      els.platformChips.innerHTML = platforms.map(platform => `
+        <button class="chip ${platform === activePlatform ? "active" : ""}" type="button" data-platform="${escapeHTML(platform)}">
+          ${platform === "all" ? "Todas las plataformas" : escapeHTML(platform)}
+        </button>
+      `).join("");
+    }
+
+    function renderSeries() {
+      const filtered = getFilteredSeries();
+      els.emptyState.style.display = filtered.length ? "none" : "block";
+
+      els.seriesGrid.innerHTML = filtered.map(series => {
+        const avg = averageRating(series);
+        const progress = progressPercent(series);
+        const favorite = getFavorite(series);
+        const id = slugify(series.title);
+
+        return `
+          <article class="series-card">
+            <div class="poster-wrap">
+              ${series.poster ? `<img src="${escapeHTML(series.poster)}" alt="Portada de ${escapeHTML(series.title)}" onerror="this.parentElement.innerHTML='<div class=&quot;poster-fallback&quot;>🎥</div>'">` : `<div class="poster-fallback">🎥</div>`}
+              <div class="poster-top">
+                <span class="status ${statusClass(series.status)}">${escapeHTML(series.status)}</span>
+                <button class="fav ${favorite ? "active" : ""}" type="button" data-fav="${id}" title="Marcar favorito">${favorite ? "★" : "☆"}</button>
+              </div>
+            </div>
+            <div class="series-body">
+              <h3>${escapeHTML(series.title)}</h3>
+              <div class="meta">
+                <span>${escapeHTML(series.year || "—")}</span>
+                <span>•</span>
+                <span>${escapeHTML(series.platform || "Sin plataforma")}</span>
+                <span>•</span>
+                <span>${escapeHTML(series.universe || "Serie")}</span>
+              </div>
+              <p class="desc">${escapeHTML(series.notes || "Sin notas todavía.")}</p>
+              <div class="ratings">
+                ${ratingHTML("Y", series.ratings?.Y)}
+                ${ratingHTML("S", series.ratings?.S)}
+                ${ratingHTML("L", series.ratings?.L)}
+                <div class="rating-box avg"><span>MEDIA</span><strong>${avg === null ? "—" : avg.toFixed(1)}</strong></div>
+              </div>
+              <div class="progress-line">
+                <div class="progress-info"><span>${series.watchedEpisodes || 0}/${series.episodes || 0} episodios</span><span>${progress}%</span></div>
+                <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
+              </div>
+              <div class="card-actions">
+                <button class="small-btn" type="button" data-open="${id}">Ver ficha</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function openModal(series) {
+      const avg = averageRating(series);
+      const progress = progressPercent(series);
+      els.modalContent.innerHTML = `
+        <div class="modal-poster">
+          ${series.poster ? `<img src="${escapeHTML(series.poster)}" alt="Portada de ${escapeHTML(series.title)}" onerror="this.parentElement.innerHTML='<div class=&quot;poster-fallback&quot;>🎥</div>'">` : `<div class="poster-fallback">🎥</div>`}
+        </div>
+        <div class="modal-content">
+          <span class="eyebrow">${escapeHTML(series.status)} · ${escapeHTML(series.platform || "Sin plataforma")}</span>
+          <h2 id="modalTitle">${escapeHTML(series.title)}</h2>
+          <p>${escapeHTML(series.notes || "Sin notas todavía.")}</p>
+          <div class="ratings">
+            ${ratingHTML("Y", series.ratings?.Y)}
+            ${ratingHTML("S", series.ratings?.S)}
+            ${ratingHTML("L", series.ratings?.L)}
+            <div class="rating-box avg"><span>MEDIA</span><strong>${avg === null ? "—" : avg.toFixed(1)}</strong></div>
+          </div>
+          <div class="detail-list">
+            <div class="detail-item"><span>Géneros</span><strong>${escapeHTML((series.genre || []).join(", ") || "—")}</strong></div>
+            <div class="detail-item"><span>Año</span><strong>${escapeHTML(series.year || "—")}</strong></div>
+            <div class="detail-item"><span>Temporadas</span><strong>${escapeHTML(series.seasons || "—")}</strong></div>
+            <div class="detail-item"><span>Progreso</span><strong>${escapeHTML(series.watchedEpisodes || 0)}/${escapeHTML(series.episodes || 0)} episodios · ${progress}%</strong></div>
+          </div>
+        </div>
+      `;
+      els.modal.classList.add("show");
+      els.modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal() {
+      els.modal.classList.remove("show");
+      els.modal.setAttribute("aria-hidden", "true");
+    }
+
+    function applyTheme(theme) {
+      els.body.classList.toggle("light", theme === "light");
+      els.themeBtn.textContent = theme === "light" ? "🌙 Modo oscuro" : "☀️ Modo claro";
+      localStorage.setItem(STORAGE_KEYS.theme, theme);
+    }
+
+    function initEvents() {
+      els.themeBtn.addEventListener("click", () => applyTheme(els.body.classList.contains("light") ? "dark" : "light"));
+      [els.searchInput, els.statusFilter, els.genreFilter, els.sortSelect].forEach(el => el.addEventListener("input", renderSeries));
+
+      els.platformChips.addEventListener("click", event => {
+        const chip = event.target.closest("[data-platform]");
+        if (!chip) return;
+        activePlatform = chip.dataset.platform;
+        renderFilters();
+        renderSeries();
+      });
+
+      els.seriesGrid.addEventListener("click", event => {
+        const favBtn = event.target.closest("[data-fav]");
+        if (favBtn) {
+          const series = SERIES.find(item => slugify(item.title) === favBtn.dataset.fav);
+          saveFavorite(series, !getFavorite(series));
+          renderSeries();
+          return;
+        }
+
+        const openBtn = event.target.closest("[data-open]");
+        if (openBtn) {
+          const series = SERIES.find(item => slugify(item.title) === openBtn.dataset.open);
+          if (series) openModal(series);
+        }
+      });
+
+      els.closeModal.addEventListener("click", closeModal);
+      els.modal.addEventListener("click", event => { if (event.target === els.modal) closeModal(); });
+      document.addEventListener("keydown", event => { if (event.key === "Escape") closeModal(); });
+    }
+
+    function init() {
+      applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || "dark");
+      renderStats();
+      renderFilters();
+      renderSeries();
+      initEvents();
+    }
+
+    init();
+  </script>
+</body>
+</html>
