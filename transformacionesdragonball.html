@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transformaciones — Dragon Ball Eternal Warriors</title>
+
+  <style>
+    :root {
+      --bg: #070707;
+      --gold: #ffd84d;
+      --orange: #ff6a00;
+      --blue: #63d8ff;
+      --text: #fff6d6;
+      --muted: #ffe6a1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(255, 216, 77, 0.22), transparent 32%),
+        radial-gradient(circle at 20% 15%, rgba(99, 216, 255, 0.12), transparent 24%),
+        linear-gradient(135deg, #090500, #1a0b00 45%, #050505);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.025) 0px,
+          rgba(255, 255, 255, 0.025) 1px,
+          transparent 1px,
+          transparent 80px
+        );
+      opacity: 0.45;
+      z-index: -1;
+    }
+
+    .page {
+      width: min(1250px, 92%);
+      margin: 0 auto;
+      padding: 44px 0 60px;
+    }
+
+    .hero {
+      position: relative;
+      padding: 34px 24px;
+      margin-bottom: 34px;
+      border: 2px solid rgba(255, 216, 77, 0.75);
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(255, 204, 51, 0.16), rgba(255, 106, 0, 0.08)),
+        rgba(10, 7, 2, 0.76);
+      box-shadow:
+        0 0 26px rgba(255, 179, 0, 0.4),
+        inset 0 0 28px rgba(255, 132, 0, 0.12);
+      overflow: hidden;
+    }
+
+    .kicker {
+      color: var(--blue);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      text-shadow: 0 0 10px rgba(99, 216, 255, 0.75);
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 6vw, 4.8rem);
+      line-height: 0.96;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-shadow:
+        0 0 8px #ffb300,
+        0 0 22px rgba(255, 106, 0, 0.85),
+        3px 3px 0 #5a2200;
+      max-width: 900px;
+    }
+
+    .subtitle {
+      margin-top: 16px;
+      max-width: 790px;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.6;
+    }
+
+    .note {
+      margin-top: 16px;
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: #1b0b00;
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--gold), var(--orange));
+      box-shadow: 0 0 14px rgba(255, 179, 0, 0.55);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      margin: 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      width: min(100%, 540px);
+    }
+
+    .toolbar-actions input,
+    .toolbar-actions select {
+      flex: 1;
+      min-width: 180px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-size: 0.96rem;
+    }
+
+    .toolbar-actions select {
+      max-width: 220px;
+    }
+
+    .counter {
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 216, 77, 0.5);
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .personajes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 28px;
+    }
+
+    .personaje-card {
+      position: relative;
+      border: 2px solid rgba(255, 204, 51, 0.85);
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(52, 28, 0, 0.92), rgba(5, 5, 5, 0.98));
+      box-shadow:
+        0 0 18px rgba(255, 209, 51, 0.4),
+        inset 0 0 25px rgba(255, 132, 0, 0.12);
+      overflow: hidden;
+    }
+
+    .personaje-header {
+      padding: 20px;
+      border-bottom: 2px solid rgba(255, 204, 51, 0.65);
+      background:
+        radial-gradient(circle at right, rgba(255, 222, 73, 0.25), transparent 38%),
+        rgba(0, 0, 0, 0.35);
+    }
+
+    .personaje-nombre {
+      font-size: 1.8rem;
+      color: #fff;
+      text-shadow:
+        0 0 8px rgba(255, 204, 51, 0.95),
+        2px 2px 0 #4b1d00;
+    }
+
+    .personaje-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .forms-list {
+      display: grid;
+      gap: 16px;
+      padding: 18px;
+    }
+
+    .form-card {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 16px;
+      align-items: stretch;
+      border: 1px solid rgba(255, 216, 77, 0.38);
+      border-radius: 18px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at left, rgba(255, 222, 73, 0.18), transparent 45%),
+        rgba(0, 0, 0, 0.35);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .form-card:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 0 18px rgba(255, 220, 80, 0.55),
+        0 0 30px rgba(255, 115, 0, 0.28);
+    }
+
+    .form-img-wrap {
+      position: relative;
+      min-height: 150px;
+      background:
+        radial-gradient(circle, rgba(255, 238, 91, 0.45), transparent 65%),
+        linear-gradient(180deg, #211000, #050505);
+      overflow: hidden;
+    }
+
+    .form-img-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(circle, rgba(255, 238, 91, 0.55), transparent 60%);
+      filter: blur(8px);
+    }
+
+    .form-img {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      min-height: 150px;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.08) contrast(1.08);
+    }
+
+    .form-info {
+      padding: 14px 14px 14px 0;
+    }
+
+    .form-name {
+      color: var(--gold);
+      font-size: 1.08rem;
+      text-transform: uppercase;
+      font-weight: 1000;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+
+    .multiplier {
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--gold), var(--orange));
+      color: #180900;
+      font-weight: 1000;
+      box-shadow: 0 0 12px rgba(255, 179, 0, 0.7);
+      margin-bottom: 10px;
+    }
+
+    .form-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(99, 216, 255, 0.14);
+      color: var(--blue);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .note-text {
+      margin-top: 10px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .no-img {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 0;
+    }
+
+    .desc {
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.93rem;
+    }
+
+    .code-help {
+      margin-top: 36px;
+      padding: 22px;
+      border-radius: 22px;
+      background: rgba(0, 0, 0, 0.42);
+      border: 1px solid rgba(255, 216, 77, 0.35);
+    }
+
+    .code-help h2 {
+      color: var(--gold);
+      margin-bottom: 10px;
+      text-shadow: 0 0 8px rgba(255, 179, 0, 0.8);
+    }
+
+    .code-help p {
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
+    code {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 620px) {
+      .page {
+        width: 94%;
+        padding-top: 24px;
+      }
+
+      .hero {
+        padding: 26px 18px;
+      }
+
+      .personajes-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-card {
+        grid-template-columns: 1fr;
+      }
+
+      .form-img-wrap,
+      .form-img {
+        min-height: 260px;
+      }
+
+      .form-info {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="kicker">Dragon Ball Server Archive</div>
+      <h1>Registro de Transformaciones</h1>
+      <p class="subtitle">
+        Cada personaje tiene su propia carta, y dentro aparecen todas sus transformaciones con imagen,
+        descripción y multiplicador. Tú lo editas directamente desde el código.
+      </p>
+      <span class="note">Modo Super Saiyan Wiki activado ⚡</span>
+    </header>
+
+    <section class="toolbar">
+      <div class="toolbar-stats">
+        <div class="counter" id="contadorPersonajes">Personajes registrados: 0</div>
+        <div class="counter" id="contadorTransformaciones">Transformaciones visibles: 0</div>
+        <div class="counter" id="contadorTipos">Tipos: 0</div>
+        <div class="counter" id="contadorSinImagen">Sin imagen: 0</div>
+      </div>
+
+      <div class="toolbar-actions">
+        <input id="searchInput" type="search" placeholder="Buscar personaje, transformación, tipo..." />
+        <select id="filterSelect">
+          <option value="all">Todos los tipos</option>
+        </select>
+      </div>
+    </section>
+
+    <section id="personajesGrid" class="personajes-grid"></section>
+
+    <section class="code-help">
+      <h2>Cómo añadir personajes y transformaciones</h2>
+      <p>
+        Busca en este archivo la parte de <code>const personajes = [...]</code>.
+      </p>
+      <p>
+        Cada personaje tiene un bloque propio, y dentro de <code>transformaciones</code>
+        metes todas sus formas.
+      </p>
+      <p>
+        Para las fotos, crea una carpeta llamada <code>img</code> y usa rutas como
+        <code>img/nara-majin.png</code>.
+      </p>
+      <p>
+        Usa <code>multiplicador</code> como número (por ejemplo <code>50</code>) y no como <code>"x50"</code>.
+      </p>
+      <p>
+        El campo <code>tipo</code> te permite filtrar transformaciones por categoría.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    /*
+      AQUÍ AÑADES TUS PERSONAJES.
+
+      ESTRUCTURA:
+
+      {
+        nombre: "Nombre del personaje",
+        descripcion: "Texto corto sobre el personaje",
+        transformaciones: [
+          {
+            nombre: "Nombre de la transformación",
+            tipo: "Super Saiyan",
+            imagen: "img/foto.png",
+            multiplicador: 50,
+            descripcion: "Cómo se ve o qué transmite.",
+            nota: "Opcional: notas del servidor o condiciones de activación."
+          }
+        ]
+      }
+
+      Puedes borrar los ejemplos y poner los tuyos.
+    */
+
+    const personajes = [
+      {
+        nombre: "Nara Midori",
+        descripcion: "Guerrera Majin de corazón noble, con una energía que se vuelve más peligrosa cuanto más protege.",
+        transformaciones: [
+          {
+            nombre: "Forma Íntegra",
+            tipo: "Majin",
+            imagen: "fotos-poderes/Transformaciones/Nara/Forma Integra.jpg",
+            multiplicador: 20,
+            descripcion: "Estado normal. Mantiene su energía controlada y una apariencia calmada.",
+            nota: "Sin aura evidente."
+          },
+          {
+            nombre: "Forma Corrupta",
+            tipo: "Majin",
+            imagen: "fotos-poderes/Transformaciones/Nara/NaraFormaCorrupta.png",
+            multiplicador: 35,
+            descripcion: "Aura rosa y dorada, mirada más seria y energía Majin envolviendo todo el cuerpo.",
+            nota: "Se activa cuando Nara decide proteger sin límites."
+          },
+        ]
+      },
+
+      {
+        nombre: "Ryomen Sukuna",
+        descripcion: "De los actuales demonios más fuertes del Infierno, trabaja a tiempo parcial como mensajero del Rey Demonio.",
+        transformaciones: [
+          {
+            nombre: "Forma Completa",
+            tipo: "Demonio",
+            imagen: "fotos-poderes/Transformaciones/Sukuna/Sukuna Completo.jpg",
+            multiplicador: 10,
+            descripcion: "La forma completa de Sukuna, la forma adaptativa que forma al adoptar su cuerpo completo en cualquier cuerpo que invada.",
+            nota: "Es el cuerpo de Sukuna."
+          },
+        ]
+      },
+
+      {
+        nombre: "Ryuko Matoi",
+        descripcion: "Guerrera agresiva, directa y hecha para pelear cuando todo parece caer.",
+        transformaciones: [
+          {
+            nombre: "Senketsu",
+            tipo: "Saiyan",
+            imagen: "fotos-poderes/Transformaciones/Ryuko/Senketsu.jpg",
+            multiplicador: 100,
+            descripcion: "Enseña demasiado, pero también golpea <strong>demasiado fuerte</strong>.",
+            nota: ""
+          }
+        ]
+      }
+    ];
+
+    const grid = document.getElementById("personajesGrid");
+    const contadorPersonajes = document.getElementById("contadorPersonajes");
+    const contadorTransformaciones = document.getElementById("contadorTransformaciones");
+    const contadorTipos = document.getElementById("contadorTipos");
+    const contadorSinImagen = document.getElementById("contadorSinImagen");
+    const searchInput = document.getElementById("searchInput");
+    const filterSelect = document.getElementById("filterSelect");
+
+    function obtenerTipos() {
+      const tipos = new Set();
+      personajes.forEach((personaje) => {
+        personaje.transformaciones.forEach((forma) => {
+          if (forma.tipo) tipos.add(forma.tipo);
+        });
+      });
+      return [...tipos];
+    }
+
+    function renderizarFiltros() {
+      const tipos = obtenerTipos();
+      filterSelect.innerHTML = '<option value="all">Todos los tipos</option>' + tipos
+        .map((tipo) => `<option value="${tipo}">${tipo}</option>`)
+        .join("");
+    }
+
+    function filtrarTransformacion(forma, texto, tipoFiltro) {
+      const textoForma = `${forma.nombre} ${forma.descripcion} ${forma.tipo}`.toLowerCase();
+      const coincideTexto = !texto || textoForma.includes(texto);
+      const coincideTipo = tipoFiltro === 'all' || forma.tipo === tipoFiltro;
+      return coincideTexto && coincideTipo;
+    }
+
+    function renderizarPersonajes() {
+      const texto = searchInput.value.trim().toLowerCase();
+      const tipoFiltro = filterSelect.value;
+      grid.innerHTML = "";
+
+      let totalTransformaciones = 0;
+      let totalSinImagen = 0;
+      let visiblePersonajes = 0;
+
+      personajes.forEach((personaje) => {
+        const formasVisibles = personaje.transformaciones.filter((forma) => filtrarTransformacion(forma, texto, tipoFiltro));
+        if (!formasVisibles.length) return;
+
+        visiblePersonajes += 1;
+        totalTransformaciones += formasVisibles.length;
+
+        const formsHTML = formasVisibles.map((forma) => {
+          const tieneImagen = Boolean(forma.imagen && forma.imagen.trim());
+          if (!tieneImagen) totalSinImagen += 1;
+
+          return `
+            <div class="form-card">
+              <div class="form-img-wrap">
+                <div class="no-img" style="display: ${tieneImagen ? 'none' : 'flex'};">
+                  Sin imagen disponible
+                </div>
+                <img
+                  class="form-img"
+                  ${tieneImagen ? `src="${forma.imagen}"` : 'style="display:none;"'}
+                  alt="${personaje.nombre} - ${forma.nombre}"
+                  onerror="this.style.display='none'; this.parentElement.querySelector('.no-img').style.display='flex';"
+                />
+              </div>
+
+              <div class="form-info">
+                <div class="form-name-row">
+                  <h3 class="form-name">${forma.nombre}</h3>
+                  ${forma.tipo ? `<span class="tag">${forma.tipo}</span>` : ''}
+                </div>
+                <div class="multiplier">⚡ x${forma.multiplicador}</div>
+                <p class="desc">${forma.descripcion}</p>
+                ${forma.nota ? `<p class="note-text">${forma.nota}</p>` : ''}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        const card = document.createElement("article");
+        card.className = "personaje-card";
+        card.innerHTML = `
+          <header class="personaje-header">
+            <h2 class="personaje-nombre">${personaje.nombre}</h2>
+            <p class="personaje-sub">${personaje.descripcion}</p>
+          </header>
+          <div class="forms-list">
+            ${formsHTML}
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      contadorPersonajes.textContent = `Personajes registrados: ${personajes.length}`;
+      contadorTransformaciones.textContent = `Transformaciones visibles: ${totalTransformaciones}`;
+      contadorTipos.textContent = `Tipos: ${obtenerTipos().length}`;
+      contadorSinImagen.textContent = `Sin imagen: ${totalSinImagen}`;
+
+      if (!grid.innerHTML.trim()) {
+        grid.innerHTML = `<div class="code-help"><p>No se encontraron transformaciones con ese filtro o búsqueda.</p></div>`;
+      }
+    }
+
+    searchInput.addEventListener('input', renderizarPersonajes);
+    filterSelect.addEventListener('change', renderizarPersonajes);
+
+    renderizarFiltros();
+    renderizarPersonajes();
+  </script>
+</body>
+</html>
