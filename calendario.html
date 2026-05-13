@@ -475,6 +475,232 @@
       transform: translateY(-1px);
     }
 
+
+
+    .dashboard {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.05fr 1.4fr .95fr;
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    .today-card,
+    .upcoming-card,
+    .stats-card {
+      background: rgba(255,255,255,.42);
+      border: 2px solid rgba(86, 61, 35, .16);
+      border-radius: 26px;
+      padding: 18px;
+      box-shadow: 7px 8px 0 rgba(105, 72, 35, .10);
+      backdrop-filter: blur(6px);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: #493326;
+      font-weight: 1000;
+      font-size: 1.05rem;
+    }
+
+    .section-heading small {
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 900;
+    }
+
+    .today-title {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 2rem;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .today-date,
+    .today-empty {
+      color: var(--muted);
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .today-events,
+    .upcoming-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .mini-event {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      border: 2px solid rgba(70,49,29,.13);
+      border-left: 8px solid var(--other);
+      border-radius: 18px;
+      padding: 10px;
+      background: rgba(255,255,255,.46);
+      color: var(--ink);
+      font-weight: 1000;
+      cursor: pointer;
+      text-align: left;
+      transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .mini-event:hover {
+      transform: translateY(-2px) rotate(-.25deg);
+      background: rgba(255,255,255,.75);
+      box-shadow: 0 10px 18px rgba(83,55,27,.12);
+    }
+
+    .mini-event.universe-dragonball { border-left-color: var(--db); }
+    .mini-event.universe-inazuma { border-left-color: var(--inazuma); }
+    .mini-event.universe-pokemon { border-left-color: var(--pokemon); }
+    .mini-event.universe-other { border-left-color: var(--other); }
+
+    .mini-event-avatar,
+    .modal-avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: rgba(47,42,36,.11);
+      border: 2px solid rgba(47,42,36,.13);
+      color: #493326;
+      font-weight: 1000;
+      flex-shrink: 0;
+    }
+
+    .mini-event-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      font-size: .8rem;
+    }
+
+    .mini-event-avatar img,
+    .modal-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .mini-event-main {
+      min-width: 0;
+    }
+
+    .mini-event-name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .mini-event-meta {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 900;
+    }
+
+    .countdown-pill {
+      white-space: nowrap;
+      border-radius: 999px;
+      padding: 6px 9px;
+      background: rgba(47,42,36,.08);
+      color: #493326;
+      font-size: .78rem;
+      font-weight: 1000;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat-box {
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255,255,255,.45);
+      border: 1px solid rgba(70,49,29,.12);
+    }
+
+    .stat-box strong {
+      display: block;
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .stat-box span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-weight: 900;
+      font-size: .82rem;
+    }
+
+    .month.month-theme-0::before { background: linear-gradient(90deg, #7dd3fc, #bfdbfe, #f8fafc); }
+    .month.month-theme-1::before { background: linear-gradient(90deg, #f472b6, #c084fc, #93c5fd); }
+    .month.month-theme-2::before { background: linear-gradient(90deg, #86efac, #facc15, #fb7185); }
+    .month.month-theme-3::before { background: linear-gradient(90deg, #a7f3d0, #60a5fa, #fef08a); }
+    .month.month-theme-4::before { background: linear-gradient(90deg, #fbbf24, #fb7185, #34d399); }
+    .month.month-theme-5::before { background: linear-gradient(90deg, #38bdf8, #fde047, #fb923c); }
+    .month.month-theme-6::before { background: linear-gradient(90deg, #f97316, #ef4444, #facc15); }
+    .month.month-theme-7::before { background: linear-gradient(90deg, #fb923c, #facc15, #f9a8d4); }
+    .month.month-theme-8::before { background: linear-gradient(90deg, #f59e0b, #a3e635, #60a5fa); }
+    .month.month-theme-9::before { background: linear-gradient(90deg, #7c3aed, #f97316, #111827); }
+    .month.month-theme-10::before { background: linear-gradient(90deg, #64748b, #a855f7, #f59e0b); }
+    .month.month-theme-11::before { background: linear-gradient(90deg, #ef4444, #22c55e, #f8fafc); }
+
+    .event.priority-major,
+    .modal-event.priority-major,
+    .mini-event.priority-major {
+      box-shadow: 0 0 0 2px rgba(255,217,131,.75), 0 10px 20px rgba(122,82,24,.16);
+    }
+
+    .event.priority-major::after {
+      content: "★";
+      margin-left: 4px;
+      color: #7a4b00;
+    }
+
+    .modal-event-header {
+      display: grid;
+      grid-template-columns: 78px 1fr;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .modal-avatar {
+      width: 78px;
+      height: 78px;
+      border-radius: 22px;
+      font-size: 1.1rem;
+    }
+
+    .modal-event strong {
+      margin-bottom: 3px;
+    }
+
+    .ambient-toggle.active {
+      background: rgba(255, 179, 71, .58);
+    }
+
+    @keyframes softPop {
+      from { opacity: 0; transform: translate(-50%, -47%) scale(.96); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    dialog[open] {
+      animation: softPop .18s ease-out both;
+    }
+
     .footer-note {
       position: relative;
       z-index: 1;
@@ -521,6 +747,10 @@
       #searchInput {
         min-width: 100%;
         width: 100%;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
       }
 
       .month {
@@ -597,6 +827,28 @@
         grid-template-columns: auto 1fr;
         gap: 4px;
       }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mini-event {
+        grid-template-columns: auto 1fr;
+      }
+
+      .countdown-pill {
+        grid-column: 1 / -1;
+        justify-self: start;
+      }
+
+      .modal-event-header {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-avatar {
+        width: 96px;
+        height: 96px;
+      }
     }
   </style>
 </head>
@@ -626,7 +878,17 @@
           <option value="other">Otros</option>
         </select>
 
-        <input class="tool" id="searchInput" type="search" placeholder="Buscar personaje..." />
+        <input class="tool" id="searchInput" type="search" placeholder="Buscar personaje, nota, universo..." />
+
+        <select class="tool" id="nostalgiaFilter" aria-label="Filtrar por estado del personaje">
+          <option value="all">Todos los estados</option>
+          <option value="active">Activos</option>
+          <option value="deceased">Fallecidos</option>
+          <option value="retired">Retirados</option>
+          <option value="old">Antiguos</option>
+        </select>
+
+        <button class="tool ambient-toggle" id="ambientToggle" type="button">🎵 Ambiente OFF</button>
       </div>
     </header>
 
@@ -637,6 +899,24 @@
       <span><i class="dot inazuma-dot"></i> Inazuma</span>
       <span><i class="dot pokemon-dot"></i> Pokémon</span>
       <span><i class="dot" style="background:#2f2a24"></i> Hoy</span>
+    </section>
+
+    <section class="dashboard" aria-label="Resumen del calendario">
+      <article class="today-card" id="todayCard"></article>
+      <article class="upcoming-card">
+        <div class="section-heading">
+          <span>🎂 Próximos recuerdos</span>
+          <small>ordenados desde hoy</small>
+        </div>
+        <div class="upcoming-list" id="upcomingList"></div>
+      </article>
+      <article class="stats-card">
+        <div class="section-heading">
+          <span>📊 Estadísticas</span>
+          <small>del calendario</small>
+        </div>
+        <div class="stats-grid" id="statsGrid"></div>
+      </article>
     </section>
 
     <div class="view-controls">
@@ -3018,6 +3298,11 @@
     const typeFilter = document.getElementById('typeFilter');
     const universeFilter = document.getElementById('universeFilter');
     const searchInput = document.getElementById('searchInput');
+    const nostalgiaFilter = document.getElementById('nostalgiaFilter');
+    const ambientToggle = document.getElementById('ambientToggle');
+    const todayCard = document.getElementById('todayCard');
+    const upcomingList = document.getElementById('upcomingList');
+    const statsGrid = document.getElementById('statsGrid');
     const viewModeButton = document.getElementById('viewModeButton');
     const prevMonth = document.getElementById('prevMonth');
     const nextMonth = document.getElementById('nextMonth');
@@ -3073,6 +3358,14 @@
       }
     };
 
+
+
+    const STATUS_INFO = {
+      active: { label: 'Activo', icon: '✨' },
+      deceased: { label: 'Fallecido', icon: '🕯️' },
+      retired: { label: 'Retirado', icon: '🌙' },
+      old: { label: 'Antiguo', icon: '📜' }
+    };
     yearLabel.textContent = CURRENT_YEAR;
 
     function normalizeText(text) {
@@ -3090,6 +3383,49 @@
       return UNIVERSE_INFO[universe] || UNIVERSE_INFO.other;
     }
 
+
+
+    function getStatusInfo(status) {
+      return STATUS_INFO[status || 'active'] || STATUS_INFO.active;
+    }
+
+    function getEventInitials(name) {
+      return String(name)
+        .split(/\s+|&/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part.charAt(0).toUpperCase())
+        .join('');
+    }
+
+    function avatarHTML(event, className) {
+      if (event.image || event.img || event.photo) {
+        const src = event.image || event.img || event.photo;
+        return `<span class="${className}"><img src="${src}" alt="${event.name}"></span>`;
+      }
+      return `<span class="${className}">${getEventInitials(event.name)}</span>`;
+    }
+
+    function getDateForEvent(event, year = CURRENT_YEAR) {
+      return new Date(year, event.month - 1, event.day);
+    }
+
+    function daysUntilEvent(event) {
+      const today = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+      let date = getDateForEvent(event, TODAY.getFullYear());
+      if (date < today) date = getDateForEvent(event, TODAY.getFullYear() + 1);
+      return Math.round((date - today) / 86400000);
+    }
+
+    function countdownText(days) {
+      if (days === 0) return 'Hoy';
+      if (days === 1) return 'Mañana';
+      return `Faltan ${days} días`;
+    }
+
+    function formatEventDate(event) {
+      return `${event.day} de ${MONTHS[event.month - 1]}`;
+    }
     function getEventsForDay(day, month) {
       return EVENTOS.filter(event => event.day === day && event.month === month);
     }
@@ -3097,13 +3433,19 @@
     function eventMatchesFilters(event) {
       const selectedType = typeFilter.value;
       const selectedUniverse = universeFilter.value;
+      const selectedStatus = nostalgiaFilter.value;
       const search = normalizeText(searchInput.value.trim());
+      const universeInfo = getUniverseInfo(event.universe);
+      const typeInfo = getTypeInfo(event.type);
+      const statusInfo = getStatusInfo(event.status);
 
       const typeMatches = selectedType === 'all' || event.type === selectedType;
       const universeMatches = selectedUniverse === 'all' || event.universe === selectedUniverse;
-      const searchMatches = !search || normalizeText(event.name + ' ' + (event.note || '')).includes(search);
+      const statusMatches = selectedStatus === 'all' || (event.status || 'active') === selectedStatus;
+      const searchableText = `${event.name} ${event.note || ''} ${event.universe || ''} ${universeInfo.label} ${event.type || ''} ${typeInfo.label} ${event.tags || ''} ${event.status || 'active'} ${statusInfo.label}`;
+      const searchMatches = !search || normalizeText(searchableText).includes(search);
 
-      return typeMatches && universeMatches && searchMatches;
+      return typeMatches && universeMatches && statusMatches && searchMatches;
     }
 
     function openDayModal(day, month, events) {
@@ -3118,19 +3460,28 @@
         const typeInfo = getTypeInfo(event.type);
         const universeInfo = getUniverseInfo(event.universe);
 
+        const statusInfo = getStatusInfo(event.status);
+        const days = daysUntilEvent(event);
         const article = document.createElement('article');
-        article.className = `modal-event ${universeInfo.className}`;
+        article.className = `modal-event ${universeInfo.className} ${event.priority === 'major' ? 'priority-major' : ''}`;
         article.innerHTML = `
-          <strong>
-            <span>${typeInfo.icon}</span>
-            <span>${event.name}</span>
-          </strong>
-
-          <p>${event.note || 'Sin nota añadida.'}</p>
+          <div class="modal-event-header">
+            ${avatarHTML(event, 'modal-avatar')}
+            <div>
+              <strong>
+                <span>${typeInfo.icon}</span>
+                <span>${event.name}</span>
+              </strong>
+              <p>${event.note || 'Sin nota añadida.'}</p>
+            </div>
+          </div>
 
           <div class="meta-row">
             <span class="pill">${typeInfo.icon} ${typeInfo.label}</span>
             <span class="pill">${universeInfo.icon} ${universeInfo.label}</span>
+            <span class="pill">⏳ ${countdownText(days)}</span>
+            <span class="pill">${statusInfo.icon} ${statusInfo.label}</span>
+            ${event.priority === 'major' ? '<span class="pill">⭐ Importante</span>' : ''}
           </div>
         `;
 
@@ -3149,7 +3500,7 @@
       const startOffset = (firstDate.getDay() + 6) % 7;
 
       const monthCard = document.createElement('article');
-      monthCard.className = 'month';
+      monthCard.className = `month month-theme-${monthIndex}`;
 
       const title = document.createElement('h2');
       title.textContent = MONTHS[monthIndex];
@@ -3205,11 +3556,13 @@
             const universeInfo = getUniverseInfo(event.universe);
 
             const eventLabel = document.createElement('span');
-            eventLabel.className = `event ${event.type} ${universeInfo.className}`;
+            eventLabel.className = `event ${event.type} ${universeInfo.className} ${event.priority === 'major' ? 'priority-major' : ''}`;
             eventLabel.dataset.type = event.type;
             eventLabel.dataset.universe = event.universe;
+            eventLabel.dataset.status = event.status || 'active';
             eventLabel.dataset.name = event.name;
             eventLabel.dataset.note = event.note || '';
+            eventLabel.dataset.tags = event.tags || '';
 
             eventLabel.innerHTML = `
               <span class="universe-badge" title="${universeInfo.label}">${universeInfo.icon}</span>
@@ -3252,6 +3605,143 @@
       updateMonthControls();
     }
 
+
+
+    function makeMiniEvent(event) {
+      const typeInfo = getTypeInfo(event.type);
+      const universeInfo = getUniverseInfo(event.universe);
+      const days = daysUntilEvent(event);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `mini-event ${universeInfo.className} ${event.priority === 'major' ? 'priority-major' : ''}`;
+      button.innerHTML = `
+        ${avatarHTML(event, 'mini-event-avatar')}
+        <span class="mini-event-main">
+          <span class="mini-event-name">${typeInfo.icon} ${event.name}</span>
+          <span class="mini-event-meta">${formatEventDate(event)} · ${universeInfo.icon} ${universeInfo.label}</span>
+        </span>
+        <span class="countdown-pill">${countdownText(days)}</span>
+      `;
+      button.addEventListener('click', () => {
+        activeMonthIndex = event.month - 1;
+        viewMode = 'month';
+        updateMonthControls();
+        openDayModal(event.day, event.month, getEventsForDay(event.day, event.month));
+      });
+      return button;
+    }
+
+    function renderTodayCard() {
+      const todayEvents = getEventsForDay(TODAY.getDate(), TODAY.getMonth() + 1).filter(eventMatchesFilters);
+      todayCard.innerHTML = `
+        <div class="today-title">📌 Hoy · ${TODAY.getDate()} de ${MONTHS[TODAY.getMonth()]}</div>
+      `;
+
+      if (!todayEvents.length) {
+        const empty = document.createElement('p');
+        empty.className = 'today-empty';
+        empty.textContent = 'Hoy no hay recuerdos visibles con los filtros actuales.';
+        todayCard.appendChild(empty);
+        return;
+      }
+
+      const list = document.createElement('div');
+      list.className = 'today-events';
+      todayEvents.forEach(event => list.appendChild(makeMiniEvent(event)));
+      todayCard.appendChild(list);
+    }
+
+    function renderUpcoming() {
+      const upcoming = EVENTOS
+        .filter(eventMatchesFilters)
+        .map(event => ({ event, days: daysUntilEvent(event) }))
+        .sort((a, b) => a.days - b.days || a.event.month - b.event.month || a.event.day - b.event.day || a.event.name.localeCompare(b.event.name))
+        .slice(0, 6);
+
+      upcomingList.innerHTML = '';
+
+      if (!upcoming.length) {
+        upcomingList.innerHTML = '<p class="today-empty">No hay próximos recuerdos con estos filtros.</p>';
+        return;
+      }
+
+      upcoming.forEach(({ event }) => upcomingList.appendChild(makeMiniEvent(event)));
+    }
+
+    function renderStats() {
+      const visible = EVENTOS.filter(eventMatchesFilters);
+      const birthdayCount = visible.filter(event => event.type === 'birthday').length;
+      const anniversaryCount = visible.filter(event => event.type === 'anniversary').length;
+      const monthCounts = MONTHS.map((_, index) => visible.filter(event => event.month === index + 1).length);
+      const maxMonthIndex = monthCounts.indexOf(Math.max(...monthCounts));
+      const universeCounts = visible.reduce((acc, event) => {
+        acc[event.universe] = (acc[event.universe] || 0) + 1;
+        return acc;
+      }, {});
+      const topUniverse = Object.entries(universeCounts).sort((a, b) => b[1] - a[1])[0];
+      const topUniverseText = topUniverse ? `${getUniverseInfo(topUniverse[0]).label}: ${topUniverse[1]}` : 'Sin datos';
+
+      statsGrid.innerHTML = `
+        <div class="stat-box"><strong>${visible.length}</strong><span>recuerdos visibles</span></div>
+        <div class="stat-box"><strong>${birthdayCount}</strong><span>cumpleaños</span></div>
+        <div class="stat-box"><strong>${anniversaryCount}</strong><span>aniversarios</span></div>
+        <div class="stat-box"><strong>${MONTHS[maxMonthIndex] || '-'}</strong><span>mes con más eventos</span></div>
+        <div class="stat-box"><strong>${topUniverseText}</strong><span>universo dominante</span></div>
+        <div class="stat-box"><strong>${EVENTOS.filter(event => event.priority === 'major').length}</strong><span>eventos importantes</span></div>
+      `;
+    }
+
+    function renderDashboard() {
+      renderTodayCard();
+      renderUpcoming();
+      renderStats();
+    }
+
+    let ambientContext;
+    let ambientNodes = [];
+    let ambientOn = false;
+
+    function stopAmbient() {
+      ambientNodes.forEach(node => {
+        try { node.stop && node.stop(); } catch (error) {}
+        try { node.disconnect && node.disconnect(); } catch (error) {}
+      });
+      ambientNodes = [];
+      ambientOn = false;
+      ambientToggle.classList.remove('active');
+      ambientToggle.textContent = '🎵 Ambiente OFF';
+    }
+
+    async function toggleAmbient() {
+      if (ambientOn) {
+        stopAmbient();
+        return;
+      }
+
+      ambientContext = ambientContext || new (window.AudioContext || window.webkitAudioContext)();
+      if (ambientContext.state === 'suspended') await ambientContext.resume();
+
+      const master = ambientContext.createGain();
+      master.gain.value = 0.035;
+      master.connect(ambientContext.destination);
+      ambientNodes.push(master);
+
+      [196, 246.94, 293.66].forEach((freq, index) => {
+        const osc = ambientContext.createOscillator();
+        const gain = ambientContext.createGain();
+        osc.type = index === 0 ? 'sine' : 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.value = index === 0 ? 0.45 : 0.22;
+        osc.connect(gain);
+        gain.connect(master);
+        osc.start();
+        ambientNodes.push(osc, gain);
+      });
+
+      ambientOn = true;
+      ambientToggle.classList.add('active');
+      ambientToggle.textContent = '🎵 Ambiente ON';
+    }
     function renderCalendar() {
       calendar.innerHTML = '';
       MONTHS.forEach((_, index) => calendar.appendChild(createMonth(index)));
@@ -3270,24 +3760,34 @@
     function applyFilters() {
       const selectedType = typeFilter.value;
       const selectedUniverse = universeFilter.value;
+      const selectedStatus = nostalgiaFilter.value;
       const search = normalizeText(searchInput.value.trim());
 
       document.querySelectorAll('.event').forEach(eventElement => {
         const type = eventElement.dataset.type;
         const universe = eventElement.dataset.universe;
-        const text = normalizeText(`${eventElement.dataset.name} ${eventElement.dataset.note}`);
+        const status = eventElement.dataset.status || 'active';
+        const universeInfo = getUniverseInfo(universe);
+        const typeInfo = getTypeInfo(type);
+        const statusInfo = getStatusInfo(status);
+        const text = normalizeText(`${eventElement.dataset.name} ${eventElement.dataset.note} ${eventElement.dataset.tags} ${universe} ${universeInfo.label} ${type} ${typeInfo.label} ${status} ${statusInfo.label}`);
 
         const typeMatches = selectedType === 'all' || type === selectedType;
         const universeMatches = selectedUniverse === 'all' || universe === selectedUniverse;
+        const statusMatches = selectedStatus === 'all' || status === selectedStatus;
         const searchMatches = !search || text.includes(search);
 
-        eventElement.classList.toggle('hidden-by-filter', !(typeMatches && universeMatches && searchMatches));
+        eventElement.classList.toggle('hidden-by-filter', !(typeMatches && universeMatches && statusMatches && searchMatches));
       });
+
+      renderDashboard();
     }
 
     typeFilter.addEventListener('change', applyFilters);
     universeFilter.addEventListener('change', applyFilters);
+    nostalgiaFilter.addEventListener('change', applyFilters);
     searchInput.addEventListener('input', applyFilters);
+    ambientToggle.addEventListener('click', toggleAmbient);
     viewModeButton.addEventListener('click', () => {
       viewMode = viewMode === 'all' ? 'month' : 'all';
       updateMonthControls();
@@ -3303,6 +3803,10 @@
     });
 
     renderCalendar();
+    setTimeout(() => {
+      const todayCell = document.querySelector('.day.today');
+      if (todayCell && viewMode === 'all') todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
   </script>
 </body>
 </html>
