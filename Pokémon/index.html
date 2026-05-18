@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Equipos Pokémon | RP Hub</title>
+  <style>
+    :root {
+      --bg: #101827;
+      --bg-soft: #17233a;
+      --card: rgba(255, 255, 255, 0.9);
+      --text: #152033;
+      --muted: #64748b;
+      --yellow: #ffcb05;
+      --blue: #2a75bb;
+      --red: #ef4444;
+      --green: #22c55e;
+      --border: rgba(255, 255, 255, 0.25);
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+      --radius: 26px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 203, 5, 0.22), transparent 28%),
+        radial-gradient(circle at top right, rgba(42, 117, 187, 0.35), transparent 30%),
+        linear-gradient(135deg, #07111f 0%, #14213d 45%, #0f172a 100%);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+      pointer-events: none;
+    }
+
+    .page {
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 34px;
+      padding: 34px;
+      background:
+        linear-gradient(135deg, rgba(42, 117, 187, 0.94), rgba(11, 25, 48, 0.96)),
+        url("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png");
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      right: -110px;
+      top: -90px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, transparent 0 34%, #111827 35% 38%, transparent 39%),
+        linear-gradient(to bottom, #ef4444 0 48%, #111827 49% 53%, #f8fafc 54% 100%);
+      opacity: 0.22;
+      transform: rotate(-15deg);
+    }
+
+    .eyebrow {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: #111827;
+      font-weight: 900;
+      background: var(--yellow);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.18);
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      margin-top: 22px;
+      font-size: clamp(2.4rem, 7vw, 5.8rem);
+      line-height: 0.92;
+      letter-spacing: -0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 6px 0 rgba(0,0,0,0.18);
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin-top: 18px;
+      color: rgba(255,255,255,0.82);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .controls {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+    }
+
+    .search, .select {
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.12);
+      color: white;
+      outline: none;
+      font: inherit;
+      backdrop-filter: blur(10px);
+    }
+
+    .search::placeholder {
+      color: rgba(255,255,255,0.65);
+    }
+
+    .select option {
+      color: #111827;
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 22px 0 28px;
+    }
+
+    .stat {
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.16);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.7rem;
+      color: var(--yellow);
+    }
+
+    .stat span {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.92rem;
+    }
+
+    .teams-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 22px;
+    }
+
+    .team-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      border: 4px solid rgba(255,255,255,0.8);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .team-card:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+    }
+
+    .team-top {
+      position: relative;
+      padding: 22px;
+      background:
+        linear-gradient(135deg, var(--team-a), var(--team-b)),
+        linear-gradient(45deg, rgba(255,255,255,0.18), transparent);
+      color: white;
+      overflow: hidden;
+    }
+
+    .team-top::after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      right: -32px;
+      bottom: -54px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, transparent 0 34%, rgba(255,255,255,0.85) 35% 38%, transparent 39%),
+        linear-gradient(to bottom, rgba(255,255,255,0.38) 0 48%, rgba(255,255,255,0.85) 49% 53%, rgba(255,255,255,0.26) 54% 100%);
+      opacity: .5;
+    }
+
+    .trainer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .trainer-info h2 {
+      font-size: 1.7rem;
+      letter-spacing: -0.04em;
+    }
+
+    .trainer-info p {
+      margin-top: 5px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.25);
+      font-weight: 800;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    .team-note {
+      margin-top: 18px;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.86);
+    }
+
+    .pokemon-list {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(42,117,187,0.08), transparent 30%),
+        #f8fafc;
+    }
+
+    .pokemon-card {
+      min-height: 142px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      padding: 12px;
+      padding-right: 104px;
+      background: white;
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 10px 22px rgba(15,23,42,0.08);
+    }
+
+    .pokemon-card::before {
+      content: "";
+      position: absolute;
+      width: 88px;
+      height: 88px;
+      right: -26px;
+      top: -24px;
+      border-radius: 50%;
+      background: rgba(42,117,187,0.08);
+    }
+
+    .pokemon-card img {
+      position: absolute;
+      right: 4px;
+      bottom: 2px;
+      width: 98px;
+      height: 98px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 8px rgba(0,0,0,0.16));
+      transition: transform .25s ease;
+    }
+
+    .pokemon-card:hover img {
+      transform: scale(1.12) rotate(2deg);
+    }
+
+    .dex {
+      display: inline-block;
+      font-size: 0.73rem;
+      font-weight: 900;
+      color: var(--muted);
+      letter-spacing: .06em;
+    }
+
+    .pokemon-card h3 {
+      margin-top: 4px;
+      text-transform: capitalize;
+      font-size: 1.05rem;
+      letter-spacing: -0.03em;
+      max-width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .type-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+      position: relative;
+      z-index: 2;
+      max-width: 100%;
+    }
+
+    .type {
+      padding: 4px 7px;
+      border-radius: 999px;
+      color: white;
+      font-size: 0.68rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.18);
+    }
+
+    .team-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px 18px;
+      background: #ffffff;
+      border-top: 1px solid rgba(15,23,42,0.08);
+    }
+
+    .footer-label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .copy-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 10px 14px;
+      background: #111827;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      background: var(--blue);
+    }
+
+    .empty {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255,255,255,0.74);
+      border: 1px dashed rgba(255,255,255,0.24);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(120px);
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: #111827;
+      color: white;
+      font-weight: 800;
+      box-shadow: var(--shadow);
+      transition: transform .3s ease;
+      z-index: 10;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 780px) {
+      .hero {
+        padding: 24px;
+      }
+
+      .controls,
+      .stats-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .pokemon-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <span class="eyebrow">⚡ Nueva sección · Equipos Pokémon</span>
+      <h1>Equipos Pokémon</h1>
+      <p>
+        Archivo visual de entrenadores, equipos principales y estilos de combate del rol.
+        Las imágenes se cargan automáticamente usando arte oficial de PokéAPI, así que no hace falta llenar el repositorio de sprites.
+      </p>
+
+      <div class="controls">
+        <input id="searchInput" class="search" type="search" placeholder="Buscar entrenador, región o Pokémon..." />
+        <select id="regionFilter" class="select">
+          <option value="all">Todas las regiones</option>
+        </select>
+        <select id="styleFilter" class="select">
+          <option value="all">Todos los estilos</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="stats-bar">
+      <article class="stat">
+        <strong id="teamCount">0</strong>
+        <span>equipos registrados</span>
+      </article>
+      <article class="stat">
+        <strong id="pokemonCount">0</strong>
+        <span>Pokémon en archivo</span>
+      </article>
+      <article class="stat">
+        <strong id="regionCount">0</strong>
+        <span>regiones representadas</span>
+      </article>
+    </section>
+
+    <section id="teamsGrid" class="teams-grid"></section>
+    <section id="emptyState" class="empty">No hay equipos que coincidan con esa búsqueda. Hasta el Rotom Dex se ha quedado en blanco.</section>
+  </main>
+
+  <div id="toast" class="toast">Equipo copiado al portapapeles</div>
+
+  <script>
+    const TYPE_COLORS = {
+      normal: "#9ca3af",
+      fire: "#f97316",
+      water: "#0ea5e9",
+      electric: "#eab308",
+      grass: "#22c55e",
+      ice: "#67e8f9",
+      fighting: "#dc2626",
+      poison: "#a855f7",
+      ground: "#ca8a04",
+      flying: "#60a5fa",
+      psychic: "#ec4899",
+      bug: "#84cc16",
+      rock: "#78716c",
+      ghost: "#6366f1",
+      dragon: "#7c3aed",
+      dark: "#111827",
+      steel: "#64748b",
+      fairy: "#f472b6"
+    };
+
+    const TYPE_ES = {
+      normal: "Normal",
+      fire: "Fuego",
+      water: "Agua",
+      electric: "Eléctrico",
+      grass: "Planta",
+      ice: "Hielo",
+      fighting: "Lucha",
+      poison: "Veneno",
+      ground: "Tierra",
+      flying: "Volador",
+      psychic: "Psíquico",
+      bug: "Bicho",
+      rock: "Roca",
+      ghost: "Fantasma",
+      dragon: "Dragón",
+      dark: "Siniestro",
+      steel: "Acero",
+      fairy: "Hada"
+    };
+
+    /*
+      GUÍA RÁPIDA PARA FORMAS ESPECIALES
+
+      Pokémon normal:
+      { id: 448, name: "lucario", types: ["fighting", "steel"] }
+
+      Forma regional / alternativa de PokéAPI:
+      Usa spriteId o formId con el número interno de esa forma.
+      El id sigue siendo el de la Pokédex nacional, pero spriteId carga la imagen especial.
+      { id: 706, spriteId: 10242, name: "goodra de hisui", form: "Hisui", types: ["dragon", "steel"] }
+
+      Forma femenina:
+      { id: 902, name: "basculegion hembra", female: true, types: ["water", "ghost"] }
+
+      Shiny:
+      { id: 448, name: "lucario shiny", shiny: true, types: ["fighting", "steel"] }
+
+      Sprite pequeño en vez de artwork:
+      { id: 25, name: "pikachu", spriteMode: "sprite", types: ["electric"] }
+
+      Imagen propia / Fakemon / forma del rol:
+      { name: "aegislash de hyrule", image: "Pokemon Custom/Aegislash de Hyrule.png", types: ["fairy", "steel"] }
+    */
+
+    const TEAMS = [
+      {
+        trainer: "Link Ordon",
+        title: "Campeón de Hyrule",
+        region: "Hyrule",
+        style: "Equilibrado",
+        colors: ["#32CD32 ", "#006400"],
+        note: "Un equpo sólido y equilibrado, llevado por una persona con la experiencia suficiente para salid campeón. Pelean bajo la bendición de la Diosa Hylia.",
+        pokemon: [
+          { id: 724, name: "decidueye", types: ["grass", "ghost"] },
+          { id: 530, name: "excadrill", types: ["ground", "steel"] },
+          {
+            id: 1150,
+            name: "aegislash-de-Hyruke",
+            image: "Pokemon Custom/Aegislash de Hyrule.png",
+            types: ["fairy", "steel"]
+          },
+          { id: 902, name: "basculegion-f", types: ["water", "ghost"] },
+          { id: 169, name: "crobat", types: ["flying", "poison"] },
+          { id: 887, name: "dragapult", types: ["dragon", "ghost"] },
+        ]
+      },
+      {
+        trainer: "Shin Haein",
+        title: "Entrenadora Cantante",
+        region: "Etruria",
+        style: "Especial",
+        colors: ["#8900FF", "#B561FF"],
+        note: "Una chica que ama la música pero prefiere el reto de cantar mientras pelea con los suyos.",
+        pokemon: [
+          { id: 160, name: "feralgatr", types: ["water"] },
+          {
+            id: 1126,
+            name: "chattoroti",
+            image: "Pokemon Custom/Chattoroti.png",
+            types: ["normal", "flying"]
+          },          
+          { id: 272, name: "ludicolo", types: ["water", "grass"] },
+          { id: 40, name: "wigglytuff", types: ["normal", "fairy"] },
+          { id: 849, name: "toxtricity", types: ["electric", "poison"] },
+          { id: 715, name: "noivern", types: ["flying", "dragon"] }
+        ]
+      },
+      {
+        trainer: "Serena Vaniville",
+        title: "Concursante Excelente",
+        region: "Kalos",
+        style: "Equilibrado",
+        colors: ["#FFED00", "#8F8200"],
+        note: "Su equipo Pokémon está compuesto por todos aquellos que tienen una oportunidad para brillar, sean bonitos o no.",
+        pokemon: [
+          { id: 655, name: "delphox", types: ["fire", "psychic"] },
+          { id: 282, name: "gardevoir", types: ["psychic", "fairy"] },
+          { id: 24, name: "arbok", types: ["poison"] },
+          { id: 428, name: "lopunny", types: ["normal"] },
+          { id: 1018, name: "archaludon", types: ["steel", "dragon"] },
+          { id: 979, name: "annihilape", types: ["fighting", "ghost"] }
+        ]
+      },
+      {
+        trainer: "Mencía Scarlet",
+        title: "Luchadora Carmesí",
+        region: "Paldea",
+        style: "Físico",
+        colors: ["#004702", "#00AB03"],
+        note: "Una chica que quiere pelear para demostrar que los combates no solo son obligaciones a los Pokémon, todos pueden disfrutar de uno.",
+        pokemon: [
+          { id: 923, name: "pawmo", types: ["fighting", "electric"] },
+          { id: 908, name: "meowscarada", types: ["grass", "dark"] },
+          { id: 212, name: "scizor", types: ["bug", "steel"] },
+          { id: 149, name: "dragonite", types: ["dragon", "flying"] },
+          { id: 214, name: "heracross", types: ["bug", "fighting"] },
+          { id: 934, name: "garganacl", types: ["rock"] }
+        ]
+      },
+      {
+        trainer: "Judith",
+        title: "Líder de Gimnasio de Tipo Lucha",
+        region: "Galar",
+        style: "Físico",
+        colors: ["#875800", "#C48100"],
+        note: "Un equipo pensado para imponer misterio, evolución forzada y una cantidad preocupante de malas intenciones con bata de laboratorio.",
+        pokemon: [
+          { id: 68, name: "machamp", types: ["fighting"] },
+          { id: 701, name: "hawlucha", types: ["fighting", "flying"] },
+          { id: 865, name: "sirfetch'd", types: ["fighting"] },
+          { id: 620, name: "mienshao", types: ["fighting"] },
+          { id: 534, name: "conkeldurr", types: ["fighting"] },
+          { id: 257, name: "blaziken", types: ["fire", "fighting"] }
+        ]
+      },
+      {
+        trainer: "Mogari Shishikuno",
+        title: "Heredero Shishikuno",
+        region: "Etruria",
+        style: "Equilibrado",
+        colors: ["#2B2B2B", "#878686"],
+        note: "Equipo dispuesto a crear los mejores platos y a honrar el nombre del Clan Shishikuno.",
+        pokemon: [
+          { id: 395, name: "empoleon", types: ["water", "steel"] },
+          { id: 560, name: "scrafty", types: ["dark", "fighting"] },
+          { id: 18, name: "pidgeot", types: ["normal", "flying"] },
+          { id: 609, name: "chandelure", types: ["fire", "ghost"] },
+          { id: 617, name: "accelgor", types: ["bug"] },
+          { id: 713, name: "avalugg", types: ["ice"] }
+        ]
+      },
+      {
+        trainer: "Gama Sazare",
+        title: "Fotógrafa Entrenadora",
+        region: "Sinnoh",
+        style: "Equilibrado",
+        colors: ["#003E8F", "#00CBE3"],
+        note: "Entrenadora entregada a sus fotos, un equipo precioso para posar frente a la playa en un atardecer.",
+        pokemon: [
+          { id: 706, spriteId: 10242, name: "goodra de hisui", form: "Hisui", types: ["dragon", "steel"] },
+          { id: 620, name: "mienshao", types: ["fighting"] },
+          { id: 133, name: "eevee", types: ["normal"] },
+          { id: 733, name: "toucannon", types: ["normal", "flying"] },
+          { id: 523, name: "zebritska", types: ["electric"] },
+          { id: 448, name: "lucario", types: ["fighting", "steel"] }
+        ]
+      },
+      {
+        trainer: "Philip",
+        title: "Entrenador Erudito",
+        region: "Etruria",
+        style: "Equilibrado",
+        colors: ["#1C6600", "#33BA00"],
+        note: "Un entrenador erudito con unas ganas abrumantes de aprender y superarse cada día.",
+        pokemon: [
+          { id: 497, name: "Serperior", types: ["grass"] },
+          { id: 521, name: "unfezant", types: ["normal", "flying"] },
+          { id: 606, name: "beheyeem", types: ["psychic"] },
+          { id: 132, name: "ditto", types: ["normal"] },
+          { id: 55, name: "golduck", types: ["water"] },
+          { id: 442, name: "spiritomb", types: ["dark", "ghost"] }
+        ]
+      },
+    ];
+
+    const SPRITES_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
+
+    const artworkUrl = (id) => `${SPRITES_BASE}/other/official-artwork/${id}.png`;
+    const femaleArtworkUrl = (id) => `${SPRITES_BASE}/other/official-artwork/female/${id}.png`;
+    const shinyArtworkUrl = (id) => `${SPRITES_BASE}/other/official-artwork/shiny/${id}.png`;
+    const spriteUrl = (id) => `${SPRITES_BASE}/${id}.png`;
+    const femaleSpriteUrl = (id) => `${SPRITES_BASE}/female/${id}.png`;
+    const shinySpriteUrl = (id) => `${SPRITES_BASE}/shiny/${id}.png`;
+
+    function getPokemonSpriteId(pokemon) {
+      return pokemon.spriteId || pokemon.formId || pokemon.apiId || pokemon.id;
+    }
+
+    function getPokemonDexId(pokemon) {
+      return pokemon.dexId || pokemon.id || pokemon.spriteId || pokemon.formId || pokemon.apiId;
+    }
+
+    function getPokemonImage(pokemon) {
+      if (pokemon.image) return pokemon.image;
+
+      const spriteId = getPokemonSpriteId(pokemon);
+
+      if (pokemon.spritePath) return `${SPRITES_BASE}/${pokemon.spritePath}`;
+      if (pokemon.female) return femaleArtworkUrl(spriteId);
+      if (pokemon.shiny) return shinyArtworkUrl(spriteId);
+      if (pokemon.spriteMode === "female") return femaleArtworkUrl(spriteId);
+      if (pokemon.spriteMode === "female-sprite") return femaleSpriteUrl(spriteId);
+      if (pokemon.spriteMode === "shiny") return shinyArtworkUrl(spriteId);
+      if (pokemon.spriteMode === "shiny-sprite") return shinySpriteUrl(spriteId);
+      if (pokemon.spriteMode === "sprite") return spriteUrl(spriteId);
+
+      return artworkUrl(spriteId);
+    }
+
+    function getFallbackImage(pokemon) {
+      const spriteId = getPokemonSpriteId(pokemon) || 1;
+      if (pokemon.female || pokemon.spriteMode === "female") return femaleSpriteUrl(spriteId);
+      if (pokemon.shiny || pokemon.spriteMode === "shiny") return shinySpriteUrl(spriteId);
+      return spriteUrl(spriteId);
+    }
+
+    const teamsGrid = document.getElementById("teamsGrid");
+    const searchInput = document.getElementById("searchInput");
+    const regionFilter = document.getElementById("regionFilter");
+    const styleFilter = document.getElementById("styleFilter");
+    const emptyState = document.getElementById("emptyState");
+    const toast = document.getElementById("toast");
+
+    function formatName(name) {
+      return name
+        .split("-")
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+    }
+
+    function createTypePill(type) {
+      return `<span class="type" style="background:${TYPE_COLORS[type] || "#475569"}">${TYPE_ES[type] || type}</span>`;
+    }
+
+    function createPokemonCard(pokemon) {
+      return `
+        <article class="pokemon-card">
+          <span class="dex">#${String(getPokemonDexId(pokemon)).padStart(4, "0")}${pokemon.form ? ` · ${pokemon.form}` : ""}${pokemon.female ? " · ♀" : ""}${pokemon.shiny ? " · Shiny" : ""}</span>
+          <h3>${formatName(pokemon.name)}</h3>
+          <div class="type-row">${pokemon.types.map(createTypePill).join("")}</div>
+          <img src="${getPokemonImage(pokemon)}" alt="${formatName(pokemon.name)}" loading="lazy" onerror="this.onerror=null;this.src='${getFallbackImage(pokemon)}';" />
+        </article>
+      `;
+    }
+
+    function createTeamCard(team) {
+      return `
+        <article class="team-card" style="--team-a:${team.colors[0]}; --team-b:${team.colors[1]};">
+          <header class="team-top">
+            <div class="trainer-row">
+              <div class="trainer-info">
+                <h2>${team.trainer}</h2>
+                <p>${team.title} · ${team.region}</p>
+              </div>
+              <span class="badge">${team.style}</span>
+            </div>
+            <p class="team-note">${team.note}</p>
+          </header>
+
+          <div class="pokemon-list">
+            ${team.pokemon.map(createPokemonCard).join("")}
+          </div>
+
+          <footer class="team-footer">
+            <span class="footer-label">Equipo de ${team.pokemon.length} Pokémon</span>
+            <button class="copy-btn" data-team="${team.trainer}">Copiar equipo</button>
+          </footer>
+        </article>
+      `;
+    }
+
+    function populateFilters() {
+      const regions = [...new Set(TEAMS.map(team => team.region))].sort();
+      const styles = [...new Set(TEAMS.map(team => team.style))].sort();
+
+      regionFilter.innerHTML += regions.map(region => `<option value="${region}">${region}</option>`).join("");
+      styleFilter.innerHTML += styles.map(style => `<option value="${style}">${style}</option>`).join("");
+    }
+
+    function updateStats(list = TEAMS) {
+      const regions = new Set(list.map(team => team.region));
+      const totalPokemon = list.reduce((total, team) => total + team.pokemon.length, 0);
+
+      document.getElementById("teamCount").textContent = list.length;
+      document.getElementById("pokemonCount").textContent = totalPokemon;
+      document.getElementById("regionCount").textContent = regions.size;
+    }
+
+    function filterTeams() {
+      const search = searchInput.value.trim().toLowerCase();
+      const selectedRegion = regionFilter.value;
+      const selectedStyle = styleFilter.value;
+
+      const filtered = TEAMS.filter(team => {
+        const haystack = [
+          team.trainer,
+          team.title,
+          team.region,
+          team.style,
+          team.note,
+          ...team.pokemon.map(p => p.name),
+          ...team.pokemon.flatMap(p => p.types.map(type => TYPE_ES[type] || type))
+        ].join(" ").toLowerCase();
+
+        const matchesSearch = !search || haystack.includes(search);
+        const matchesRegion = selectedRegion === "all" || team.region === selectedRegion;
+        const matchesStyle = selectedStyle === "all" || team.style === selectedStyle;
+
+        return matchesSearch && matchesRegion && matchesStyle;
+      });
+
+      renderTeams(filtered);
+      updateStats(filtered);
+    }
+
+    function renderTeams(list = TEAMS) {
+      teamsGrid.innerHTML = list.map(createTeamCard).join("");
+      emptyState.style.display = list.length ? "none" : "block";
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    document.addEventListener("click", async (event) => {
+      const button = event.target.closest(".copy-btn");
+      if (!button) return;
+
+      const team = TEAMS.find(item => item.trainer === button.dataset.team);
+      const text = `${team.trainer}: ${team.pokemon.map(p => formatName(p.name)).join(", ")}`;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Equipo copiado al portapapeles");
+      } catch {
+        showToast("No se pudo copiar, pero el equipo está más arriba");
+      }
+    });
+
+    searchInput.addEventListener("input", filterTeams);
+    regionFilter.addEventListener("change", filterTeams);
+    styleFilter.addEventListener("change", filterTeams);
+
+    populateFilters();
+    renderTeams();
+    updateStats();
+  </script>
+</body>
+</html>
