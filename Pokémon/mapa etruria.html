@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa Interactivo Pokémon — Etruria</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600;800&display=swap');
+
+    :root {
+      --bg: #101624;
+      --panel: #ffffff;
+      --ink: #172033;
+      --yellow: #ffd94a;
+      --blue: #3a7cff;
+      --red: #ff4f5f;
+      --green: #47d16c;
+      --locked: #6f7480;
+      --border: #101010;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(58, 124, 255, 0.35), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(255, 217, 74, 0.25), transparent 35%),
+        linear-gradient(135deg, #101624, #182542 55%, #0b1020);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    header {
+      padding: 28px 22px 12px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-family: 'Bangers', cursive;
+      font-size: clamp(2.4rem, 8vw, 5rem);
+      letter-spacing: 2px;
+      color: var(--yellow);
+      text-shadow: 4px 4px 0 var(--border), 0 0 20px rgba(255, 217, 74, 0.45);
+    }
+
+    header p {
+      margin: 8px auto 0;
+      max-width: 760px;
+      color: #dce7ff;
+      font-weight: 600;
+    }
+
+    .layout {
+      width: min(1380px, 96vw);
+      margin: 22px auto 48px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .map-shell,
+    .side-panel {
+      border: 4px solid var(--border);
+      border-radius: 28px;
+      box-shadow: 0 18px 0 rgba(0, 0, 0, 0.35);
+      background: var(--panel);
+      color: var(--ink);
+    }
+
+    .map-shell {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1366 / 1152;
+      align-self: start;
+    }
+
+    .map-toolbar {
+      position: absolute;
+      z-index: 20;
+      bottom: 18px;
+      left: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      border: 3px solid var(--border);
+      border-radius: 999px;
+      background: white;
+      padding: 8px 14px;
+      font-weight: 900;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.25);
+    }
+
+    .map-stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: url('Mapa/Etruria.png');
+      background-size: 100% 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* Fallback visual por si aún no tienes metida la imagen */
+    
+
+    .map-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.15) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .pin {
+      position: absolute;
+      z-index: 5;
+      transform: translate(-50%, -50%);
+      width: 42px;
+      height: 42px;
+      border: 4px solid var(--border);
+      border-radius: 50% 50% 50% 8px;
+      rotate: -45deg;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 0;
+      transition: transform .18s ease, filter .18s ease, opacity .18s ease;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.28);
+    }
+
+    .pin::before {
+      content: "";
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      border: 3px solid var(--border);
+      background: white;
+    }
+
+    .pin.visitada {
+      background: var(--blue);
+    }
+
+    .pin.bloqueada {
+      background: #808894;
+      filter: grayscale(1);
+      opacity: 0.72;
+    }
+
+    .pin.actual {
+      background: var(--red);
+      animation: pulse 1.4s infinite;
+    }
+
+    .pin:hover {
+      transform: translate(-50%, -50%) scale(1.15);
+      z-index: 10;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,79,95,.65), 6px 6px 0 rgba(0,0,0,.28); }
+      50% { box-shadow: 0 0 0 18px rgba(255,79,95,0), 6px 6px 0 rgba(0,0,0,.28); }
+    }
+
+    .tooltip {
+      position: absolute;
+      z-index: 30;
+      pointer-events: none;
+      transform: translate(-50%, -115%);
+      background: #fff;
+      color: var(--ink);
+      border: 3px solid var(--border);
+      border-radius: 16px;
+      padding: 8px 13px;
+      font-weight: 900;
+      opacity: 0;
+      transition: opacity .12s ease;
+      box-shadow: 5px 5px 0 rgba(0,0,0,.25);
+      white-space: nowrap;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+    }
+
+    .side-panel {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-family: 'Bangers', cursive;
+      font-size: 2.8rem;
+      letter-spacing: 1px;
+      color: var(--blue);
+      text-shadow: 2px 2px 0 var(--border);
+    }
+
+    .status-card {
+      border: 3px solid var(--border);
+      border-radius: 22px;
+      padding: 16px;
+      background: #f6f8ff;
+      box-shadow: 5px 5px 0 rgba(0,0,0,.16);
+    }
+
+    .status-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .status-card p {
+      margin: 0;
+      color: #40506c;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+    .type-pill {
+      display: inline-flex;
+      margin-top: 10px;
+      padding: 7px 12px;
+      border: 3px solid var(--border);
+      border-radius: 999px;
+      background: var(--yellow);
+      font-weight: 900;
+    }
+
+    .current-location {
+      background: #fff2f4;
+    }
+
+    .city-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .city-row {
+      width: 100%;
+      border: 3px solid var(--border);
+      border-radius: 16px;
+      background: white;
+      padding: 10px 12px;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: left;
+      box-shadow: 4px 4px 0 rgba(0,0,0,.14);
+    }
+
+    .city-row.locked {
+      filter: grayscale(1);
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .city-row.now {
+      background: #ffe3e7;
+    }
+
+    .legend {
+      margin-top: auto;
+      display: grid;
+      gap: 8px;
+      font-weight: 800;
+      color: #40506c;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+    }
+
+    .dot.blue { background: var(--blue); }
+    .dot.red { background: var(--red); }
+    .dot.gray { background: var(--locked); }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .map-shell {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mapa de Etruria</h1>
+    <p>Explora las ciudades descubiertas durante el rol. Las zonas no visitadas permanecerán ocultas hasta que el grupo llegue in rol.</p>
+  </header>
+
+  <main class="layout">
+    <section class="map-shell">
+      <div class="map-toolbar">
+        <div class="badge" id="progressBadge">Descubiertas: 0/0</div>
+        <div class="badge" id="currentBadge">Ubicación actual: —</div>
+      </div>
+
+      <div class="map-stage" id="mapStage">
+        <div class="tooltip" id="tooltip">???</div>
+      </div>
+    </section>
+
+    <aside class="side-panel">
+      <h2 class="panel-title" id="panelTitle">PokéNav</h2>
+
+      <div class="status-card current-location">
+        <h3>📍 Posición actual</h3>
+        <p id="currentText">Todavía no hay ninguna ciudad marcada como ubicación actual.</p>
+      </div>
+
+      <div class="status-card">
+        <h3>Información de zona</h3>
+        <p id="panelDescription">Pasa el ratón por una ciudad o pulsa una localización descubierta para ver sus datos.</p>
+        <span class="type-pill" id="gymPill" style="display:none;"></span>
+      </div>
+
+      <div class="status-card">
+        <h3>Ciudades</h3>
+        <div class="city-list" id="cityList"></div>
+      </div>
+
+      <div class="legend">
+        <span><i class="dot blue"></i> Ciudad descubierta</span>
+        <span><i class="dot red"></i> Ubicación actual</span>
+        <span><i class="dot gray"></i> Zona no descubierta</span>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const ciudades = [
+      {
+        id: 'olivilia',
+        nombre: 'Olivilia',
+        x: 80.8,
+        y: 60.1,
+        visitada: true,
+        actual: false,
+        descripcion: 'Ciudad inicial de nuestros héroes, hogar de la academia Pokémon y punto de partida del viaje. Sus calles están llenas de entrenadores novatos y tiendas de objetos.',
+        gimnasio: 'Laboratorio Pokémon'
+      },
+      {
+        id: 'vesubria',
+        nombre: 'Vesubria',
+        x: 57,
+        y: 53,
+        visitada: true,
+        actual: false,
+        descripcion: 'Ciudad conocida por su cercanía al volcán y a la mitología del legendario Vulcarion',
+        gimnasio: 'Gimnasio Tipo Fuego'
+      },
+      {
+        id: 'napolisia',
+        nombre: 'Napolisia',
+        x: 61.4,
+        y: 47,
+        visitada: true,
+        actual: false,
+        descripcion: 'Puerto comercial de Etruria. Sus muelles conectan con rutas marítimas y el lugar con más tipo Bicho de la región.',
+        gimnasio: 'Gimnasio Tipo Bicho'
+      },
+      {
+        id: 'colisea',
+        nombre: 'Colisea',
+        x: 46.6,
+        y: 45.7,
+        visitada: true,
+        actual: false,
+        descripcion: 'Capital de la región y centro político de Etruria. Alberga la sede de la Liga Pokémon y el famoso Coliseo, donde se celebran torneos y eventos multitudinarios además de ser el Gimnasio Pokémon de la ciudad.',
+        gimnasio: 'Gimnasio Tipo Roca'
+      },
+      {
+        id: 'civitas-aeterna',
+        nombre: 'Civitas Aeterna',
+        x: 50,
+        y: 34,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: 'villa-arcanum',
+        nombre: 'Villa Arcanum',
+        x: 43.7,
+        y: 33.7,
+        visitada: true,
+        actual: true,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: '',
+        nombre: '???',
+        x: 37.4,
+        y: 37.6,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: '',
+        nombre: '???',
+        x: 21.1,
+        y: 28,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: '',
+        nombre: '???',
+        x: 11.5,
+        y: 6.1,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: '',
+        nombre: '???',
+        x: 46.8,
+        y: 1.3,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: '',
+        nombre: '???',
+        x: 33.9,
+        y: 10.7,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: '',
+        nombre: '???',
+        x: 45,
+        y: 14.7,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: '',
+        nombre: '???',
+        x: 32.1,
+        y: 21.8,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: '',
+        nombre: '???',
+        x: 25.3,
+        y: 55.3,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: '',
+        nombre: '???',
+        x: 29,
+        y: 67,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+      {
+        id: '',
+        nombre: '???',
+        x: 51.2,
+        y: 79,
+        visitada: false,
+        actual: false,
+        descripcion: 'Información bloqueada hasta que el grupo llegue a esta zona.',
+        gimnasio: ''
+      },
+    ];
+
+    const mapStage = document.getElementById('mapStage');
+    const tooltip = document.getElementById('tooltip');
+    const panelTitle = document.getElementById('panelTitle');
+    const panelDescription = document.getElementById('panelDescription');
+    const gymPill = document.getElementById('gymPill');
+    const cityList = document.getElementById('cityList');
+    const progressBadge = document.getElementById('progressBadge');
+    const currentBadge = document.getElementById('currentBadge');
+    const currentText = document.getElementById('currentText');
+
+    function nombreVisible(ciudad) {
+      return ciudad.visitada ? ciudad.nombre : '???';
+    }
+
+    function mostrarInfo(ciudad) {
+      if (!ciudad.visitada) {
+        panelTitle.textContent = '???';
+        panelDescription.textContent = 'Esta localización aún no ha sido descubierta in rol.';
+        gymPill.style.display = 'none';
+        return;
+      }
+
+      panelTitle.textContent = ciudad.nombre;
+      panelDescription.textContent = ciudad.descripcion;
+
+      if (ciudad.gimnasio) {
+        gymPill.textContent = ciudad.gimnasio;
+        gymPill.style.display = 'inline-flex';
+      } else {
+        gymPill.style.display = 'none';
+      }
+    }
+
+    function renderMapa() {
+      document.querySelectorAll('.pin').forEach(pin => pin.remove());
+
+      ciudades.forEach(ciudad => {
+        const pin = document.createElement('button');
+        pin.className = `pin ${ciudad.visitada ? 'visitada' : 'bloqueada'} ${ciudad.actual ? 'actual' : ''}`;
+        pin.style.left = ciudad.x + '%';
+        pin.style.top = ciudad.y + '%';
+        pin.setAttribute('aria-label', nombreVisible(ciudad));
+
+        pin.addEventListener('mouseenter', () => {
+          tooltip.textContent = nombreVisible(ciudad);
+          tooltip.style.left = ciudad.x + '%';
+          tooltip.style.top = ciudad.y + '%';
+          tooltip.classList.add('visible');
+        });
+
+        pin.addEventListener('mouseleave', () => {
+          tooltip.classList.remove('visible');
+        });
+
+        pin.addEventListener('click', () => mostrarInfo(ciudad));
+
+        mapStage.appendChild(pin);
+      });
+    }
+
+    function renderLista() {
+      cityList.innerHTML = '';
+
+      ciudades.forEach(ciudad => {
+        const row = document.createElement('button');
+        row.className = `city-row ${ciudad.visitada ? '' : 'locked'} ${ciudad.actual ? 'now' : ''}`;
+        row.textContent = ciudad.actual
+          ? `📍 ${nombreVisible(ciudad)}`
+          : nombreVisible(ciudad);
+
+        row.addEventListener('click', () => mostrarInfo(ciudad));
+        cityList.appendChild(row);
+      });
+    }
+
+    function renderEstado() {
+      const descubiertas = ciudades.filter(c => c.visitada).length;
+      const actual = ciudades.find(c => c.actual);
+
+      progressBadge.textContent = `Descubiertas: ${descubiertas}/${ciudades.length}`;
+      currentBadge.textContent = `Ubicación actual: ${actual ? nombreVisible(actual) : '—'}`;
+      currentText.textContent = actual
+        ? `El grupo se encuentra ahora mismo en ${nombreVisible(actual)}.`
+        : 'Todavía no hay ninguna ciudad marcada como ubicación actual.';
+    }
+
+    function iniciarMapa() {
+      renderMapa();
+      renderLista();
+      renderEstado();
+
+      const actual = ciudades.find(c => c.actual);
+      if (actual) mostrarInfo(actual);
+    }
+
+    iniciarMapa();
+  </script>
+</body>
+</html>

@@ -126,6 +126,56 @@
 
     .pill-button:hover { transform: translateY(-2px); background: var(--card-strong); }
 
+    /* Brillo amarillo y post-it para el botón de Actualizaciones */
+    #updatesBtn {
+      position: relative;
+      overflow: visible;
+      animation: updatesGlow 2.6s ease-in-out infinite;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.28);
+    }
+
+    @keyframes updatesGlow {
+      0% { box-shadow: 0 6px 0 rgba(0,0,0,0.28), 0 0 6px rgba(255,216,77,0.22); }
+      50% { box-shadow: 0 6px 0 rgba(0,0,0,0.28), 0 0 20px rgba(255,216,77,0.9); }
+      100% { box-shadow: 0 6px 0 rgba(0,0,0,0.28), 0 0 6px rgba(255,216,77,0.22); }
+    }
+
+    /* Post-it encima del botón */
+    #updatesBtn::before {
+      content: "NUEVO!";
+      position: absolute;
+      top: -12px;
+      right: -6px;
+      transform: rotate(8deg);
+      background: linear-gradient(180deg, #fff176, #ffd54f);
+      color: #141000;
+      border: 2px solid rgba(0,0,0,0.08);
+      padding: 4px 8px;
+      font-weight: 900;
+      font-size: 12px;
+      border-radius: 4px;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.14);
+      z-index: 30;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* Cinta adhesiva pequeña */
+    #updatesBtn::after {
+      content: "";
+      position: absolute;
+      top: -6px;
+      right: 6px;
+      width: 26px;
+      height: 8px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+      transform: rotate(6deg);
+      border-radius: 2px;
+      box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+      z-index: 29;
+      pointer-events: none;
+    }
+
     .hero {
       display: grid;
       grid-template-columns: 1.2fr .8fr;
@@ -282,6 +332,38 @@
     }
     .section-card:hover { transform: translateY(-4px); background: var(--card-strong); border-color: rgba(255,216,77,.35); }
 
+    /* Estilo para tarjetas recientemente añadidas */
+    .section-card.new {
+      animation: cardGlow 2.8s ease-in-out infinite;
+      border-color: rgba(255,216,77,0.45);
+      box-shadow: var(--shadow), 0 0 20px rgba(255,216,77,0.28);
+    }
+
+    @keyframes cardGlow {
+      0% { box-shadow: var(--shadow), 0 0 6px rgba(255,216,77,0.18); }
+      50% { box-shadow: var(--shadow), 0 0 28px rgba(255,216,77,0.9); }
+      100% { box-shadow: var(--shadow), 0 0 6px rgba(255,216,77,0.18); }
+    }
+
+    .section-card.new::after {
+      content: "NUEVO!";
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      transform: rotate(-10deg);
+      background: linear-gradient(180deg, #fff176, #ffd54f);
+      color: #141000;
+      border: 2px solid rgba(0,0,0,0.08);
+      padding: 6px 10px;
+      font-weight: 900;
+      font-size: 12px;
+      border-radius: 4px;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.12);
+      z-index: 30;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
     .card-top { display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; }
     .icon {
       width: 48px;
@@ -330,6 +412,7 @@
       display:none;
       padding: 20px;
       margin: 18px 0 22px;
+      
     }
     .updates-panel.open { display:block; animation: fadeIn .18s ease both; }
     .updates-panel h2 { margin: 0 0 12px; }
@@ -413,12 +496,9 @@
 
     <section class="updates-panel" id="updatesPanel">
       <h2>🆕 Actualizaciones</h2>
+      <strong>Mes de Mayo de 2026:</strong>
       <ul>
-        <li>Nuevo diseño smooth con tarjetas compactas y más espacio visual.</li>
-        <li>Buscador para encontrar páginas por nombre, descripción o categoría.</li>
-        <li>Filtros automáticos por sección: Inazuma, Dragon Ball, General y Minijuegos.</li>
-        <li>Modo claro/oscuro guardado con localStorage.</li>
-        <li>Ahora añadir páginas es más fácil: solo toca editar el array <strong>PAGES</strong>.</li>
+        <li>Añadida la página del Mapa de Etruria.</li>
       </ul>
     </section>
 
@@ -449,6 +529,9 @@
       { title: "Árbol Familiar DB", category: "Dragon Ball", emoji: "🌳", url: "parejasdragonball.html", description: "Familias, parejas y descendencia del universo Dragon Ball.", status: "" },
       { title: "Transformaciones", category: "Dragon Ball", emoji: "🔺", url: "transformacionesdragonball.html", description: "Catálogo de transformaciones, apariencias y multiplicadores.", status: "Sin terminar" },
 
+      { title: "Equipos", category: "Pokémon", "emoji": "⚔️", url: "Pokémon/index.html", description: "Registro de equipos, entrenadores y criaturas del universo Pokémon.", status: "Sin terminar" },
+      { title: "Mapa", category: "Pokémon", emoji: "🗺️", url: "Pokémon/mapa etruria.html", description: "Mapa interactivo de la región de Etruria.", status: "Nuevo" },
+
       { title: "Personajes", category: "General", emoji: "👤", url: "personajes.html", description: "Entrada general para fichas de personajes y datos de rol.", status: "" },
       { title: "Embarazos", category: "General", emoji: "🤰", url: "embarazos.html", description: "Seguimiento de embarazos, fechas y relaciones familiares.", status: "" },
       { title: "Clima", category: "General", emoji: "🌤️", url: "clima.html", description: "Página de clima y ambiente para escenas de rol.", status: "" },
@@ -457,7 +540,6 @@
       { title: "Relaciones", category: "General", emoji: "💖", url: "relaciones.html", description: "Mapa de relaciones entre personajes y vínculos importantes.", status: "Sin terminar" },
       { title: "Series", category: "General", emoji: "🎥", url: "Series/series.html", description: "Cantidad de series que hemos visto y/o tenemos a medias.", status: "" },
 
-      { title: "Equipos", category: "Pokémon", "emoji": "⚔️", url: "Pokémon/index.html", description: "Registro de equipos, entrenadores y criaturas del universo Pokémon.", status: "Sin terminar" },
 
       { title: "Puzzle", category: "Minijuegos", emoji: "🧩", url: "puzzle.html", description: "Minijuego de lógica para desconectar entre roles.", status: "" },
       { title: "Lights Out", category: "Minijuegos", emoji: "💡", url: "lightsout.html", description: "Puzzle clásico de luces con estética de minijuego.", status: "" }
@@ -702,7 +784,7 @@
             </div>
             <div class="grid">
               ${groupPages.map(page => `
-                <article class="section-card">
+                <article class="section-card ${statusClass(page.status)}">
                   <div>
                     <div class="card-top">
                       <div class="icon">${escapeHTML(page.emoji)}</div>
