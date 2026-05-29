@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PokéDamage Advanced · Randomlocke</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="hero pokedex-frame">
+      <div class="hero-lights" aria-hidden="true">
+        <span class="light blue"></span><span class="light red"></span><span class="light yellow"></span><span class="light green"></span>
+      </div>
+      <div class="hero-content">
+        <p class="eyebrow">Randomlocke Tool · Gen 9 Advanced</p>
+        <h1>PokéDamage Calculator</h1>
+        <p class="subtitle">Calculadora avanzada para runs randomizadas: Pokémon reales, movimientos oficiales o manuales, formas especiales, Teracristalización, climas, campos, pantallas, estados, objetos, habilidades y edición completa de stats.</p>
+      </div>
+      <aside class="mini-help">
+        <strong>Tip rápido</strong>
+        <span>Usa nombres en inglés: <b>gardevoir</b>, <b>scizor-mega</b>, <b>flamethrower</b>. Si tu randomizer cambia algo, edítalo manualmente.</span>
+      </aside>
+    </header>
+
+    <section class="battle-board">
+      <article class="card pokemon-card side-card attacker-side">
+        <div class="card-head"><span class="role-pill">Atacante</span><h2>¿Quién pega?</h2></div>
+        <label>Pokémon atacante
+          <div class="search-row"><input id="attackerName" type="text" placeholder="Ej: gardevoir" list="pokemonExamples" autocomplete="off" /><button id="loadAttacker">Cargar</button></div>
+        </label>
+        <div class="form-tools"><label>Forma / variante<select id="attackerFormSelect" disabled><option value="">Carga un Pokémon</option></select></label><button id="applyAttackerForm" class="ghost-button" disabled>Cambiar forma</button></div>
+        <div class="pokemon-preview empty" id="attackerPreview"><div class="sprite-placeholder">?</div><div><strong>Sin cargar</strong><p>Stats, tipos, habilidades y formas aparecerán aquí.</p></div></div>
+
+        <details class="advanced" open>
+          <summary>Stats ofensivos editables</summary>
+          <div class="form-grid compact">
+            <label>Nivel<input id="level" type="number" value="50" min="1" max="100" /></label>
+            <label>Objeto atacante<select id="attackerItem"></select></label>
+            <label>Habilidad atacante<select id="attackerAbility"><option value="none">Ninguna</option></select></label>
+            <label>Habilidad manual<input id="attackerAbilityCustom" type="text" placeholder="Ej: adaptability" /></label>
+            <label>Naturaleza ofensiva<select id="attackNature"><option value="1">Neutral</option><option value="1.1">Beneficia</option><option value="0.9">Perjudica</option></select></label>
+            <label>Boost ofensivo<select id="attackBoost"></select></label>
+          </div>
+          <div class="stat-table-wrap">
+            <div class="stat-table-title">Tabla completa de características</div>
+            <div class="stat-table">
+              <div class="stat-row stat-head"><span>Stat</span><span>Base</span><span>IV</span><span>EV</span><span>Final</span><span>Boost</span></div>
+              <div class="stat-row muted-row"><span>PS</span><input id="atkBaseHp" type="number" value="1" min="1"><input id="atkHpIV" type="number" value="31" min="0" max="31"><input id="atkHpEV" type="number" value="0" min="0" max="252" step="4"><output id="atkHpFinal">—</output><span class="dash">—</span></div>
+              <div class="stat-row"><span>Ataque</span><input id="baseAtk" type="number" value="1" min="1"><input id="atkIV" type="number" value="31" min="0" max="31"><input id="atkEV" type="number" value="0" min="0" max="252" step="4"><output id="atkFinal">—</output><select id="attackBoostInline"></select></div>
+              <div class="stat-row muted-row"><span>Defensa</span><input id="atkBaseDef" type="number" value="1" min="1"><input id="atkDefIV" type="number" value="31" min="0" max="31"><input id="atkDefEV" type="number" value="0" min="0" max="252" step="4"><output id="atkDefFinal">—</output><span class="dash">—</span></div>
+              <div class="stat-row"><span>At. Esp.</span><input id="baseSpa" type="number" value="1" min="1"><input id="spaIV" type="number" value="31" min="0" max="31"><input id="spaEV" type="number" value="0" min="0" max="252" step="4"><output id="spaFinal">—</output><select id="spAttackBoostInline"></select></div>
+              <div class="stat-row muted-row"><span>Def. Esp.</span><input id="atkBaseSpd" type="number" value="1" min="1"><input id="atkSpdIV" type="number" value="31" min="0" max="31"><input id="atkSpdEV" type="number" value="0" min="0" max="252" step="4"><output id="atkSpdFinal">—</output><span class="dash">—</span></div>
+              <div class="stat-row muted-row"><span>Velocidad</span><input id="atkBaseSpe" type="number" value="1" min="1"><input id="atkSpeIV" type="number" value="31" min="0" max="31"><input id="atkSpeEV" type="number" value="0" min="0" max="252" step="4"><output id="atkSpeFinal">—</output><span class="dash">—</span></div>
+            </div>
+          </div>
+        </details>
+      </article>
+
+      <div class="center-column">
+        <div class="vs-badge">VS</div>
+        <article class="card move-card">
+          <div class="card-head"><span class="role-pill move-pill">Movimiento</span><h2>¿Con qué ataca?</h2></div>
+          <label>Movimiento
+            <div class="search-row"><input id="moveName" type="text" placeholder="Ej: flamethrower" list="moveExamples" autocomplete="off" /><button id="loadMove">Cargar</button></div>
+          </label>
+          <div class="move-preview empty" id="movePreview"><strong>Sin movimiento</strong><p>Carga uno oficial o edita los datos manualmente.</p></div>
+          <div class="form-grid">
+            <label>Potencia<input id="movePower" type="number" value="90" min="1" /></label>
+            <label>Tipo<select id="moveType"></select></label>
+            <label>Categoría<select id="moveCategory"><option value="physical">Físico</option><option value="special" selected>Especial</option></select></label>
+            <label>STAB<select id="stabMode"><option value="auto">Automático</option><option value="yes">Sí</option><option value="no">No</option></select></label>
+            <label>Ataque Z<select id="zMoveMode"><option value="off">No</option><option value="auto">Sí, potencia Z automática</option><option value="custom">Sí, potencia Z manual</option></select></label>
+            <label>Potencia Z manual<input id="zMovePower" type="number" value="175" min="1" /></label>
+            <label>Contacto<select id="moveContact"><option value="no">No / desconocido</option><option value="yes">Sí</option></select></label>
+            <label>Etiqueta del movimiento<select id="moveTag"><option value="none">Normal</option><option value="punch">Puño</option><option value="bite">Mordisco</option><option value="sound">Sonido</option><option value="pulse">Pulso</option><option value="blade">Corte / cuchilla</option><option value="bomb">Bomba / esfera</option><option value="earthquake">Terremoto / Magnitud / Terratemblor</option></select></label>
+          </div>
+        </article>
+      </div>
+
+      <article class="card pokemon-card side-card defender-side">
+        <div class="card-head"><span class="role-pill defender-pill">Defensor</span><h2>¿Quién recibe?</h2></div>
+        <label>Pokémon defensor
+          <div class="search-row"><input id="defenderName" type="text" placeholder="Ej: scizor" list="pokemonExamples" autocomplete="off" /><button id="loadDefender">Cargar</button></div>
+        </label>
+        <div class="form-tools"><label>Forma / variante<select id="defenderFormSelect" disabled><option value="">Carga un Pokémon</option></select></label><button id="applyDefenderForm" class="ghost-button" disabled>Cambiar forma</button></div>
+        <div class="pokemon-preview empty" id="defenderPreview"><div class="sprite-placeholder">?</div><div><strong>Sin cargar</strong><p>Stats, tipos, habilidades y formas aparecerán aquí.</p></div></div>
+
+        <details class="advanced" open>
+          <summary>Stats defensivos editables</summary>
+          <div class="form-grid compact">
+            <label>Objeto defensivo<select id="defenderItem"></select></label>
+            <label>Habilidad defensiva<select id="defenderAbility"><option value="none">Ninguna</option></select></label>
+            <label>Habilidad manual<input id="defenderAbilityCustom" type="text" placeholder="Ej: fluffy" /></label>
+            <label>Naturaleza defensiva<select id="defenseNature"><option value="1">Neutral</option><option value="1.1">Beneficia</option><option value="0.9">Perjudica</option></select></label>
+            <label>Boost defensivo<select id="defenseBoost"></select></label>
+            <label>Vida actual del defensor<input id="currentHp" type="number" value="0" min="0" /></label>
+          </div>
+          <div class="stat-table-wrap">
+            <div class="stat-table-title">Tabla completa de características</div>
+            <div class="stat-table">
+              <div class="stat-row stat-head"><span>Stat</span><span>Base</span><span>IV</span><span>EV</span><span>Final</span><span>Boost</span></div>
+              <div class="stat-row"><span>PS</span><input id="baseHp" type="number" value="1" min="1"><input id="hpIV" type="number" value="31" min="0" max="31"><input id="hpEV" type="number" value="0" min="0" max="252" step="4"><output id="hpFinal">—</output><span class="dash">—</span></div>
+              <div class="stat-row muted-row"><span>Ataque</span><input id="defBaseAtk" type="number" value="1" min="1"><input id="defAtkIV" type="number" value="31" min="0" max="31"><input id="defAtkEV" type="number" value="0" min="0" max="252" step="4"><output id="defAtkFinal">—</output><span class="dash">—</span></div>
+              <div class="stat-row"><span>Defensa</span><input id="baseDef" type="number" value="1" min="1"><input id="defIV" type="number" value="31" min="0" max="31"><input id="defEV" type="number" value="0" min="0" max="252" step="4"><output id="defFinal">—</output><select id="defenseBoostInline"></select></div>
+              <div class="stat-row muted-row"><span>At. Esp.</span><input id="defBaseSpa" type="number" value="1" min="1"><input id="defSpaIV" type="number" value="31" min="0" max="31"><input id="defSpaEV" type="number" value="0" min="0" max="252" step="4"><output id="defSpaFinal">—</output><span class="dash">—</span></div>
+              <div class="stat-row"><span>Def. Esp.</span><input id="baseSpd" type="number" value="1" min="1"><input id="spdIV" type="number" value="31" min="0" max="31"><input id="spdEV" type="number" value="0" min="0" max="252" step="4"><output id="spdFinal">—</output><select id="spDefenseBoostInline"></select></div>
+              <div class="stat-row muted-row"><span>Velocidad</span><input id="defBaseSpe" type="number" value="1" min="1"><input id="defSpeIV" type="number" value="31" min="0" max="31"><input id="defSpeEV" type="number" value="0" min="0" max="252" step="4"><output id="defSpeFinal">—</output><span class="dash">—</span></div>
+            </div>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <section class="card modifiers sticky-calc">
+      <div><h2>Modificadores de combate</h2><p class="soft-note">Todo lo que afecta al daño se aplica. Cosas como Viento Afín se muestran como aviso porque no cambian el daño directo.</p></div>
+      <details class="advanced" open><summary>Clima, campo y sala</summary>
+        <div class="form-grid wide">
+          <label>Tiempo atmosférico<select id="weather"><option value="none">Ninguno</option><option value="sun">Sol</option><option value="rain">Lluvia</option><option value="sand">Tormenta de Arena</option><option value="snow">Nieve</option></select></label>
+          <label>Campo<select id="terrain"><option value="none">Ninguno</option><option value="electric">Campo Eléctrico</option><option value="grassy">Campo de Hierba</option><option value="misty">Campo de Niebla</option><option value="psychic">Campo Psíquico</option></select></label>
+          <label>Atacante toca el suelo<select id="attackerGrounded"><option value="yes">Sí</option><option value="no">No</option></select></label>
+          <label>Defensor toca el suelo<select id="defenderGrounded"><option value="yes">Sí</option><option value="no">No</option></select></label>
+          <label>Gravedad<select id="gravity"><option value="no">No</option><option value="yes">Sí</option></select></label>
+          <label>Zona Mágica<select id="magicRoom"><option value="no">No</option><option value="yes">Sí, anula objetos</option></select></label>
+        </div>
+      </details>
+
+      <details class="advanced" open><summary>Pantallas y combate</summary>
+        <div class="form-grid wide">
+          <label>Formato<select id="battleFormat"><option value="singles">Individual</option><option value="doubles">Dobles</option></select></label>
+          <label>Reflejo defensor<select id="reflect"><option value="no">No</option><option value="yes">Sí</option></select></label>
+          <label>Pantalla de Luz defensor<select id="lightScreen"><option value="no">No</option><option value="yes">Sí</option></select></label>
+          <label>Velo Aurora defensor<select id="auroraVeil"><option value="no">No</option><option value="yes">Sí</option></select></label>
+          <label>Viento Afín atacante<select id="tailwind"><option value="no">No</option><option value="yes">Sí</option></select></label>
+          <label>Crítico<select id="critical"><option value="no">No</option><option value="yes">Sí</option></select></label>
+        </div>
+      </details>
+
+      <details class="advanced" open><summary>Estados, tipos alterados y Tera</summary>
+        <div class="form-grid wide">
+          <label>Estado atacante<select id="attackerStatus"><option value="none">Ninguno</option><option value="burn">Quemado</option><option value="freeze">Congelado</option><option value="sleep">Dormido</option><option value="poison">Envenenado</option><option value="paralysis">Paralizado</option></select></label>
+          <label>Estado defensor<select id="defenderStatus"><option value="none">Ninguno</option><option value="burn">Quemado</option><option value="freeze">Congelado</option><option value="sleep">Dormido</option><option value="poison">Envenenado</option><option value="paralysis">Paralizado</option></select></label>
+          <label>Alquitranazo<select id="tarShot"><option value="no">No</option><option value="yes">Sí, fuego x2 extra</option></select></label>
+          <label>Carga<select id="charge"><option value="no">No</option><option value="yes">Sí, eléctrico x2</option></select></label>
+          <label>Condena Silvana<select id="forestCurse"><option value="no">No</option><option value="yes">Sí, añade Planta</option></select></label>
+          <label>Halloween<select id="trickOrTreat"><option value="no">No</option><option value="yes">Sí, añade Fantasma</option></select></label>
+          <label>Respiro defensor<select id="roost"><option value="no">No</option><option value="yes">Sí, pierde Volador este turno</option></select></label>
+          <label>Tera activo atacante<select id="attackerTeraActive"><option value="no">No</option><option value="yes">Sí</option></select></label>
+          <label>Teratipo atacante<select id="attackerTeraType"></select></label>
+          <label>Tera activo defensor<select id="defenderTeraActive"><option value="no">No</option><option value="yes">Sí</option></select></label>
+          <label>Teratipo defensor<select id="defenderTeraType"></select></label>
+        </div>
+      </details>
+      <button class="calculate" id="calculateDamage">Calcular daño</button>
+    </section>
+
+    <section class="result-card" id="result"><p>Carga atacante, movimiento y defensor para calcular.</p></section>
+
+    <section class="quick-guide">
+      <div class="guide-card"><b>1</b><span>Carga Pokémon y forma.</span></div>
+      <div class="guide-card"><b>2</b><span>Carga movimiento o edítalo.</span></div>
+      <div class="guide-card"><b>3</b><span>Ajusta Tera, clima, campo, objetos, habilidad y vida actual.</span></div>
+      <div class="guide-card"><b>4</b><span>Calcula el roll contra vida máxima o vida restante.</span></div>
+    </section>
+  </main>
+
+  <datalist id="pokemonExamples"><option value="charizard"><option value="charizard-mega-x"><option value="charizard-mega-y"><option value="gardevoir"><option value="gardevoir-mega"><option value="scizor"><option value="scizor-mega"><option value="lucario"><option value="lucario-mega"><option value="greninja-ash"><option value="groudon-primal"><option value="kyogre-primal"><option value="mewtwo-mega-x"><option value="mewtwo-mega-y"><option value="garchomp"><option value="dragapult"><option value="meowscarada"><option value="skeledirge"><option value="quaquaval"><option value="kingambit"></datalist>
+  <datalist id="moveExamples"><option value="flamethrower"><option value="earthquake"><option value="thunderbolt"><option value="ice-beam"><option value="shadow-ball"><option value="close-combat"><option value="moonblast"><option value="hydro-pump"><option value="psychic"><option value="draco-meteor"><option value="gigavolt-havoc"><option value="inferno-overdrive"><option value="tectonic-rage"></datalist>
+  <script src="script.js"></script>
+</body>
+</html>
