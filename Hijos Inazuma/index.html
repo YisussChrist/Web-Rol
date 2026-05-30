@@ -631,9 +631,35 @@
 
     .child-card.is-born { border-color: rgba(46,229,157,.45); }
 
+    /* =========================
+   BOTÓN SECRETO REN
+   ========================= */
+
+#secretRenBtn{
+  position:fixed;
+  top:0;
+  left:0;
+  width:20px;
+  height:20px;
+  opacity:0;
+  z-index:99999;
+  border:none;
+  background:transparent;
+  color:white;
+  transition:.2s;
+}
+
+#secretRenBtn:hover{
+  opacity:1;
+  width:35px;
+  height:35px;
+  background:rgba(255,255,255,.15);
+  border-radius:0 0 10px 0;
+}
   </style>
 </head>
 <body>
+  <button id="secretRenBtn">⚽</button>
   <header class="topbar">
     <div class="topbar-inner">
       <a class="brand back-menu" href="index.html" title="Volver al menú">
@@ -804,6 +830,66 @@
       "nombre": "Bisco Akaboshi",
       "foto": "pjs/Bisco Akaboshi.jpg"
       
+    }
+  },
+  {
+    "familia": "Ren y Jeanne",
+    "foto": "",
+    "descripcion": "",
+    "hijos": [
+      {
+        "numero": "1",
+        "nombre": "Iris Ito",
+        "genero": "F",
+        "referencia": "Teoritta - Sentenced to be a Hero",
+        "estado": "L",
+        "foto": "InaHijos/Ren y Jeanne/IrisIto.jpg",
+        "descripcion": ""
+      },
+      {
+        "numero": "2",
+        "nombre": "Ariane Ito",
+        "genero": "F",
+        "referencia": "Ariane Glenys Maple - Skeleton Knight From Another World",
+        "estado": "S",
+        "foto": "InaHijos/Ren y Jeanne/ArianeIto.jpg",
+        "descripcion": ""
+      },
+      {
+        "numero": "3",
+        "nombre": "Sakura Ito",
+        "genero": "F",
+        "referencia": "Hana Kazamaki - Detectives These Days are Crazy!",
+        "estado": "Y",
+        "foto": "InaHijos/Ren y Jeanne/SakuraIto.jpg",
+        "descripcion": ""
+      },
+      {
+        "numero": "4",
+        "nombre": "Alexia Ito",
+        "genero": "F",
+        "referencia": "Mordred - Fate/Grand Order",
+        "estado": "L",
+        "foto": "InaHijos/Ren y Jeanne/AlexiaIto.jpg",
+        "descripcion": ""
+      },
+      {
+        "numero": "5",
+        "nombre": "Kenshi Ito",
+        "genero": "M",
+        "referencia": "Yanqing - Honkai Star Rail",
+        "estado": "L",
+        "foto": "InaHijos/Ren y Jeanne/KenshiIto.jpg",
+        "descripcion": ""
+      },
+    ],
+    "madre": {
+      "nombre": "Jeanne d'Arc",
+      "foto": "pjs/Jeanne Darc.jpg"
+    },
+    "padre": {
+      "nombre": "Renzu Ito",
+      "foto": "pjs/Renzu Ito.jpg"
     }
   },
   {
@@ -2550,8 +2636,29 @@
       `;
     }
 
-    function renderFamilies() {
-      const families = getFilteredFamilies();
+    let mostrarRen = false;
+
+function renderFamilies() {
+  let families;
+
+  if (mostrarRen) {
+    families = FAMILIAS.filter(
+      f => f.familia === "Ren y Jeanne"
+    );
+  } else {
+    families = getFilteredFamilies().filter(
+      f => f.familia !== "Ren y Jeanne"
+    );
+  }
+
+  renderStats(families);
+  renderIndex(families);
+
+  if (!families.length) {
+    familiesContainer.innerHTML = `<div class="empty">No hay resultados con esos filtros.</div>`;
+    return;
+  }
+
       renderStats(families);
       renderIndex(families);
 
@@ -2673,6 +2780,11 @@
     renderUpdates();
     populateSeries();
     renderFamilies();
+
+    document.getElementById("secretRenBtn").addEventListener("click", () => {
+      mostrarRen = !mostrarRen;
+      renderFamilies();
+    });
   </script>
 </body>
 </html>
