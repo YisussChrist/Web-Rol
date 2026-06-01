@@ -7,6 +7,21 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="site-warning" id="siteWarning" role="dialog" aria-modal="true" aria-labelledby="siteWarningTitle">
+    <div class="site-warning__backdrop" data-close-warning></div>
+    <article class="site-warning__box">
+      <span class="site-warning__tag">Aviso importante</span>
+      <h2 id="siteWarningTitle">Antes de usar la calculadora</h2>
+      <p>Esta herramienta sigue en desarrollo, así que puede haber algún error en cálculos, formas, habilidades u objetos concretos.</p>
+      <ul>
+        <li>Algunos objetos todavía no han sido añadidos o pueden estar simplificados.</li>
+        <li>Los nombres de Pokémon, formas y ataques deben escribirse en <strong>inglés</strong>.</li>
+        <li>Esto es especialmente importante con Pokémon Paradox y formas especiales.</li>
+      </ul>
+      <button type="button" id="closeSiteWarning">Entendido</button>
+    </article>
+  </div>
+
   <main class="app">
     <header class="hero pokedex-frame">
       <div class="hero-lights" aria-hidden="true">

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Torneo Mortal</title>
+<style>
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #3b0000, #050000 70%);
+  color: #f5d27a;
+  font-family: Impact, Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  font-size: 4rem;
+  color: #ffcc55;
+  text-shadow: 0 0 15px red, 4px 4px #000;
+  letter-spacing: 3px;
+}
+
+button {
+  background: linear-gradient(#ffcc55, #8b0000);
+  border: 3px solid #ffef9a;
+  color: #160000;
+  font-size: 1.5rem;
+  padding: 15px 35px;
+  cursor: pointer;
+  font-family: Impact;
+  box-shadow: 0 0 20px red;
+  margin-bottom: 30px;
+}
+
+button:hover {
+  transform: scale(1.08);
+  filter: brightness(1.2);
+}
+
+#ronda {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 25px;
+  padding: 30px;
+}
+
+.combate {
+  background: linear-gradient(145deg, #1a0000, #390000);
+  border: 3px solid #b8860b;
+  box-shadow: 0 0 25px #8b0000;
+  padding: 25px;
+  position: relative;
+}
+
+.combate h2 {
+  color: #ff3333;
+  text-shadow: 2px 2px #000;
+}
+
+.vs {
+  font-size: 2.5rem;
+  color: #fff;
+  text-shadow: 0 0 12px red;
+  margin: 15px 0;
+}
+
+.luchador {
+  font-size: 1.4rem;
+  background: #090000;
+  border: 2px solid #ffcc55;
+  padding: 12px;
+  margin: 8px 0;
+}
+
+.letra {
+  color: #ff4444;
+}
+</style>
+</head>
+<body>
+
+<h1>TORNEO MORTAL</h1>
+<button onclick="generarTorneo()">GENERAR KOMBAT</button>
+
+<div id="ronda"></div>
+
+<script>
+const participantes = [
+  { nombre: "Rokurou Rangetsu", letra: "S" },
+  { nombre: "Crownslayer", letra: "S" },
+  { nombre: "Undyne", letra: "S" },
+  { nombre: "Marl Barrock", letra: "S" },
+  { nombre: "Kurumi Tokisaki", letra: "S" },
+
+  { nombre: "Alma Azkaban", letra: "Y" },
+  { nombre: "Tao Saotome", letra: "Y" },
+  { nombre: "Burnin'", letra: "Y" },
+  { nombre: "Freyja Kane", letra: "Y" },
+  { nombre: "Mereoleona Vermillion", letra: "Y" },
+  { nombre: "Albedo Dauthrelle", letra: "Y" },
+
+  { nombre: "Glorio", letra: "L" },
+  { nombre: "Raiko Makiro", letra: "L" },
+  { nombre: "Agoti Kamiji", letra: "L" },
+  { nombre: "Garou", letra: "L" },
+  { nombre: "Tohru Ryugu", letra: "L" }
+];
+
+function mezclar(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
+
+function generarPrimeraRonda() {
+  let intentos = 0;
+
+  while (intentos < 10000) {
+    intentos++;
+
+    const lista = mezclar(participantes);
+    const combates = [];
+    let valido = true;
+
+    for (let i = 0; i < lista.length; i += 2) {
+      const p1 = lista[i];
+      const p2 = lista[i + 1];
+
+      if (!p2 || p1.letra === p2.letra) {
+        valido = false;
+        break;
+      }
+
+      combates.push([p1, p2]);
+    }
+
+    if (valido) return combates;
+  }
+
+  return null;
+}
+
+function generarTorneo() {
+  const ronda = generarPrimeraRonda();
+  const contenedor = document.getElementById("ronda");
+  contenedor.innerHTML = "";
+
+  if (!ronda) {
+    contenedor.innerHTML = "<h2>NO HAY KOMBAT POSIBLE</h2>";
+    return;
+  }
+
+  ronda.forEach((combate, index) => {
+    contenedor.innerHTML += `
+      <div class="combate">
+        <h2>KOMBAT ${index + 1}</h2>
+
+        <div class="luchador">
+          ${combate[0].nombre} 
+          <span class="letra">[${combate[0].letra}]</span>
+        </div>
+
+        <div class="vs">VS</div>
+
+        <div class="luchador">
+          ${combate[1].nombre} 
+          <span class="letra">[${combate[1].letra}]</span>
+        </div>
+      </div>
+    `;
+  });
+}
+</script>
+
+</body>
+</html>
