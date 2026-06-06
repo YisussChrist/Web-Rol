@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archivo Tao Saotome | Sellos de Maldición</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap');
+
+    :root {
+      --bg: #080808;
+      --panel: rgba(18, 18, 18, 0.92);
+      --panel-2: rgba(28, 28, 28, 0.95);
+      --paper: #e8e0d0;
+      --muted: #9b9386;
+      --red: #b31217;
+      --red-2: #ff2830;
+      --line: rgba(255,255,255,0.12);
+      --shadow: rgba(179,18,23,0.32);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--paper);
+      font-family: 'Inter', system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(179,18,23,0.20), transparent 28%),
+        radial-gradient(circle at 80% 15%, rgba(255,255,255,0.05), transparent 28%),
+        linear-gradient(135deg, #030303 0%, #111 45%, #070707 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(circle at center, black, transparent 85%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.025),
+        rgba(255,255,255,0.025) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      opacity: .18;
+      mix-blend-mode: overlay;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 24px;
+    }
+
+    .case-file, .subject-card, .seal-grid, .detail-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--panel), rgba(10,10,10,0.96));
+      box-shadow: 0 20px 55px rgba(0,0,0,.45), 0 0 34px rgba(179,18,23,.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .case-file::before, .subject-card::before, .detail-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0 35%, rgba(255,255,255,0.035), transparent 65% 100%);
+      pointer-events: none;
+    }
+
+    .case-file {
+      padding: 30px;
+      min-height: 280px;
+    }
+
+    .tag {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 12px;
+      border: 1px solid rgba(179,18,23,.6);
+      color: var(--red-2);
+      background: rgba(179,18,23,.08);
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-family: 'Bebas Neue', Impact, sans-serif;
+      font-size: clamp(54px, 9vw, 108px);
+      line-height: .86;
+      letter-spacing: .03em;
+      margin: 0;
+      text-transform: uppercase;
+      text-shadow: 4px 4px 0 #000, -2px 0 0 rgba(179,18,23,.8);
+    }
+
+    .subtitle {
+      max-width: 660px;
+      margin: 18px 0 0;
+      color: #c9c0b1;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .meta div {
+      border: 1px solid var(--line);
+      padding: 12px;
+      background: rgba(255,255,255,.035);
+      min-height: 70px;
+    }
+
+    .meta span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      margin-bottom: 8px;
+    }
+
+    .meta strong {
+      font-family: 'Bebas Neue';
+      font-size: 25px;
+      letter-spacing: .04em;
+      font-weight: 400;
+    }
+
+    .subject-card {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 280px;
+    }
+
+    .portrait {
+      flex: 1;
+      border: 1px dashed rgba(232,224,208,.28);
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(45deg, rgba(255,255,255,.04) 25%, transparent 25% 50%, rgba(255,255,255,.04) 50% 75%, transparent 75%),
+        radial-gradient(circle, rgba(179,18,23,.25), transparent 62%);
+      background-size: 18px 18px, auto;
+      min-height: 160px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .portrait .kanji {
+      font-family: 'Bebas Neue';
+      font-size: 76px;
+      color: rgba(232,224,208,.12);
+      position: absolute;
+      z-index: 3;
+    }
+
+    .portrait p {
+      z-index: 3;
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      color: #ddd1bf;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .portrait-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      display: block;
+    }
+
+    .portrait-photo.is-empty {
+      display: none;
+    }
+
+    .warning {
+      border-left: 4px solid var(--red);
+      padding: 12px 14px;
+      background: rgba(179,18,23,.08);
+      color: #d9d0c3;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin: 28px 0 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: 'Bebas Neue';
+      font-size: 42px;
+      letter-spacing: .05em;
+      font-weight: 400;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .16em;
+    }
+
+    .seal-grid {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .seal {
+      border: 1px solid rgba(255,255,255,.14);
+      min-height: 142px;
+      padding: 14px;
+      background: rgba(255,255,255,.035);
+      cursor: pointer;
+      transition: .2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .seal:hover, .seal.active {
+      transform: translateY(-3px);
+      border-color: rgba(255,40,48,.75);
+      box-shadow: 0 0 24px var(--shadow);
+      background: rgba(179,18,23,.13);
+    }
+
+    .seal.locked {
+      cursor: not-allowed;
+      filter: grayscale(.6);
+      opacity: .7;
+    }
+
+    .seal.locked:hover { transform: none; box-shadow: none; border-color: rgba(255,255,255,.14); }
+
+    .number {
+      color: var(--red-2);
+      font-family: 'Bebas Neue';
+      font-size: 23px;
+    }
+
+    .icon {
+      font-size: 38px;
+      margin: 12px 0 6px;
+      filter: drop-shadow(0 0 12px rgba(255,255,255,.12));
+    }
+
+    .seal h3 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .seal small {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: 10px;
+    }
+
+    .seal.locked::after {
+      content: "████████████████████";
+      position: absolute;
+      left: -18px;
+      right: -18px;
+      bottom: 18px;
+      color: rgba(255,40,48,.28);
+      transform: rotate(-9deg);
+      font-size: 13px;
+      letter-spacing: .12em;
+    }
+
+    .detail-card {
+      margin-top: 18px;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: .72fr 1.28fr;
+      gap: 26px;
+      min-height: 340px;
+    }
+
+    .detail-symbol {
+      border: 1px solid rgba(255,255,255,.12);
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle, rgba(179,18,23,.18), transparent 58%),
+        rgba(255,255,255,.03);
+      min-height: 280px;
+      position: relative;
+    }
+
+    .detail-symbol span {
+      font-size: 116px;
+      filter: drop-shadow(0 0 26px rgba(179,18,23,.5));
+    }
+
+
+    .seal-photo {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      object-fit: cover;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 0 22px rgba(179,18,23,.35));
+    }
+
+    .seal-photo.is-empty {
+      display: none;
+    }
+
+    .detail-symbol .placeholder-icon {
+      position: relative;
+      z-index: 2;
+      font-size: 116px;
+      filter: drop-shadow(0 0 26px rgba(179,18,23,.5));
+    }
+
+    .detail-symbol::before,
+    .detail-symbol::after {
+      content: "";
+      position: absolute;
+      width: 72%;
+      height: 1px;
+      background: rgba(255,40,48,.45);
+    }
+
+    .detail-symbol::before { transform: rotate(45deg); }
+    .detail-symbol::after { transform: rotate(-45deg); }
+
+    .detail-content h3 {
+      font-family: 'Bebas Neue';
+      font-size: clamp(44px, 6vw, 72px);
+      margin: 0 0 4px;
+      line-height: .9;
+      letter-spacing: .04em;
+    }
+
+    .quote {
+      color: #d4c8b8;
+      border-left: 3px solid var(--red);
+      padding-left: 14px;
+      margin: 14px 0 20px;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .chip {
+      border: 1px solid rgba(255,255,255,.14);
+      padding: 7px 10px;
+      background: rgba(255,255,255,.04);
+      color: #ded3c3;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .box {
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 15px;
+      background: rgba(0,0,0,.22);
+    }
+
+    .box h4 {
+      margin: 0 0 10px;
+      color: var(--red-2);
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: 12px;
+    }
+
+    ul { margin: 0; padding-left: 18px; color: #d7ccbc; line-height: 1.65; font-size: 14px; }
+
+    .classified {
+      font-family: 'Bebas Neue';
+      color: rgba(255,40,48,.75);
+      letter-spacing: .12em;
+      font-size: 26px;
+      text-transform: uppercase;
+    }
+
+    .progress {
+      margin-top: 24px;
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: rgba(255,255,255,.035);
+    }
+
+    .bar {
+      height: 13px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: 20%;
+      background: repeating-linear-gradient(45deg, var(--red), var(--red) 8px, #6b070a 8px, #6b070a 16px);
+      box-shadow: 0 0 18px var(--shadow);
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 880px) {
+      .header, .detail-card { grid-template-columns: 1fr; }
+      .meta { grid-template-columns: repeat(2, 1fr); }
+      .seal-grid { grid-template-columns: repeat(3, 1fr); }
+      .columns { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .wrap { width: min(100% - 20px, 1180px); padding-top: 18px; }
+      .case-file, .subject-card, .detail-card { padding: 18px; }
+      .seal-grid { grid-template-columns: repeat(2, 1fr); padding: 12px; }
+      .seal { min-height: 128px; }
+      .meta { grid-template-columns: 1fr; }
+      h2 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="header">
+      <article class="case-file">
+        <div class="tag">● Archivo confidencial / Maldición activa</div>
+        <h1>Sellos de<br>Tao Saotome</h1>
+        <p class="subtitle">
+          Registro interno de los sellos animales atribuidos a Tao. La mayoría de datos siguen bajo censura.
+        </p>
+        <div class="meta">
+          <div><span>Sujeto</span><strong>Tao Saotome</strong></div>
+          <div><span>Estado</span><strong>Activa</strong></div>
+          <div><span>Sellos</span><strong>3 / 15</strong></div>
+          <div><span>Riesgo</span><strong>Especial</strong></div>
+        </div>
+      </article>
+
+      <aside class="subject-card">
+        <div class="portrait">
+            <img id="portraitImage" class="portrait-photo is-empty" src="" alt="Foto del sujeto">
+            <div class="kanji">封</div>
+            <p>Imagen del sujeto<br>pendiente de insertar</p>
+          </div>
+        <div class="warning">
+          <strong>Advertencia:</strong> no se recomienda provocar una liberación simultánea. El patrón de los sellos parece responder tanto al daño recibido como al instinto de supervivencia del sujeto.
+        </div>
+      </aside>
+    </section>
+
+    <div class="section-title">
+      <h2>Registro de sellos</h2>
+      <div class="counter">Revelados: 3 / 15</div>
+    </div>
+
+    <section class="seal-grid" id="sealGrid"></section>
+
+    <section class="detail-card" id="detailCard">
+      <div class="detail-symbol">
+        <img id="detailImage" class="seal-photo is-empty" src="" alt="Imagen del sello">
+        <span id="detailIcon" class="placeholder-icon">🐆</span>
+      </div>
+      <div class="detail-content">
+        <div class="number" id="detailNumber">SELLO 01</div>
+        <h3 id="detailName">Guepardo del Horizonte</h3>
+        <div class="quote" id="detailQuote">“Corre antes de que el enemigo comprenda que te has movido.”</div>
+        <div class="chips" id="detailChips"></div>
+        <div class="columns">
+          <div class="box">
+            <h4>Capacidades</h4>
+            <ul id="detailPowers"></ul>
+          </div>
+          <div class="box">
+            <h4>Riesgos / Limitaciones</h4>
+            <ul id="detailRisks"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="progress">
+      <div class="counter">Progreso de expediente: 20%</div>
+      <div class="bar"><span></span></div>
+    </section>
+
+    <div class="footer-note">Última actualización: sellos conocidos registrados manualmente</div>
+  </main>
+
+  <script>
+    const seals = [
+      {
+        id: 9,
+        icon: '🐆',
+        image: 'Sellos/Guepardo.png',
+        name: 'Guepardo del Horizonte',
+        type: 'Velocidad',
+        status: 'Revelado',
+        quote: '“Corre antes de que el enemigo comprenda que te has movido.”',
+        tags: ['Velocidad', 'Reflejos', 'Aceleración'],
+        powers: [
+          'Aumenta drásticamente la velocidad de desplazamiento.',
+          'Permite aceleraciones explosivas en espacios cortos.',
+          'Mejora los reflejos y la lectura de trayectorias rápidas.',
+          'Ideal para esquivar, reposicionarse o rematar a un enemigo abierto.'
+        ],
+        risks: [
+          'Sobrecarga muscular si se mantiene demasiado tiempo.',
+          'Pierde valor en espacios muy cerrados o con movilidad limitada.',
+          'Puede volver a Tao predecible si solo busca velocidad frontal.'
+        ]
+      },
+      {
+        id: 2,
+        icon: '🐙',
+        image: 'Sellos/Pulpo.png',
+        name: 'Pulpo Abisal',
+        type: 'Adaptación',
+        status: 'Revelado',
+        quote: '“La victoria pertenece a quien entiende el combate antes de comenzarlo.”',
+        tags: ['Análisis', 'Adaptación', 'Control'],
+        powers: [
+          'Aumenta la capacidad de análisis durante el combate.',
+          'Mejora la lectura de patrones y hábitos del rival.',
+          'Potencia la coordinación corporal y la creatividad táctica.',
+          'Permite adaptarse a estilos de lucha caóticos o impredecibles.'
+        ],
+        risks: [
+          'Puede generar agotamiento mental intenso.',
+          'No aumenta de forma directa la fuerza bruta.',
+          'Si Tao se bloquea emocionalmente, el análisis puede volverse inútil.'
+        ]
+      },
+      {
+        id: 5,
+        icon: '🐘',
+        image: 'Sellos/Elefante.png',
+        name: 'Elefante Africano',
+        type: 'Fuerza / Resistencia',
+        status: 'Revelado',
+        quote: '“Ni el acero ni la montaña pueden detener aquello que avanza.”',
+        tags: ['Fuerza', 'Resistencia', 'Estabilidad'],
+        powers: [
+          'Incrementa enormemente la fuerza física.',
+          'Aumenta la resistencia al daño directo.',
+          'Mejora la estabilidad corporal y reduce el retroceso recibido.',
+          'Convierte a Tao en una fuerza de avance difícil de frenar.'
+        ],
+        risks: [
+          'Reduce la movilidad y la capacidad de esquiva.',
+          'Consume mucha energía si se combina con sellos veloces.',
+          'Puede forzar a Tao a recibir golpes en vez de evitarlos.'
+        ]
+      }
+    ];
+
+    const grid = document.getElementById('sealGrid');
+    const knownMap = Object.fromEntries(seals.map(seal => [seal.id, seal]));
+
+    function sealLabel(n) {
+      return String(n).padStart(2, '0');
+    }
+
+    function createGrid() {
+      for (let i = 1; i <= 15; i++) {
+        const data = knownMap[i];
+        const card = document.createElement('article');
+        card.className = 'seal' + (data ? '' : ' locked');
+        card.dataset.id = i;
+
+        if (data) {
+          card.innerHTML = `
+            <div class="number">${sealLabel(i)}</div>
+            <div class="icon">${data.icon}</div>
+            <h3>${data.name}</h3>
+            <small>${data.type}</small>
+          `;
+          card.addEventListener('click', () => selectSeal(i));
+        } else {
+          card.innerHTML = `
+            <div class="number">${sealLabel(i)}</div>
+            <div class="icon">封</div>
+            <h3>Información clasificada</h3>
+            <small>Acceso denegado</small>
+          `;
+        }
+
+        grid.appendChild(card);
+      }
+    }
+
+    function selectSeal(id) {
+      const data = knownMap[id];
+      if (!data) return;
+
+      document.querySelectorAll('.seal').forEach(card => card.classList.remove('active'));
+      document.querySelector(`.seal[data-id="${id}"]`).classList.add('active');
+
+      const detailImage = document.getElementById('detailImage');
+      const detailIcon = document.getElementById('detailIcon');
+
+      if (data.image) {
+        detailImage.src = data.image;
+        detailImage.alt = `Imagen del sello ${data.name}`;
+        detailImage.classList.remove('is-empty');
+        detailIcon.style.display = 'none';
+      } else {
+        detailImage.src = '';
+        detailImage.alt = 'Imagen del sello';
+        detailImage.classList.add('is-empty');
+        detailIcon.style.display = '';
+        detailIcon.textContent = data.icon;
+      }
+
+      document.getElementById('detailIcon').textContent = data.icon;
+      document.getElementById('detailNumber').textContent = `SELLO ${sealLabel(data.id)}`;
+      document.getElementById('detailName').textContent = data.name;
+      document.getElementById('detailQuote').textContent = data.quote;
+
+      const chips = document.getElementById('detailChips');
+      chips.innerHTML = data.tags.map(tag => `<span class="chip">${tag}</span>`).join('');
+
+      const powers = document.getElementById('detailPowers');
+      powers.innerHTML = data.powers.map(power => `<li>${power}</li>`).join('');
+
+      const risks = document.getElementById('detailRisks');
+      risks.innerHTML = data.risks.map(risk => `<li>${risk}</li>`).join('');
+    }
+
+    createGrid();
+    function setPortrait(src) {
+      const img = document.getElementById('portraitImage');
+      const caption = document.querySelector('.portrait p');
+      if (!img) return;
+      if (src) {
+        img.src = src;
+        img.alt = 'Foto del sujeto';
+        img.classList.remove('is-empty');
+        if (caption) caption.style.display = 'none';
+      } else {
+        img.src = '';
+        img.classList.add('is-empty');
+        if (caption) caption.style.display = '';
+      }
+    }
+
+    // carga por defecto la foto del sujeto (ruta relativa al archivo)
+    setPortrait('OST/img/TaoSaotome.jpg');
+
+    selectSeal(1);
+  </script>
+
+</body>
+</html>
