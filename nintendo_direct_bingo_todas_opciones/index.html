@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bingo Nintendo Direct</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <p class="eyebrow">Nintendo Direct</p>
+      <h1>Bingo del Direct</h1>
+      <p class="subtitle">Todas las opciones del array aparecen en el cartón y todas son clicables. Esto ya no es bingo, es una quiniela del copium.</p>
+
+      <div class="controls">
+        <button id="shuffleBtn">Aleatorizar orden</button>
+        <button id="resetBtn" class="secondary">Reiniciar</button>
+      </div>
+
+      <p id="status" class="status">Que empiece el Direct.</p>
+    </section>
+
+    <section id="board" class="board" aria-label="Cartón de bingo"></section>
+  </main>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
