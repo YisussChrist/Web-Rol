@@ -581,7 +581,37 @@
       .card{padding:10px; gap:10px}
     }
 
-  </style>
+  
+    .card.born{
+      border-color:rgba(80,255,140,.55);
+      box-shadow:0 0 22px rgba(80,255,140,.16);
+    }
+    .card.born::before{
+      content:"NACIDO";
+      position:absolute; top:10px; right:10px; z-index:2;
+      padding:4px 9px; border-radius:999px;
+      background:linear-gradient(180deg,#7cff9f,#22c55e);
+      color:#05220d; font-weight:900; font-size:.72rem;
+    }
+    .card.unborn{
+      opacity:.68; filter:grayscale(.35); border-style:dashed;
+    }
+    .card.unborn::before{
+      content:"NO NACIDO";
+      position:absolute; top:10px; right:10px; z-index:2;
+      padding:4px 9px; border-radius:999px;
+      background:linear-gradient(180deg,#b8b8b8,#6b7280);
+      color:#111; font-weight:900; font-size:.72rem;
+    }
+    .card.unknown-born::before{
+      content:"???";
+      position:absolute; top:10px; right:10px; z-index:2;
+      padding:4px 9px; border-radius:999px;
+      background:linear-gradient(180deg,#ffd45f,#ff8c1a);
+      color:#230b00; font-weight:900; font-size:.72rem;
+    }
+
+</style>
 </head>
 <body>
   <header id="siteHeader">
@@ -697,15 +727,15 @@
         { name: 'Alma Azkaban', img: 'fotos-poderes/Alma Azkaban.jpg' },
         { name: 'Exusiai', img: 'fotos-poderes/Exusiai.jpg' }
       ], children: [
-        { name: 'Kiriya Azkaban', img: 'Hijos/Alma y Exusiai/Kiriya Azkaban.jpg', gender: 'F', tag: 'Y', series: "Goddess' Dorm", meta: "Kiriya Sensho — Dorm Mother of the Goddess' Dorm", link: '#' }
+        { name: 'Kiriya Azkaban', img: 'Hijos/Alma y Exusiai/Kiriya Azkaban.jpg', gender: 'F', tag: 'Y', series: "Goddess' Dorm", meta: "Kiriya Sensho — Dorm Mother of the Goddess' Dorm", link: '#', born: true }
       ]},
       { family: 'Lancelot y Tokishikko', parents: [
         { name: 'Lancelot Tsukue', img: "fotos-poderes/Lancelot Tsukue.jpg" },
         { name: 'Tokishikko Dana', img: "fotos-poderes/Tokishikko Dana.jpg" }
       ], children: [
-        { name: 'Kabane Tsukue', img: "Hijos/Lancelot y Tokishikko/Kabane Tsukue.jpg", gender: 'M', tag: 'S', series: 'Kemono Jihen', meta: 'Kabane Kusaka — Kemono Jihen', link: '#' },
-        { name: 'Ellen Tsukue', img: "Hijos/Lancelot y Tokishikko/Ellen Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Zenless Zone Zero', meta: 'Ellen Joe - Zenless Zone Zero', link: '#' },
-        { name: 'Lumine Tsukue', img: "Hijos/Lancelot y Tokishikko/Lumine Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Genshin Impact', meta: 'Lumine - Genshin Impact', link: '#' }
+        { name: 'Kabane Tsukue', img: "Hijos/Lancelot y Tokishikko/Kabane Tsukue.jpg", gender: 'M', tag: 'S', series: 'Kemono Jihen', meta: 'Kabane Kusaka — Kemono Jihen', link: '#', born: true },
+        { name: 'Ellen Tsukue', img: "Hijos/Lancelot y Tokishikko/Ellen Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Zenless Zone Zero', meta: 'Ellen Joe - Zenless Zone Zero', link: '#', born: false },
+        { name: 'Lumine Tsukue', img: "Hijos/Lancelot y Tokishikko/Lumine Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Genshin Impact', meta: 'Lumine - Genshin Impact', link: '#', born: true }
       ]},
       { family: 'Law y Gogo', parents: [
         { name: 'Law Vireon', img: 'fotos-poderes/Law Vireon.jpg' },
@@ -779,7 +809,7 @@
         { name: 'Simon Drayton', img: 'fotos-poderes/Simon Drayton.jpg' },
         { name: 'Ryuko Matoi', img: 'fotos-poderes/Ryuko Matoi.jpg' }
       ], children: [
-        { name: 'Shiki Drayton', img: 'Hijos/Ryuko y Simon/Shiki Drayton.png', gender: 'M', tag: 'S', series: 'Edens Zero', meta: 'Shiki Granbell — Edens Zero', link: '#' },
+        { name: 'Shiki Drayton', img: 'Hijos/Ryuko y Simon/Shiki Drayton.png', gender: 'M', tag: 'L', series: 'Edens Zero', meta: 'Shiki Granbell — Edens Zero', link: '#' },
         { name: 'Kanade Drayton', img: 'Hijos/Ryuko y Simon/Kanade Drayton.jpg', gender: 'F', tag: 'L', series: 'Symphogear', meta: 'Kadane Amou — Symphogear', link: '#' }
       ]},
       { family: 'Kael y Jibril', parents: [
@@ -846,7 +876,7 @@
         { name: 'Urtiel', img: 'fotos-poderes/Urtiel.png' } 
       ], children: [
         { name: 'Lilith Sukuna', img:'Hijos/Sukuna y Sentencia/Lilith Sukuna.jpg',gender: 'F', tag: 'Y', series: 'Path to Nowhere', meta: 'Ninety-Nine — Path to Nowhere', link: '#' },
-        { name: 'Heine Sukuna', img:'Hijos/Sukuna y Sentencia/Heine Sukuna.png', gender: 'F', tag: 'S', series: 'Sentouin, Hakenshimasu!', meta: 'Heine — Sentouin, Hakenshimasu!', link: '#' }
+        { name: 'Heine Sukuna', img:'Hijos/Sukuna y Sentencia/Heine Sukuna.jpg', gender: 'F', tag: 'S', series: 'Sentouin, Hakenshimasu!', meta: 'Heine — Sentouin, Hakenshimasu!', link: '#' }
       ]},
       { family: 'Grimmjow y Justicia', parents: [
         { name: 'Grimmjow Jearjearquez', img: 'fotos-poderes/Grimmjow.png' },
@@ -1020,7 +1050,7 @@
           <div class="children">
             ${fam.children.map((kid, idx) => `
               <article
-                class="card"
+                class="card ${kid.born === true ? 'born' : kid.born === false ? 'unborn' : 'unknown-born'}"
                 tabindex="0"
                 role="button"
                 aria-label="Abrir ficha de ${escapeHTML(kid.name)}"
