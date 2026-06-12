@@ -16,9 +16,13 @@ const client = new Client({
 
 const CANAL_AVISOS_ID = "1514802130647515285";
 
+const WIKI_API = "https://dragon-ball-eternal-warriors.fandom.com/es/api.php";
+const WIKI_BASE = "https://dragon-ball-eternal-warriors.fandom.com/es/wiki/";
+
 const RUTA_CALENDARIO = path.join(__dirname, "..", "calendario.html");
 const RUTA_EMBARAZOS = path.join(__dirname, "..", "embarazos.html");
 const RUTA_PERSONAJES = path.join(__dirname, "..", "personajes.json");
+const RUTA_PODER = path.join(__dirname, "..", "poder.html");
 
 let ultimoComandoRepetible = null;
 
@@ -64,6 +68,10 @@ function limitarTexto(texto, max = 3900) {
     return texto.slice(0, max - 20) + "\n...";
 }
 
+function formatearNumero(numero) {
+    return Number(numero).toLocaleString("es-ES");
+}
+
 function extraerEventosCalendario() {
     if (!fs.existsSync(RUTA_CALENDARIO)) return null;
 
@@ -85,6 +93,38 @@ function extraerEventosCalendario() {
     }
 
     return eventos;
+}
+
+function extraerPersonajesPoder() {
+    if (!fs.existsSync(RUTA_PODER)) return null;
+
+    const html = fs.readFileSync(RUTA_PODER, "utf8");
+
+    const inicio = html.indexOf("const characters =");
+
+    if (inicio === -1) return [];
+
+    const inicioArray = html.indexOf("[", inicio);
+    const finArray = html.indexOf("];", inicioArray);
+
+    if (inicioArray === -1 || finArray === -1) return [];
+
+    let textoArray = html.slice(inicioArray, finArray + 1);
+
+    textoArray = textoArray
+        .replace(/\/\/.*$/gm, "")
+        .replace(/\/\*[\s\S]*?\*\//g, "")
+        .replace(/,\s*]/g, "]")
+        .replace(/,\s*}/g, "}");
+
+    try {
+        return Function(`"use strict"; return (${textoArray});`)();
+    } catch (error) {
+        console.error("Error leyendo characters de poder.html:", error);
+        console.log("Fragmento problemático:");
+        console.log(textoArray.slice(0, 1000));
+        return [];
+    }
 }
 
 function extraerEmbarazos() {
@@ -128,6 +168,8 @@ function diasHastaEvento(dia, mes) {
     return Math.round((fechaEvento - hoy) / (1000 * 60 * 60 * 24));
 }
 
+
+
 function buscarPersonaje(nombreBuscado) {
     if (!fs.existsSync(RUTA_PERSONAJES)) return null;
 
@@ -139,6 +181,73 @@ function buscarPersonaje(nombreBuscado) {
         const nombre = String(p.nombre || p.name || "").toLowerCase();
         return nombre.includes(busqueda);
     });
+}
+
+async function buscarWiki(nombrePagina) {
+
+    // Intentar búsqueda exacta primero
+    let params = new URLSearchParams({
+        action: "query",
+        format: "json",
+        prop: "extracts|pageimages",
+        exintro: "true",
+        explaintext: "true",
+        redirects: "true",
+        pithumbsize: "400",
+        titles: nombrePagina
+    });
+
+    let respuesta = await fetch(`${WIKI_API}?${params.toString()}`);
+    let data = await respuesta.json();
+
+    let pages = data.query.pages;
+    let pagina = Object.values(pages)[0];
+
+    // Si no existe, buscar sugerencias
+    if (!pagina || pagina.missing) {
+
+        const busqueda = await fetch(
+    `${WIKI_API}?action=query&list=search&srsearch=${encodeURIComponent(nombrePagina)}&srlimit=5&format=json`
+);
+
+const resultado = await busqueda.json();
+
+if (!resultado.query || !resultado.query.search || resultado.query.search.length === 0) {
+    return null;
+}
+
+const tituloEncontrado = resultado.query.search[0].title;
+
+        params = new URLSearchParams({
+            action: "query",
+            format: "json",
+            prop: "extracts|pageimages",
+            exintro: "true",
+            explaintext: "true",
+            redirects: "true",
+            pithumbsize: "400",
+            titles: tituloEncontrado
+        });
+
+        respuesta = await fetch(`${WIKI_API}?${params.toString()}`);
+        data = await respuesta.json();
+
+        pages = data.query.pages;
+        pagina = Object.values(pages)[0];
+    }
+
+    if (!pagina || pagina.missing) {
+        return null;
+    }
+
+    return {
+        titulo: pagina.title,
+        resumen: pagina.extract || "Esta página no tiene resumen disponible.",
+        imagen: pagina.thumbnail ? pagina.thumbnail.source : null,
+        url: WIKI_BASE + encodeURIComponent(
+            pagina.title.replaceAll(" ", "_")
+        )
+    };
 }
 
 async function comandoDuelo(message, texto, guardar = true) {
@@ -364,6 +473,65 @@ client.on("messageCreate", async (message) => {
 
     const contenido = message.content.trim();
 
+    if (contenido.startsWith("-wiki")) {
+    const busqueda = contenido.replace("-wiki", "").trim();
+
+    if (!busqueda) {
+        const embed = crearEmbedError(
+            "❌ Falta el nombre de la página",
+            "Ejemplo:\n`-wiki Nara Midori`"
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    try {
+        const pagina = await buscarWiki(busqueda);
+
+if (!pagina) {
+    const embed = crearEmbedError(
+        "❌ Página no encontrada",
+        `No he encontrado ninguna página llamada **${busqueda}** en la wiki.`
+    );
+
+    return message.reply({ embeds: [embed] });
+}
+
+        const embed = new EmbedBuilder()
+    .setColor(0x8E44AD)
+    .setTitle(`📚 ${pagina.titulo}`)
+    .setURL(pagina.url)
+    .setDescription(limitarTexto(pagina.resumen, 1000))
+    .addFields(
+        {
+            name: "🔗 Enlace",
+            value: `[Abrir artículo completo](${pagina.url})`,
+            inline: false
+        }
+    )
+    .setFooter({ text: "Dragon Ball Eternal Warriors Wiki" })
+    .setTimestamp();
+
+        if (pagina.imagen) {
+            embed.setThumbnail(pagina.imagen);
+        }
+
+        return message.channel.send({
+            embeds: [embed]
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        const embed = crearEmbedError(
+            "❌ Error al consultar la wiki",
+            error.message
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+}
+
     if (contenido === "-help") {
         const embed = new EmbedBuilder()
             .setColor(0x3498DB)
@@ -411,10 +579,24 @@ client.on("messageCreate", async (message) => {
                         "Muestra los embarazos activos desde `embarazos.html`."
                 },
                 {
-                    name: "📚 Personajes",
+                    name: "🧮 Utilidades",
+                    value:
+                        "`-calc 1500 * 2 + 300`\n" +
+                        "Calcula operaciones matemáticas.\n\n" +
+                        "`-multi 51000000 50`\n" +
+                        "Calcula un multiplicador sobre un poder base.\n\n" +
+                        "`-podercalc Freyja Kane * 100`\n" +
+                        "Calcula operaciones usando el poder base del personaje.\n\n"
+                },
+                {
+                    name: "📚 Personajes / Wiki",
                     value:
                         "`-personaje Freyja`\n" +
-                        "Busca un personaje en `personajes.json`."
+                        "Busca un personaje en `personajes.json`.\n\n" +
+                        "`-wiki Nara Midori`\n" +
+                        "Busca una página en la wiki de Fandom.\n\n" +
+                        "`-poder Freyja Kane`\n" +
+                        "Muestra el poder base y transformaciones de un personaje según `poder.html`."
                 },
                 {
                     name: "🌐 GitHub / Web",
@@ -462,6 +644,276 @@ client.on("messageCreate", async (message) => {
 
         return message.channel.send({ embeds: [embed] });
     }
+
+    if (contenido.startsWith("-multi")) {
+    const args = contenido.replace("-multi", "").trim().split(/\s+/);
+
+    if (args.length < 2) {
+        const embed = crearEmbedError(
+            "❌ Faltan datos",
+            "Ejemplo:\n`-multi 51000000 50`"
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    const base = Number(args[0]);
+    const multiplicador = Number(args[1]);
+
+    if (isNaN(base) || isNaN(multiplicador)) {
+        const embed = crearEmbedError(
+            "❌ Datos inválidos",
+            "Debes usar números.\n\nEjemplo:\n`-multi 51000000 50`"
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    const resultado = base * multiplicador;
+
+    const embed = new EmbedBuilder()
+        .setColor(0xE67E22)
+        .setTitle("🔥 Multiplicador")
+        .addFields(
+            {
+                name: "Poder base",
+                value: formatearNumero(base),
+                inline: true
+            },
+            {
+                name: "Multiplicador",
+                value: `x${multiplicador}`,
+                inline: true
+            },
+            {
+                name: "Resultado",
+                value: `# ${formatearNumero(resultado)}`
+            }
+        )
+        .setFooter({ text: "Calculadora de Poder" })
+        .setTimestamp();
+
+    return message.channel.send({ embeds: [embed] });
+}
+
+    if (contenido.startsWith("-calc")) {
+    const expresion = contenido.replace("-calc", "").trim();
+
+    if (!expresion) {
+        const embed = crearEmbedError(
+            "❌ Falta la operación",
+            "Ejemplo:\n`-calc 1500 * 2 + 300`"
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    // Solo permitir números, espacios y operadores básicos
+    if (!/^[0-9+\-*/().%\s]+$/.test(expresion)) {
+        const embed = crearEmbedError(
+            "❌ Operación inválida",
+            "Solo se permiten números y operadores matemáticos."
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    try {
+        let operacion = expresion;
+
+        // Convierte porcentajes:
+        // 30% -> (30/100)
+        operacion = operacion.replace(
+            /(\d+(\.\d+)?)%/g,
+            "($1/100)"
+        );
+
+        const resultado = Function(
+            `"use strict"; return (${operacion})`
+        )();
+
+        const embed = new EmbedBuilder()
+            .setColor(0x16A085)
+            .setTitle("🧮 Calculadora")
+            .addFields(
+                {
+                    name: "Operación",
+                    value: `\`${expresion}\``
+                },
+                {
+                    name: "Resultado",
+                    value: `# ${resultado}`
+                }
+            )
+            .setFooter({ text: "Calculadora Web-Rol" })
+            .setTimestamp();
+
+        return message.channel.send({ embeds: [embed] });
+
+    } catch {
+        const embed = crearEmbedError(
+            "❌ Error matemático",
+            "No he podido resolver esa operación."
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    
+}
+    if (contenido.startsWith("-podercalc")) {
+
+    const texto = contenido.replace("-podercalc", "").trim();
+
+    const match = texto.match(/(.+?)\s*([\*\/\+\-])\s*(\d+(?:\.\d+)?)/);
+
+    if (!match) {
+        const embed = crearEmbedError(
+            "❌ Formato incorrecto",
+            "Ejemplo:\n`-podercalc Freyja Kane * 100`"
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    const nombrePersonaje = match[1].trim();
+    const operador = match[2];
+    const valor = Number(match[3]);
+
+    const personajes = extraerPersonajesPoder();
+
+    if (!personajes || personajes.length === 0) {
+        const embed = crearEmbedError(
+            "❌ No he podido leer poder.html",
+            "Comprueba que exista y que contenga `const characters = [...]`"
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    const personaje = personajes.find(p =>
+        p.name.toLowerCase() === nombrePersonaje.toLowerCase()
+    );
+
+    if (!personaje) {
+        const embed = crearEmbedError(
+            "❌ Personaje no encontrado",
+            `No he encontrado a **${nombrePersonaje}** en poder.html`
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    const base = Number(personaje.strength);
+
+    let resultado = base;
+
+    switch (operador) {
+        case "*":
+            resultado = base * valor;
+            break;
+        case "/":
+            resultado = base / valor;
+            break;
+        case "+":
+            resultado = base + valor;
+            break;
+        case "-":
+            resultado = base - valor;
+            break;
+    }
+
+    const embed = new EmbedBuilder()
+        .setColor(0xE74C3C)
+        .setTitle("🔥 Calculadora de Poder")
+        .addFields(
+            {
+                name: "Personaje",
+                value: personaje.name,
+                inline: true
+            },
+            {
+                name: "Poder base",
+                value: formatearNumero(base),
+                inline: true
+            },
+            {
+                name: "Operación",
+                value: `${operador} ${valor}`,
+                inline: true
+            },
+            {
+                name: "Resultado",
+                value: `# ${formatearNumero(resultado)}`
+            }
+        )
+        .setTimestamp();
+
+    return message.channel.send({ embeds: [embed] });
+}
+
+if (contenido.startsWith("-poder")) {
+
+    const nombreBuscado = contenido.replace("-poder", "").trim();
+
+    if (!nombreBuscado) {
+        const embed = crearEmbedError(
+            "❌ Falta el nombre",
+            "Ejemplo:\n`-poder Freyja Kane`"
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    const personajes = extraerPersonajesPoder();
+
+    if (!personajes || personajes.length === 0) {
+        const embed = crearEmbedError(
+            "❌ No he podido leer poder.html",
+            "Comprueba que exista y que contenga `const characters = [...]`"
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    const personaje = personajes.find(p =>
+        p.name.toLowerCase().includes(nombreBuscado.toLowerCase())
+    );
+
+    if (!personaje) {
+        const embed = crearEmbedError(
+            "❌ Personaje no encontrado",
+            `No he encontrado a **${nombreBuscado}** en poder.html`
+        );
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    let descripcion =
+        `🔥 **Poder Base**\n` +
+        `# ${formatearNumero(personaje.strength)}`;
+
+    if (personaje.transformations && personaje.transformations.length > 0) {
+        descripcion += "\n\n⚡ **Transformaciones**\n";
+
+        personaje.transformations.forEach(t => {
+            descripcion +=
+                `• **${t.name}** → ${formatearNumero(t.strength)}\n`;
+        });
+    }
+
+    const embed = new EmbedBuilder()
+        .setColor(0xF39C12)
+        .setTitle(`🔥 ${personaje.name}`)
+        .setDescription(descripcion)
+        .setTimestamp();
+
+    // if (personaje.photo) {
+    // embed.setThumbnail(personaje.photo);
+    // }
+
+    return message.channel.send({ embeds: [embed] });
+}
 
     if (contenido.startsWith("-equipos")) {
         const texto = contenido.replace("-equipos", "").trim();
