@@ -546,7 +546,9 @@ if (!pagina) {
                         "`-dado`\n" +
                         "Tira un dado de 20 caras por defecto.\n\n" +
                         "`-d6`, `-d20`, `-d100`\n" +
-                        "Tira dados concretos."
+                        "Tira dados concretos.\n\n" +
+                        "`-explicacionduelo`\n" +
+                        "Explica cómo funciona el sistema aleatorio de duelos.\n\n"
                 },
                 {
                     name: "🏆 Torneos",
@@ -614,6 +616,45 @@ if (!pagina) {
     if (contenido.startsWith("-duelo")) {
         const texto = contenido.replace("-duelo", "").trim();
         return comandoDuelo(message, texto);
+    }
+
+    if (contenido === "-explicacionduelo") {
+
+    const embed = new EmbedBuilder()
+        .setColor(0x3498DB)
+        .setTitle("🎲 ¿Cómo funciona el sistema de duelos?")
+        .setDescription(
+            "El sistema utiliza el generador aleatorio interno de JavaScript (`Math.random()`).\n\n" +
+
+            "Por cada duelo:\n\n" +
+
+            "1️⃣ Se cuentan todos los participantes.\n" +
+            "2️⃣ Se genera un número aleatorio.\n" +
+            "3️⃣ Se elige al participante correspondiente a ese número.\n\n" +
+
+            "Ejemplo:\n" +
+            "• Alma → 0\n" +
+            "• Tao → 1\n" +
+            "• Freyja → 2\n" +
+            "• Goku → 3\n\n" +
+
+            "Cada participante tiene exactamente las mismas probabilidades de ganar.\n\n" +
+
+            "La posición en la lista NO influye en el resultado.\n" +
+            "No existen favoritos, pesos ocultos ni ventajas para las primeras opciones."
+        )
+        .addFields({
+            name: "📊 Importante",
+            value:
+                "Que alguien pierda muchas veces seguidas no significa que el sistema esté trucado.\n\n" +
+                "La mala suerte también existe. 😈"
+        })
+        .setFooter({
+            text: "⚠️ 'NekoChoose me odia' no constituye evidencia científica."
+        })
+        .setTimestamp();
+
+    return message.channel.send({ embeds: [embed] });
     }
 
     if (contenido.startsWith("-torneo")) {
@@ -913,6 +954,12 @@ if (contenido.startsWith("-poder")) {
     // }
 
     return message.channel.send({ embeds: [embed] });
+}
+
+if (contenido === "-tit") {
+    return message.channel.send(
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQttWT0cD9kg6S83c4_qsZvTdPaoZDd-Emoqw&s"
+    );
 }
 
     if (contenido.startsWith("-equipos")) {
