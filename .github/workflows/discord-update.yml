@@ -1,4 +1,3 @@
-
 name: Avisar actualización web
 
 on:
@@ -12,7 +11,20 @@ jobs:
 
     steps:
       - name: Enviar aviso a Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
+          JSON_PAYLOAD=$(jq -n \
+            --arg content "📢 <@&1514803118746108004>
+          🌐 **Nueva actualización de la web**
+
+          📝 Último cambio:
+          $COMMIT_MESSAGE
+
+          🔗 https://yisusschrist.github.io/Web-Rol/" \
+            '{content: $content}')
+
           curl -H "Content-Type: application/json" \
-          -d "{\"content\":\"📢 <@&1514803118746108004>\\n🌐 **Nueva actualización de la web**\\n\\n📝 Último cambio: ${{ github.event.head_commit.message }}\\n🔗 https://yisusschrist.github.io/Web-Rol/\"}" \
-          ${{ secrets.DISCORD_WEBHOOK }}
+            -d "$JSON_PAYLOAD" \
+            "$DISCORD_WEBHOOK"
