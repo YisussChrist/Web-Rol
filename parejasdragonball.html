@@ -581,7 +581,43 @@
       .card{padding:10px; gap:10px}
     }
 
-  </style>
+  
+    .card.born{
+      border-color:rgba(80,255,140,.55);
+      box-shadow:0 0 22px rgba(80,255,140,.16);
+    }
+    .card.born::before{
+      content:"NACIDO";
+      position:absolute; top:10px; right:10px; z-index:2;
+      padding:4px 9px; border-radius:999px;
+      background:linear-gradient(180deg,#7cff9f,#22c55e);
+      color:#05220d; font-weight:900; font-size:.72rem;
+    }
+    .card.unborn{
+      border-color:rgba(180,180,180,.35);
+    }
+    .card.unborn::before{
+      content:"NO NACIDO";
+      position:absolute;
+      top:10px;
+      right:10px;
+      z-index:2;
+      padding:4px 9px;
+      border-radius:999px;
+      background:linear-gradient(180deg,#b8b8b8,#6b7280);
+      color:#111;
+      font-weight:900;
+      font-size:.72rem;
+    }
+    .card.unknown-born::before{
+      content:"???";
+      position:absolute; top:10px; right:10px; z-index:2;
+      padding:4px 9px; border-radius:999px;
+      background:linear-gradient(180deg,#ffd45f,#ff8c1a);
+      color:#230b00; font-weight:900; font-size:.72rem;
+    }
+
+</style>
 </head>
 <body>
   <header id="siteHeader">
@@ -615,6 +651,13 @@
           <button class="btn" type="button" data-filter-gender="F" aria-pressed="false">♀︎</button>
           <button class="btn" type="button" data-filter-gender="M" aria-pressed="false">♂︎</button>
           <button class="btn" type="button" data-filter-gender="?" aria-pressed="false">？</button>
+        </div>
+
+        <div class="group" role="group" aria-label="Ordenar familias">
+          <span class="label">ORDEN</span>
+          <button class="btn" type="button" data-sort="alpha" aria-pressed="true">A-Z</button>
+          <button class="btn" type="button" data-sort="children-desc" aria-pressed="false">+ Hijos</button>
+          <button class="btn" type="button" data-sort="children-asc" aria-pressed="false">- Hijos</button>
         </div>
 
         <button id="theme" class="btn" type="button" aria-pressed="false" aria-label="Cambiar tema">☀️ Cambiar a claro</button>
@@ -691,27 +734,28 @@
     // 2) En padres usa: { name: 'Nombre', img: 'img/familias/foto.png' }
     // 3) En hijos añade: img: 'img/familias/foto.png'
     // Si dejas img: '' o no pones img, saldrán las iniciales como antes.
+    //todos estos personajes son la caña de España
 
     const DATA = [
       { family: 'Alma y Exusiai', parents: [
         { name: 'Alma Azkaban', img: 'fotos-poderes/Alma Azkaban.jpg' },
         { name: 'Exusiai', img: 'fotos-poderes/Exusiai.jpg' }
       ], children: [
-        { name: 'Kiriya Azkaban', img: 'Hijos/Alma y Exusiai/Kiriya Azkaban.jpg', gender: 'F', tag: 'Y', series: "Goddess' Dorm", meta: "Kiriya Sensho — Dorm Mother of the Goddess' Dorm", link: '#' }
+        { name: 'Kiriya Azkaban', img: 'Hijos/Alma y Exusiai/Kiriya Azkaban.jpg', gender: 'F', tag: 'Y', series: "Goddess' Dorm", meta: "Kiriya Sensho — Dorm Mother of the Goddess' Dorm", link: '#', born: true }
       ]},
       { family: 'Lancelot y Tokishikko', parents: [
         { name: 'Lancelot Tsukue', img: "fotos-poderes/Lancelot Tsukue.jpg" },
         { name: 'Tokishikko Dana', img: "fotos-poderes/Tokishikko Dana.jpg" }
       ], children: [
-        { name: 'Kabane Tsukue', img: "Hijos/Lancelot y Tokishikko/Kabane Tsukue.jpg", gender: 'M', tag: 'S', series: 'Kemono Jihen', meta: 'Kabane Kusaka — Kemono Jihen', link: '#' },
-        { name: 'Ellen Tsukue', img: "Hijos/Lancelot y Tokishikko/Ellen Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Zenless Zone Zero', meta: 'Ellen Joe - Zenless Zone Zero', link: '#' },
-        { name: 'Lumine Tsukue', img: "Hijos/Lancelot y Tokishikko/Lumine Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Genshin Impact', meta: 'Lumine - Genshin Impact', link: '#' }
+        { name: 'Kabane Tsukue', img: "Hijos/Lancelot y Tokishikko/Kabane Tsukue.jpg", gender: 'M', tag: 'S', series: 'Kemono Jihen', meta: 'Kabane Kusaka — Kemono Jihen', link: '#', born: true },
+        { name: 'Ellen Tsukue', img: "Hijos/Lancelot y Tokishikko/Ellen Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Zenless Zone Zero', meta: 'Ellen Joe - Zenless Zone Zero', link: '#', born: false },
+        { name: 'Lumine Tsukue', img: "Hijos/Lancelot y Tokishikko/Lumine Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Genshin Impact', meta: 'Lumine - Genshin Impact', link: '#', born: false }
       ]},
       { family: 'Law y Gogo', parents: [
         { name: 'Law Vireon', img: 'fotos-poderes/Law Vireon.jpg' },
         { name: 'Gogo Karashina', img: 'fotos-poderes/Gogo Karashina.jpg' }
       ], children: [
-        { name: 'Fujimaru Vireon', img: 'Hijos/Law y Gogo/Fujimaru Vireon.jpg', gender: 'M', tag: 'L', series: 'Fate', meta: 'Fujimaru Ritsuka — Fate', link: '#' }
+        { name: 'Fujimaru Vireon', img: 'Hijos/Law y Gogo/Fujimaru Vireon.jpg', gender: 'M', tag: 'L', series: 'Fate', meta: 'Fujimaru Ritsuka — Fate', link: '#', born: false }
       ]},
       { family: 'Skadi y Beelzebub', parents: [
         { name: 'Skadi Dragenfelt', img: 'fotos-poderes/Skadi Dragenfelt.jpg' },
@@ -723,51 +767,51 @@
         { name: 'Ares Kane', img: 'fotos-poderes/Ares Kane.jpg' },
         { name: '', img: 'fotos-poderes/Tao Saotome.jpg' }
       ], children: [
-        { name: 'Hermes Kane', img: "Hijos/Ares y Tao/Hermes Kane.jpg", gender: 'M', tag: 'S', series: 'The Yozakura Family', meta: 'Sui Aoi — The Yozakura Family', link: '#' },
-        { name: 'Thalia Kane', img: "Hijos/Ares y Tao/Thalia Kane.webp", gender: 'F', tag: 'Y', series: 'The Academy’s Sashimi Sword Master', meta: 'Medea Poison — The Academy’s Sashimi Sword Master', link: '#' },
-        { name: 'Hestia Kane', img: "Hijos/Ares y Tao/Hestia Kane.jpg", gender: 'F', tag: 'Y', series: 'Someone Stop Her!', meta: 'Yoonda Cha — Someone Stop Her!', link: '#' }
+        { name: 'Hermes Kane', img: "Hijos/Ares y Tao/Hermes Kane.jpg", gender: 'M', tag: 'S', series: 'The Yozakura Family', meta: 'Sui Aoi — The Yozakura Family', link: '#', born: true },
+        { name: 'Thalia Kane', img: "Hijos/Ares y Tao/Thalia Kane.webp", gender: 'F', tag: 'Y', series: 'The Academy’s Sashimi Sword Master', meta: 'Medea Poison — The Academy’s Sashimi Sword Master', link: '#', born: true },
+        { name: 'Hestia Kane', img: "Hijos/Ares y Tao/Hestia Kane.jpg", gender: 'F', tag: 'Y', series: 'Someone Stop Her!', meta: 'Yoonda Cha — Someone Stop Her!', link: '#', born: false }
       ]},
       { family: 'David y Kurumi', parents: [
         { name: 'David Martínez', img: 'fotos-poderes/David Martinez.jpg' },
         { name: 'Kurumi Tokisaki', img: 'fotos-poderes/Kurumi Tokisaki.jpg' }
       ], children: [
-        { name: 'Kiawa Martínez', img: "Hijos/David y Kurumi/Kiawa Martinez.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Sparkle — Honkai Star Rail', link: '#' }
+        { name: 'Kiawa Martínez', img: "Hijos/David y Kurumi/Kiawa Martinez.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Sparkle — Honkai Star Rail', link: '#', born: true }
       ]},
       { family: 'Zelda y Waru', parents: [
         { name: 'Zelda Hellsdothir', img: 'fotos-poderes/Zelda Hellsdothir.jpg' },
         { name: 'Waru Shintarou', img: 'fotos-poderes/Waru Shintarou.webp' }
       ], children: [
-        { name: 'Galbrena Shintarou', img: "Hijos/Waru y Zelda/Galbrena Shintarou.jpg", gender: 'F', tag: 'L', series: 'Wuthering Waves', meta: 'Galbrena — Wuthering Waves', link: '#' },
-        { name: 'Setsuna Shintarou', img: "Hijos/Waru y Zelda/Setsuna Shintarou.jpg", gender: 'F', tag: 'L', series: 'Redo of Healer', meta: 'Setsuna — Redo of Healer', link: '#' },
-        { name: 'Kawaki Shintarou', img: "Hijos/Waru y Zelda/Kawaki Shintarou.jpg", gender: 'M', tag: 'L', series: 'Naruto', meta: 'Kawaki — Naruto', link: '#' },
-        { name: 'Ciel Shintarou', img: "Hijos/Waru y Zelda/Ciel Shintarou.jpg", gender: 'M', tag: 'Y', series: 'Elsword', meta: 'Ciel — Elsword', link: '#' }
+        { name: 'Galbrena Shintarou', img: "Hijos/Waru y Zelda/Galbrena Shintarou.jpg", gender: 'F', tag: 'L', series: 'Wuthering Waves', meta: 'Galbrena — Wuthering Waves', link: '#', born: false },
+        { name: 'Setsuna Shintarou', img: "Hijos/Waru y Zelda/Setsuna Shintarou.jpg", gender: 'F', tag: 'L', series: 'Redo of Healer', meta: 'Setsuna — Redo of Healer', link: '#', born: false },
+        { name: 'Kawaki Shintarou', img: "Hijos/Waru y Zelda/Kawaki Shintarou.jpg", gender: 'M', tag: 'L', series: 'Naruto', meta: 'Kawaki — Naruto', link: '#', born: false },
+        { name: 'Ciel Shintarou', img: "Hijos/Waru y Zelda/Ciel Shintarou.jpg", gender: 'M', tag: 'Y', series: 'Elsword', meta: 'Ciel — Elsword', link: '#', born: false }
       ]},
       { family: 'Hak y Yoruichi', parents: [
         { name: 'Hak Aethereon', img: 'fotos-poderes/Hak.jpg' },
         { name: 'Yoruichi Shinhouin', img: 'fotos-poderes/Yoruichi Shihoin.jpg' }
       ], children: [
-        { name: 'Dax Aethereon', img: "Hijos/Hak y Yoruichi/Dax Aethereon.jpg", gender: 'M', tag: 'L', series: 'Juusen Battle Monsuno', meta: 'Dax — Juusen Battle Monsuno', link: '#' },
-        { name: 'Chun Aethereon', img: "Hijos/Hak y Yoruichi/Chun Aethereon.jpg", gender: 'F', tag: 'L', series: 'Record of Ragnarok', meta: 'Chun Yun — Record of Ragnarok', link: '#' }
+        { name: 'Dax Aethereon', img: "Hijos/Hak y Yoruichi/Dax Aethereon.jpg", gender: 'M', tag: 'L', series: 'Juusen Battle Monsuno', meta: 'Dax — Juusen Battle Monsuno', link: '#', born: true },
+        { name: 'Chun Aethereon', img: "Hijos/Hak y Yoruichi/Chun Aethereon.jpg", gender: 'F', tag: 'L', series: 'Record of Ragnarok', meta: 'Chun Yun — Record of Ragnarok', link: '#', born: false }
       ]},
       { family: 'Add y Albedo', parents: [
         { name: 'David Martínez', img: 'fotos-poderes/Add.jpg' },
         { name: 'Kurumi Tokisaki', img: 'fotos-poderes/Albedo.jpg' }
       ], children: [
-        { name: 'Utena Vileborne', img: "Hijos/Add y Albedo/Utena Vileborne.jpg", gender: 'F', tag: 'S', series: 'Mahou Shoujo ni Akogarete', meta: 'Utena Hiiragi — Mahou Shoujo ni Akogarete', link: '#' }
+        { name: 'Utena Vileborne', img: "Hijos/Add y Albedo/Utena Vileborne.jpg", gender: 'F', tag: 'S', series: 'Mahou Shoujo ni Akogarete', meta: 'Utena Hiiragi — Mahou Shoujo ni Akogarete', link: '#', born: true }
       ]},
       { family: 'Nara y Khrome', parents: [
         { name: 'Nara Midori', img: 'fotos-poderes/Nara Midori.jpg' },
         { name: 'Khrome Ryugu', img: 'fotos-poderes/Khrome2.jpg' }
       ], children: [
-        { name: 'Ibuki Ryugu', img: "Hijos/Khrome y Nara/Ibuki Ryugu.jpg", gender: 'F', tag: 'L', series: 'Fate', meta: 'Ibuki-douji — Fate', link: '#' },
-        { name: 'Lapis Ryugu', img: "Hijos/Khrome y Nara/Lapis Ryugu.png", gender: 'F', tag: 'Y', series: 'OC', meta: 'Androide 21 de Joven', link: '#' },
-        { name: 'Chronoa Ryugu', img: "Hijos/Khrome y Nara/Chronoa Ryugu.jpg", gender: 'F', tag: 'Y', series: 'Dragon Ball Heroes', meta: 'Chronoa - Dragon Ball Heroes', link: '#' },
+        { name: 'Ibuki Ryugu', img: "Hijos/Khrome y Nara/Ibuki Ryugu.jpg", gender: 'F', tag: 'L', series: 'Fate', meta: 'Ibuki-douji — Fate', link: '#', born: true },
+        { name: 'Lapis Ryugu', img: "Hijos/Khrome y Nara/Lapis Ryugu.png", gender: 'F', tag: 'Y', series: 'OC', meta: 'Androide 21 de Joven', link: '#', born: false },
+        { name: 'Chronoa Ryugu', img: "Hijos/Khrome y Nara/Chronoa Ryugu.jpg", gender: 'F', tag: 'Y', series: 'Dragon Ball Heroes', meta: 'Chronoa - Dragon Ball Heroes', link: '#', born: false },
       ]},
       { family: 'Plasma y Magilou', parents: [
         { name: 'Killua Zaoldyeck', img: 'fotos-poderes/Plasma.jpg' },
         { name: '', img: 'fotos-poderes/Magilou Mayvin.jpg' }
       ], children: [
-        { name: 'Luna Zaoldyeck', img: "Hijos/Plasma y Magilou/Luna Zaoldyeck.jpg", gender: 'F', tag: 'L', series: "Li'l Miss Vampire Can't Suck Right", meta: "Luna Ishikawa — Li'l Miss Vampire Can't Suck Right", link: '#' }
+        { name: 'Luna Zaoldyeck', img: "Hijos/Plasma y Magilou/Luna Zaoldyeck.jpg", gender: 'F', tag: 'L', series: "Li'l Miss Vampire Can't Suck Right", meta: "Luna Ishikawa — Li'l Miss Vampire Can't Suck Right", link: '#', born: false }
       ]},
       { family: "Scar y Wis'Adel", parents: [
         { name: 'Scar', img: 'fotos-poderes/Scar.jpg' },
@@ -779,15 +823,15 @@
         { name: 'Simon Drayton', img: 'fotos-poderes/Simon Drayton.jpg' },
         { name: 'Ryuko Matoi', img: 'fotos-poderes/Ryuko Matoi.jpg' }
       ], children: [
-        { name: 'Shiki Drayton', img: 'Hijos/Ryuko y Simon/Shiki Drayton.png', gender: 'M', tag: 'S', series: 'Edens Zero', meta: 'Shiki Granbell — Edens Zero', link: '#' },
-        { name: 'Kanade Drayton', img: 'Hijos/Ryuko y Simon/Kanade Drayton.jpg', gender: 'F', tag: 'L', series: 'Symphogear', meta: 'Kadane Amou — Symphogear', link: '#' }
+        { name: 'Shiki Drayton', img: 'Hijos/Ryuko y Simon/Shiki Drayton.png', gender: 'M', tag: 'S', series: 'Edens Zero', meta: 'Shiki Granbell — Edens Zero', link: '#', born: false },
+        { name: 'Kanade Drayton', img: 'Hijos/Ryuko y Simon/Kanade Drayton.jpg', gender: 'F', tag: 'L', series: 'Symphogear', meta: 'Kadane Amou — Symphogear', link: '#', born: false }
       ]},
       { family: 'Kael y Jibril', parents: [
         { name: 'Kael Kane', img: 'fotos-poderes/Kael.jpg' },
         { name: 'Jibril Hellsdothir', img: 'fotos-poderes/Jibril.jpg' }
       ], children: [
-        { name: 'Milim Kane', img: "Hijos/Kael y Jibril/Milim Kane.jpg", gender: 'F', tag: 'Y', series: 'That Time I Got Reincarnated as a Slime', meta: 'Milim Nava — That Time I Got Reincarnated as a Slime', link: '#' },
-        { name: 'Joryuu Kane', img: "Hijos/Kael y Jibril/Jouryuu Kane.jpg", gender: 'F', tag: 'L', series: 'Mato Seihei no Slave', meta: 'Jouryuu — Mato Seihei no Slave', link: '#' }
+        { name: 'Milim Kane', img: "Hijos/Kael y Jibril/Milim Kane.jpg", gender: 'F', tag: 'Y', series: 'That Time I Got Reincarnated as a Slime', meta: 'Milim Nava — That Time I Got Reincarnated as a Slime', link: '#', born: false },
+        { name: 'Joryuu Kane', img: "Hijos/Kael y Jibril/Jouryuu Kane.jpg", gender: 'F', tag: 'L', series: 'Mato Seihei no Slave', meta: 'Jouryuu — Mato Seihei no Slave', link: '#', born: false }
 
       ]},
       { family: 'Shionne y Goliat', parents: [
@@ -800,7 +844,7 @@
         { name: 'Gilthunder Rainford', img: 'fotos-poderes/Gilthunder.jpg' },
         { name: 'Undyne', img: 'fotos-poderes/Undyne.png' }
       ], children: [
-        { name: 'Sirius Rainford', img: "Hijos/Gilthunder y Undyne/Sirius Rainford.jpg", gender: 'F', tag: 'Y', series: 'Boku no Hero', meta: 'Sirius — Boku no Hero', link: '#' }
+        { name: 'Sirius Rainford', img: "Hijos/Gilthunder y Undyne/Sirius Rainford.jpg", gender: 'F', tag: 'Y', series: 'Boku no Hero', meta: 'Sirius — Boku no Hero', link: '#', born: false }
       ]},
       { family: 'Billy y Frostleaf', parents: [
         { name: 'Billy Kid', img: 'fotos-poderes/Billy Kid.jpg' },
@@ -818,21 +862,21 @@
         { name: 'Venus Shintarou', img: 'fotos-poderes/Venus Shintarou.jpg' },
         { name: 'Jade Karashina', img: 'fotos-poderes/Jade Karashina.webp' }
       ], children: [
-        { name: 'Genos Shintarou', img: "Hijos/Venus y Jade/Genos Shintarou.jpg", gender: 'M', tag: 'L', series: 'One Punch Man', meta: 'Genos — One Punch Man', link: '#' }
+        { name: 'Genos Shintarou', img: "Hijos/Venus y Jade/Genos Shintarou.jpg", gender: 'M', tag: 'L', series: 'One Punch Man', meta: 'Genos — One Punch Man', link: '#', born: false }
       ]},
       { family: 'Uzui y Feixiao', parents: [
         { name: 'Uzui Tengen', img: 'fotos-poderes/Uzui Tengen.jpeg' },
         { name: 'Feixiao Hatsuse', img: 'fotos-poderes/Feixiao.jpg' }
       ], children: [
-        { name: 'Fohl Tengen', img: "Hijos/Uzui y Feixiao/Fohl Tengen.jpg", gender: 'M', tag: 'L', series: 'The Rising of the Shield Hero', meta: 'Fohl Fayon — The Rising of the Shield Hero', link: '#' },
-        { name: 'Cipher Tengen', img: "Hijos/Uzui y Feixiao/Cipher Tengen.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Cipher — Honkai Star Rail', link: '#' }
+        { name: 'Fohl Tengen', img: "Hijos/Uzui y Feixiao/Fohl Tengen.jpg", gender: 'M', tag: 'L', series: 'The Rising of the Shield Hero', meta: 'Fohl Fayon — The Rising of the Shield Hero', link: '#', born: false },
+        { name: 'Cipher Tengen', img: "Hijos/Uzui y Feixiao/Cipher Tengen.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Cipher — Honkai Star Rail', link: '#', born: false }
       ]},
       { family: 'Jin y Freyja', parents: [
         { name: 'Jin Mori', img: 'fotos-poderes/Jin Mori.jpg' },
         { name: 'Freyja Kane', img: 'fotos-poderes/Freyja Kane.jpg' }
       ], children: [
-        { name: 'Hera Mori', img: "Hijos/Jin y Freyja/Hera Mori.png", gender: 'F', tag: 'Y', series: 'Alchemy Star', meta: 'Regina — Alchemy Stars', link: '#' },
-        { name: 'Eris Mori', img: "Hijos/Jin y Freyja/Eris Mori.jpg", gender: 'F', tag: 'L', series: 'The Rising Of The Shield Hero', meta: 'Malty Melromac — The Rising Of The Shield Hero', link: '#' },
+        { name: 'Hera Mori', img: "Hijos/Jin y Freyja/Hera Mori.png", gender: 'F', tag: 'Y', series: 'Alchemy Star', meta: 'Regina — Alchemy Stars', link: '#', born: false },
+        { name: 'Eris Mori', img: "Hijos/Jin y Freyja/Eris Mori.jpg", gender: 'F', tag: 'L', series: 'The Rising Of The Shield Hero', meta: 'Malty Melromac — The Rising Of The Shield Hero', link: '#', born: false }
 
       ]},
       { family: 'Hakuryuu y Velvet', parents: [
@@ -845,8 +889,8 @@
         { name: 'Ryoomen Sukuna', img: 'fotos-poderes/Sukuna.jpg' },
         { name: 'Urtiel', img: 'fotos-poderes/Urtiel.png' } 
       ], children: [
-        { name: 'Lilith Sukuna', img:'Hijos/Sukuna y Sentencia/Lilith Sukuna.jpg',gender: 'F', tag: 'Y', series: 'Path to Nowhere', meta: 'Ninety-Nine — Path to Nowhere', link: '#' },
-        { name: 'Heine Sukuna', img:'Hijos/Sukuna y Sentencia/Heine Sukuna.png', gender: 'F', tag: 'S', series: 'Sentouin, Hakenshimasu!', meta: 'Heine — Sentouin, Hakenshimasu!', link: '#' }
+        { name: 'Lilith Sukuna', img:'Hijos/Sukuna y Sentencia/Lilith Sukuna.jpg',gender: 'F', tag: 'Y', series: 'Path to Nowhere', meta: 'Ninety-Nine — Path to Nowhere', link: '#', born: false },
+        { name: 'Heine Sukuna', img:'Hijos/Sukuna y Sentencia/Heine Sukuna.png', gender: 'F', tag: 'S', series: 'Sentouin, Hakenshimasu!', meta: 'Heine — Sentouin, Hakenshimasu!', link: '#', born: false }
       ]},
       { family: 'Grimmjow y Justicia', parents: [
         { name: 'Grimmjow Jearjearquez', img: 'fotos-poderes/Grimmjow.png' },
@@ -889,31 +933,31 @@
         { name: 'Zenos Sochiku', img: 'fotos-poderes/Zenos.jpg' },
         { name: 'Rias Gremory', img: 'fotos-poderes/Rias Gremory.jpg' }
       ], children: [
-        { name: 'Millicas Shochiku', img: "Hijos/Zenos y cñia/Rias/Millica Shochiku.png", gender: 'M', tag: 'S', series: 'Highschool DxD', meta: 'Millicas Gremory — Highschool DxD — [Rias Gremory]', link: '#' }
+        { name: 'Millicas Shochiku', img: "Hijos/Zenos y cñia/Rias/Millica Shochiku.png", gender: 'M', tag: 'S', series: 'Highschool DxD', meta: 'Millicas Gremory — Highschool DxD — [Rias Gremory]', link: '#', born: false }
       ]},
       { family: 'Shoto y Mina', parents: [
         { name: 'Shoto Todoroki', img: 'fotos-poderes/Todoroki.jpg' }, //* Devuélveme a mi puta novia *// 
         { name: 'Mina Ashido', img: 'fotos-poderes/Mina Ashido.jpg' }
       ], children: [
-        { name: 'Tōshirō Todoroki', img: "Hijos/Shoto y Mina/Tōshirō Todoroki.jpg", gender: 'M', tag: 'L', series: 'Bleach', meta: 'Tōshirō Hitsugaya — Bleach', link: '#' },
-        { name: 'Uta Todoroki', img: "Hijos/Shoto y Mina/Uta Todoroki.jpg", gender: 'F', tag: 'L', series: 'One Piece', meta: 'Uta — One Piece', link: '#' },
-        { name: 'Tao Todoroki', img: "Hijos/Shoto y Mina/Tao Todoroki.jpg", gender: 'F', tag: 'S', series: 'Jigokuraku', meta: 'Tao — Jigokuraku', link: '#' },
-        { name: 'Takako Todoroki', img: "Hijos/Shoto y Mina/Takako Todoroki.jpg", gender: 'F', tag: 'L', series: 'Jujutsu Kaisen', meta: 'Takako — Jujutsu Kaisen', link: '#'}
+        { name: 'Tōshirō Todoroki', img: "Hijos/Shoto y Mina/Tōshirō Todoroki.jpg", gender: 'M', tag: 'L', series: 'Bleach', meta: 'Tōshirō Hitsugaya — Bleach', link: '#', born: false },
+        { name: 'Uta Todoroki', img: "Hijos/Shoto y Mina/Uta Todoroki.jpg", gender: 'F', tag: 'L', series: 'One Piece', meta: 'Uta — One Piece', link: '#', born: false },
+        { name: 'Tao Todoroki', img: "Hijos/Shoto y Mina/Tao Todoroki.jpg", gender: 'F', tag: 'S', series: 'Jigokuraku', meta: 'Tao — Jigokuraku', link: '#', born: false },
+        { name: 'Takako Todoroki', img: "Hijos/Shoto y Mina/Takako Todoroki.jpg", gender: 'F', tag: 'L', series: 'Jujutsu Kaisen', meta: 'Takako — Jujutsu Kaisen', link: '#', born: false }
       ]},
       { family: 'Keigo y Baiken', parents: [
         { name: 'Keigo Magami', img: 'fotos-poderes/Keigo Magami.jpg' },
         { name: 'Baiken Tatakai', img: 'fotos-poderes/Baiken.jpg' }
       ], children: [
-        { name: 'Reid Magami', img: "Hijos/Keigo y Baiken/Reid Magami.jpg", gender: 'M', tag: 'Y', series: 'RE:Zero', meta: 'Reid Astrea — RE:Zero', link: '#' },
-        { name: 'Hinako Magami', img: "Hijos/Keigo y Baiken/Hinako Magami.png", gender: 'F', tag: 'L', series: 'Mission Yozakura Family', meta: 'Rin Fudou — Mission Yozakura Family', link: '#' }
+        { name: 'Reid Magami', img: "Hijos/Keigo y Baiken/Reid Magami.jpg", gender: 'M', tag: 'Y', series: 'RE:Zero', meta: 'Reid Astrea — RE:Zero', link: '#', born: false },
+        { name: 'Hinako Magami', img: "Hijos/Keigo y Baiken/Hinako Magami.png", gender: 'F', tag: 'L', series: 'Mission Yozakura Family', meta: 'Rin Fudou — Mission Yozakura Family', link: '#', born: false }
       ]},
       { family: 'Garou y Kuroka', parents: [
         { name: 'Garou Silverfang', img: 'fotos-poderes/Garou.jpg' },
         { name: 'Kuroka Toujou', img: 'fotos-poderes/Kuroka Toujou.jpg' }
       ], children: [
-        { name: 'Wolf Silverfang', img: "Hijos/Garou y Kuroka/Wolf Silverfang.webp", gender: 'M', tag: 'S', series: 'Witch Watch', meta: 'Wolf — Witch Watch', link: '#' },
-        { name: 'Nezumii Silverfang', img: "Hijos/Garou y Kuroka/Lisiá.jpg", gender: 'F', tag: 'Y', series: 'Rememento: White Shadow', meta: 'Li Xiang — Rememento: White Shadow', link: '#' },
-        { name: 'Zen Silerfang', img: "Hijos/Garou y Kuroka/Zen Silverfang.jpg", gender: 'M', tag: 'L', series: 'Blood Lad', meta: 'Wolf — Blood Lad', link: '#' } //* 💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀 💀💀💀 Deadpool — Deadpool', link: '#' }
+        { name: 'Wolf Silverfang', img: "Hijos/Garou y Kuroka/Wolf Silverfang.webp", gender: 'M', tag: 'S', series: 'Witch Watch', meta: 'Wolf — Witch Watch', link: '#', born: false },
+        { name: 'Nezumii Silverfang', img: "Hijos/Garou y Kuroka/Lisiá.jpg", gender: 'F', tag: 'Y', series: 'Rememento: White Shadow', meta: 'Li Xiang — Rememento: White Shadow', link: '#', born: false },
+        { name: 'Zen Silerfang', img: "Hijos/Garou y Kuroka/Zen Silverfang.jpg", gender: 'M', tag: 'L', series: 'Blood Lad', meta: 'Wolf — Blood Lad', link: '#', born: false } //* 💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀 Deadpool — Deadpool', link: '#' }
       ]}
     ];
 
@@ -995,19 +1039,44 @@
       return fallbackHTML;
     }
 
+    function parentName(parent){
+      const parentObj = typeof parent === 'string' ? { name: parent, img: '' } : parent;
+      return parentObj.name || '???';
+    }
+
+    function sortedParents(parents){
+      return [...parents].sort((a, b) => normalize(parentName(a)).localeCompare(normalize(parentName(b)), 'es'));
+    }
+
+    function sortedFamilies(){
+      return [...DATA].sort((a, b) => {
+        if(state.sort === 'children-desc'){
+          return b.children.length - a.children.length || normalize(a.family).localeCompare(normalize(b.family), 'es');
+        }
+
+        if(state.sort === 'children-asc'){
+          return a.children.length - b.children.length || normalize(a.family).localeCompare(normalize(b.family), 'es');
+        }
+
+        return normalize(a.family).localeCompare(normalize(b.family), 'es');
+      });
+    }
+
     function renderFamilies(){
       familiesEl.innerHTML = '';
 
-      DATA.forEach((fam, i) => {
+      sortedFamilies().forEach((fam, i) => {
         const section = document.createElement('section');
         section.className = 'panel family';
         section.dataset.title = fam.family;
+        section.dataset.parents = fam.parents.map(parentName).join(' ');
+        section.dataset.childCount = String(fam.children.length);
         section.id = slugify(fam.family) || `familia-${i+1}`;
 
         section.innerHTML = `
           <div class="family-header">
             <div class="parents">
-              ${fam.parents.map(parent => {
+              ${sortedParents(fam.parents).map(parent => {
                 const parentObj = typeof parent === 'string' ? { name: parent, img: '' } : parent;
                 const parentName = parentObj.name || '???';
                 const parentImg = parentObj.img || '';
@@ -1020,7 +1089,7 @@
           <div class="children">
             ${fam.children.map((kid, idx) => `
               <article
-                class="card"
+                class="card ${kid.born === true ? 'born' : kid.born === false ? 'unborn' : 'unknown-born'}"
                 tabindex="0"
                 role="button"
                 aria-label="Abrir ficha de ${escapeHTML(kid.name)}"
@@ -1115,11 +1184,13 @@
     const resultsStrip = document.getElementById('resultsStrip');
     const tagBtns = [...document.querySelectorAll('[data-filter-tag]')];
     const genderBtns = [...document.querySelectorAll('[data-filter-gender]')];
+    const sortBtns = [...document.querySelectorAll('[data-sort]')];
 
     const state = {
       term: '',
       tags: new Set(),
-      genders: new Set()
+      genders: new Set(),
+      sort: 'alpha'
     };
 
     function toggleBtn(btn){
@@ -1130,55 +1201,38 @@
     function apply(){
       const nterm = normalize(state.term);
       const familySections = [...document.querySelectorAll('section.family')];
-      const cards = [...document.querySelectorAll('.card')];
-      const hits = [];
-
-      cards.forEach(card => {
-        const name = normalize(card.dataset.name);
-        const series = normalize(card.dataset.series);
-        const meta = normalize(card.querySelector('p')?.textContent || '');
-        const tag = card.dataset.tag || '?';
-        const gender = card.dataset.gender || '?';
-
-        const termOk = !nterm || name.includes(nterm) || series.includes(nterm) || meta.includes(nterm);
-        const tagOk = state.tags.size === 0 || state.tags.has(tag);
-        const genOk = state.genders.size === 0 || state.genders.has(gender);
-        const visible = termOk && tagOk && genOk;
-
-        card.classList.toggle('hidden', !visible);
-
-        if(visible && nterm){
-          hits.push(card);
-        }
-      });
 
       familySections.forEach(sec => {
-        const anyVisible = [...sec.querySelectorAll('.card')].some(c => !c.classList.contains('hidden'));
+        const familyText = normalize(`${sec.dataset.title || ''} ${sec.dataset.parents || ''}`);
+        const familyHit = !!nterm && familyText.includes(nterm);
+        const cards = [...sec.querySelectorAll('.card')];
+
+        cards.forEach(card => {
+          const name = normalize(card.dataset.name);
+          const series = normalize(card.dataset.series);
+          const meta = normalize(card.querySelector('p')?.textContent || '');
+          const tag = card.dataset.tag || '?';
+          const gender = card.dataset.gender || '?';
+
+          const childHit = name.includes(nterm) || series.includes(nterm) || meta.includes(nterm);
+          const termOk = !nterm || familyHit || childHit;
+          const tagOk = state.tags.size === 0 || state.tags.has(tag);
+          const genOk = state.genders.size === 0 || state.genders.has(gender);
+          const visible = termOk && tagOk && genOk;
+
+          card.classList.toggle('hidden', !visible);
+        });
+
+        const anyVisible = cards.some(c => !c.classList.contains('hidden'));
         sec.classList.toggle('hidden', !anyVisible);
       });
 
       rebuildIndex();
 
+      // Antes se clonaban las cards arriba en "Coincidencias", y por eso al buscar
+      // el mismo personaje podía aparecer repetido. Ahora solo se muestra en su familia.
+      results.classList.add('hidden');
       resultsStrip.innerHTML = '';
-
-      if(nterm){
-        results.classList.remove('hidden');
-
-        hits.slice(0, 24).forEach(card => {
-          const clone = card.cloneNode(true);
-          clone.classList.remove('hidden');
-          resultsStrip.appendChild(clone);
-        });
-
-        if(hits.length === 0){
-          const empty = document.createElement('div');
-          empty.className = 'emptyNote';
-          empty.textContent = 'No hay coincidencias.';
-          resultsStrip.appendChild(empty);
-        }
-      } else {
-        results.classList.add('hidden');
-      }
     }
 
     let tId = null;
@@ -1231,15 +1285,23 @@
       apply();
     }));
 
+    sortBtns.forEach(btn => btn.addEventListener('click', () => {
+      state.sort = btn.dataset.sort || 'alpha';
+      sortBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      renderFamilies();
+    }));
+
     document.getElementById('reset').addEventListener('click', () => {
       state.term = '';
       q.value = '';
       clear.style.visibility = 'hidden';
       state.tags.clear();
       state.genders.clear();
+      state.sort = 'alpha';
 
       [...tagBtns, ...genderBtns].forEach(b => b.setAttribute('aria-pressed', 'false'));
-      apply();
+      sortBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sort === 'alpha')));
+      renderFamilies();
     });
 
     const modal = document.getElementById('modal');
