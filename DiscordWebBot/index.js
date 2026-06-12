@@ -138,7 +138,7 @@ function extraerEmbarazos() {
 
     const bloque = matchArray[1];
 
-    const regex = /\{\s*pareja:\s*"([^"]+)"\s*,\s*anuncio:\s*"([^"]+)"\s*\}/g;
+    const regex = /\{\s*pareja:\s*"([^"]+)"\s*,\s*anuncio:\s*"([^"]+)"\s*,\s*parto:\s*"([^"]+)"\s*\}/g;
 
     const embarazos = [];
     let match;
@@ -146,11 +146,39 @@ function extraerEmbarazos() {
     while ((match = regex.exec(bloque)) !== null) {
         embarazos.push({
             pareja: match[1],
-            anuncio: match[2]
+            anuncio: match[2],
+            parto: match[3]
         });
     }
 
     return embarazos;
+}
+
+function crearBarra(porcentaje) {
+    const totalBloques = 10;
+    const llenos = Math.round((porcentaje / 100) * totalBloques);
+    const vacios = totalBloques - llenos;
+
+    return "🟩".repeat(llenos) + "⬜".repeat(vacios);
+}
+
+function calcularProgreso(fechaInicio, fechaParto) {
+    const hoy = new Date();
+    const inicio = new Date(fechaInicio);
+    const parto = new Date(fechaParto);
+
+    const total = parto - inicio;
+    const pasado = hoy - inicio;
+    const restante = parto - hoy;
+
+    const porcentaje = Math.min(100, Math.max(0, Math.round((pasado / total) * 100)));
+    const diasRestantes = Math.max(0, Math.ceil(restante / (1000 * 60 * 60 * 24)));
+
+    return {
+        porcentaje,
+        diasRestantes,
+        barra: crearBarra(porcentaje)
+    };
 }
 
 function diasHastaEvento(dia, mes) {
@@ -1143,9 +1171,21 @@ if (contenido === "-tit") {
             return message.channel.send({ embeds: [embed] });
         }
 
-        const descripcion = embarazos
-            .map(item => `• **${item.pareja}**\n  📅 Anuncio: ${item.anuncio}`)
-            .join("\n\n");
+        const embarazosOrdenados = embarazos
+    .filter(item => item.parto)
+    .sort((a, b) => new Date(a.parto) - new Date(b.parto));
+
+const descripcion = embarazosOrdenados
+    .map(item => {
+        const progreso = calcularProgreso(item.anuncio, item.parto);
+
+        return `• **${item.pareja}**
+  📅 Anuncio: ${item.anuncio}
+  🍼 Parto: ${item.parto}
+  ⏳ Faltan: **${progreso.diasRestantes} días**
+  ${progreso.barra} **${progreso.porcentaje}%**`;
+    })
+    .join("\n\n");
 
         const embed = new EmbedBuilder()
             .setColor(0xE84393)

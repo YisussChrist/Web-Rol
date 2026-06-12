@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Status Person — Dragon Ball Eternal Warriors</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+
+    :root{
+      --bg:#05070d;
+      --panel:rgba(13,18,32,.78);
+      --panel2:rgba(23,30,50,.86);
+      --glass:rgba(255,255,255,.08);
+      --line:rgba(93,213,255,.22);
+      --text:#eaf8ff;
+      --muted:#8db8cc;
+      --cyan:#41e6ff;
+      --blue:#4287ff;
+      --green:#4dff91;
+      --red:#ff4267;
+      --yellow:#ffd35c;
+      --purple:#b174ff;
+      --unknown:#9aa8b8;
+      --shadow:0 24px 70px rgba(0,0,0,.55), 0 0 38px rgba(65,230,255,.12);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+
+    body{
+      min-height:100vh;
+      color:var(--text);
+      font-family:'Rajdhani',system-ui,sans-serif;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(65,230,255,.20), transparent 28%),
+        radial-gradient(circle at 86% 12%, rgba(177,116,255,.16), transparent 30%),
+        radial-gradient(circle at 50% 120%, rgba(255,66,103,.13), transparent 38%),
+        linear-gradient(135deg,#02040a,#071020 48%,#040713);
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.22;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 4px, rgba(255,255,255,.045) 5px),
+        linear-gradient(90deg, transparent 0 49%, rgba(65,230,255,.10) 50%, transparent 51%);
+      mix-blend-mode:screen;
+      z-index:-1;
+    }
+
+    body::after{
+      content:"";
+      position:fixed;
+      inset:-80px;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient(115deg, rgba(65,230,255,.045) 0 1px, transparent 1px 72px),
+        repeating-linear-gradient(25deg, rgba(255,255,255,.025) 0 1px, transparent 1px 90px);
+      animation:gridMove 18s linear infinite;
+      z-index:-2;
+    }
+
+    @keyframes gridMove{to{transform:translate3d(58px,-30px,0)}}
+
+    .page{max-width:1440px;margin:0 auto;padding:26px 18px 80px}
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(65,230,255,.28);
+      border-radius:34px;
+      padding:26px;
+      background:
+        linear-gradient(135deg, rgba(65,230,255,.16), rgba(177,116,255,.08)),
+        rgba(8,14,28,.78);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(18px);
+    }
+
+    .hero::after{
+      content:"STATUS PERSON";
+      position:absolute;
+      right:-22px;
+      bottom:-26px;
+      font:900 clamp(3.5rem,9vw,8rem) 'Orbitron',sans-serif;
+      color:rgba(255,255,255,.035);
+      letter-spacing:5px;
+      pointer-events:none;
+    }
+
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;position:relative;z-index:1}
+    .back{
+      color:var(--text);
+      text-decoration:none;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.07);
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:900;
+      backdrop-filter:blur(10px);
+    }
+    .live{
+      display:inline-flex;align-items:center;gap:9px;
+      padding:10px 14px;border-radius:999px;
+      border:1px solid rgba(77,255,145,.25);
+      background:rgba(77,255,145,.10);
+      color:#c7ffda;font-weight:900;
+      letter-spacing:.7px;
+      text-transform:uppercase;
+    }
+    .live i{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 16px var(--green);animation:pulse 1.3s infinite}
+    @keyframes pulse{50%{opacity:.45;transform:scale(.75)}}
+
+    h1{
+      margin-top:28px;
+      font:900 clamp(2.5rem,7vw,6.8rem) 'Orbitron',sans-serif;
+      line-height:.9;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      text-shadow:0 0 28px rgba(65,230,255,.45);
+      position:relative;z-index:1;
+    }
+    .subtitle{margin-top:16px;max-width:760px;color:var(--muted);font-size:1.18rem;line-height:1.55;font-weight:700;position:relative;z-index:1}
+
+    .stats{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:12px;margin-top:24px;position:relative;z-index:1}
+    .stat{
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:20px;
+      padding:15px;
+      background:rgba(255,255,255,.07);
+      backdrop-filter:blur(14px);
+    }
+    .stat strong{display:block;font:900 2rem 'Orbitron',sans-serif;color:var(--cyan);text-shadow:0 0 18px rgba(65,230,255,.38)}
+    .stat span{display:block;margin-top:4px;color:var(--muted);font-weight:900}
+
+    .toolbar{margin:20px 0;display:grid;grid-template-columns:minmax(240px,1fr) repeat(3,minmax(160px,220px));gap:12px}
+    input,select{
+      width:100%;
+      border:1px solid rgba(65,230,255,.22);
+      border-radius:18px;
+      padding:14px 15px;
+      background:rgba(7,13,25,.82);
+      color:var(--text);
+      font:800 1rem 'Rajdhani',sans-serif;
+      outline:none;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    input::placeholder{color:#7099ad}
+    input:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 4px rgba(65,230,255,.14)}
+    option{background:#071020;color:white}
+
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+    .card{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04)),
+        rgba(9,15,29,.86);
+      box-shadow:0 18px 42px rgba(0,0,0,.32);
+      transition:.18s ease;
+      min-height:360px;
+    }
+    .card:hover{transform:translateY(-5px);border-color:rgba(65,230,255,.52);box-shadow:0 28px 70px rgba(0,0,0,.45),0 0 24px rgba(65,230,255,.14)}
+    .card::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--status-color,var(--unknown));box-shadow:0 0 18px var(--status-color,var(--unknown))}
+
+    .portrait{height:190px;position:relative;background:linear-gradient(135deg,rgba(65,230,255,.18),rgba(177,116,255,.12));overflow:hidden}
+    .portrait img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.05) contrast(1.05)}
+    .portrait .fallback{height:100%;display:grid;place-items:center;font:900 3rem 'Orbitron',sans-serif;color:rgba(255,255,255,.82);text-shadow:0 0 22px rgba(65,230,255,.55)}
+    .portrait::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(5,7,13,.94));pointer-events:none}
+
+    .content{padding:16px;position:relative;z-index:2}
+    .name{font-size:1.35rem;font-weight:900;line-height:1.05;overflow-wrap:anywhere}
+    .alias{margin-top:5px;color:var(--muted);font-weight:800;min-height:22px}
+
+    .status-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
+    .badge{
+      display:inline-flex;align-items:center;gap:7px;
+      padding:8px 11px;border-radius:999px;
+      background:color-mix(in srgb, var(--status-color,var(--unknown)) 20%, transparent);
+      border:1px solid color-mix(in srgb, var(--status-color,var(--unknown)) 48%, transparent);
+      color:#fff;font-weight:900;text-transform:uppercase;font-size:.82rem;letter-spacing:.7px;
+      box-shadow:0 0 18px color-mix(in srgb, var(--status-color,var(--unknown)) 22%, transparent);
+    }
+    .badge i{width:9px;height:9px;border-radius:50%;background:var(--status-color,var(--unknown));box-shadow:0 0 12px var(--status-color,var(--unknown))}
+    .universe{color:var(--muted);font-weight:900;font-size:.92rem}
+    .note{margin-top:13px;color:#cfeeff;line-height:1.35;font-weight:700}
+    .last{margin-top:13px;color:#789fb2;font-weight:900;font-size:.86rem;text-transform:uppercase;letter-spacing:.6px}
+
+    .alive{--status-color:var(--green)}
+    .dead{--status-color:var(--red)}
+    .missing{--status-color:var(--yellow)}
+    .sealed{--status-color:var(--purple)}
+    .unknown{--status-color:var(--unknown)}
+    .corrupted{--status-color:#ff2bd6}
+
+    .corrupted{
+      border-color:rgba(255,43,214,.45);
+      box-shadow:0 18px 42px rgba(0,0,0,.32),0 0 35px rgba(255,43,214,.16);
+      animation:glitchCard 1.4s infinite steps(2,end);
+    }
+    .corrupted .portrait img{filter:saturate(1.6) contrast(1.35) hue-rotate(18deg)}
+    .corrupted::after{
+      content:"SIGNAL CORRUPTED";
+      position:absolute;
+      top:18px;right:-34px;
+      transform:rotate(35deg);
+      background:rgba(255,43,214,.22);
+      border:1px solid rgba(255,43,214,.45);
+      color:#ffd8fb;
+      padding:7px 48px;
+      font:900 .75rem 'Orbitron',sans-serif;
+      letter-spacing:1px;
+      text-shadow:0 0 10px rgba(255,43,214,.8);
+      z-index:4;
+    }
+    .static{
+      position:absolute;inset:0;pointer-events:none;z-index:3;opacity:.28;
+      background:
+        repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,.9) 0 1px, transparent 1px 4px),
+        repeating-linear-gradient(0deg, transparent 0 2px, rgba(255,43,214,.35) 3px, transparent 4px);
+      mix-blend-mode:screen;
+      animation:staticMove .22s infinite;
+    }
+    .glitch-name{position:relative;display:inline-block;color:#fff;text-shadow:2px 0 #ff2bd6,-2px 0 #41e6ff,0 0 18px rgba(255,43,214,.55);animation:glitchText .9s infinite}
+    @keyframes staticMove{to{transform:translate3d(7px,-5px,0)}}
+    @keyframes glitchText{0%,100%{transform:none}20%{transform:skew(8deg) translateX(2px)}40%{transform:translateX(-3px)}60%{transform:skew(-5deg)}}
+    @keyframes glitchCard{50%{filter:hue-rotate(12deg) contrast(1.08)}}
+
+    .empty{display:none;text-align:center;padding:34px;border:1px dashed rgba(65,230,255,.32);border-radius:24px;background:rgba(255,255,255,.06);color:var(--muted);font-weight:900}
+    .footer-note{margin-top:24px;text-align:center;color:var(--muted);font-weight:800}
+
+    @media(max-width:1180px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.stats{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar{grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:620px){.page{padding:14px 10px 50px}.hero{padding:20px;border-radius:26px}.grid,.toolbar,.stats{grid-template-columns:1fr}.portrait{height:220px}h1{font-size:2.55rem}.subtitle{font-size:1rem}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="topbar">
+        <a class="back" href="index.html">⬅ Volver al HUB</a>
+        <span class="live"><i></i> Sistema de estado activo</span>
+      </div>
+
+      <h1>Status Person</h1>
+      <p class="subtitle">Registro de estado vital y narrativo de Dragon Ball Eternal Warriors. Úsalo para controlar quién está vivo, muerto, desaparecido, sellado o directamente roto por la corrupción.</p>
+
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <section class="toolbar" aria-label="Filtros de estado">
+      <input id="search" type="search" placeholder="Buscar personaje, nota, estado..." autocomplete="off" />
+      <select id="statusFilter">
+        <option value="all">Todos los estados</option>
+        <option value="Vivo">Vivos</option>
+        <option value="Muerto">Muertos</option>
+        <option value="Desaparecido">Desaparecidos</option>
+        <option value="Sellado">Sellados</option>
+        <option value="Desconocido">Desconocidos</option>
+        <option value="Corrupto">Corruptos</option>
+      </select>
+      <select id="groupFilter">
+        <option value="all">Todos los grupos</option>
+      </select>
+      <select id="sortFilter">
+        <option value="az">Orden A-Z</option>
+        <option value="status">Orden por estado</option>
+        <option value="updated">Última actualización</option>
+      </select>
+    </section>
+
+    <section class="grid" id="grid"></section>
+    <div class="empty" id="empty">No hay personajes que coincidan. La señal está más muerta que Yamcha en meme.</div>
+    <p class="footer-note">Edita el array <b>STATUS_DATA</b> para añadir personajes. Las fotos van en la propiedad <b>image</b>.</p>
+  </main>
+
+  <script>
+    const STATUS_DATA = [
+      {
+        name: "Freyja Kane",
+        alias: "Diosa Granate",
+        image: "fotos-poderes/Freyja Kane.jpg",
+        status: "Corrupto",
+        group: "Kane / Dragon Ball Eternal Warriors",
+        lastUpdate: "Tras la desaparición de Gerson",
+        note: "ERROR: señal vital inestable. Corrupción y estática detectadas en el registro. El sistema no puede confirmar estado exacto. Mantener en observación."
+      },
+      {
+        name: "Gerson Boom",
+        alias: "Maestro de Freyja",
+        image: "fotos-poderes/Gerson Boom.jpg",
+        status: "Muerto",
+        group: "Guerreros Eclipse",
+        lastUpdate: "Castigo divino ejecutado",
+        note: "Fallecido. Su presencia en la Tierra dependía de un pacto de no intervención que fue roto al proteger a Freyja."
+      },
+      {
+        name: "Alma Azkaban",
+        alias: "Híbrido Ceresiano",
+        image: "fotos-poderes/Alma Azkaban.jpg",
+        status: "Vivo",
+        group: "Tsukikage",
+        lastUpdate: "Aldea reconstruida",
+        note: "Activo. Revivido gracias a las Esferas del Dragón. Actualmente protege Tsukikage junto a Exusiai."
+      },
+      {
+        name: "Tao Saotome",
+        alias: "Guardiana Impasible",
+        image: "fotos-poderes/Tao Saotome.jpg",
+        status: "Vivo",
+        group: "Aliados",
+        lastUpdate: "Torneo completado",
+        note: "Activa. Campeona del torneo y usuaria de sellos animales. Nivel de amenaza: no hacerla enfadar."
+      },
+      {
+        name: "Kael Kane",
+        alias: "Saiyan Legendario",
+        image: "fotos-poderes/Kael.jpg",
+        status: "Vivo",
+        group: "Kane",
+        lastUpdate: "Conflicto familiar activo",
+        note: "Activo. Poder legendario ligado al trauma por abandono y al detonante emocional de ser llamado monstruo."
+      },
+      {
+        name: "Zelda Hellsdothir",
+        alias: "Demonio de poder superior",
+        image: "fotos-poderes/Zelda Hellsdothir.jpg",
+        status: "Vivo",
+        group: "Demonios",
+        lastUpdate: "Batalla de Satán City",
+        note: "Activa. Extremadamente peligrosa. Su poder fue suficiente para provocar la intervención de Gerson."
+      },
+      {
+        name: "Jin Mori",
+        alias: "Nuevo Guardián de Gaia",
+        image: "fotos-poderes/Jin Mori.jpg",
+        status: "Vivo",
+        group: "Guardianes",
+        lastUpdate: "Herido en Satán City",
+        note: "Activo, aunque marcado por los sucesos recientes. Mantiene rol de guardián tras el conflicto."
+      },
+      {
+        name: "Grimmjow Jaegerjaquez",
+        alias: "Ultrademonio",
+        image: "fotos-poderes/Grimmjow.png",
+        status: "Vivo",
+        group: "Demonios",
+        lastUpdate: "Satán City",
+        note: "Activo. Participó en la ofensiva donde Freyja y otros quedaron superados."
+      },
+      {
+        name: "Nara Midori",
+        alias: "Majin de corazón puro",
+        image: "fotos-poderes/Nara Midori.jpg",
+        status: "Vivo",
+        group: "Aliados",
+        lastUpdate: "Control estable",
+        note: "Activa. Mantiene control sobre Nara Maligna, aunque cada combate perdido erosiona una mínima parte de ese control."
+      },
+      {
+        name: "Mereoleona Vermillion",
+        alias: "Leona Ígnea",
+        image: "fotos-poderes/Mereoleona.jpg",
+        status: "Vivo",
+        group: "Aliados",
+        lastUpdate: "Semifinal del torneo",
+        note: "Activa. Una de las combatientes más dominantes del torneo. Energía de jefa final sin pedir permiso."
+      }
+    ];
+
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    const stats = document.getElementById('stats');
+    const search = document.getElementById('search');
+    const statusFilter = document.getElementById('statusFilter');
+    const groupFilter = document.getElementById('groupFilter');
+    const sortFilter = document.getElementById('sortFilter');
+
+    const STATUS_CLASS = {
+      "Vivo": "alive",
+      "Muerto": "dead",
+      "Desaparecido": "missing",
+      "Sellado": "sealed",
+      "Desconocido": "unknown",
+      "Corrupto": "corrupted"
+    };
+
+    const STATUS_ORDER = ["Vivo", "Corrupto", "Desaparecido", "Sellado", "Muerto", "Desconocido"];
+
+    function escapeHTML(str){
+      return String(str ?? '')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
+
+    function normalize(text){
+      return String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    }
+
+    function initials(name){
+      return String(name || '?').split(/\s+/).filter(Boolean).slice(0,2).map(w => w[0].toUpperCase()).join('') || '?';
+    }
+
+    function fillGroups(){
+      const groups = [...new Set(STATUS_DATA.map(p => p.group).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+      groups.forEach(group => {
+        const opt = document.createElement('option');
+        opt.value = group;
+        opt.textContent = group;
+        groupFilter.appendChild(opt);
+      });
+    }
+
+    function renderStats(list){
+      const count = status => STATUS_DATA.filter(p => p.status === status).length;
+      stats.innerHTML = `
+        <article class="stat"><strong>${STATUS_DATA.length}</strong><span>Registrados</span></article>
+        <article class="stat"><strong>${count('Vivo')}</strong><span>Vivos</span></article>
+        <article class="stat"><strong>${count('Muerto')}</strong><span>Muertos</span></article>
+        <article class="stat"><strong>${count('Corrupto')}</strong><span>Corruptos</span></article>
+        <article class="stat"><strong>${list.length}</strong><span>Mostrados</span></article>
+      `;
+    }
+
+    function cardTemplate(p){
+      const cls = STATUS_CLASS[p.status] || 'unknown';
+      const image = p.image
+        ? `<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'fallback',textContent:'${escapeHTML(initials(p.name))}'}))">`
+        : `<div class="fallback">${escapeHTML(initials(p.name))}</div>`;
+
+      const nameHTML = p.status === 'Corrupto'
+        ? `<span class="glitch-name">${escapeHTML(p.name)}</span>`
+        : escapeHTML(p.name);
+
+      return `
+        <article class="card ${cls}">
+          ${p.status === 'Corrupto' ? '<div class="static"></div>' : ''}
+          <div class="portrait">${image}</div>
+          <div class="content">
+            <h2 class="name">${nameHTML}</h2>
+            <p class="alias">${escapeHTML(p.alias || '')}</p>
+            <div class="status-row">
+              <span class="badge"><i></i>${escapeHTML(p.status)}</span>
+              <span class="universe">${escapeHTML(p.group || 'Sin grupo')}</span>
+            </div>
+            <p class="note">${escapeHTML(p.note || 'Sin notas registradas.')}</p>
+            <p class="last">Última actualización: ${escapeHTML(p.lastUpdate || 'Desconocida')}</p>
+          </div>
+        </article>
+      `;
+    }
+
+    function applyFilters(){
+      const term = normalize(search.value);
+      const status = statusFilter.value;
+      const group = groupFilter.value;
+      const sort = sortFilter.value;
+
+      let filtered = STATUS_DATA.filter(p => {
+        const haystack = normalize(`${p.name} ${p.alias} ${p.status} ${p.group} ${p.note} ${p.lastUpdate}`);
+        return (!term || haystack.includes(term))
+          && (status === 'all' || p.status === status)
+          && (group === 'all' || p.group === group);
+      });
+
+      filtered = [...filtered].sort((a,b) => {
+        if(sort === 'status') return STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status) || a.name.localeCompare(b.name,'es');
+        if(sort === 'updated') return String(a.lastUpdate || '').localeCompare(String(b.lastUpdate || ''),'es');
+        return a.name.localeCompare(b.name,'es');
+      });
+
+      grid.innerHTML = filtered.map(cardTemplate).join('');
+      empty.style.display = filtered.length ? 'none' : 'block';
+      renderStats(filtered);
+    }
+
+    [search,statusFilter,groupFilter,sortFilter].forEach(el => el.addEventListener('input', applyFilters));
+
+    fillGroups();
+    applyFilters();
+  </script>
+</body>
+</html>
