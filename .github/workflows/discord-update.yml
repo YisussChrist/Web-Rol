@@ -1,1 +1,18 @@
 
+name: Avisar actualización web
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Enviar aviso a Discord
+        run: |
+          curl -H "Content-Type: application/json" \
+          -d "{\"content\":\"📢 <@&1514803118746108004>\\n🌐 **Nueva actualización de la web**\\n\\n📝 Último cambio: ${{ github.event.head_commit.message }}\\n🔗 https://yisusschrist.github.io/Web-Rol/\"}" \
+          ${{ secrets.DISCORD_WEBHOOK }}
