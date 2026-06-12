@@ -698,6 +698,10 @@ client.on("messageCreate", async (message) => {
         const raza = personaje.raza || personaje.race || "No especificada";
         const estado = personaje.estado || personaje.status || "No especificado";
         const universo = personaje.universo || personaje.universe || "No especificado";
+        const grupo = personaje.grupo || "Ninguno";
+        const edad = personaje.edad || "Desconocida";
+        const sexo = personaje.sexo || "Desconocido";
+        const imagen = personaje.imagen || null;
         const descripcion = personaje.descripcion || personaje.description || "Sin descripción.";
 
         const embed = new EmbedBuilder()
@@ -720,13 +724,30 @@ client.on("messageCreate", async (message) => {
                     inline: true
                 },
                 {
+                    name: "Edad",
+                    value: String(edad),
+                    inline: true
+                },
+                {
+                    name: "Sexo",
+                    value: String(sexo),
+                    inline: true
+                },
+                {
+                    name: "Grupo",
+                    value: String(grupo),
+                    inline: true
+                },
+                {
                     name: "Descripción",
                     value: limitarTexto(String(descripcion), 900)
                 }
             )
             .setFooter({ text: "Base de personajes" })
             .setTimestamp();
-
+            if (imagen) {
+                embed.setThumbnail(imagen);
+}
         return message.channel.send({ embeds: [embed] });
     }
 
