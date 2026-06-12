@@ -16,15 +16,29 @@ jobs:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           JSON_PAYLOAD=$(jq -n \
-            --arg content "📢 <@&1514803118746108004>
-          🌐 **Nueva actualización de la web**
+            --arg commit "$COMMIT_MESSAGE" \
+            '{
+              "content":"<@&1514803118746108004>",
+              "embeds":[
+                {
+                  "title":"🌐 Nueva actualización de la web",
+                  "description":$commit,
+                  "color":3447003,
+                  "fields":[
+                    {
+                      "name":"🔗 Enlace",
+                      "value":"https://yisusschrist.github.io/Web-Rol/"
+                    }
+                  ],
+                  "footer":{
+                    "text":"Web-Rol"
+                  },
+                  "timestamp":now|strftime("%Y-%m-%dT%H:%M:%SZ")
+                }
+              ]
+            }')
 
-          📝 Último cambio:
-          $COMMIT_MESSAGE
-
-          🔗 https://yisusschrist.github.io/Web-Rol/" \
-            '{content: $content}')
-
-          curl -H "Content-Type: application/json" \
+          curl \
+            -H "Content-Type: application/json" \
             -d "$JSON_PAYLOAD" \
             "$DISCORD_WEBHOOK"
