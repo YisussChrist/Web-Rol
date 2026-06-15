@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rol App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="app">
+    <section class="chat-header">
+      <h1>Rol App</h1>
+      <p>Prototipo básico de chat de rol</p>
+    </section>
+
+    <section id="chat" class="chat"></section>
+
+    <section class="message-box">
+      <select id="characterSelect"></select>
+
+      <input 
+        id="messageInput" 
+        type="text" 
+        placeholder="Escribe tu mensaje..."
+        autocomplete="off"
+      />
+
+      <button id="sendButton">Enviar</button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
