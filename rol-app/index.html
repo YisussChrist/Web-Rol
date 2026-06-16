@@ -1,35 +1,68 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rol App</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Web-Rol</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <main class="app">
-    <section class="chat-header">
-      <h1>Rol App</h1>
-      <p>Prototipo básico de chat de rol</p>
-    </section>
+<div class="contenedor">
 
-    <section id="chat" class="chat"></section>
+    <h1>🌍 Sala de Rol</h1>
 
-    <section class="message-box">
-      <select id="characterSelect"></select>
+    <section class="panel-superior">
 
-      <input 
-        id="messageInput" 
+    <div class="selector-personaje">
+        <label for="personaje">Personaje activo</label>
+
+        <select id="personaje">
+            <option value="Renzu">🔥 Renzu Itō</option>
+            <option value="Freyja">⚔️ Freyja Kane</option>
+            <option value="Tao">🐉 Tao Saotome</option>
+        </select>
+    </div>
+
+    <div class="lugar-activo">
+        <span>Lugar actual</span>
+        <strong id="nombreLugarActivo">Ningún lugar seleccionado</strong>
+    </div>
+
+</section>
+
+<section class="zona-lugares">
+
+    <h2>🌍 Lugares de rol</h2>
+
+    <input 
         type="text" 
+        id="buscadorLugares" 
+        placeholder="Buscar lugar..."
+    >
+
+    <div id="categoriasLugares"></div>
+
+    <div id="lugaresGrid"></div>
+
+</section>
+
+    <div id="chat"></div>
+
+    <div class="input-area">
+
+    <textarea
+        id="mensaje"
         placeholder="Escribe tu mensaje..."
-        autocomplete="off"
-      />
+    ></textarea>
 
-      <button id="sendButton">Enviar</button>
-    </section>
-  </main>
+    <button onclick="enviarMensaje()">
+        Enviar
+    </button>
 
-  <script src="app.js"></script>
+</div>
+
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>

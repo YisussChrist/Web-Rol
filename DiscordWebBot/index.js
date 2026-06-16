@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const { EmbedBuilder } = require("discord.js");
 
 require("dotenv").config();
 
@@ -626,7 +627,9 @@ if (!pagina) {
                         "`-wiki Nara Midori`\n" +
                         "Busca una página en la wiki de Fandom.\n\n" +
                         "`-poder Freyja Kane`\n" +
-                        "Muestra el poder base y transformaciones de un personaje según `poder.html`."
+                        "Muestra el poder base y transformaciones de un personaje según `poder.html`.\n\n" +
+                        "`-roadmap`\n" +
+                        "Muestra la hoja de ruta de eventos planeados.\n\n" 
                 },
                 {
                     name: "🌐 GitHub / Web",
@@ -640,6 +643,55 @@ if (!pagina) {
 
         return message.channel.send({ embeds: [embed] });
     }
+    if (message.content === "-roadmap") {
+
+    const roadmap = [
+        {
+            nombre: "Viaje en el Espacio-Tiempo a Dragon Ball",
+            universo: "⚽ Inazuma Eleven",
+            fecha: "18/06/2026",
+            estado: "🟡"
+        },
+        {
+            nombre: "Torneo Budokai Infantil",
+            universo: "🐉 Dragon Ball",
+            fecha: "",
+            estado: "🟢"
+        },
+    ];
+
+    const eventos = roadmap.map((evento, i) => {
+        const fecha = evento.fecha?.trim()
+            ? evento.fecha
+            : "Aún sin fijar fecha";
+
+        return `${evento.estado} **${i + 1}. ${evento.nombre}**
+🌍 Universo: ${evento.universo}
+📅 Fecha: ${fecha}`;
+    }).join("\n\n");
+
+    const embed = new EmbedBuilder()
+        .setTitle("🗺️ Hoja de Ruta del Rol")
+        .setColor(0x3498DB)
+        .setDescription(eventos)
+        .addFields(
+            {
+                name: "📖 Leyenda de Estados",
+                value:
+                    "🟢 En preparación\n" +
+                    "🟡 En desarrollo\n" +
+                    "🔵 Próximo evento\n" +
+                    "🟣 Planeado\n" +
+                    "🔴 Retrasado\n" +
+                    "✅ Completado"
+            }
+        )
+        .setFooter({
+            text: "Las fechas y eventos pueden cambiar según la historia."
+        });
+
+    await message.channel.send({ embeds: [embed] });
+}
 
     if (contenido.startsWith("-duelo")) {
         const texto = contenido.replace("-duelo", "").trim();
