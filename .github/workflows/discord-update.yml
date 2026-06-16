@@ -1,9 +1,7 @@
 name: Avisar actualización web
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   notify-discord:
