@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creador de Plantillas Inazuma DS</title>
+  <link rel="stylesheet" href="plantillas-inazuma.css" />
+</head>
+<body>
+  <div class="bg-orbs"></div>
+
+  <!-- Welcome / loading overlay -->
+  <div id="welcomeOverlay" class="welcome-overlay" aria-hidden="false">
+    <div class="welcome-inner">
+      <div class="welcome-logo">⚽</div>
+      <h2 class="welcome-title">Inazuma Eleven</h2>
+
+      <div class="welcome-stage">
+        <div class="bolt"></div>
+        <div class="ball" aria-hidden="true"></div>
+      </div>
+
+      <div id="welcomeSub" class="welcome-sub">Cargando plantilla…</div>
+      <div id="welcomeMsg" class="welcome-msg" aria-hidden="true">¡Bienvenido, entrenador!</div>
+      <button id="skipIntro" class="skip-intro" aria-label="Saltar intro">Saltar</button>
+    </div>
+  </div>
+
+  <main class="app">
+    <section class="topbar">
+      <div class="brand">
+        <div class="logo-ball">⚽</div>
+        <div>
+          <h1>Creador de Plantillas Inazuma</h1>
+          <p>Estilo táctico inspirado en la era DS.</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="btnCopiar">Copiar plantilla</button>
+        <button id="btnVista">Vista grande</button>
+        <button id="btnExportar">Exportar JSON</button>
+        <button id="btnImportar">Importar JSON</button>
+        <input id="importFile" class="hidden-file" type="file" accept="application/json,.json" />
+        <button id="btnLimpiar">Limpiar</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="panel">
+        <div class="panel-header">MENÚ DE EQUIPO</div>
+
+        <label>Nombre del evento</label>
+        <input id="eventoInput" type="text" placeholder="Ej: Japón vs Francia" />
+
+        <label>Equipo</label>
+        <input id="equipoInput" type="text" placeholder="Ej: Japón" />
+
+        <label>Formación</label>
+        <select id="formationSelect"></select>
+
+        <label>Buscar personaje</label>
+        <input id="searchInput" type="text" placeholder="Nombre, equipo o posición..." />
+
+        <div class="filters">
+          <select id="teamFilter">
+            <option value="">Todos los equipos</option>
+          </select>
+          <select id="positionFilter">
+            <option value="">Todas las posiciones</option>
+          </select>
+        </div>
+
+        <div id="playersList" class="players-list"></div>
+      </aside>
+
+      <section class="board-wrap">
+        <div class="ds-frame">
+          <div class="ds-top-screen">
+            <div class="screen-gloss"></div>
+            <div class="tactics-hud">
+              <aside class="side-roster staff-side">
+                <div class="side-title">CUERPO TÉCNICO</div>
+                <div id="managersPanel" class="side-card-list staff-card-list"></div>
+              </aside>
+
+              <div id="board" class="board">
+                <div class="board-title">
+                  <strong id="boardEventName">Evento sin nombre</strong>
+                  <span id="boardTeamName">Equipo sin definir</span>
+                </div>
+
+                <div class="field-lines">
+                  <div class="midline"></div>
+                  <div class="center-circle"></div>
+                  <div class="box top-box"></div>
+                  <div class="box bottom-box"></div>
+                </div>
+
+                <div id="slots"></div>
+              </div>
+
+              <aside class="side-roster bench-side">
+                <div class="side-title">BANQUILLO</div>
+                <div id="benchPanel" class="side-card-list bench-card-list"></div>
+              </aside>
+            </div>
+          </div>
+
+          <div class="ds-hinge"></div>
+
+          <div class="ds-bottom-screen">
+            <div class="bottom-title">HUD DE EQUIPO</div>
+            <div id="teamHud" class="team-hud"></div>
+            <textarea id="output" readonly placeholder="Aquí aparecerá la plantilla para copiar..."></textarea>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="playerDialog" class="big-dialog">
+    <h2>Elegir integrante</h2>
+    <p id="selectedSlotInfo"></p>
+    <input id="dialogSearch" type="text" placeholder="Buscar jugador, gerente o entrenador..." />
+
+    <div class="dialog-filter-box">
+      <div>
+        <label class="dialog-filter-label">Equipo</label>
+        <select id="dialogTeamFilter">
+          <option value="">Todos los equipos</option>
+        </select>
+      </div>
+      <div>
+        <label class="dialog-filter-label">Posición</label>
+        <div id="dialogPositionChips" class="position-chips"></div>
+      </div>
+    </div>
+
+    <div id="dialogPlayers" class="dialog-list card-grid"></div>
+    <button id="dialogClose">Cerrar</button>
+  </dialog>
+
+  <script src="plantillas-inazuma.js"></script>
+</body>
+</html>

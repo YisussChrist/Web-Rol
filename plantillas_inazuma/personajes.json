@@ -1,0 +1,542 @@
+[
+  {
+    "nombre": "Renzu Itō",
+    "equipo": "Raimon",
+    "posicion": "EI",
+    "dorsal": 8,
+    "foto": "../Hijos Inazuma/pjs/Renzu Ito.jpg"
+  },
+  {
+    "nombre": "Jeanne d'Arc",
+    "equipo": "Olimpique Lyonnais",
+    "posicion": "DFC",
+    "dorsal": 3,
+    "foto": "../Hijos Inazuma/pjs/Jeanne Darc.jpg"
+  },
+  {
+    "nombre": "Mavuika Heartless",
+    "equipo": "Universal",
+    "posicion": "DC",
+    "dorsal": 9,
+    "foto": "../Hijos Inazuma/pjs/Mavuika Heartless.jpg"
+  },
+  {
+    "nombre": "Hikaru Hoshihara",
+    "equipo": "Raimon",
+    "posicion": "MC",
+    "dorsal": 7,
+    "foto": "../Hijos Inazuma/pjs/Hikaru Hoshihara.jpg"
+  },
+  {
+    "nombre": "Justin Kaido",
+    "equipo": "Raimon",
+    "posicion": "DC",
+    "dorsal": 10,
+    "foto": "../Hijos Inazuma/pjs/Jin Kaido.jpg"
+  },
+  {
+    "nombre": "Siete de Marzo",
+    "equipo": "Raimon",
+    "posicion": "LD",
+    "dorsal": 3,
+    "foto": "../Hijos Inazuma/pjs/Siete de Marzo.jpg"
+  },
+  {
+    "nombre": "Kiyoka Sendou",
+    "equipo": "Raimon",
+    "posicion": "MCD",
+    "dorsal": 5,
+    "foto": "../Hijos Inazuma/pjs/Kiyoka Sendou.jpg"
+  },
+  {
+    "nombre": "Victor Koga",
+    "equipo": "Raimon",
+    "posicion": "MI",
+    "dorsal": 9,
+    "foto": "../Hijos Inazuma/pjs/Victor Koga.jpg"
+  },
+  {
+    "nombre": "Top Blaze",
+    "equipo": "Galaxia",
+    "posicion": "ED",
+    "dorsal": 20,
+    "foto": "../Hijos Inazuma/pjs/Top Blaze.jpg"
+  },
+  {
+    "nombre": "Joanna d'Arc",
+    "equipo": "Agente Libre",
+    "posicion": "DFC",
+    "dorsal": 3,
+    "foto": "../Hijos Inazuma/pjs/Joanna Darc.webp"
+  },
+  {
+    "nombre": "Jibril Foster",
+    "equipo": "Raimon",
+    "posicion": "DC",
+    "dorsal": 11,
+    "foto": "../Hijos Inazuma/pjs/Jibril Foster.jpg"
+  },
+  {
+    "nombre": "Akari Foster",
+    "equipo": "Raimon",
+    "posicion": "MC",
+    "dorsal": 10,
+    "foto": "../Hijos Inazuma/pjs/Akari Foster.jpg"
+  },
+  {
+    "nombre": "Lidia Foster",
+    "equipo": "Raimon",
+    "posicion": "DFC",
+    "dorsal": 3,
+    "foto": "../Hijos Inazuma/pjs/LidiaAdolescente.jpg"
+  },
+  {
+    "nombre": "Yachiho Azuma",
+    "equipo": "Galaxia",
+    "posicion": "MC",
+    "dorsal": 6,
+    "foto": "../Hijos Inazuma/pjs/Yachiho Azuma.jpg"
+  },
+  {
+    "nombre": "Norman Heartless",
+    "equipo": "Universal",
+    "posicion": "MC",
+    "dorsal": 6,
+    "foto": "../Hijos Inazuma/pjs/Norman Hearthless.jpg"
+  },
+  {
+    "nombre": "Fubuki Sumiye",
+    "equipo": "Raimon",
+    "posicion": "POR",
+    "dorsal": 1,
+    "foto": "../Hijos Inazuma/pjs/Fubuki Sumiye.jpg"
+  },
+  {
+    "nombre": "Riko Wingate",
+    "equipo": "Alpino",
+    "posicion": "MCD",
+    "dorsal": 4,
+    "foto": "../Hijos Inazuma/pjs/Riko Wingate.jpg"
+  },
+  {
+    "nombre": "Senku Ishigami",
+    "equipo": "Galaxia",
+    "posicion": "MD",
+    "dorsal": 42,
+    "foto": "../Hijos Inazuma/pjs/Ishigami Senku.jpg"
+  },
+  {
+    "nombre": "Rikuo Nura",
+    "equipo": "Galaxia",
+    "posicion": "MD",
+    "dorsal": 17,
+    "foto": "../Hijos Inazuma/pjs/Rikuo Mura.jpg"
+  },
+  {
+    "nombre": "Shinoa Hiiragi",
+    "equipo": "Espejismo",
+    "posicion": "LI",
+    "dorsal": 2,
+    "foto": "../Hijos Inazuma/pjs/Shinoa Hiiragi.jpg"
+  },
+  {
+    "nombre": "Shinbad Ramírez",
+    "equipo": "Raimon",
+    "posicion": "DFC",
+    "dorsal": 34,
+    "foto": "../Hijos Inazuma/pjs/Shinbad Ramirez.jpg"
+  },
+  {
+    "nombre": "Giyuu Tomioka",
+    "equipo": "Galaxia",
+    "posicion": "DC",
+    "dorsal": 32,
+    "foto": "../Hijos Inazuma/pjs/Tomioka.jpg"
+  },
+  {
+    "nombre": "Power Aoyama",
+    "equipo": "",
+    "posicion": "POR",
+    "dorsal": 1,
+    "foto": "../Hijos Inazuma/pjs/Power Aoyama.jpg"
+  },
+  {
+    "nombre": "Pan Walker",
+    "equipo": "Future Raimon",
+    "posicion": "ED",
+    "dorsal": 17,
+    "foto": "../Hijos Inazuma/pjs/Pan Walker.jpg"
+  },
+  {
+    "nombre": "Dan Karman",
+    "equipo": "Raimon",
+    "posicion": "DC",
+    "dorsal": 21,
+    "foto": "../Hijos Inazuma/pjs/Dan Karman.png"
+  },
+  {
+    "nombre": "Ryuji Sakamoto",
+    "equipo": "Raimon",
+    "posicion": "MD",
+    "dorsal": 11,
+    "foto": "../Hijos Inazuma/pjs/Ryuji Sakamoto.jpg"
+  },
+  {
+    "nombre": "Chisato Nishikigi",
+    "equipo": "Raimon",
+    "posicion": "LI",
+    "dorsal": 4,
+    "foto": "../Hijos Inazuma/pjs/Chisato Nishikigi.jpg"
+  },
+  {
+    "nombre": "Kyoko Kirigiri",
+    "equipo": "Raimon",
+    "posicion": "MCD",
+    "dorsal": 14,
+    "foto": "../Hijos Inazuma/pjs/Kyoko Kirigiri.jpg"
+  },
+  {
+    "nombre": "Shuichi Saihara",
+    "equipo": "Galaxia",
+    "posicion": "MC",
+    "dorsal": 8,
+    "foto": "../Hijos Inazuma/pjs/Shuichi Saihara.png"
+  },
+  {
+    "nombre": "Lambda Zinaida",
+    "equipo": "Galaxia",
+    "posicion": "DFC",
+    "dorsal": 2,
+    "foto": "../Hijos Inazuma/pjs/Lambda.jpg"
+  },
+  {
+    "nombre": "Delta Hervieux",
+    "equipo": "Espejismo",
+    "posicion": "POR",
+    "dorsal": 1,
+    "foto": "../Hijos Inazuma/pjs/Delta.jpg"
+  },
+  {
+    "nombre": "Lylia Cardson",
+    "equipo": "Galaxia",
+    "posicion": "DFC",
+    "dorsal": 4,
+    "foto": "../Hijos Inazuma/pjs/Omega.jpg"
+  },
+  {
+    "nombre": "Kaito Momota",
+    "equipo": "Galaxia",
+    "posicion": "DC",
+    "dorsal": 9,
+    "foto": "../Hijos Inazuma/pjs/Kaito Momota.jpg"
+  },
+  {
+    "nombre": "David Villa",
+    "equipo": "Sporting Gijón",
+    "posicion": "DC",
+    "dorsal": 7,
+    "foto": "../Hijos Inazuma/pjs/David Villa.png"
+  },
+  {
+    "nombre": "Ruminahara Kurogane",
+    "equipo": "Raimon",
+    "posicion": "MCO",
+    "dorsal": 17,
+    "foto": "../Hijos Inazuma/pjs/Rumi Kurogane 2.jpg"
+  },
+  {
+    "nombre": "Candace Foster",
+    "equipo": "Raimon",
+    "posicion": "DFC",
+    "dorsal": 2,
+    "foto": "../Hijos Inazuma/pjs/Candace Foster.jpg"
+  },
+  {
+    "nombre": "Rebecca Whitering",
+    "equipo": "Raimon",
+    "posicion": "MCO",
+    "dorsal": 20,
+    "foto": "../Hijos Inazuma/pjs/Rebecca Whitering.jpg"
+  },
+  {
+    "nombre": "Jikan Alonso",
+    "equipo": "Raimon",
+    "posicion": "MC",
+    "dorsal": 7,
+    "foto": "../Hijos Inazuma/pjs/Jikan Alonso.jpg"
+  },
+  {
+    "nombre": "Irina Greenway",
+    "equipo": "Raimon",
+    "posicion": "MC",
+    "dorsal": 6,
+    "foto": "../Hijos Inazuma/pjs/Irina Greenway.jpg"
+  },
+  {
+    "nombre": "Serena Kitagawa",
+    "equipo": "Raimon",
+    "posicion": "LI",
+    "dorsal": 22,
+    "foto": "../Hijos Inazuma/pjs/Serena Kitagawa.jpg"
+  },
+  {
+    "nombre": "Sen Kaibara",
+    "equipo": "Galaxia",
+    "posicion": "DC",
+    "dorsal": 22,
+    "foto": "../Hijos Inazuma/pjs/Sen Kaibara.jpg"
+  },
+  {
+    "nombre": "Shu Ogawa",
+    "equipo": "Galaxia",
+    "posicion": "ED",
+    "dorsal": 18,
+    "foto": "../Hijos Inazuma/pjs/Shu Ogata.jpg"
+  },
+  {
+    "nombre": "Kuro Fujimoto",
+    "equipo": "Galaxia",
+    "posicion": "MC",
+    "dorsal": 14,
+    "foto": "../Hijos Inazuma/pjs/Kuro Fujimoto.jpg"
+  },
+  {
+    "nombre": "Shiro Harukawa",
+    "equipo": "Galaxia",
+    "posicion": "MCO",
+    "dorsal": 10,
+    "foto": "../Hijos Inazuma/pjs/Shiro Takeda.png"
+  },
+  {
+    "nombre": "Jiro Yakuin",
+    "equipo": "Raimon",
+    "posicion": "GER",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Jiro Yakuin.jpg"
+  },
+  {
+    "nombre": "Nalu Tanaka",
+    "equipo": "Mary Times Memorial",
+    "posicion": "DC",
+    "dorsal": 9,
+    "foto": "../Hijos Inazuma/pjs/Nalu Tanaka.jpg"
+  },
+  {
+    "nombre": "Peko Pekoyama",
+    "equipo": "Galaxia",
+    "posicion": "DC",
+    "dorsal": 11,
+    "foto": "../Hijos Inazuma/pjs/Peko Pekoyama.jpg"
+  },
+  {
+    "nombre": "Chiaki Nanami",
+    "equipo": "Galaxia",
+    "posicion": "LI",
+    "dorsal": 4,
+    "foto": "../Hijos Inazuma/pjs/Nanami.jpg"
+  },
+  {
+    "nombre": "Ayane Owari",
+    "equipo": "Galaxia",
+    "posicion": "EI",
+    "dorsal": 7,
+    "foto": "../Hijos Inazuma/pjs/Akane Owari.jpg"
+  },
+  {
+    "nombre": "Miu Iruma",
+    "equipo": "Galaxia",
+    "posicion": "LD",
+    "dorsal": 69,
+    "foto": "../Hijos Inazuma/pjs/Miu Iruma.jpg"
+  },
+  {
+    "nombre": "Bronya Wingate",
+    "equipo": "Alpino",
+    "posicion": "DFC",
+    "dorsal": 2,
+    "foto": "../Hijos Inazuma/pjs/Bronya Wingate.jpg"
+  },
+  {
+    "nombre": "Aika Wingate",
+    "equipo": "Alpino",
+    "posicion": "GER",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Aika Wingate.jpg"
+  },
+  {
+    "nombre": "Yokoya Hitoyoshi",
+    "equipo": "Espejismo",
+    "posicion": "MC",
+    "dorsal": 8,
+    "foto": "../Hijos Inazuma/pjs/Yokoya Hitoyoshi.jpg"
+  },
+  {
+    "nombre": "Irene Villa",
+    "equipo": "Sporting Gijón",
+    "posicion": "POR",
+    "dorsal": 1,
+    "foto": "../Hijos Inazuma/pjs/Irene Villa.png"
+  },
+  {
+    "nombre": "Maki Harukawa",
+    "equipo": "Galaxia",
+    "posicion": "LD",
+    "dorsal": 30,
+    "foto": "../Hijos Inazuma/pjs/Maki Harukawa.jpg"
+  },
+  {
+    "nombre": "Leii Ishikawa",
+    "equipo": "Galaxia",
+    "posicion": "GER",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Leii Ishikawa.jpg"
+  },
+  {
+    "nombre": "James Smith",
+    "equipo": "Poderosa Fe",
+    "posicion": "MC",
+    "dorsal": 6,
+    "foto": "../Hijos Inazuma/pjs/James Smith.jpg"
+  },
+  {
+    "nombre": "Natsu Dragneel",
+    "equipo": "Ultramegahiedra",
+    "posicion": "MC",
+    "dorsal": 7,
+    "foto": "../Hijos Inazuma/pjs/Natsu Dragneel.jpg"
+  },
+  {
+    "nombre": "Ciro Castañeda",
+    "equipo": "Levante UD",
+    "posicion": "LI",
+    "dorsal": 3,
+    "foto": "../Hijos Inazuma/pjs/Ciro Castañeda.webp"
+  },
+  {
+    "nombre": "Zeref Dragneel",
+    "equipo": "Ultramegahiedra",
+    "posicion": "DC",
+    "dorsal": 9,
+    "foto": "../Hijos Inazuma/pjs/Zeref Dragneel.webp"
+  },
+  {
+    "nombre": "Xavier Foster",
+    "equipo": "Raimon",
+    "posicion": "ENT",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Jugadores !/XavierFoster.webp"
+  },
+  {
+    "nombre": "Zuolos Foster",
+    "equipo": "Raimon",
+    "posicion": "ENT",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Zuolos Foster.png"
+  },
+  {
+    "nombre": "Sebastien Eller",
+    "equipo": "Galaxia",
+    "posicion": "ENT",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Jugadores !/SebasAdulto.jpg"
+  },
+  {
+    "nombre": "Diamond White",
+    "equipo": "Inazuma Japón",
+    "posicion": "ENT",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Jugadores !/Diamond White.jpg"
+  },
+  {
+    "nombre": "Dark Walker",
+    "equipo": "Inazuma Japón",
+    "posicion": "ENT",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Jugadores !/Dark Walker.png"
+  },
+  {
+    "nombre": "Waru Walker.jpg",
+    "equipo": "Inazuma Japón",
+    "posicion": "ENT",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Jugadores !/Waru Walker.png"
+  },
+  {
+    "nombre": "Yuito Sumeragi",
+    "equipo": "Royal Academy",
+    "posicion": "ENT",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Jugadores !/Yuito.jpg"
+  },
+  {
+    "nombre": "Dayann Midford",
+    "equipo": "Raimon",
+    "posicion": "ENT",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Jugadores !/Dayann.webp"
+  },
+  {
+    "nombre": "Phil 'Code' Wingate",
+    "equipo": "Alpino",
+    "posicion": "ENT",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Jugadores !/"
+  },
+  {
+    "nombre": "Kurumi Tokisaki",
+    "equipo": "Raimon B",
+    "posicion": "ENT",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Jugadores !/Kurumi Tokisaki.jpg"
+  },
+  {
+    "nombre": "Mikan Tsumiki",
+    "equipo": "Galaxia",
+    "posicion": "GER",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Mikan Tsumiki.jpg"
+  },
+  {
+    "nombre": "Gonta Gokuhara",
+    "equipo": "Galaxia",
+    "posicion": "POR",
+    "dorsal": 1,
+    "foto": "../Hijos Inazuma/pjs/Gonta Gokuhara.webp"
+  },
+  {
+    "nombre": "Himiko Toga",
+    "equipo": "Protocolo Omega 3.0",
+    "posicion": "MC",
+    "dorsal": 7,
+    "foto": "../Hijos Inazuma/pjs/Himiko Toga.jpg"
+  },
+  {
+    "nombre": "Willow Proude",
+    "equipo": "Protocolo Omega 4.0",
+    "posicion": "DC",
+    "dorsal": 8,
+    "foto": "../Hijos Inazuma/pjs/Willow Proude.jpg"
+  },
+  {
+    "nombre": "Mystere",
+    "equipo": "Protocolo Omega",
+    "posicion": "DC",
+    "dorsal": 9,
+    "foto": "../Hijos Inazuma/pjs/Mystere.webp"
+  },
+  {
+    "nombre": "Heaven Heaton",
+    "equipo": "Protocolo Omega 4.0",
+    "posicion": "MC",
+    "dorsal": 6,
+    "foto": "../Hijos Inazuma/pjs/Heaven.png"
+  },
+  {
+    "nombre": "Nui Harime",
+    "equipo": "Protocolo Omega 2.0",
+    "posicion": "DC",
+    "dorsal": 9,
+    "foto": "../Hijos Inazuma/pjs/Nui Harime.jpg"
+  }
+  
+]
