@@ -1,0 +1,75 @@
+name: Deploy web y avisar Discord
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir archivos de la web
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Esperar publicación
+        run: sleep 30
+
+      - name: Enviar aviso a Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          JSON_PAYLOAD=$(jq -n \
+            --arg commit "$COMMIT_MESSAGE" \
+            '{
+              "content":"<@&1514803118746108004>",
+              "embeds":[
+                {
+                  "title":"🌐 Nueva actualización de la web",
+                  "description":$commit,
+                  "color":3447003,
+                  "fields":[
+                    {
+                      "name":"🔗 Enlace",
+                      "value":"https://yisusschrist.github.io/Web-Rol/"
+                    }
+                  ],
+                  "footer":{
+                    "text":"Web-Rol"
+                  },
+                  "timestamp":now|strftime("%Y-%m-%dT%H:%M:%SZ")
+                }
+              ]
+            }')
+
+          curl \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD" \
+            "$DISCORD_WEBHOOK"
