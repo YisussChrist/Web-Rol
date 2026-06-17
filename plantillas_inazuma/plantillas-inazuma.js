@@ -10,6 +10,8 @@ const boardEventName = document.getElementById("boardEventName");
 const boardTeamName = document.getElementById("boardTeamName");
 const output = document.getElementById("output");
 const btnCopiar = document.getElementById("btnCopiar");
+const btnCopiarCodigo = document.getElementById("btnCopiarCodigo");
+const btnImportarPaste = document.getElementById("btnImportarPaste");
 const btnLimpiar = document.getElementById("btnLimpiar");
 const btnVista = document.getElementById("btnVista");
 const btnExportar = document.getElementById("btnExportar");
@@ -66,6 +68,8 @@ async function init() {
   eventoInput.addEventListener("input", updateBoardTitle);
   equipoInput.addEventListener("input", updateBoardTitle);
   btnCopiar.addEventListener("click", copyTemplate);
+  btnCopiarCodigo?.addEventListener("click", copyTemplateCode);
+  btnImportarPaste?.addEventListener("click", importTemplateFromPaste);
   btnLimpiar.addEventListener("click", clearBoard);
   btnVista?.addEventListener("click", () => document.body.classList.toggle("wide-view"));
   btnExportar?.addEventListener("click", exportTemplateJson);
@@ -152,7 +156,7 @@ function renderSlots() {
     slotEl.innerHTML = `
       <div class="magnet ${player ? "filled draggable-card" : "empty"}" data-index="${index}" ${player ? 'draggable="true"' : ""}>
         ${player ? renderAvatar(player) : `<span class="slot-role">${escapeHtml(slot.rol)}</span>`}
-        ${player?.dorsal ? `<span class="slot-number">${escapeHtml(player.dorsal)}</span>` : ""}
+        ${player ? `<span class="slot-number">${escapeHtml(getJerseyForTarget("field", index) ?? "?")}</span>` : ""}
       </div>
       <div class="slot-role">${escapeHtml(slot.rol)}</div>
       <div class="slot-name">${player ? escapeHtml(player.nombre) : "Vacío"}</div>
@@ -229,7 +233,7 @@ function renderRosterCard(type, index, label, player, isCoach = false) {
       <span class="roster-label">${escapeHtml(label)}</span>
       <span class="roster-face">${player ? renderAvatar(player) : "+"}</span>
       <span class="roster-name">${player ? escapeHtml(player.nombre) : "Vacío"}</span>
-      <span class="roster-meta">${player ? `#${escapeHtml(player.dorsal ?? "?")} · ${escapeHtml(player.posicion ?? "?")}` : "Arrastra o clica"}</span>
+      <span class="roster-meta">${player ? `${type === "bench" ? `#${escapeHtml(getJerseyForTarget(type, index) ?? "?")} · ` : ""}${escapeHtml(player.posicion ?? "?")}` : "Arrastra o clica"}</span>
     </button>
   `;
 }
@@ -472,34 +476,98 @@ function updateBoardTitle() {
 }
 
 function generateOutput() {
+  output.value = buildDiscordPaste();
+}
+
+function buildDiscordPaste() {
   const eventName = eventoInput.value.trim() || "Evento sin nombre";
   const teamName = equipoInput.value.trim() || "Equipo sin definir";
-
   const lines = [
-    `⚽ ${eventName}`,
-    `🏟️ Equipo: ${teamName}`,
-    `📋 Formación: ${currentFormation}`,
+    `# ⚽ ${eventName}`,
+    `**Equipo:** ${teamName}`,
+    `**Formación:** ${currentFormation}`,
     "",
-    "━━━━━━━━━━ TITULARES ━━━━━━━━━━"
+    "## 🟦 TITULARES"
   ];
 
   formaciones[currentFormation]?.forEach((slot, index) => {
     const player = placedPlayers[index];
-    lines.push(`${slot.rol}: ${player ? formatPerson(player) : "Vacío"}`);
+    lines.push(player
+      ? `${roleIcon(slot.rol)} **${slot.rol}** — ${formatPlayerForPaste(player, getJerseyForTarget("field", index))}`
+      : `${roleIcon(slot.rol)} **${slot.rol}** — *Vacío*`);
   });
 
-  lines.push("", "━━━━━━━━━━ BANQUILLO ━━━━━━━━━━");
-  benchPlayers.forEach((player, index) => lines.push(`B${index + 1}: ${player ? formatPerson(player) : "Vacío"}`));
+  const filledBench = benchPlayers.map((player, index) => ({ player, index })).filter(item => item.player);
+  lines.push("", "## 🟨 BANQUILLO");
+  if (filledBench.length) {
+    filledBench.forEach(({ player, index }) => {
+      lines.push(`• ${formatPlayerForPaste(player, getJerseyForTarget("bench", index))}`);
+    });
+  } else {
+    lines.push("• *Sin suplentes*");
+  }
 
-  lines.push("", "━━━━━━━━━━ CUERPO TÉCNICO ━━━━━━━━━━");
-  managers.forEach((player, index) => lines.push(`Gerente ${index + 1}: ${player ? formatPerson(player) : "Vacío"}`));
-  lines.push(`Entrenador: ${coach ? formatPerson(coach) : "Vacío"}`);
+  const filledManagers = managers.map((player, index) => ({ player, index })).filter(item => item.player);
+  lines.push("", "## 🧠 CUERPO TÉCNICO");
+  lines.push(`👔 **Entrenador:** ${coach ? coach.nombre : "*Vacío*"}`);
+  if (filledManagers.length) {
+    filledManagers.forEach(({ player, index }) => {
+      lines.push(`📋 **Gerente ${index + 1}:** ${player.nombre}`);
+    });
+  } else {
+    lines.push("📋 **Gerentes:** *Vacío*");
+  }
 
-  output.value = lines.join("\n");
+  lines.push("", `> Dorsales generados automáticamente para que no se repitan en el paste.`);
+  return lines.join("\n");
 }
 
-function formatPerson(player) {
-  return `#${player.dorsal ?? "?"} ${player.nombre}`;
+function formatPlayerForPaste(player, dorsal) {
+  const number = dorsal ?? "?";
+  const team = player.equipo ? ` · ${player.equipo}` : "";
+  return `#${number} **${player.nombre}**${team}`;
+}
+
+function roleIcon(role) {
+  const pos = normalize(role);
+  if (["por", "pt", "gk", "portero"].includes(pos)) return "🧤";
+  if (pos.includes("df") || pos.includes("def") || pos === "li" || pos === "ld" || pos === "dfc") return "🛡️";
+  if (pos.includes("mc") || pos.includes("md") || pos.includes("mi") || pos.includes("mcd") || pos.includes("mco")) return "⚙️";
+  if (pos.includes("dc") || pos.includes("del") || pos.includes("ei") || pos.includes("ed") || pos.includes("ext")) return "⚡";
+  return "🔹";
+}
+
+function getLineupEntries() {
+  const entries = [];
+  formaciones[currentFormation]?.forEach((slot, index) => {
+    const player = placedPlayers[index];
+    if (player) entries.push({ type: "field", index, player, role: slot.rol });
+  });
+  benchPlayers.forEach((player, index) => {
+    if (player) entries.push({ type: "bench", index, player, role: `B${index + 1}` });
+  });
+  return entries;
+}
+
+function getTargetKey(type, index) {
+  return `${type}:${Number(index)}`;
+}
+
+function getAutoJerseys() {
+  const entries = getLineupEntries();
+  const assigned = {};
+  let nextNumber = 1;
+
+  entries.forEach(entry => {
+    assigned[getTargetKey(entry.type, entry.index)] = nextNumber;
+    nextNumber += 1;
+  });
+
+  return assigned;
+}
+
+function getJerseyForTarget(type, index) {
+  return getAutoJerseys()[getTargetKey(type, index)] ?? null;
 }
 
 function getPersonKey(player) {
@@ -512,11 +580,10 @@ function findPersonByKey(key) {
   return personajes.find(player => String(player.id ?? player.nombre) === String(key)) || null;
 }
 
-function exportTemplateJson() {
+function getTemplateData() {
   generateOutput();
-
-  const data = {
-    version: 1,
+  return {
+    version: 2,
     exportedAt: new Date().toISOString(),
     eventName: eventoInput.value.trim(),
     teamName: equipoInput.value.trim(),
@@ -529,6 +596,10 @@ function exportTemplateJson() {
     coach: getPersonKey(coach),
     text: output.value
   };
+}
+
+function exportTemplateJson() {
+  const data = getTemplateData();
 
   const safeName = normalize(`${data.eventName || "plantilla"}-${data.teamName || "equipo"}`)
     .replace(/[^a-z0-9]+/g, "-")
@@ -548,6 +619,75 @@ function exportTemplateJson() {
   setTimeout(() => btnExportar.textContent = "Exportar JSON", 1400);
 }
 
+
+function encodeTemplateCode(data) {
+  const json = JSON.stringify(data);
+  return `INAZUMA-CODE:${btoa(unescape(encodeURIComponent(json)))}`;
+}
+
+function decodeTemplateCode(text) {
+  const match = String(text || "").match(/INAZUMA-CODE:([A-Za-z0-9+/=]+)/);
+  if (!match) return null;
+  const json = decodeURIComponent(escape(atob(match[1])));
+  return JSON.parse(json);
+}
+
+async function copyTemplateCode() {
+  const code = encodeTemplateCode(getTemplateData());
+  await navigator.clipboard.writeText(code);
+  btnCopiarCodigo.textContent = "Código copiado ✅";
+  setTimeout(() => btnCopiarCodigo.textContent = "Copiar código", 1400);
+}
+
+function loadTemplateData(data) {
+  eventoInput.value = data.eventName ?? data.evento ?? "";
+  equipoInput.value = data.teamName ?? data.equipo ?? "";
+
+  const importedFormation = data.formation ?? data.formacion;
+  if (importedFormation && formaciones[importedFormation]) {
+    currentFormation = importedFormation;
+    formationSelect.value = importedFormation;
+  }
+
+  placedPlayers = {};
+  const importedStarters = data.starters ?? data.titulares ?? {};
+  Object.entries(importedStarters).forEach(([index, key]) => {
+    const player = findPersonByKey(key);
+    if (player) placedPlayers[index] = player;
+  });
+
+  benchPlayers = Array(BENCH_SIZE).fill(null);
+  (data.bench ?? data.banquillo ?? []).slice(0, BENCH_SIZE).forEach((key, index) => {
+    benchPlayers[index] = findPersonByKey(key);
+  });
+
+  managers = Array(MANAGER_SIZE).fill(null);
+  (data.managers ?? data.gerentes ?? []).slice(0, MANAGER_SIZE).forEach((key, index) => {
+    managers[index] = findPersonByKey(key);
+  });
+
+  coach = findPersonByKey(data.coach ?? data.entrenador);
+
+  updateBoardTitle();
+  renderAll();
+}
+
+function importTemplateFromPaste() {
+  try {
+    const data = decodeTemplateCode(output.value);
+    if (!data) {
+      alert("Pega en la caja un código que empiece por INAZUMA-CODE:");
+      return;
+    }
+    loadTemplateData(data);
+    btnImportarPaste.textContent = "Paste importado ✅";
+    setTimeout(() => btnImportarPaste.textContent = "Importar paste", 1400);
+  } catch (error) {
+    console.error(error);
+    alert("No he podido importar ese paste. Revisa que el código INAZUMA-CODE esté completo.");
+  }
+}
+
 async function importTemplateJson(event) {
   const file = event.target.files?.[0];
   if (!file) return;
@@ -555,37 +695,7 @@ async function importTemplateJson(event) {
   try {
     const text = await file.text();
     const data = JSON.parse(text);
-
-    eventoInput.value = data.eventName ?? data.evento ?? "";
-    equipoInput.value = data.teamName ?? data.equipo ?? "";
-
-    const importedFormation = data.formation ?? data.formacion;
-    if (importedFormation && formaciones[importedFormation]) {
-      currentFormation = importedFormation;
-      formationSelect.value = importedFormation;
-    }
-
-    placedPlayers = {};
-    const importedStarters = data.starters ?? data.titulares ?? {};
-    Object.entries(importedStarters).forEach(([index, key]) => {
-      const player = findPersonByKey(key);
-      if (player) placedPlayers[index] = player;
-    });
-
-    benchPlayers = Array(BENCH_SIZE).fill(null);
-    (data.bench ?? data.banquillo ?? []).slice(0, BENCH_SIZE).forEach((key, index) => {
-      benchPlayers[index] = findPersonByKey(key);
-    });
-
-    managers = Array(MANAGER_SIZE).fill(null);
-    (data.managers ?? data.gerentes ?? []).slice(0, MANAGER_SIZE).forEach((key, index) => {
-      managers[index] = findPersonByKey(key);
-    });
-
-    coach = findPersonByKey(data.coach ?? data.entrenador);
-
-    updateBoardTitle();
-    renderAll();
+    loadTemplateData(data);
 
     btnImportar.textContent = "Importado ✅";
     setTimeout(() => btnImportar.textContent = "Importar JSON", 1400);
@@ -601,7 +711,7 @@ async function copyTemplate() {
   generateOutput();
   await navigator.clipboard.writeText(output.value);
   btnCopiar.textContent = "Copiado ✅";
-  setTimeout(() => btnCopiar.textContent = "Copiar plantilla", 1400);
+  setTimeout(() => btnCopiar.textContent = "Copiar Discord", 1400);
 }
 
 function clearBoard() {
