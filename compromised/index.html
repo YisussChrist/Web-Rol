@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evolink HUD</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient"></div>
+  <main class="device-shell" id="deviceShell">
+    <section class="boot-screen" id="bootScreen">
+      <div class="boot-logo">
+        <span class="infinity-mark">∞</span>
+        <h1>EVOLINK</h1>
+        <p>OS v2.4.7</p>
+      </div>
+      <div class="boot-lines" id="bootLines">
+        <p>Inicializando núcleo holográfico...</p>
+        <p>Conectando con Red Regional de Etruria...</p>
+        <p>Sincronizando perfil de entrenador...</p>
+        <p>Validando módulos del Infinity Y Institute...</p>
+      </div>
+      <div class="boot-bar"><span></span></div>
+    </section>
+
+    <section class="evolink" id="evolinkApp" aria-live="polite">
+      <header class="topbar">
+        <button class="icon-btn back hidden" id="backBtn" title="Volver">‹</button>
+        <div>
+          <span class="eyebrow">EVOLINK</span>
+          <h2 id="screenTitle">Menú principal</h2>
+        </div>
+        <div class="status-cluster">
+          <span id="clock">12:45</span>
+          <span class="signal">▰▰▰▰▰</span>
+          <button class="notification-dot" id="notifyBtn" title="Notificaciones">3</button>
+        </div>
+      </header>
+
+      <section class="screen active" id="screen-home">
+        <div class="home-hero">
+          <div class="trainer-card-mini">
+            <div class="avatar-ring"><img id="homeAvatar" src="" alt="Avatar" /></div>
+            <div>
+              <span>Entrenador sincronizado</span>
+              <strong id="homeName">Link</strong>
+              <small id="homeStatus">2 medallas · En ruta</small>
+            </div>
+          </div>
+          <div class="system-card">
+            <span>Conexión regional</span>
+            <strong>Estable</strong>
+            <small>Meseta Arcanum / Red Etruria</small>
+          </div>
+        </div>
+
+        <nav class="app-grid">
+          <button data-open="calls" class="app-btn"><span>📞</span><strong>Llamadas</strong><small>Contactos</small></button>
+          <button data-open="messages" class="app-btn"><span>💬</span><strong>Mensajes</strong><small>Avisos</small></button>
+          <button data-action="map" class="app-btn"><span>🗺️</span><strong>Mapa</strong><small>Etruria</small></button>
+          <button data-open="profile" class="app-btn featured"><span>👤</span><strong>Perfil</strong><small>¿Quién eres?</small></button>
+          <button data-open="research" class="app-btn"><span>🔬</span><strong>Investigación</strong><small>Informes</small></button>
+          <button data-open="settings" class="app-btn"><span>⚙️</span><strong>Ajustes</strong><small>Sistema</small></button>
+        </nav>
+      </section>
+
+      <section class="screen" id="screen-profile">
+        <div class="panel-title"><h3>¿Quién eres?</h3><p>Selecciona el perfil activo del Evolink.</p></div>
+        <div class="profile-layout">
+          <div class="selector-list" id="profileSelector"></div>
+          <article class="trainer-profile" id="trainerProfile"></article>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-calls">
+        <div class="panel-title"><h3>Contactos</h3><p>Lista de llamadas registradas.</p></div>
+        <div class="calls-layout">
+          <div class="contact-list" id="contactList"></div>
+          <div class="call-display" id="callDisplay">
+            <div class="call-avatar">📞</div>
+            <h3>Selecciona un contacto</h3>
+            <p>El Evolink simulará una llamada entrante/saliente con el contacto elegido.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-messages">
+        <div class="panel-title"><h3>Bandeja de mensajes</h3><p>Notificaciones de viaje y avisos del Instituto.</p></div>
+        <div class="message-list" id="messageList"></div>
+      </section>
+
+      <section class="screen" id="screen-research">
+        <div class="panel-title"><h3>Base de datos</h3><p>Informes públicos desbloqueados según progreso.</p></div>
+        <div class="research-grid" id="researchGrid"></div>
+        <div class="locked-banner">
+          <strong>🔒 Archivos restringidos</strong>
+          <span>El acceso a proyectos clasificados requiere autorización superior.</span>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-settings">
+        <div class="panel-title"><h3>Ajustes</h3><p>Personaliza el comportamiento del Evolink.</p></div>
+        <div class="settings-grid">
+          <label class="setting-card"><span>Tema visual</span><select id="themeSelect"><option value="default">Infinity Azul</option><option value="tera">Tera Cristal</option><option value="mega">Megaenergía</option><option value="dark">Modo Noche</option></select></label>
+          <label class="setting-card"><span>Brillo HUD</span><input id="brightnessRange" type="range" min="70" max="120" value="100" /></label>
+          <label class="setting-card"><span>Tamaño de texto</span><select id="fontSelect"><option value="normal">Normal</option><option value="large">Grande</option><option value="compact">Compacto</option></select></label>
+          <label class="setting-card toggle"><span>Reducir animaciones</span><input id="motionToggle" type="checkbox" /></label>
+          <label class="setting-card toggle"><span>Modo simplificado</span><input id="simpleToggle" type="checkbox" /></label>
+          <button class="setting-card action" id="resetBtn">Reiniciar Evolink</button>
+        </div>
+        <div class="system-info">
+          <p><b>Versión:</b> Evolink OS v2.4.7</p>
+          <p><b>Estado:</b> Conectado a Red Regional de Etruria</p>
+          <p><b>Ruta mapa:</b> <code>mapa-etruria.html</code></p>
+        </div>
+      </section>
+
+      <section class="screen overlay-screen" id="screen-mapload">
+        <div class="map-loader">
+          <span class="pulse-globe">◎</span>
+          <h3>Conectando con el Mapa Regional</h3>
+          <p id="mapLoadText">Estableciendo enlace con Etruria...</p>
+          <div class="boot-bar map"><span></span></div>
+          <button id="cancelMap" class="ghost-btn">Cancelar</button>
+        </div>
+      </section>
+
+      <aside class="toast-panel" id="toastPanel"></aside>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

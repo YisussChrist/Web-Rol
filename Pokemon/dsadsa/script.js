@@ -388,3 +388,14 @@ document.addEventListener('input', updateStatOutputs);
 document.addEventListener('change', updateStatOutputs);
 
 fillSelects(); updateStatOutputs();
+
+const siteWarning = document.getElementById("siteWarning");
+const closeSiteWarning = document.getElementById("closeSiteWarning");
+
+closeSiteWarning.addEventListener("click", () => {
+    siteWarning.classList.add("is-hidden");
+});
+
+document.getElementById("backToMenu").addEventListener("click", () => {
+    window.location.href = "../../index.html";
+});
