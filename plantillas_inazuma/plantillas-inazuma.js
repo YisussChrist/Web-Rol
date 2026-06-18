@@ -13,6 +13,7 @@ const btnCopiar = document.getElementById("btnCopiar");
 const btnCopiarCodigo = document.getElementById("btnCopiarCodigo");
 const btnImportarPaste = document.getElementById("btnImportarPaste");
 const btnToggleChemistry = document.getElementById("btnToggleChemistry");
+const btnChemistryDetails = document.getElementById("btnChemistryDetails");
 const btnLimpiar = document.getElementById("btnLimpiar");
 const btnVista = document.getElementById("btnVista");
 const btnExportar = document.getElementById("btnExportar");
@@ -39,6 +40,11 @@ const statsRed = document.getElementById("statsRed");
 const statsChangePlayer = document.getElementById("statsChangePlayer");
 const statsClearPlayer = document.getElementById("statsClearPlayer");
 const statsDialogClose = document.getElementById("statsDialogClose");
+const chemistryDialog = document.getElementById("chemistryDialog");
+const chemistryDialogSummary = document.getElementById("chemistryDialogSummary");
+const chemistryDialogContent = document.getElementById("chemistryDialogContent");
+const chemistryDialogClose = document.getElementById("chemistryDialogClose");
+const chemistryTooltip = document.getElementById("chemistryTooltip");
 
 const BENCH_SIZE = 10;
 const MANAGER_SIZE = 3;
@@ -56,7 +62,7 @@ let draggedItem = null;
 let dialogSelectedTeam = "";
 let dialogSelectedPosition = "";
 let statsSelectedTarget = null;
-let chemistryRules = { relaciones: [], ajustes: [] };
+let chemistryRules = { relaciones: [], ajustes: [], efectos: [] };
 let chemistryEnabled = true;
 
 init();
@@ -88,6 +94,8 @@ async function init() {
   btnCopiarCodigo?.addEventListener("click", copyTemplateCode);
   btnImportarPaste?.addEventListener("click", importTemplateFromPaste);
   btnToggleChemistry?.addEventListener("click", toggleChemistry);
+  btnChemistryDetails?.addEventListener("click", openChemistryDetailsDialog);
+  chemistryDialogClose?.addEventListener("click", () => chemistryDialog?.close());
   btnLimpiar.addEventListener("click", clearBoard);
   btnVista?.addEventListener("click", () => document.body.classList.toggle("wide-view"));
   btnExportar?.addEventListener("click", exportTemplateJson);
@@ -132,11 +140,12 @@ async function loadChemistryRules() {
 }
 
 function normalizeChemistryRules(data) {
-  const empty = { relaciones: [], ajustes: [] };
+  const empty = { relaciones: [], ajustes: [], efectos: [] };
   if (!data || typeof data !== "object") return empty;
 
   const relaciones = [];
   const ajustes = [];
+  const efectos = [];
 
   const sourceRelaciones = Array.isArray(data.relaciones) ? data.relaciones : [];
   sourceRelaciones.forEach(item => {
@@ -161,7 +170,43 @@ function normalizeChemistryRules(data) {
     });
   });
 
-  return { relaciones, ajustes };
+  const sourceEfectos = [
+    ...(Array.isArray(data.efectos) ? data.efectos : []),
+    ...(Array.isArray(data.presencias) ? data.presencias : []),
+    ...(Array.isArray(data.bonusPorPresencia) ? data.bonusPorPresencia : [])
+  ];
+
+  sourceEfectos.forEach(item => {
+    const fuente = item.fuente || item.jugador || item.player || item.personaje;
+    if (!fuente) return;
+
+    const rawZonas = item.zonas || item.ubicaciones || item.where || item.en || item.zona;
+    const zonas = (Array.isArray(rawZonas) ? rawZonas : [rawZonas || "field"]).map(normalizeZone).filter(Boolean);
+
+    const rawObjetivos = item.objetivos || item.targets || item.receptores || item.a || item.para || item.jugadoresObjetivo || item.objetivo || "*";
+    const objetivos = (Array.isArray(rawObjetivos) ? rawObjetivos : [rawObjetivos]).map(target => String(target).trim() === "*" ? "*" : normalizePersonName(target));
+
+    efectos.push({
+      fuente: normalizePersonName(fuente),
+      fuenteOriginal: String(fuente),
+      zonas: zonas.length ? zonas : ["field"],
+      objetivos: objetivos.length ? objetivos : ["*"],
+      puntos: Number(item.puntos ?? item.points ?? item.valor ?? item.bonus ?? 0),
+      motivo: item.motivo || item.reason || "efecto por presencia",
+      nombre: item.nombre || item.name || "efecto de presencia"
+    });
+  });
+
+  return { relaciones, ajustes, efectos };
+}
+
+function normalizeZone(zone) {
+  const z = normalize(String(zone || ""));
+  if (["titular", "titulares", "campo", "field", "starter", "starters", "once"].includes(z)) return "field";
+  if (["banquillo", "suplente", "suplentes", "bench", "sub", "subs"].includes(z)) return "bench";
+  if (["gerente", "gerentes", "manager", "managers", "staff"].includes(z)) return "manager";
+  if (["entrenador", "coach", "dt"].includes(z)) return "coach";
+  return z || "field";
 }
 
 function toggleChemistry() {
@@ -239,6 +284,7 @@ function renderAll() {
   renderSlots();
   renderHud();
   generateOutput();
+  bindChemistryTooltipEvents();
 }
 
 function renderSlots() {
@@ -641,6 +687,64 @@ function getStarterEntries() {
   return starters;
 }
 
+
+function getChemistryPresenceEntries() {
+  const entries = [];
+  formaciones[currentFormation]?.forEach((slot, index) => {
+    const player = placedPlayers[index];
+    if (player) entries.push({ type: "field", index, slot, player });
+  });
+  benchPlayers.forEach((player, index) => {
+    if (player) entries.push({ type: "bench", index, player });
+  });
+  managers.forEach((player, index) => {
+    if (player) entries.push({ type: "manager", index, player });
+  });
+  if (coach) entries.push({ type: "coach", index: 0, player: coach });
+  return entries;
+}
+
+function getActivePresenceEffects() {
+  if (!chemistryEnabled) return [];
+  const entries = getChemistryPresenceEntries();
+  const active = [];
+
+  chemistryRules.efectos.forEach(effect => {
+    const sourceEntry = entries.find(entry =>
+      normalizePersonName(entry.player?.nombre || "") === effect.fuente &&
+      effect.zonas.includes(entry.type)
+    );
+
+    if (!sourceEntry) return;
+
+    active.push({
+      ...effect,
+      source: sourceEntry.player.nombre,
+      sourceType: sourceEntry.type,
+      sourceIndex: sourceEntry.index,
+      sourceLabel: zoneLabel(sourceEntry.type)
+    });
+  });
+
+  return active;
+}
+
+function zoneLabel(zone) {
+  if (zone === "field") return "campo";
+  if (zone === "bench") return "banquillo";
+  if (zone === "manager") return "gerente";
+  if (zone === "coach") return "entrenador";
+  return zone;
+}
+
+function getPresenceEffectsForPlayer(player) {
+  const name = normalizePersonName(player?.nombre || "");
+  if (!name) return [];
+  return getActivePresenceEffects().filter(effect =>
+    effect.objetivos.includes("*") || effect.objetivos.includes(name)
+  );
+}
+
 function getSurname(player) {
   const clean = normalize(player?.nombre || "").replace(/[’']/g, " ");
   const parts = clean.split(/\s+/).filter(Boolean);
@@ -668,6 +772,18 @@ function getManualPlayerAdjustment(player) {
   return chemistryRules.ajustes
     .filter(item => item.jugador === name)
     .reduce((total, item) => total + item.puntos, 0);
+}
+
+
+function getManualPlayerAdjustments(player) {
+  const name = normalizePersonName(player?.nombre || "");
+  if (!name) return [];
+  return chemistryRules.ajustes.filter(item => item.jugador === name);
+}
+
+function formatSignedPoints(points) {
+  const n = Number(points || 0);
+  return `${n >= 0 ? "+" : ""}${n}`;
 }
 
 function getSpecialRelationshipScore(a, b) {
@@ -720,8 +836,18 @@ function evaluateChemistryLink(a, b) {
   const manualAdjustment = getManualPlayerAdjustment(a.player) + getManualPlayerAdjustment(b.player);
   if (manualAdjustment) {
     points += manualAdjustment;
-    reasons.push("ajuste manual");
+    reasons.push(`ajuste manual ${formatSignedPoints(manualAdjustment)}`);
   }
+
+  const presenceEffects = [
+    ...getPresenceEffectsForPlayer(a.player).map(effect => ({ ...effect, target: a.player.nombre })),
+    ...getPresenceEffectsForPlayer(b.player).map(effect => ({ ...effect, target: b.player.nombre }))
+  ];
+
+  presenceEffects.forEach(effect => {
+    points += effect.puntos;
+    reasons.push(`${effect.source} en ${effect.sourceLabel}: ${effect.target} ${formatSignedPoints(effect.puntos)} · ${effect.motivo}`);
+  });
 
   let level = "dead";
   if (points >= 6) level = "perfect";
@@ -755,14 +881,50 @@ function renderSynergySvg() {
   const links = getChemistryLinks();
   if (!links.length) return `<svg class="synergy-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>`;
   return `
-    <svg class="synergy-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      ${links.map(link => `
-        <line class="synergy-line synergy-${escapeAttribute(link.level)}" x1="${link.a.slot.x}" y1="${link.a.slot.y}" x2="${link.b.slot.x}" y2="${link.b.slot.y}">
-          <title>${escapeHtml(link.a.player.nombre)} + ${escapeHtml(link.b.player.nombre)} · ${escapeHtml(link.reasons.join(", ") || "sin conexión")}</title>
-        </line>
-      `).join("")}
+    <svg class="synergy-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Líneas de sinergia">
+      ${links.map((link, index) => {
+        const tooltip = buildChemistryTooltipText(link);
+        return `
+          <line class="synergy-line synergy-hitbox" x1="${link.a.slot.x}" y1="${link.a.slot.y}" x2="${link.b.slot.x}" y2="${link.b.slot.y}" data-tooltip="${escapeAttribute(tooltip)}"></line>
+          <line class="synergy-line synergy-${escapeAttribute(link.level)}" x1="${link.a.slot.x}" y1="${link.a.slot.y}" x2="${link.b.slot.x}" y2="${link.b.slot.y}" data-tooltip="${escapeAttribute(tooltip)}"></line>
+        `;
+      }).join("")}
     </svg>
   `;
+}
+
+function buildChemistryTooltipText(link) {
+  const reasons = link.reasons?.length ? link.reasons.map(reason => `• ${reason}`).join("\n") : "• sin conexión especial";
+  return `${link.a.player.nombre} ↔ ${link.b.player.nombre}\nQuímica: ${formatSignedPoints(link.points)}\n${reasons}`;
+}
+
+function bindChemistryTooltipEvents() {
+  if (!chemistryTooltip) return;
+  document.querySelectorAll(".synergy-line[data-tooltip]").forEach(line => {
+    line.addEventListener("pointerenter", event => showChemistryTooltip(event, line.dataset.tooltip || ""));
+    line.addEventListener("pointermove", moveChemistryTooltip);
+    line.addEventListener("pointerleave", hideChemistryTooltip);
+  });
+}
+
+function showChemistryTooltip(event, text) {
+  if (!chemistryTooltip) return;
+  chemistryTooltip.innerHTML = escapeHtml(text).replaceAll("\n", "<br>");
+  chemistryTooltip.classList.add("visible");
+  chemistryTooltip.setAttribute("aria-hidden", "false");
+  moveChemistryTooltip(event);
+}
+
+function moveChemistryTooltip(event) {
+  if (!chemistryTooltip) return;
+  chemistryTooltip.style.left = `${event.clientX + 14}px`;
+  chemistryTooltip.style.top = `${event.clientY + 14}px`;
+}
+
+function hideChemistryTooltip() {
+  if (!chemistryTooltip) return;
+  chemistryTooltip.classList.remove("visible");
+  chemistryTooltip.setAttribute("aria-hidden", "true");
 }
 
 function getDefaultStats() {
@@ -935,6 +1097,8 @@ function renderChemistryPanel(chemistry) {
     `;
   }
 
+  const activeEffects = getActivePresenceEffects();
+
   return `
     <section class="chemistry-panel">
       <div class="chemistry-topline">
@@ -945,10 +1109,107 @@ function renderChemistryPanel(chemistry) {
         <strong>${chemistry.score}</strong>
       </div>
       <div class="chemistry-bar"><span style="width:${chemistry.score}%"></span></div>
-      <p class="chemistry-help">Valora equipo, apellido/familia, nacionalidad y relaciones especiales de quimica.json. Verde = química top; rojo = no conectan.</p>
+      ${activeEffects.length ? `
+        <div class="active-adjustments-mini">
+          <b>Efectos activos:</b>
+          ${activeEffects.slice(0, 3).map(effect => `<span>${escapeHtml(effect.source)} en ${escapeHtml(effect.sourceLabel)}: ${formatSignedPoints(effect.puntos)} · ${escapeHtml(effect.motivo)}</span>`).join("")}
+          ${activeEffects.length > 3 ? `<span>+${activeEffects.length - 3} más…</span>` : ""}
+        </div>
+      ` : `<p class="chemistry-help">No hay efectos por presencia activos ahora mismo.</p>`}
+      <p class="chemistry-help">Pasa el ratón por una línea para ver el motivo. Pulsa "Ver ajustes" para ver efectos de campo, banquillo y gerentes.</p>
     </section>
   `;
 }
+
+function getActiveManualRelationships() {
+  const starters = getStarterEntries();
+  const active = [];
+  for (let i = 0; i < starters.length; i++) {
+    for (let j = i + 1; j < starters.length; j++) {
+      const rel = getManualRelationship(starters[i].player, starters[j].player);
+      if (rel) {
+        active.push({
+          playerA: starters[i].player.nombre,
+          playerB: starters[j].player.nombre,
+          puntos: rel.puntos,
+          nivel: rel.nivel,
+          motivo: rel.motivo
+        });
+      }
+    }
+  }
+  return active;
+}
+
+function getActiveIndividualAdjustments() {
+  const starters = getStarterEntries();
+  const active = [];
+  starters.forEach(entry => {
+    getManualPlayerAdjustments(entry.player).forEach(item => {
+      active.push({ player: entry.player.nombre, puntos: item.puntos, motivo: item.motivo });
+    });
+  });
+  return active;
+}
+
+function openChemistryDetailsDialog() {
+  if (!chemistryDialog || !chemistryDialogContent) return;
+  const chemistry = calculateChemistry();
+  const links = getChemistryLinks();
+  const manualRelations = getActiveManualRelationships();
+  const individualAdjustments = getActiveIndividualAdjustments();
+  const presenceEffects = getActivePresenceEffects();
+
+  chemistryDialogSummary.textContent = chemistryEnabled
+    ? `Sinergia actual: ${chemistry.score}/100 · ${chemistry.label}. Enlaces visibles: ${links.length}.`
+    : "La sinergia está desactivada para esta plantilla.";
+
+  chemistryDialogContent.innerHTML = `
+    <section class="chemistry-detail-section">
+      <h3>📍 Efectos por presencia activos</h3>
+      ${presenceEffects.length ? presenceEffects.map(effect => `
+        <div class="chemistry-detail-card ${Number(effect.puntos) >= 0 ? "positive" : "negative"}">
+          <strong>${escapeHtml(effect.source)} en ${escapeHtml(effect.sourceLabel)} ${formatSignedPoints(effect.puntos)}</strong>
+          <span>Objetivo: ${escapeHtml(effect.objetivos.includes("*") ? "todos" : effect.objetivos.join(", "))}</span>
+          <span>${escapeHtml(effect.motivo || "Sin motivo escrito")}</span>
+        </div>
+      `).join("") : `<p>No hay efectos por presencia activos. Añade entradas en <code>quimica.json</code> dentro de <code>efectos</code>.</p>`}
+    </section>
+
+    <section class="chemistry-detail-section">
+      <h3>⚙️ Ajustes individuales activos</h3>
+      ${individualAdjustments.length ? individualAdjustments.map(item => `
+        <div class="chemistry-detail-card ${Number(item.puntos) >= 0 ? "positive" : "negative"}">
+          <strong>${escapeHtml(item.player)} ${formatSignedPoints(item.puntos)}</strong>
+          <span>${escapeHtml(item.motivo || "Sin motivo escrito")}</span>
+        </div>
+      `).join("") : `<p>No hay ajustes individuales activos entre titulares.</p>`}
+    </section>
+
+    <section class="chemistry-detail-section">
+      <h3>🤝 Relaciones manuales activas</h3>
+      ${manualRelations.length ? manualRelations.map(item => `
+        <div class="chemistry-detail-card ${Number(item.puntos) >= 0 ? "positive" : "negative"}">
+          <strong>${escapeHtml(item.playerA)} ↔ ${escapeHtml(item.playerB)} ${formatSignedPoints(item.puntos)}</strong>
+          <span>${escapeHtml(item.motivo || "Sin motivo escrito")}</span>
+        </div>
+      `).join("") : `<p>No hay relaciones manuales activas entre titulares actuales.</p>`}
+    </section>
+
+    <section class="chemistry-detail-section">
+      <h3>🧪 Líneas visibles</h3>
+      ${links.length ? links.map(link => `
+        <div class="chemistry-detail-card level-${escapeAttribute(link.level)}">
+          <strong>${escapeHtml(link.a.player.nombre)} ↔ ${escapeHtml(link.b.player.nombre)} ${formatSignedPoints(link.points)}</strong>
+          ${link.reasons?.length ? link.reasons.map(reason => `<span>${escapeHtml(reason)}</span>`).join("") : `<span>sin conexión especial</span>`}
+        </div>
+      `).join("") : `<p>No hay líneas visibles. Puede que falten jugadores o estén demasiado lejos.</p>`}
+    </section>
+  `;
+
+  chemistryDialog.showModal();
+}
+
 function formatStatsForPaste(type, index) {
   const stats = getStatsForTarget(type, index);
   const parts = [];

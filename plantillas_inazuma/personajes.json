@@ -537,6 +537,13 @@
     "posicion": "DC",
     "dorsal": 9,
     "foto": "../Hijos Inazuma/pjs/Nui Harime.jpg"
+  },
+  {
+    "nombre": "Wang Qing",
+    "equipo": "Raimon",
+    "posicion": "GER",
+    "dorsal": 0,
+    "foto": "../Hijos Inazuma/pjs/Wang Qing.jpg"
   }
   
 ]

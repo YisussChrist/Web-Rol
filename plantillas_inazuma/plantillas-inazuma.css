@@ -1719,3 +1719,114 @@ body.dragging-player .roster-card.empty {
     right: -9px;
   }
 }
+
+/* ===== Detalles y efectos de química por presencia ===== */
+#btnToggleChemistry.active {
+  background: linear-gradient(#8cffb5, #25ad45);
+}
+
+#btnToggleChemistry.inactive {
+  background: linear-gradient(#ffd0d0, #ff5c5c);
+}
+
+#btnChemistryDetails {
+  background: linear-gradient(#ffffff, #36d7ff);
+}
+
+.active-adjustments-mini {
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+  color: #09235f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.active-adjustments-mini span {
+  display: inline-block;
+  background: rgba(255,255,255,.85);
+  border: 2px solid #09235f;
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+
+.synergy-hitbox {
+  stroke: transparent;
+  stroke-width: 7;
+  pointer-events: stroke;
+}
+
+.chemistry-tooltip {
+  position: fixed;
+  z-index: 999999;
+  max-width: 320px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .12s ease, transform .12s ease;
+  color: #06143d;
+  background: linear-gradient(180deg, #ffffff, #dff8ff);
+  border: 3px solid #09235f;
+  border-radius: 14px;
+  padding: 9px 11px;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.35;
+  box-shadow: 0 6px 0 rgba(0,0,0,.32), 0 0 18px rgba(54,215,255,.4);
+}
+
+.chemistry-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chemistry-dialog {
+  width: min(900px, 94vw);
+}
+
+.chemistry-dialog-content {
+  display: grid;
+  gap: 14px;
+  max-height: 62vh;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.chemistry-detail-section {
+  border: 3px solid #09235f;
+  border-radius: 18px;
+  padding: 12px;
+  background: rgba(255,255,255,.72);
+}
+
+.chemistry-detail-section h3 {
+  margin: 0 0 10px;
+  color: #09235f;
+}
+
+.chemistry-detail-card {
+  display: grid;
+  gap: 3px;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 14px;
+  border: 2px solid #09235f;
+  background: linear-gradient(180deg, #fff, #dff8ff);
+  color: #06143d;
+}
+
+.chemistry-detail-card.positive,
+.chemistry-detail-card.level-perfect,
+.chemistry-detail-card.level-strong {
+  background: linear-gradient(180deg, #ffffff, #d9ffe5);
+}
+
+.chemistry-detail-card.negative,
+.chemistry-detail-card.level-dead {
+  background: linear-gradient(180deg, #ffffff, #ffe0e0);
+}
+
+.chemistry-detail-card.level-medium,
+.chemistry-detail-card.level-weak {
+  background: linear-gradient(180deg, #ffffff, #fff2bf);
+}

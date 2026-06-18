@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Creador de Plantillas Inazuma DS</title>
-  <link rel="stylesheet" href="plantillas-inazuma.css?v=marcadores-encima-1" />
+  <link rel="stylesheet" href="plantillas-inazuma.css?v=quimica-presencia-1" />
 </head>
 <body>
   <div class="bg-orbs"></div>
@@ -39,6 +39,8 @@
         <button id="btnCopiar">Copiar Discord</button>
         <button id="btnCopiarCodigo">Copiar código</button>
         <button id="btnImportarPaste">Importar paste</button>
+        <button id="btnToggleChemistry">Sinergia ON</button>
+        <button id="btnChemistryDetails">Ver ajustes</button>
         <button id="btnVista">Vista grande</button>
         <button id="btnExportar">Exportar JSON</button>
         <button id="btnImportar">Importar JSON</button>
@@ -169,6 +171,15 @@
     </div>
   </dialog>
 
-  <script src="plantillas-inazuma.js?v=marcadores-encima-1"></script>
+  <div id="chemistryTooltip" class="chemistry-tooltip" aria-hidden="true"></div>
+
+  <dialog id="chemistryDialog" class="chemistry-dialog">
+    <h2>Detalles de sinergia</h2>
+    <p id="chemistryDialogSummary"></p>
+    <div id="chemistryDialogContent" class="chemistry-dialog-content"></div>
+    <button id="chemistryDialogClose" type="button">Cerrar</button>
+  </dialog>
+
+  <script src="plantillas-inazuma.js?v=quimica-presencia-1"></script>
 </body>
 </html>
