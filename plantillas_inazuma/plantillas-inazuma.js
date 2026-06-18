@@ -12,6 +12,7 @@ const output = document.getElementById("output");
 const btnCopiar = document.getElementById("btnCopiar");
 const btnCopiarCodigo = document.getElementById("btnCopiarCodigo");
 const btnImportarPaste = document.getElementById("btnImportarPaste");
+const btnToggleChemistry = document.getElementById("btnToggleChemistry");
 const btnLimpiar = document.getElementById("btnLimpiar");
 const btnVista = document.getElementById("btnVista");
 const btnExportar = document.getElementById("btnExportar");
@@ -28,6 +29,16 @@ const dialogPlayers = document.getElementById("dialogPlayers");
 const dialogClose = document.getElementById("dialogClose");
 const dialogTeamFilter = document.getElementById("dialogTeamFilter");
 const dialogPositionChips = document.getElementById("dialogPositionChips");
+const statsDialog = document.getElementById("statsDialog");
+const statsDialogTitle = document.getElementById("statsDialogTitle");
+const statsDialogMeta = document.getElementById("statsDialogMeta");
+const statsGoals = document.getElementById("statsGoals");
+const statsAssists = document.getElementById("statsAssists");
+const statsYellow = document.getElementById("statsYellow");
+const statsRed = document.getElementById("statsRed");
+const statsChangePlayer = document.getElementById("statsChangePlayer");
+const statsClearPlayer = document.getElementById("statsClearPlayer");
+const statsDialogClose = document.getElementById("statsDialogClose");
 
 const BENCH_SIZE = 10;
 const MANAGER_SIZE = 3;
@@ -39,21 +50,27 @@ let placedPlayers = {};
 let benchPlayers = Array(BENCH_SIZE).fill(null);
 let managers = Array(MANAGER_SIZE).fill(null);
 let coach = null;
+let matchStats = {};
 let selectedTarget = null;
 let draggedItem = null;
 let dialogSelectedTeam = "";
 let dialogSelectedPosition = "";
+let statsSelectedTarget = null;
+let chemistryRules = { relaciones: [], ajustes: [] };
+let chemistryEnabled = true;
 
 init();
 
 async function init() {
-  const [formacionesRes, personajesRes] = await Promise.all([
+  const [formacionesRes, personajesRes, quimicaData] = await Promise.all([
     fetch("formaciones.json"),
-    fetch("personajes.json")
+    fetch("personajes.json"),
+    loadChemistryRules()
   ]);
 
   formaciones = await formacionesRes.json();
   personajes = await personajesRes.json();
+  chemistryRules = normalizeChemistryRules(quimicaData);
 
   fillFormationSelect();
   fillFilters();
@@ -70,6 +87,7 @@ async function init() {
   btnCopiar.addEventListener("click", copyTemplate);
   btnCopiarCodigo?.addEventListener("click", copyTemplateCode);
   btnImportarPaste?.addEventListener("click", importTemplateFromPaste);
+  btnToggleChemistry?.addEventListener("click", toggleChemistry);
   btnLimpiar.addEventListener("click", clearBoard);
   btnVista?.addEventListener("click", () => document.body.classList.toggle("wide-view"));
   btnExportar?.addEventListener("click", exportTemplateJson);
@@ -81,6 +99,86 @@ async function init() {
     renderDialogPlayers();
   });
   dialogClose.addEventListener("click", () => playerDialog.close());
+  statsGoals?.addEventListener("change", () => updateStatsDialogValue({ goals: Number(statsGoals.value) }));
+  statsAssists?.addEventListener("change", () => updateStatsDialogValue({ assists: Number(statsAssists.value) }));
+  statsYellow?.addEventListener("click", () => toggleStatsDialogCard("yellow"));
+  statsRed?.addEventListener("click", () => toggleStatsDialogCard("red"));
+  statsChangePlayer?.addEventListener("click", () => {
+    if (!statsSelectedTarget) return;
+    const target = { ...statsSelectedTarget };
+    statsDialog?.close();
+    openPicker(target.type, target.index);
+  });
+  statsClearPlayer?.addEventListener("click", () => {
+    if (!statsSelectedTarget) return;
+    setTargetPlayer(statsSelectedTarget.type, statsSelectedTarget.index, null);
+    statsDialog?.close();
+    renderAll();
+  });
+  statsDialogClose?.addEventListener("click", () => statsDialog?.close());
+  updateChemistryToggleButton();
+}
+
+
+async function loadChemistryRules() {
+  try {
+    const response = await fetch("quimica.json", { cache: "no-store" });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.warn("No se ha podido cargar quimica.json. Se usará la química automática.", error);
+    return null;
+  }
+}
+
+function normalizeChemistryRules(data) {
+  const empty = { relaciones: [], ajustes: [] };
+  if (!data || typeof data !== "object") return empty;
+
+  const relaciones = [];
+  const ajustes = [];
+
+  const sourceRelaciones = Array.isArray(data.relaciones) ? data.relaciones : [];
+  sourceRelaciones.forEach(item => {
+    const jugadores = item.jugadores || item.players || item.personajes;
+    if (!Array.isArray(jugadores) || jugadores.length < 2) return;
+    relaciones.push({
+      jugadores: jugadores.slice(0, 2).map(name => normalizePersonName(name)),
+      puntos: Number(item.puntos ?? item.points ?? item.valor ?? 0),
+      nivel: item.nivel || item.level || "",
+      motivo: item.motivo || item.reason || item.tipo || "quimica.json"
+    });
+  });
+
+  const sourceAjustes = Array.isArray(data.ajustes) ? data.ajustes : [];
+  sourceAjustes.forEach(item => {
+    const jugador = item.jugador || item.player || item.personaje;
+    if (!jugador) return;
+    ajustes.push({
+      jugador: normalizePersonName(jugador),
+      puntos: Number(item.puntos ?? item.points ?? item.valor ?? 0),
+      motivo: item.motivo || item.reason || "ajuste manual"
+    });
+  });
+
+  return { relaciones, ajustes };
+}
+
+function toggleChemistry() {
+  chemistryEnabled = !chemistryEnabled;
+  updateChemistryToggleButton();
+  renderAll();
+}
+
+function updateChemistryToggleButton() {
+  if (!btnToggleChemistry) return;
+  btnToggleChemistry.textContent = chemistryEnabled ? "Sinergia ON" : "Sinergia OFF";
+  btnToggleChemistry.classList.toggle("active", chemistryEnabled);
+  btnToggleChemistry.classList.toggle("inactive", !chemistryEnabled);
+}
+
+function normalizePersonName(name) {
+  return normalize(String(name || "").replace(/[’']/g, " ").replace(/\s+/g, " ").trim());
 }
 
 function fillFormationSelect() {
@@ -133,6 +231,7 @@ function changeFormation(name) {
   currentFormation = name;
   formationSelect.value = name;
   placedPlayers = {};
+  matchStats = {};
   renderAll();
 }
 
@@ -144,7 +243,7 @@ function renderAll() {
 
 function renderSlots() {
   const formation = formaciones[currentFormation] || [];
-  slotsContainer.innerHTML = "";
+  slotsContainer.innerHTML = renderSynergySvg();
 
   formation.forEach((slot, index) => {
     const player = placedPlayers[index];
@@ -156,6 +255,7 @@ function renderSlots() {
     slotEl.innerHTML = `
       <div class="magnet ${player ? "filled draggable-card" : "empty"}" data-index="${index}" ${player ? 'draggable="true"' : ""}>
         ${player ? renderAvatar(player) : `<span class="slot-role">${escapeHtml(slot.rol)}</span>`}
+        ${player ? renderPlayerMatchBadges("field", index) : ""}
         ${player ? `<span class="slot-number">${escapeHtml(getJerseyForTarget("field", index) ?? "?")}</span>` : ""}
       </div>
       <div class="slot-role">${escapeHtml(slot.rol)}</div>
@@ -163,7 +263,7 @@ function renderSlots() {
     `;
 
     const magnet = slotEl.querySelector(".magnet");
-    magnet.addEventListener("click", () => openPicker("field", index));
+    magnet.addEventListener("click", () => player ? openStatsDialog("field", index) : openPicker("field", index));
     magnet.dataset.type = "field";
     magnet.dataset.index = index;
     if (player) {
@@ -181,6 +281,7 @@ function renderHud() {
   const managerCount = managers.filter(Boolean).length;
 
   if (teamHud) {
+    const chemistry = calculateChemistry();
     teamHud.innerHTML = `
       <div class="hud-summary compact-summary">
         <div><strong>${starters}</strong><span>Titulares</span></div>
@@ -188,8 +289,11 @@ function renderHud() {
         <div><strong>${managerCount}/${MANAGER_SIZE}</strong><span>Gerentes</span></div>
         <div><strong>${coach ? "1" : "0"}/1</strong><span>Entrenador</span></div>
       </div>
-      <p class="hud-tip">Puedes clicar una tarjeta o arrastrar jugadores desde el menú hacia campo, banquillo, gerentes o entrenador.</p>
+      ${renderChemistryPanel(chemistry)}
+      ${renderStatsEditor()}
+      <p class="hud-tip">Puedes clicar una tarjeta o arrastrar jugadores desde el menú hacia campo, banquillo, gerentes o entrenador. En el editor puedes marcar goles, asistencias y tarjetas.</p>
     `;
+    bindStatsEditorEvents();
   }
 
   if (managersPanel) {
@@ -208,7 +312,7 @@ function renderHud() {
   document.querySelectorAll(".roster-card, .mini-slot").forEach(card => {
     const type = card.dataset.type;
     const index = Number(card.dataset.index);
-    card.addEventListener("click", () => openPicker(type, index));
+    card.addEventListener("click", () => getTargetPlayer(type, index) ? openStatsDialog(type, index) : openPicker(type, index));
     if (card.classList.contains("filled")) {
       card.addEventListener("dragstart", event => startDragFromSlot(event, type, index));
       card.addEventListener("dragend", endDrag);
@@ -329,11 +433,18 @@ function getTargetPlayer(type, index) {
 }
 
 function setTargetPlayer(type, index, player) {
+  const key = getTargetKey(type, index);
   if (type === "field") {
     if (player) placedPlayers[index] = player;
-    else delete placedPlayers[index];
+    else {
+      delete placedPlayers[index];
+      delete matchStats[key];
+    }
   }
-  if (type === "bench") benchPlayers[index] = player || null;
+  if (type === "bench") {
+    benchPlayers[index] = player || null;
+    if (!player) delete matchStats[key];
+  }
   if (type === "manager") managers[index] = player || null;
   if (type === "coach") coach = player || null;
 }
@@ -380,9 +491,18 @@ function moveDraggedItemTo(type, index) {
   }
 
   if (source) {
-    // Si arrastras entre dos espacios ocupados, intercambia. Si el destino está vacío, mueve y limpia el origen.
+    // Si arrastras entre dos espacios ocupados, intercambia también sus estadísticas de partido.
+    const sourceKey = getTargetKey(source.type, source.index);
+    const targetKey = getTargetKey(type, index);
+    const sourceStats = getStatsForTarget(source.type, source.index);
+    const targetStats = getStatsForTarget(type, index);
+
     setTargetPlayer(source.type, source.index, targetPlayer || null);
     setTargetPlayer(type, index, movedPlayer);
+
+    if (targetPlayer) matchStats[sourceKey] = targetStats;
+    else delete matchStats[sourceKey];
+    matchStats[targetKey] = sourceStats;
   } else {
     // Desde el menú de personajes se copia, no se borra de la biblioteca.
     setTargetPlayer(type, index, movedPlayer);
@@ -475,6 +595,370 @@ function updateBoardTitle() {
   generateOutput();
 }
 
+
+
+function openStatsDialog(type, index) {
+  const player = getTargetPlayer(type, index);
+  if (!player || !statsDialog) return;
+
+  statsSelectedTarget = { type, index };
+  const stats = getStatsForTarget(type, index);
+  const jersey = getJerseyForTarget(type, index) ?? player.dorsal ?? "?";
+  const role = type === "field" ? (formaciones[currentFormation]?.[index]?.rol ?? "Titular") : targetLabel(type, index);
+
+  statsDialogTitle.textContent = `#${jersey} ${player.nombre}`;
+  statsDialogMeta.textContent = `${role} · ${player.posicion ?? "?"} · ${player.equipo || "Sin equipo"}`;
+  statsGoals.value = String(stats.goals ?? 0);
+  statsAssists.value = String(stats.assists ?? 0);
+  statsYellow.classList.toggle("active", !!stats.yellow);
+  statsRed.classList.toggle("active", !!stats.red);
+  statsDialog.showModal();
+}
+
+function updateStatsDialogValue(partial) {
+  if (!statsSelectedTarget) return;
+  setStatsForTarget(statsSelectedTarget.type, statsSelectedTarget.index, partial);
+  renderAll();
+}
+
+function toggleStatsDialogCard(card) {
+  if (!statsSelectedTarget) return;
+  const stats = getStatsForTarget(statsSelectedTarget.type, statsSelectedTarget.index);
+  const partial = card === "yellow" ? { yellow: !stats.yellow } : { red: !stats.red };
+  setStatsForTarget(statsSelectedTarget.type, statsSelectedTarget.index, partial);
+  const updated = getStatsForTarget(statsSelectedTarget.type, statsSelectedTarget.index);
+  statsYellow.classList.toggle("active", !!updated.yellow);
+  statsRed.classList.toggle("active", !!updated.red);
+  renderAll();
+}
+
+function getStarterEntries() {
+  const starters = [];
+  formaciones[currentFormation]?.forEach((slot, index) => {
+    const player = placedPlayers[index];
+    if (player) starters.push({ type: "field", index, slot, player });
+  });
+  return starters;
+}
+
+function getSurname(player) {
+  const clean = normalize(player?.nombre || "").replace(/[’']/g, " ");
+  const parts = clean.split(/\s+/).filter(Boolean);
+  return parts.length > 1 ? parts[parts.length - 1] : "";
+}
+
+function getPlayerNationality(player) {
+  return player?.nacionalidad ?? player?.pais ?? player?.seleccion ?? player?.origen ?? "";
+}
+
+function getManualRelationship(a, b) {
+  const nameA = normalizePersonName(a?.nombre || "");
+  const nameB = normalizePersonName(b?.nombre || "");
+  if (!nameA || !nameB) return null;
+
+  return chemistryRules.relaciones.find(rel => {
+    const [ra, rb] = rel.jugadores;
+    return (ra === nameA && rb === nameB) || (ra === nameB && rb === nameA);
+  }) || null;
+}
+
+function getManualPlayerAdjustment(player) {
+  const name = normalizePersonName(player?.nombre || "");
+  if (!name) return 0;
+  return chemistryRules.ajustes
+    .filter(item => item.jugador === name)
+    .reduce((total, item) => total + item.puntos, 0);
+}
+
+function getSpecialRelationshipScore(a, b) {
+  const manual = getManualRelationship(a, b);
+  if (manual) return manual.puntos;
+
+  const nameA = normalizePersonName(a?.nombre || "");
+  const nameB = normalizePersonName(b?.nombre || "");
+  const pair = [nameA, nameB].sort().join("|");
+  const hardcoded = new Set([
+    ["renzu ito", "jeanne d arc"].sort().join("|"),
+    ["renzu ito", "wang qing"].sort().join("|"),
+    ["jeanne d arc", "wang qing"].sort().join("|"),
+    ["dan karman", "serena kitagawa"].sort().join("|"),
+    ["akari foster", "jiro yakuin"].sort().join("|"),
+  ]);
+  if (hardcoded.has(pair)) return 4;
+
+  const rawA = JSON.stringify(a ?? {}).toLowerCase();
+  const rawB = JSON.stringify(b ?? {}).toLowerCase();
+  if (rawA.includes(nameB) || rawB.includes(nameA)) return 4;
+  return 0;
+}
+function evaluateChemistryLink(a, b) {
+  let points = 0;
+  const reasons = [];
+  if (a.player.equipo && b.player.equipo && a.player.equipo === b.player.equipo) {
+    points += 2;
+    reasons.push("mismo equipo");
+  }
+  const surnameA = getSurname(a.player);
+  const surnameB = getSurname(b.player);
+  if (surnameA && surnameA === surnameB) {
+    points += 3;
+    reasons.push("familia/apellido");
+  }
+  const natA = getPlayerNationality(a.player);
+  const natB = getPlayerNationality(b.player);
+  if (natA && natB && normalize(natA) === normalize(natB)) {
+    points += 2;
+    reasons.push("misma nacionalidad");
+  }
+  const manualRelation = getManualRelationship(a.player, b.player);
+  const relation = getSpecialRelationshipScore(a.player, b.player);
+  if (relation) {
+    points += relation;
+    reasons.push(manualRelation?.motivo || "relación especial");
+  }
+
+  const manualAdjustment = getManualPlayerAdjustment(a.player) + getManualPlayerAdjustment(b.player);
+  if (manualAdjustment) {
+    points += manualAdjustment;
+    reasons.push("ajuste manual");
+  }
+
+  let level = "dead";
+  if (points >= 6) level = "perfect";
+  else if (points >= 4) level = "strong";
+  else if (points >= 2) level = "medium";
+  else if (points >= 1) level = "weak";
+
+  return { points, level, reasons };
+}
+
+function getChemistryLinks() {
+  if (!chemistryEnabled) return [];
+  const starters = getStarterEntries();
+  const links = [];
+  for (let i = 0; i < starters.length; i++) {
+    for (let j = i + 1; j < starters.length; j++) {
+      const a = starters[i];
+      const b = starters[j];
+      const dx = a.slot.x - b.slot.x;
+      const dy = a.slot.y - b.slot.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance > 31) continue;
+      const evaluation = evaluateChemistryLink(a, b);
+      links.push({ a, b, distance, ...evaluation });
+    }
+  }
+  return links;
+}
+
+function renderSynergySvg() {
+  const links = getChemistryLinks();
+  if (!links.length) return `<svg class="synergy-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>`;
+  return `
+    <svg class="synergy-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      ${links.map(link => `
+        <line class="synergy-line synergy-${escapeAttribute(link.level)}" x1="${link.a.slot.x}" y1="${link.a.slot.y}" x2="${link.b.slot.x}" y2="${link.b.slot.y}">
+          <title>${escapeHtml(link.a.player.nombre)} + ${escapeHtml(link.b.player.nombre)} · ${escapeHtml(link.reasons.join(", ") || "sin conexión")}</title>
+        </line>
+      `).join("")}
+    </svg>
+  `;
+}
+
+function getDefaultStats() {
+  return { yellow: false, red: false, goals: 0, assists: 0 };
+}
+
+function getStatsForTarget(type, index) {
+  return { ...getDefaultStats(), ...(matchStats[getTargetKey(type, index)] || {}) };
+}
+
+function renderPlayerMatchBadges(type, index) {
+  const stats = getStatsForTarget(type, index);
+  const goals = Math.max(0, Math.min(4, Number(stats.goals || 0)));
+  const assists = Math.max(0, Math.min(4, Number(stats.assists || 0)));
+  const cards = [];
+
+  if (stats.yellow) cards.push(`<span class="card-square yellow-card" title="Tarjeta amarilla"></span>`);
+  if (stats.red) cards.push(`<span class="card-square red-card" title="Tarjeta roja"></span>`);
+
+  const cardBadge = cards.length
+    ? `<span class="player-marker cards-marker" title="Tarjetas">${cards.join("")}</span>`
+    : "";
+
+  const goalBadge = goals > 0
+    ? `<span class="player-marker goals-marker" title="${goals} gol${goals === 1 ? "" : "es"}"><span class="marker-icon">⚽</span>${goals > 1 ? `<span class="marker-count">${goals}</span>` : ""}</span>`
+    : "";
+
+  const assistBadge = assists > 0
+    ? `<span class="player-marker assists-marker" title="${assists} asistencia${assists === 1 ? "" : "s"}"><span class="marker-icon">🦶</span>${assists > 1 ? `<span class="marker-count">${assists}</span>` : ""}</span>`
+    : "";
+
+  return cardBadge + goalBadge + assistBadge;
+}
+
+function setStatsForTarget(type, index, partial) {
+  const key = getTargetKey(type, index);
+  const current = getStatsForTarget(type, index);
+  matchStats[key] = { ...current, ...partial };
+  generateOutput();
+}
+
+function getMatchLineupEntries() {
+  const entries = [];
+  formaciones[currentFormation]?.forEach((slot, index) => {
+    const player = placedPlayers[index];
+    if (player) entries.push({ type: "field", index, player, role: slot.rol, isStarter: true });
+  });
+  benchPlayers.forEach((player, index) => {
+    if (player) entries.push({ type: "bench", index, player, role: `B${index + 1}`, isStarter: false });
+  });
+  return entries;
+}
+
+function renderStatsEditor() {
+  const entries = getMatchLineupEntries();
+  if (!entries.length) {
+    return `
+      <section class="stats-editor empty-stats">
+        <h3>🎯 Estadísticas del partido</h3>
+        <p>Añade jugadores para poder poner goles, asistencias, amarilla o roja.</p>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="stats-editor">
+      <h3>🎯 Goles, asistencias y tarjetas</h3>
+      <div class="stats-grid">
+        ${entries.map(entry => renderStatsRow(entry)).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderStatsRow(entry) {
+  const stats = getStatsForTarget(entry.type, entry.index);
+  const jersey = getJerseyForTarget(entry.type, entry.index) ?? "?";
+  return `
+    <div class="stats-row" data-type="${escapeAttribute(entry.type)}" data-index="${escapeAttribute(entry.index)}">
+      <div class="stats-player">
+        <strong>#${escapeHtml(jersey)} ${escapeHtml(entry.player.nombre)}</strong>
+        <span>${escapeHtml(entry.role)} · ${escapeHtml(entry.player.equipo || "Sin equipo")}</span>
+      </div>
+      <label>⚽
+        <select class="stat-goals">
+          ${[0,1,2,3,4].map(n => `<option value="${n}" ${stats.goals === n ? "selected" : ""}>${n}</option>`).join("")}
+        </select>
+      </label>
+      <label>🅰️
+        <select class="stat-assists">
+          ${[0,1,2,3,4].map(n => `<option value="${n}" ${stats.assists === n ? "selected" : ""}>${n}</option>`).join("")}
+        </select>
+      </label>
+      <button class="card-toggle ${stats.yellow ? "active" : ""}" data-card="yellow" type="button">🟨</button>
+      <button class="card-toggle ${stats.red ? "active" : ""}" data-card="red" type="button">🟥</button>
+    </div>
+  `;
+}
+
+function bindStatsEditorEvents() {
+  teamHud.querySelectorAll(".stats-row").forEach(row => {
+    const type = row.dataset.type;
+    const index = Number(row.dataset.index);
+
+    row.querySelector(".stat-goals")?.addEventListener("change", event => {
+      setStatsForTarget(type, index, { goals: Number(event.target.value) });
+    });
+
+    row.querySelector(".stat-assists")?.addEventListener("change", event => {
+      setStatsForTarget(type, index, { assists: Number(event.target.value) });
+    });
+
+    row.querySelectorAll(".card-toggle").forEach(button => {
+      button.addEventListener("click", () => {
+        const card = button.dataset.card;
+        const stats = getStatsForTarget(type, index);
+        if (card === "yellow") setStatsForTarget(type, index, { yellow: !stats.yellow });
+        if (card === "red") setStatsForTarget(type, index, { red: !stats.red });
+        renderHud();
+      });
+    });
+  });
+}
+
+function calculateChemistry() {
+  const starters = getStarterEntries();
+  if (!chemistryEnabled) {
+    return { score: 0, label: "Desactivada", links: 0, perfectLinks: 0, strongLinks: 0, mediumLinks: 0, weakLinks: 0, deadLinks: 0, teams: {} };
+  }
+  const links = getChemistryLinks();
+  const teamCounts = {};
+  starters.forEach(entry => {
+    const team = entry.player.equipo || "Sin equipo";
+    teamCounts[team] = (teamCounts[team] || 0) + 1;
+  });
+
+  const totalPoints = links.reduce((total, link) => total + link.points, 0);
+  const perfectLinks = links.filter(link => link.level === "perfect").length;
+  const strongLinks = links.filter(link => link.level === "strong").length;
+  const mediumLinks = links.filter(link => link.level === "medium").length;
+  const weakLinks = links.filter(link => link.level === "weak").length;
+  const deadLinks = links.filter(link => link.level === "dead").length;
+  const starterRatio = starters.length ? starters.length / 11 : 0;
+  const maxPoints = Math.max(1, links.length * 8);
+  const rawScore = Math.round((totalPoints / maxPoints) * 100);
+  const completionPenalty = Math.round(rawScore * starterRatio);
+  const score = Math.min(100, Math.max(0, completionPenalty));
+
+  let label = "Baja";
+  if (score >= 90) label = "Perfecta";
+  else if (score >= 75) label = "Alta";
+  else if (score >= 50) label = "Media";
+
+  return { score, label, links: links.length, perfectLinks, strongLinks, mediumLinks, weakLinks, deadLinks, teams: teamCounts };
+}
+
+function renderChemistryPanel(chemistry) {
+  if (!chemistryEnabled) {
+    return `
+      <section class="chemistry-panel disabled-chemistry">
+        <div class="chemistry-topline">
+          <div>
+            <h3>🧪 Sinergia de equipo</h3>
+            <p>Desactivada para esta plantilla.</p>
+          </div>
+          <strong>OFF</strong>
+        </div>
+        <p class="chemistry-help">Usa el botón "Sinergia ON/OFF" para mostrar u ocultar química y líneas.</p>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="chemistry-panel">
+      <div class="chemistry-topline">
+        <div>
+          <h3>🧪 Sinergia de equipo</h3>
+          <p>${escapeHtml(chemistry.label)} · 🟢 ${chemistry.perfectLinks + chemistry.strongLinks} · 🟡 ${chemistry.mediumLinks + chemistry.weakLinks} · 🔴 ${chemistry.deadLinks}</p>
+        </div>
+        <strong>${chemistry.score}</strong>
+      </div>
+      <div class="chemistry-bar"><span style="width:${chemistry.score}%"></span></div>
+      <p class="chemistry-help">Valora equipo, apellido/familia, nacionalidad y relaciones especiales de quimica.json. Verde = química top; rojo = no conectan.</p>
+    </section>
+  `;
+}
+function formatStatsForPaste(type, index) {
+  const stats = getStatsForTarget(type, index);
+  const parts = [];
+  if (stats.goals > 0) parts.push(`⚽ x${stats.goals}`);
+  if (stats.assists > 0) parts.push(`🅰️ x${stats.assists}`);
+  if (stats.yellow) parts.push("🟨");
+  if (stats.red) parts.push("🟥");
+  return parts.length ? ` — ${parts.join(" ")}` : "";
+}
+
 function generateOutput() {
   output.value = buildDiscordPaste();
 }
@@ -486,6 +970,8 @@ function buildDiscordPaste() {
     `# ⚽ ${eventName}`,
     `**Equipo:** ${teamName}`,
     `**Formación:** ${currentFormation}`,
+    chemistryEnabled ? `**Sinergia:** ${calculateChemistry().score}/100 · ${calculateChemistry().label}` : `**Sinergia:** Desactivada`,
+    chemistryEnabled ? `**Enlaces:** 🟢 ${calculateChemistry().perfectLinks + calculateChemistry().strongLinks} · 🟡 ${calculateChemistry().mediumLinks + calculateChemistry().weakLinks} · 🔴 ${calculateChemistry().deadLinks}` : `**Enlaces:** Ocultos`,
     "",
     "## 🟦 TITULARES"
   ];
@@ -493,7 +979,7 @@ function buildDiscordPaste() {
   formaciones[currentFormation]?.forEach((slot, index) => {
     const player = placedPlayers[index];
     lines.push(player
-      ? `${roleIcon(slot.rol)} **${slot.rol}** — ${formatPlayerForPaste(player, getJerseyForTarget("field", index))}`
+      ? `${roleIcon(slot.rol)} **${slot.rol}** — ${formatPlayerForPaste(player, getJerseyForTarget("field", index))}${formatStatsForPaste("field", index)}`
       : `${roleIcon(slot.rol)} **${slot.rol}** — *Vacío*`);
   });
 
@@ -501,7 +987,7 @@ function buildDiscordPaste() {
   lines.push("", "## 🟨 BANQUILLO");
   if (filledBench.length) {
     filledBench.forEach(({ player, index }) => {
-      lines.push(`• ${formatPlayerForPaste(player, getJerseyForTarget("bench", index))}`);
+      lines.push(`• ${formatPlayerForPaste(player, getJerseyForTarget("bench", index))}${formatStatsForPaste("bench", index)}`);
     });
   } else {
     lines.push("• *Sin suplentes*");
@@ -594,6 +1080,8 @@ function getTemplateData() {
     bench: benchPlayers.map(getPersonKey),
     managers: managers.map(getPersonKey),
     coach: getPersonKey(coach),
+    stats: matchStats,
+    chemistryEnabled,
     text: output.value
   };
 }
@@ -667,6 +1155,9 @@ function loadTemplateData(data) {
   });
 
   coach = findPersonByKey(data.coach ?? data.entrenador);
+  matchStats = data.stats ?? data.estadisticas ?? {};
+  chemistryEnabled = data.chemistryEnabled ?? data.sinergiaActiva ?? true;
+  updateChemistryToggleButton();
 
   updateBoardTitle();
   renderAll();
@@ -719,6 +1210,7 @@ function clearBoard() {
   benchPlayers = Array(BENCH_SIZE).fill(null);
   managers = Array(MANAGER_SIZE).fill(null);
   coach = null;
+  matchStats = {};
   renderAll();
 }
 

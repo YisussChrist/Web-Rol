@@ -1299,3 +1299,423 @@ body.dragging-player .roster-card.empty {
     padding: 10px;
   }
 }
+
+
+/* ===== Sinergia + estadísticas de partido ===== */
+.chemistry-panel,
+.stats-editor {
+  border: 3px solid #09235f;
+  border-radius: 18px;
+  padding: 10px;
+  background: linear-gradient(180deg, #ffffff, #dff8ff);
+  color: #09235f;
+  box-shadow: 0 3px 0 rgba(0,0,0,.25);
+}
+
+.chemistry-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.chemistry-topline h3,
+.stats-editor h3 {
+  margin: 0;
+  color: #09235f;
+  text-transform: uppercase;
+  font-size: 15px;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+.chemistry-topline p,
+.chemistry-help,
+.empty-stats p {
+  margin: 3px 0 0;
+  color: #095a9f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.chemistry-topline strong {
+  min-width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  background: linear-gradient(#ffdd57, #ff8c1a);
+  color: #09235f;
+  font-size: 25px;
+  box-shadow: 0 4px 0 rgba(0,0,0,.32), 0 0 0 3px #09235f;
+}
+
+.chemistry-bar {
+  height: 16px;
+  margin: 9px 0 7px;
+  border: 3px solid #09235f;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #c9f2ff;
+}
+
+.chemistry-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff3b3b, #ffd43b, #25ad45);
+}
+
+.stats-grid {
+  margin-top: 8px;
+  display: grid;
+  gap: 8px;
+  max-height: 290px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) 70px 70px 46px 46px;
+  gap: 7px;
+  align-items: center;
+  padding: 8px;
+  border: 2px solid #09235f;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #fff, #e9fbff);
+}
+
+.stats-player strong {
+  display: block;
+  color: #071432;
+  font-size: 13px;
+}
+
+.stats-player span {
+  display: block;
+  color: #096dcc;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.stats-row label {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #09235f;
+  font-size: 14px;
+}
+
+.stats-row select {
+  width: 48px;
+  padding: 5px;
+  border-width: 2px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.card-toggle {
+  width: 42px;
+  height: 38px;
+  padding: 0;
+  border-width: 2px;
+  border-radius: 12px;
+  background: linear-gradient(#fff, #dff8ff);
+  box-shadow: 0 3px 0 rgba(0,0,0,.24);
+  filter: grayscale(1);
+}
+
+.card-toggle.active {
+  filter: none;
+  background: linear-gradient(#ffdd57, #ff8c1a);
+  outline: 3px solid #fff;
+}
+
+@media (max-width: 760px) {
+  .stats-row {
+    grid-template-columns: 1fr 58px 58px 42px 42px;
+  }
+
+  .stats-player strong {
+    font-size: 12px;
+  }
+}
+
+/* ===== Sinergia FIFA + editor individual ===== */
+.synergy-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.synergy-line {
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,.8));
+  opacity: .88;
+}
+
+.synergy-perfect { stroke: #22ff66; stroke-width: 1.75; }
+.synergy-strong { stroke: #63ff63; stroke-width: 1.45; }
+.synergy-medium { stroke: #ffe45c; stroke-width: 1.25; stroke-dasharray: 3 2; }
+.synergy-weak { stroke: #ff9e2c; stroke-width: 1.05; stroke-dasharray: 2 2; }
+.synergy-dead { stroke: #ff3131; stroke-width: .9; stroke-dasharray: 1.2 2.2; opacity: .65; }
+
+.stats-dialog {
+  width: min(620px, 94vw);
+}
+
+.stats-dialog h2 {
+  margin-bottom: 4px;
+}
+
+#statsDialogMeta {
+  margin: 0 0 14px;
+  color: #095a9f;
+}
+
+.single-stats-box {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.single-stats-box label {
+  margin: 0;
+  padding: 10px;
+  border: 3px solid #09235f;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fff, #dff8ff);
+}
+
+.single-stats-box select {
+  margin-top: 6px;
+}
+
+.single-stats-box .card-toggle {
+  width: 100%;
+  height: auto;
+  padding: 12px;
+  filter: grayscale(1);
+}
+
+.single-stats-box .card-toggle.active {
+  filter: none;
+}
+
+.stats-dialog-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.chemistry-panel {
+  border: 3px solid #09235f;
+  border-radius: 18px;
+  padding: 10px;
+  background: linear-gradient(180deg, #ffffff, #dff8ff);
+  box-shadow: 0 3px 0 rgba(0,0,0,.25);
+}
+
+.chemistry-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.chemistry-topline h3 {
+  margin: 0 0 4px;
+  color: #09235f;
+}
+
+.chemistry-topline p,
+.chemistry-help {
+  margin: 0;
+  color: #095a9f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.chemistry-topline strong {
+  display: grid;
+  place-items: center;
+  min-width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 4px solid #09235f;
+  background: linear-gradient(#ffdd57, #ff8c1a);
+  color: #09235f;
+  font-size: 24px;
+  box-shadow: 0 4px 0 rgba(0,0,0,.25);
+}
+
+.chemistry-bar {
+  height: 18px;
+  margin: 9px 0 8px;
+  border: 3px solid #09235f;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.chemistry-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #ff3131, #ffe45c 50%, #22ff66);
+  transition: width .25s ease;
+}
+
+@media (max-width: 760px) {
+  .single-stats-box {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Toggle de sinergia */
+.chemistry-toggle.active {
+  background: linear-gradient(#67ff83, #25ad45);
+  color: #06143d;
+}
+
+.chemistry-toggle.inactive {
+  background: linear-gradient(#ffe1e1, #ff6b6b);
+  color: #071432;
+}
+
+.disabled-chemistry {
+  opacity: .82;
+  filter: grayscale(.2);
+}
+
+
+/* ===== Marcadores visuales ENCIMA del retrato del jugador ===== */
+.magnet {
+  position: relative;
+  overflow: visible;
+}
+
+.magnet .avatar {
+  position: relative;
+  z-index: 2;
+}
+
+.player-marker {
+  position: absolute;
+  z-index: 35;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 1px 5px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: rgba(7, 20, 50, .96);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 1000;
+  line-height: 1;
+  box-shadow:
+    0 3px 0 rgba(0,0,0,.45),
+    0 0 0 2px rgba(9,35,95,.85);
+  pointer-events: none;
+  text-shadow: 1px 1px 0 #071432;
+}
+
+.marker-icon {
+  line-height: 1;
+  filter: drop-shadow(1px 1px 0 rgba(0,0,0,.55));
+}
+
+.marker-count {
+  margin-left: 2px;
+  font-size: 13px;
+  font-weight: 1000;
+}
+
+.cards-marker {
+  top: -12px;
+  left: -12px;
+  gap: 2px;
+  min-width: auto;
+  padding: 2px 4px;
+  background: rgba(7,20,50,.80);
+}
+
+.card-square {
+  width: 13px;
+  height: 18px;
+  display: inline-block;
+  border: 2px solid #fff;
+  border-radius: 3px;
+  box-shadow: 1px 2px 0 rgba(0,0,0,.55);
+}
+
+.yellow-card {
+  background: linear-gradient(#ffe96b, #ffb700);
+}
+
+.red-card {
+  background: linear-gradient(#ff6b6b, #d80000);
+}
+
+.assists-marker {
+  top: -12px;
+  right: -13px;
+  background: linear-gradient(#ffdd57, #ff8c1a);
+  color: #09235f;
+  text-shadow: 1px 1px 0 rgba(255,255,255,.45);
+}
+
+.goals-marker {
+  left: -13px;
+  bottom: 1px;
+  background: linear-gradient(#ffffff, #dff8ff);
+  color: #071432;
+  text-shadow: 1px 1px 0 rgba(255,255,255,.7);
+}
+
+.slot-number {
+  z-index: 36;
+}
+
+@media (max-width: 680px) {
+  .player-marker {
+    min-width: 20px;
+    height: 20px;
+    font-size: 11px;
+    padding: 1px 4px;
+  }
+
+  .marker-count {
+    font-size: 11px;
+  }
+
+  .card-square {
+    width: 11px;
+    height: 15px;
+  }
+
+  .cards-marker,
+  .assists-marker {
+    top: -9px;
+  }
+
+  .cards-marker,
+  .goals-marker {
+    left: -9px;
+  }
+
+  .assists-marker {
+    right: -9px;
+  }
+}

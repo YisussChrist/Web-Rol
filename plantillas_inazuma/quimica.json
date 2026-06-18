@@ -1,0 +1,11 @@
+{
+  "relaciones": [
+    { "jugadores": ["Renzu Itō", "Jeanne d'Arc"], "puntos": 8, "nivel": "perfect", "motivo": "pareja / vínculo canon" },
+    { "jugadores": ["Renzu Itō", "Mavuika Heartless"], "puntos": 6, "nivel": "perfect", "motivo": "mejor amiga y apoyo emocional" },
+    { "jugadores": ["Akari Foster", "Jibril Foster"], "puntos": 6, "nivel": "perfect", "motivo": "familia Foster" },
+    { "jugadores": ["Dan Karman", "Serena Kitagawa"], "puntos": 7, "nivel": "perfect", "motivo": "pareja" }
+  ],
+  "ajustes": [
+    { "jugador": "Renzu Itō", "puntos": 1, "motivo": "líder ofensivo" }
+  ]
+}

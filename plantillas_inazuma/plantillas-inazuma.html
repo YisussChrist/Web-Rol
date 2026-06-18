@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Creador de Plantillas Inazuma DS</title>
-  <link rel="stylesheet" href="plantillas-inazuma.css" />
+  <link rel="stylesheet" href="plantillas-inazuma.css?v=marcadores-encima-1" />
 </head>
 <body>
   <div class="bg-orbs"></div>
@@ -142,6 +142,33 @@
     <button id="dialogClose">Cerrar</button>
   </dialog>
 
-  <script src="plantillas-inazuma.js"></script>
+
+  <dialog id="statsDialog" class="stats-dialog">
+    <h2 id="statsDialogTitle">Editar jugador</h2>
+    <p id="statsDialogMeta"></p>
+
+    <div class="single-stats-box">
+      <label>⚽ Goles
+        <select id="statsGoals">
+          <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+        </select>
+      </label>
+      <label>🅰️ Asistencias
+        <select id="statsAssists">
+          <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+        </select>
+      </label>
+      <button id="statsYellow" class="card-toggle" type="button">🟨 Amarilla</button>
+      <button id="statsRed" class="card-toggle" type="button">🟥 Roja</button>
+    </div>
+
+    <div class="stats-dialog-actions">
+      <button id="statsChangePlayer" type="button">Cambiar jugador</button>
+      <button id="statsClearPlayer" type="button">Quitar jugador</button>
+      <button id="statsDialogClose" type="button">Cerrar</button>
+    </div>
+  </dialog>
+
+  <script src="plantillas-inazuma.js?v=marcadores-encima-1"></script>
 </body>
 </html>
