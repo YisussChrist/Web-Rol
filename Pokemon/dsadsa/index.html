@@ -55,7 +55,7 @@
         <details class="advanced" open>
           <summary>Stats ofensivos editables</summary>
           <div class="form-grid compact">
-            <label>Nivel<input id="level" type="number" value="50" min="1" max="100" /></label>
+            <label>Nivel atacante<input id="level" type="number" value="50" min="1" max="100" /></label>
             <label>Objeto atacante<select id="attackerItem"></select></label>
             <label>Habilidad atacante<select id="attackerAbility"><option value="none">Ninguna</option></select></label>
             <label>Habilidad manual<input id="attackerAbilityCustom" type="text" placeholder="Ej: adaptability" /></label>
@@ -114,7 +114,9 @@
             <label>Habilidad manual<input id="defenderAbilityCustom" type="text" placeholder="Ej: fluffy" /></label>
             <label>Naturaleza defensiva<select id="defenseNature"><option value="1">Neutral</option><option value="1.1">Beneficia</option><option value="0.9">Perjudica</option></select></label>
             <label>Boost defensivo<select id="defenseBoost"></select></label>
+            <label>Nivel defensor<input id="defenderLevel" type="number" value="50" min="1" max="100" /></label>
             <label>Vida actual del defensor<input id="currentHp" type="number" value="0" min="0" /></label>
+            <button type="button" id="setCurrentHpMax" class="ghost-button field-button">PS máximos</button>
           </div>
           <div class="stat-table-wrap">
             <div class="stat-table-title">Tabla completa de características</div>

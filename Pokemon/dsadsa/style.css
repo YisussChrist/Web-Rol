@@ -112,3 +112,13 @@ label{display:grid;gap:6px;color:#475569;font-size:.82rem;font-weight:800}input,
 .menu-button:hover{
     transform:translateY(-2px);
 }
+
+.field-button{
+  align-self:end;
+  min-height:38px;
+  color:var(--blue);
+}
+.level-note{
+  color:var(--muted);
+  font-size:.82rem;
+}

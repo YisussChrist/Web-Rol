@@ -46,6 +46,9 @@ function prettyName(name){ return (name || '').split('-').map(x => x.charAt(0).t
 function typeChip(type){ return `<span class="type-chip type-${type}">${typeNames[type] || type}</span>`; }
 function val(id){ return $(id).value; }
 function yes(id){ return val(id) === 'yes'; }
+function numberVal(id, fallback=0){ const el=$(id); const n=Number(el?.value); return Number.isFinite(n) && n > 0 ? n : fallback; }
+function attackerLevel(){ return numberVal('level', 50); }
+function defenderLevel(){ return numberVal('defenderLevel', attackerLevel()); }
 
 function fillSelects(){
   ['moveType','attackerTeraType','defenderTeraType'].forEach(id => {
@@ -94,6 +97,7 @@ function setBaseFields(kind, pokemon){
     $('defBaseSpe').value = getStat(pokemon,'speed');
   }
   updateStatOutputs();
+  if(kind === 'defender' && (!Number(val('currentHp')) || Number(val('currentHp')) <= 0)) $('currentHp').value = calcDefenderHp();
 }
 
 function fillAbilitySelect(kind, pokemon){
@@ -271,29 +275,32 @@ function abilityDamageModifier(category, moveType, effectiveness){
   return m;
 }
 function hpRatioIsFull(){ const hp=calcDefenderHp(); const current=Number(val('currentHp')); return !current || current >= hp; }
-function calcDefenderHp(){ const level=Number(val('level')); return calcStat(Number(val('baseHp')), Number(val('hpIV')), Number(val('hpEV')), level, 1, true); }
+function calcDefenderHp(){ return calcStat(Number(val('baseHp')), Number(val('hpIV')), Number(val('hpEV')), defenderLevel(), 1, true); }
 function setOut(id, value){ const el=$(id); if(el) el.value = Number.isFinite(value) ? value : '—'; }
-function calcNormal(base, iv, ev, nature=1){ return calcStat(Number(val(base)), Number(val(iv)), Number(val(ev)), Number(val('level')), nature, false); }
-function calcHp(base, iv, ev){ return calcStat(Number(val(base)), Number(val(iv)), Number(val(ev)), Number(val('level')), 1, true); }
+function calcNormalAt(base, iv, ev, level, nature=1){ return calcStat(Number(val(base)), Number(val(iv)), Number(val(ev)), level, nature, false); }
+function calcHpAt(base, iv, ev, level){ return calcStat(Number(val(base)), Number(val(iv)), Number(val(ev)), level, 1, true); }
 function updateStatOutputs(){
   try{
-    setOut('atkHpFinal', calcHp('atkBaseHp','atkHpIV','atkHpEV'));
-    setOut('atkFinal', calcNormal('baseAtk','atkIV','atkEV', Number(val('attackNature'))));
-    setOut('atkDefFinal', calcNormal('atkBaseDef','atkDefIV','atkDefEV'));
-    setOut('spaFinal', calcNormal('baseSpa','spaIV','spaEV', Number(val('attackNature'))));
-    setOut('atkSpdFinal', calcNormal('atkBaseSpd','atkSpdIV','atkSpdEV'));
-    setOut('atkSpeFinal', calcNormal('atkBaseSpe','atkSpeIV','atkSpeEV'));
-    setOut('hpFinal', calcHp('baseHp','hpIV','hpEV'));
-    setOut('defAtkFinal', calcNormal('defBaseAtk','defAtkIV','defAtkEV'));
-    setOut('defFinal', calcNormal('baseDef','defIV','defEV', Number(val('defenseNature'))));
-    setOut('defSpaFinal', calcNormal('defBaseSpa','defSpaIV','defSpaEV'));
-    setOut('spdFinal', calcNormal('baseSpd','spdIV','spdEV', Number(val('defenseNature'))));
-    setOut('defSpeFinal', calcNormal('defBaseSpe','defSpeIV','defSpeEV'));
+    const atkLvl = attackerLevel();
+    const defLvl = defenderLevel();
+    setOut('atkHpFinal', calcHpAt('atkBaseHp','atkHpIV','atkHpEV', atkLvl));
+    setOut('atkFinal', calcNormalAt('baseAtk','atkIV','atkEV', atkLvl, Number(val('attackNature'))));
+    setOut('atkDefFinal', calcNormalAt('atkBaseDef','atkDefIV','atkDefEV', atkLvl));
+    setOut('spaFinal', calcNormalAt('baseSpa','spaIV','spaEV', atkLvl, Number(val('attackNature'))));
+    setOut('atkSpdFinal', calcNormalAt('atkBaseSpd','atkSpdIV','atkSpdEV', atkLvl));
+    setOut('atkSpeFinal', calcNormalAt('atkBaseSpe','atkSpeIV','atkSpeEV', atkLvl));
+    setOut('hpFinal', calcHpAt('baseHp','hpIV','hpEV', defLvl));
+    setOut('defAtkFinal', calcNormalAt('defBaseAtk','defAtkIV','defAtkEV', defLvl));
+    setOut('defFinal', calcNormalAt('baseDef','defIV','defEV', defLvl, Number(val('defenseNature'))));
+    setOut('defSpaFinal', calcNormalAt('defBaseSpa','defSpaIV','defSpaEV', defLvl));
+    setOut('spdFinal', calcNormalAt('baseSpd','spdIV','spdEV', defLvl, Number(val('defenseNature'))));
+    setOut('defSpeFinal', calcNormalAt('defBaseSpe','defSpeIV','defSpeEV', defLvl));
   }catch(e){}
 }
 
 function warningNotes(){
   const notes=[];
+  if(attackerLevel() !== defenderLevel()) notes.push(`Nivel separado activo: atacante Nv. ${attackerLevel()} y defensor Nv. ${defenderLevel()}.`);
   if(yes('tailwind')) notes.push('Viento Afín está activo: afecta a Velocidad, no al daño directo.');
   if(val('attackerStatus')==='sleep' || val('attackerStatus')==='freeze') notes.push('El atacante está dormido/congelado: si no puede atacar, el daño real sería 0; aquí se calcula el golpe si llega a salir.');
   if(val('attackerStatus')==='paralysis') notes.push('Parálisis no baja el daño; solo afecta velocidad y probabilidad de moverse.');
@@ -305,8 +312,8 @@ function warningNotes(){
 
 function calculateDamage(){
   if(!attacker || !defender){ $('result').innerHTML = `<div class="error">Carga primero atacante y defensor.</div>`; return; }
-  const level=Number(val('level')); const power=effectiveMovePower(); const originalPower=Number(val('movePower')); const moveType=val('moveType'); const category=val('moveCategory');
-  if(!level || !power){ $('result').innerHTML = `<div class="error">Nivel y potencia deben tener valor válido.</div>`; return; }
+  const level=attackerLevel(); const defLvl=defenderLevel(); const power=effectiveMovePower(); const originalPower=Number(val('movePower')); const moveType=val('moveType'); const category=val('moveCategory');
+  if(!level || !defLvl || !power){ $('result').innerHTML = `<div class="error">Nivel y potencia deben tener valor válido.</div>`; return; }
 
   syncInlineBoosts(); updateStatOutputs();
   const atkBase = category==='physical' ? Number(val('baseAtk')) : Number(val('baseSpa'));
@@ -316,7 +323,7 @@ function calculateDamage(){
   const defIV = category==='physical' ? Number(val('defIV')) : Number(val('spdIV'));
   const defEV = category==='physical' ? Number(val('defEV')) : Number(val('spdEV'));
   let attackStat = calcStat(atkBase, atkIV, atkEV, level, Number(val('attackNature')));
-  let defenseStat = calcStat(defBase, defIV, defEV, level, Number(val('defenseNature')));
+  let defenseStat = calcStat(defBase, defIV, defEV, defLvl, Number(val('defenseNature')));
   const hpStat = calcDefenderHp(); const currentHp = Number(val('currentHp')) > 0 ? Number(val('currentHp')) : hpStat;
 
   attackStat = Math.floor(attackStat * boostModifier(val('attackBoost')) * itemAttackModifier(category) * abilityAttackModifier(category, moveType));
@@ -362,8 +369,8 @@ function calculateDamage(){
         <div class="bar"><div class="bar-fill" style="width:${barWidth}%"></div></div>
       </div>
       <div class="details">
-        <div><strong>Atacante:</strong> ${prettyName(attacker.name)} · Stat usado: ${attackStat} · Habilidad: ${prettyName(currentAbility('attacker'))}</div>
-        <div><strong>Defensor:</strong> ${prettyName(defender.name)} · Stat usado: ${defenseStat} · Tipos efectivos: ${defenderTypes.map(t=>typeNames[t]).join(' / ')} · Habilidad: ${prettyName(currentAbility('defender'))}</div>
+        <div><strong>Atacante:</strong> ${prettyName(attacker.name)} · Nv. ${level} · Stat usado: ${attackStat} · Habilidad: ${prettyName(currentAbility('attacker'))}</div>
+        <div><strong>Defensor:</strong> ${prettyName(defender.name)} · Nv. ${defLvl} · Stat usado: ${defenseStat} · Tipos efectivos: ${defenderTypes.map(t=>typeNames[t]).join(' / ')} · Habilidad: ${prettyName(currentAbility('defender'))}</div>
         <div><strong>Movimiento:</strong> ${typeNames[moveType]} · ${category==='physical'?'Físico':'Especial'} · Potencia ${power}${val('zMoveMode')!=='off' ? ` · Ataque Z desde ${originalPower}` : ''}</div>
         <div><strong>STAB:</strong> x${getStab(moveType)} · <strong>Efectividad:</strong> ${effText} · <strong>Modificador total aprox:</strong> x${modifier.toFixed(3)}</div>
         ${notes.length ? `<div class="note-list"><strong>Avisos:</strong><ul>${notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>` : ''}
@@ -377,6 +384,7 @@ $('loadMove').addEventListener('click', loadMove);
 $('applyAttackerForm').addEventListener('click', () => loadPokemon('attacker', val('attackerFormSelect')));
 $('applyDefenderForm').addEventListener('click', () => loadPokemon('defender', val('defenderFormSelect')));
 $('calculateDamage').addEventListener('click', calculateDamage);
+$('setCurrentHpMax')?.addEventListener('click', () => { updateStatOutputs(); $('currentHp').value = calcDefenderHp(); });
 ['attackerName','defenderName','moveName'].forEach(id => $(id).addEventListener('keydown', e => { if(e.key!=='Enter') return; if(id==='attackerName') loadPokemon('attacker'); if(id==='defenderName') loadPokemon('defender'); if(id==='moveName') loadMove(); }));
 $('movePower').addEventListener('input', () => { const z=getZMovePower(val('movePower')); if(z && val('zMoveMode')==='auto') $('zMovePower').value=z; });
 $('zMoveMode').addEventListener('change', () => { const z=getZMovePower(val('movePower')); if(z && val('zMoveMode')==='auto') $('zMovePower').value=z; });
