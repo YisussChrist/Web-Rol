@@ -85,10 +85,45 @@
         </div>
       </section>
 
+
+
+      <section class="screen overlay-screen" id="screen-incoming-call">
+        <div class="incoming-call-panel" id="incomingCallPanel">
+          <div class="incoming-rings" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="incoming-avatar" id="incomingAvatar">🧪</div>
+          <span class="incoming-label">Llamada entrante</span>
+          <h3 id="incomingName">Profesora Romaine</h3>
+          <p id="incomingRole">Profesora Pokémon</p>
+          <div class="incoming-actions">
+            <button id="declineIncoming" class="decline-btn">Colgar</button>
+            <button id="acceptIncoming" class="accept-btn">Aceptar</button>
+          </div>
+        </div>
+      </section>
+
       <section class="screen" id="screen-messages">
         <div class="panel-title"><h3>Bandeja de mensajes</h3><p>Notificaciones de viaje y avisos del Instituto.</p></div>
         <div class="message-list" id="messageList"></div>
       </section>
+
+      <section class="screen overlay-screen" id="screen-invite">
+  <div class="invite-panel">
+    <span class="invite-logo">Y</span>
+    <h3>Infinity Y Institute</h3>
+    <p>El instituto abre sus puertas a entrenadores con dos medallas o más.</p>
+
+    <div class="invite-box">
+      <strong>Invitación pendiente</strong>
+      <span>Estado: compatible con tu progreso actual.</span>
+      <span>Requisito: 2 medallas obtenidas.</span>
+    </div>
+
+    <button id="requestInvite" class="main-action">Solicitar acceso</button>
+    <button id="closeInvite" class="ghost-btn">Cerrar</button>
+  </div>
+</section>
 
       <section class="screen" id="screen-research">
         <div class="panel-title"><h3>Base de datos</h3><p>Informes públicos desbloqueados según progreso.</p></div>

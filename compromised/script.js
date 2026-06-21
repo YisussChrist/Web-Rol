@@ -7,8 +7,12 @@ const trainers = [
 ];
 
 const contacts = [
-  { name:'Profesora Romaine', role:'Profesora Pokémon', icon:'🧪', msg:'¡Perfecto! Tu Evolink ya está activo. Lo he enviado a todos mis alumnos para mantenernos conectados durante el viaje.' },
-  { name:'Alaric Morrow', role:'Director del Infinity Y Institute', icon:'⭐', msg:'He oído hablar de tus avances. Cuando tengas ocasión, me gustaría mostrarte el instituto. Creo que tu viaje puede aportar datos muy valiosos.' },
+{
+  name:'Profesora Romaine',
+  role:'Profesora Pokémon',
+  icon:'🧪',
+  msg:''
+},  { name:'Alaric Morrow', role:'Director del Infinity Y Institute', icon:'⭐', msg:'He oído hablar de tus avances. Cuando tengas ocasión, me gustaría mostrarte el instituto. Creo que tu viaje puede aportar datos muy valiosos.' },
   { name:'Oriana Rova', role:'Departamento Mega', icon:'🧬', msg:'Si observas cambios físicos anómalos en tus Pokémon durante una transformación, registra la duración exacta. Cada segundo importa.' },
   { name:'Dante Koval', role:'Pruebas de Campo', icon:'🦁', msg:'Los datos de laboratorio sirven de poco si no sobreviven a la realidad. Sigue combatiendo. Ahí se ve lo que vale cada teoría.' },
   { name:'Lyra Thorne', role:'Fenómenos Cristalinos', icon:'💎', msg:'Si encuentras cristales con patrones de luz irregulares, no los toques directamente. Obsérvalos primero. A veces mirar ya es suficiente.' },
@@ -18,8 +22,13 @@ const contacts = [
 const messages = [
   { from:'Romaine', title:'Evolink activado', text:'He enviado el dispositivo a todos mis alumnos. Usa el perfil para identificarte y mantener tu progreso al día.', time:'Ahora' },
   { from:'Sistema', title:'Nuevo módulo disponible', text:'El módulo Mapa redirige al archivo regional de Etruria.', time:'Hace 3 min' },
-  { from:'Infinity Y Institute', title:'Invitación pendiente', text:'El instituto abre sus puertas a entrenadores con dos medallas o más.', time:'Hace 12 min' },
-  { from:'Centro Pokémon', title:'Consejo de viaje', text:'Recuerda revisar tu equipo antes de avanzar hacia rutas de mayor dificultad.', time:'Hoy' }
+{
+  from:'Infinity Y Institute',
+  title:'Invitación pendiente',
+  text:'El instituto abre sus puertas a entrenadores con dos medallas o más.',
+  time:'Hace 12 min',
+  action:'invite'
+},  { from:'Centro Pokémon', title:'Consejo de viaje', text:'Recuerda revisar tu equipo antes de avanzar hacia rutas de mayor dificultad.', time:'Hoy' }
 ];
 
 const research = [
@@ -112,22 +121,53 @@ function startCall(i){
   document.querySelectorAll('.contact-row').forEach((e,idx)=>e.classList.toggle('active', idx===i));
   const c = contacts[i]; const box = document.getElementById('callDisplay');
   box.classList.add('calling');
-  box.innerHTML = `<div class="call-avatar">${c.icon}</div><h3>Llamando a ${c.name}...</h3><p>${c.role}</p>`;
+  box.innerHTML = box.innerHTML = `
+  <div class="call-avatar">${c.icon}</div>
+  <h3>${c.name}</h3>
+  <p><b>${c.role}</b></p>
+  <div class="call-status">Llamada conectada</div>
+  <button class="hang-btn" onclick="endCall()">Colgar</button>
+`;;
   setTimeout(()=>{
     box.classList.remove('calling');
     box.innerHTML = `<div class="call-avatar">${c.icon}</div><h3>${c.name}</h3><p><b>${c.role}</b></p><p>“${c.msg}”</p><button class="ghost-btn" onclick="endCall()">Finalizar llamada</button>`;
   }, 950);
 }
+
+function autoCallRomaine(){
+  const romaineIndex = contacts.findIndex(c => c.name.includes('Romaine'));
+
+  if (romaineIndex === -1) return;
+
+  setTimeout(() => {
+    startCall(romaineIndex);
+  }, 450);
+}
+
 window.endCall = function(){
   document.getElementById('callDisplay').innerHTML = `<div class="call-avatar">📞</div><h3>Llamada finalizada</h3><p>Registro guardado en el Evolink.</p>`;
   document.querySelectorAll('.contact-row').forEach(e=>e.classList.remove('active'));
 }
 
 function renderMessages(){
-  const list = document.getElementById('messageList'); list.innerHTML='';
-  messages.forEach(m=>{
-    const card = document.createElement('article'); card.className='message-card';
-    card.innerHTML = `<small>${m.time} · ${m.from}</small><strong>${m.title}</strong><p>${m.text}</p>`;
+  const list = document.getElementById('messageList');
+  list.innerHTML = '';
+
+  messages.forEach(m => {
+    const card = document.createElement('article');
+    card.className = `message-card ${m.action ? 'clickable' : ''}`;
+
+    card.innerHTML = `
+      <small>${m.time} · ${m.from}</small>
+      <strong>${m.title}</strong>
+      <p>${m.text}</p>
+      ${m.action ? '<span class="message-hint">Abrir →</span>' : ''}
+    `;
+
+    if (m.action === 'invite') {
+      card.onclick = () => openScreen('invite');
+    }
+
     list.appendChild(card);
   });
 }
@@ -168,8 +208,17 @@ function applySettings(){
   document.getElementById('simpleToggle').checked = localStorage.getItem('evolinkSimple') === '1';
 }
 
-document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openScreen(b.dataset.open));
-document.querySelectorAll('[data-action="map"]').forEach(b=>b.onclick=goMap);
+document.querySelectorAll('[data-open]').forEach(b => {
+  b.onclick = () => {
+    if (b.dataset.open === 'calls') {
+      openScreen('calls');
+      autoCallRomaine();
+      return;
+    }
+
+    openScreen(b.dataset.open);
+  };
+});document.querySelectorAll('[data-action="map"]').forEach(b=>b.onclick=goMap);
 backBtn.onclick=()=>openScreen('home');
 document.getElementById('notifyBtn').onclick=()=>showToast('3 notificaciones pendientes. Revisa Mensajes.');
 document.getElementById('themeSelect').onchange=e=>{ localStorage.setItem('evolinkTheme', e.target.value); applySettings(); };

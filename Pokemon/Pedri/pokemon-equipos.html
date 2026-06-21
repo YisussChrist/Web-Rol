@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Equipos Pokémon</title>
+  <link rel="stylesheet" href="pokemon-equipos.css" />
+</head>
+<body>
+  <div class="bg-orb orb-one"></div>
+  <div class="bg-orb orb-two"></div>
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Web-Rol · Pokémon</p>
+      <h1>Registro de Equipos Regionales</h1>
+      <p class="subtitle">Guarda los equipos que usas en cada región y consulta la ficha de cada Pokémon al hacer clic.</p>
+    </div>
+    <button id="resetBtn" class="danger-btn" title="Borra todos los datos guardados">Reiniciar datos</button>
+  </header>
+
+  <main class="layout">
+    <section class="panel form-panel">
+      <h2>Añadir Pokémon</h2>
+      <form id="pokemonForm">
+        <label>
+          Región
+          <select id="regionInput" required>
+            <option value="Kanto">Kanto</option>
+            <option value="Johto">Johto</option>
+            <option value="Hoenn">Hoenn</option>
+            <option value="Sinnoh">Sinnoh</option>
+            <option value="Teselia">Teselia</option>
+            <option value="Kalos">Kalos</option>
+            <option value="Alola">Alola</option>
+            <option value="Galar">Galar</option>
+            <option value="Hisui">Hisui</option>
+            <option value="Paldea">Paldea</option>
+            <option value="Etruria">Etruria</option>
+          </select>
+        </label>
+
+        <label>
+          Pokémon
+          <input id="nameInput" type="text" placeholder="Ej: Krookodile" required />
+        </label>
+
+        <div class="two-cols">
+          <label>
+            Nivel
+            <input id="levelInput" type="number" min="1" max="100" placeholder="35" />
+          </label>
+          <label>
+            Rol
+            <input id="roleInput" type="text" placeholder="Sweeper, tanque..." />
+          </label>
+        </div>
+
+        <div class="two-cols">
+          <label>
+            Tipo 1
+            <input id="type1Input" type="text" placeholder="Tierra" />
+          </label>
+          <label>
+            Tipo 2
+            <input id="type2Input" type="text" placeholder="Siniestro" />
+          </label>
+        </div>
+
+        <label>
+          Imagen / sprite
+          <input id="imageInput" type="url" placeholder="https://... o déjalo vacío" />
+        </label>
+
+        <label>
+          Habilidad
+          <input id="abilityInput" type="text" placeholder="Intimidación" />
+        </label>
+
+        <label>
+          Objeto
+          <input id="itemInput" type="text" placeholder="Restos, Cinta Elegida..." />
+        </label>
+
+        <label>
+          Movimientos
+          <textarea id="movesInput" rows="3" placeholder="Terremoto, Triturar, Avalancha, Protección"></textarea>
+        </label>
+
+        <label>
+          Notas
+          <textarea id="notesInput" rows="4" placeholder="Por qué lo llevas, momentos del rol, estrategia..."></textarea>
+        </label>
+
+        <button class="primary-btn" type="submit">Guardar Pokémon</button>
+      </form>
+    </section>
+
+    <section class="content">
+      <div class="toolbar panel">
+        <input id="searchInput" type="search" placeholder="Buscar Pokémon, región, habilidad, rol..." />
+        <select id="filterRegion">
+          <option value="Todas">Todas las regiones</option>
+        </select>
+      </div>
+      <div id="regionsContainer" class="regions-grid"></div>
+    </section>
+  </main>
+
+  <dialog id="infoModal" class="modal">
+    <button id="closeModal" class="close-btn">×</button>
+    <div id="modalContent"></div>
+  </dialog>
+
+  <template id="regionTemplate">
+    <article class="region-card panel">
+      <div class="region-head">
+        <h2></h2>
+        <span class="counter"></span>
+      </div>
+      <div class="team-grid"></div>
+    </article>
+  </template>
+
+  <template id="pokemonTemplate">
+    <button class="pokemon-card" type="button">
+      <img alt="" />
+      <div>
+        <strong></strong>
+        <span></span>
+      </div>
+    </button>
+  </template>
+
+  <script src="pokemon-equipos.js"></script>
+</body>
+</html>
