@@ -646,14 +646,11 @@ if (!pagina) {
     }
     const { EmbedBuilder } = require("discord.js");
 
-if (message.content === "-chatot") {
-  const embed = new EmbedBuilder()
-    .setTitle("🦜 Chatot")
-    .setDescription("**La verdad que sí**")
-    .setColor(0x00bfff);
+    const { WebhookClient } = require('discord.js');
 
-  message.reply({ embeds: [embed] });
-}
+const chatotWebhook = new WebhookClient({
+    url: process.env.CHATOT_WEBHOOK
+});
 
     if (message.content === "-roadmap") {
 
@@ -1058,6 +1055,12 @@ if (contenido === "-tit") {
         const texto = contenido.replace("-equipos", "").trim();
         return comandoEquipos(message, texto);
     }
+
+    if (message.content === '-chatot') {
+    await chatotWebhook.send({
+        content: 'La verdad que sí'
+    });
+}
 
     if (contenido === "-reroll") {
         if (!ultimoComandoRepetible) {
