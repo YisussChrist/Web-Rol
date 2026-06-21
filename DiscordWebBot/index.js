@@ -616,7 +616,9 @@ if (!pagina) {
                         "`-multi 51000000 50`\n" +
                         "Calcula un multiplicador sobre un poder base.\n\n" +
                         "`-podercalc Freyja Kane * 100`\n" +
-                        "Calcula operaciones usando el poder base del personaje.\n\n"
+                        "Calcula operaciones usando el poder base del personaje.\n\n" +
+                        "`-chatot`\n" +
+                        "`'La verdad que sí'`\n\n" 
                 },
                 {
                     name: "📚 Personajes / Wiki",
@@ -642,6 +644,17 @@ if (!pagina) {
 
         return message.channel.send({ embeds: [embed] });
     }
+    const { EmbedBuilder } = require("discord.js");
+
+if (message.content === "-chatot") {
+  const embed = new EmbedBuilder()
+    .setTitle("🦜 Chatot")
+    .setDescription("**La verdad que sí**")
+    .setColor(0x00bfff);
+
+  message.reply({ embeds: [embed] });
+}
+
     if (message.content === "-roadmap") {
 
     const roadmap = [
