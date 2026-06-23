@@ -544,6 +544,13 @@
     "posicion": "GER",
     "dorsal": 0,
     "foto": "../Hijos Inazuma/pjs/Wang Qing.jpg"
+  },
+  {
+    "nombre": "Shino Asada",
+    "equipo": "ChronoStorm",
+    "posicion": "LD",
+    "dorsal": 2,
+    "foto": "../Hijos Inazuma/pjs/Sinon.png"
   }
   
 ]

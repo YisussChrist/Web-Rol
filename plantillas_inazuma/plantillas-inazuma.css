@@ -111,6 +111,91 @@ button:hover {
   transform: translateY(-2px);
 }
 
+
+/* Desplegable para builders externos: útil para equipos rivales de uso puntual */
+.external-builder-menu {
+  position: relative;
+}
+
+.external-builder-menu summary {
+  list-style: none;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: linear-gradient(#36d7ff, #096dcc);
+  color: #fff;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 1000;
+  box-shadow: 0 5px 0 #071432;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 0 #06143d;
+}
+
+.external-builder-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.external-builder-menu summary::after {
+  content: " ▾";
+}
+
+.external-builder-menu[open] summary::after {
+  content: " ▴";
+}
+
+.external-builder-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 80;
+  width: min(310px, 86vw);
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 4px solid #fff;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #e9fbff, #8edfff);
+  color: #09235f;
+  box-shadow: 8px 8px 0 rgba(0,0,0,.45), inset 0 0 0 3px #096dcc;
+}
+
+.external-builder-link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border: 3px solid #09235f;
+  border-radius: 999px;
+  background: linear-gradient(#ffdd57, #ff8c1a);
+  color: #09235f;
+  padding: 10px 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  box-shadow: 0 4px 0 rgba(0,0,0,.3);
+}
+
+.external-builder-link.secondary {
+  background: linear-gradient(#ffffff, #dff8ff);
+}
+
+.external-builder-link:hover {
+  transform: translateY(-2px);
+}
+
+.external-builder-panel p {
+  margin: 2px 0 0;
+  color: #09235f;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+@media (max-width: 980px) {
+  .external-builder-panel {
+    left: 0;
+    right: auto;
+  }
+}
+
 .layout {
   display: grid;
   grid-template-columns: 340px 1fr;
