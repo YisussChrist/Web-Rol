@@ -480,7 +480,7 @@
     "equipo": "Alpino",
     "posicion": "ENT",
     "dorsal": 0,
-    "foto": "../Hijos Inazuma/pjs/Jugadores !/"
+    "foto": "../Hijos Inazuma/pjs/Jugadores !/Code.jpg"
   },
   {
     "nombre": "Kurumi Tokisaki",
@@ -551,6 +551,13 @@
     "posicion": "LD",
     "dorsal": 2,
     "foto": "../Hijos Inazuma/pjs/Sinon.png"
+  },
+  {
+    "nombre": "Flora Sprigan",
+    "equipo": "Raimon",
+    "posicion": "POR",
+    "dorsal": 67,
+    "foto": "../Hijos Inazuma/pjs/Flora Sprigan.jpg"
   }
   
 ]
