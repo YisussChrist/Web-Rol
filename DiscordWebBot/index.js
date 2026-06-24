@@ -611,14 +611,20 @@ if (!pagina) {
                 {
                     name: "🧮 Utilidades",
                     value:
-                        "`-calc 1500 * 2 + 300`\n" +
-                        "Calcula operaciones matemáticas.\n\n" +
-                        "`-multi 51000000 50`\n" +
-                        "Calcula un multiplicador sobre un poder base.\n\n" +
-                        "`-podercalc Freyja Kane * 100`\n" +
-                        "Calcula operaciones usando el poder base del personaje.\n\n" +
-                        "`-chatot`\n" +
-                        "`'La verdad que sí'`\n\n" 
+                      "`-calc 1500 * 2 + 300`\n" +
+                      "Calcula operaciones matemáticas.\n\n" +
+
+                      "`-multi 51000000 50`\n" +
+                       "Calcula un multiplicador sobre un poder base.\n\n" +
+
+                       "`-podercalc Freyja Kane * 100`\n" +
+                       "Calcula operaciones usando el poder base del personaje.\n\n" +
+
+                       "`-st Ren 4, Mavuika 2`\n" +
+                       "Enfrenta dos supertécnicas. Un mayor grado aumenta las probabilidades de victoria.\n\n" +
+
+                      "`-chatot`\n" +
+                       "`'La verdad que sí'`\n\n"
                 },
                 {
                     name: "📚 Personajes / Wiki",
@@ -644,13 +650,110 @@ if (!pagina) {
 
         return message.channel.send({ embeds: [embed] });
     }
-    const { EmbedBuilder } = require("discord.js");
 
     const { WebhookClient } = require('discord.js');
 
 const chatotWebhook = new WebhookClient({
     url: process.env.CHATOT_WEBHOOK
 });
+if (contenido.toLowerCase().startsWith("-st ")) {
+    const texto = contenido.slice(4).trim();
+    const partes = texto.split(",").map(x => x.trim()).filter(Boolean);
+
+    if (partes.length < 2) {
+        return message.reply("Uso: `-st Ren 5, Mavuika eg, Shu 3`");
+    }
+
+    function leerLado(textoLado) {
+        const match = textoLado.trim().match(/(.+)\s+(\d+|eg|arm|steg|armst)$/i);
+
+        if (!match) return null;
+
+        const nombre = match[1].trim();
+        const valor = match[2].toLowerCase();
+
+        const pesos = {
+            eg: 7,
+            arm: 8,
+            armst: 9,
+            steg: 10
+        };
+
+        const etiquetas = {
+            eg: "Espíritu Guerrero",
+            arm: "Armadura",
+            armst: "ST + Armadura",
+            steg: "ST + Espíritu Guerrero"
+        };
+
+        if (!isNaN(valor)) {
+            const grado = Number(valor);
+
+            return {
+                nombre,
+                etiqueta: `Grado ${grado}`,
+                papeletas: grado + 1
+            };
+        }
+
+        return {
+            nombre,
+            etiqueta: etiquetas[valor],
+            papeletas: pesos[valor]
+        };
+    }
+
+    const participantes = partes.map(leerLado);
+
+    if (participantes.some(p => !p)) {
+        return message.reply(
+            "Uso:\n" +
+            "`-st Ren 5, Mavuika eg, Shu 3`\n" +
+            "`-st Ren steg, Mavuika armst, Victor 2`"
+        );
+    }
+
+    const total = participantes.reduce((sum, p) => sum + p.papeletas, 0);
+
+    const bolsa = [];
+
+    participantes.forEach(p => {
+        for (let i = 0; i < p.papeletas; i++) {
+            bolsa.push(p.nombre);
+        }
+    });
+
+    const ganador = bolsa[Math.floor(Math.random() * bolsa.length)];
+
+    const descripcion = participantes
+        .map(p => `**${p.nombre}** (${p.etiqueta})`)
+        .join("\nVS\n");
+
+    const probabilidades = participantes
+        .map(p => {
+            const prob = ((p.papeletas / total) * 100).toFixed(1);
+            return `${p.nombre}: ${prob}% (${p.papeletas} chooses)`;
+        })
+        .join("\n");
+
+    const embed = new EmbedBuilder()
+    .setColor(0xFFD700)
+    .setTitle("⚡ Duelo de Supertécnicas")
+    .setDescription(
+        `${descripcion}\n\n` +
+        `🏆 **GANADOR**\n` +
+        `# ${ganador}`
+    )
+    .addFields(
+        {
+            name: "📊 Probabilidades",
+            value: probabilidades
+        }
+    )
+    .setTimestamp();
+
+    return message.channel.send({ embeds: [embed] });
+}
 
     if (message.content === "-roadmap") {
 
@@ -701,6 +804,8 @@ const chatotWebhook = new WebhookClient({
 
     await message.channel.send({ embeds: [embed] });
 }
+
+
 
     if (contenido.startsWith("-duelo")) {
         const texto = contenido.replace("-duelo", "").trim();

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archivo de STs</title>
+  <link rel="stylesheet" href="sts.css">
+</head>
+<body>
+  <main class="pantalla-select">
+    <header class="titulo">
+      <div class="marca-superior">INAZUMA DATABASE</div>
+      <h1>ARCHIVO DE STs</h1>
+      <p>Selector de jugadores · Supertécnicas · EG · Miximax</p>
+    </header>
+
+    <section class="zona-principal">
+      <aside class="panel-selector">
+        <div class="buscador-box">
+          <label for="buscador-personajes">Buscar jugador</label>
+          <input id="buscador-personajes" type="search" placeholder="Ej: Ren, Fuego, Raimon, Portero...">
+        </div>
+
+        <div class="selector-header">
+          <strong>Plantilla</strong>
+          <span id="contador-personajes"></span>
+        </div>
+
+        <div id="selector-personajes" class="selector-personajes"></div>
+      </aside>
+
+      <section id="ficha-personaje" class="ficha-personaje"></section>
+    </section>
+  </main>
+
+  <script src="sts.js"></script>
+</body>
+</html>
