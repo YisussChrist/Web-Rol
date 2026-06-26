@@ -22,6 +22,21 @@ const importFile = document.getElementById("importFile");
 const teamHud = document.getElementById("teamHud");
 const benchPanel = document.getElementById("benchPanel");
 const managersPanel = document.getElementById("managersPanel");
+const templateSelect = document.getElementById("templateSelect");
+const btnNuevaPlantilla = document.getElementById("btnNuevaPlantilla");
+const btnDuplicarPlantilla = document.getElementById("btnDuplicarPlantilla");
+const btnBorrarPlantilla = document.getElementById("btnBorrarPlantilla");
+const btnPlantillaAnterior = document.getElementById("btnPlantillaAnterior");
+const btnPlantillaSiguiente = document.getElementById("btnPlantillaSiguiente");
+const templateMode = document.getElementById("templateMode");
+const fieldStyleSelect = document.getElementById("fieldStyleSelect");
+const themeSelect = document.getElementById("themeSelect");
+const zoomRange = document.getElementById("zoomRange");
+const quickCopiar = document.getElementById("quickCopiar");
+const quickCodigo = document.getElementById("quickCodigo");
+const quickExportar = document.getElementById("quickExportar");
+const quickImportar = document.getElementById("quickImportar");
+const quickFullscreen = document.getElementById("quickFullscreen");
 
 const playerDialog = document.getElementById("playerDialog");
 const selectedSlotInfo = document.getElementById("selectedSlotInfo");
@@ -45,6 +60,17 @@ const chemistryDialogSummary = document.getElementById("chemistryDialogSummary")
 const chemistryDialogContent = document.getElementById("chemistryDialogContent");
 const chemistryDialogClose = document.getElementById("chemistryDialogClose");
 const chemistryTooltip = document.getElementById("chemistryTooltip");
+const freePlayerDialog = document.getElementById("freePlayerDialog");
+const freeSlotInfo = document.getElementById("freeSlotInfo");
+const freeName = document.getElementById("freeName");
+const freePosition = document.getElementById("freePosition");
+const freeNumber = document.getElementById("freeNumber");
+const freeImage = document.getElementById("freeImage");
+const freeTeam = document.getElementById("freeTeam");
+const freePreview = document.getElementById("freePreview");
+const freeSave = document.getElementById("freeSave");
+const freeRemove = document.getElementById("freeRemove");
+const freeClose = document.getElementById("freeClose");
 
 const BENCH_SIZE = 10;
 const MANAGER_SIZE = 3;
@@ -64,6 +90,14 @@ let dialogSelectedPosition = "";
 let statsSelectedTarget = null;
 let chemistryRules = { relaciones: [], ajustes: [], efectos: [] };
 let chemistryEnabled = true;
+let templateModeValue = "normal";
+let fieldStyleValue = "classic";
+let themeValue = "ds";
+let zoomValue = 100;
+let templates = [];
+let activeTemplateId = null;
+let isLoadingTemplate = false;
+let freeSelectedTarget = null;
 
 init();
 
@@ -124,6 +158,9 @@ async function init() {
     renderAll();
   });
   statsDialogClose?.addEventListener("click", () => statsDialog?.close());
+
+  initTemplateSystem();
+  bindLayoutTools();
   updateChemistryToggleButton();
 }
 
@@ -255,6 +292,9 @@ function renderDialogPositionChips() {
   if (!dialogPositionChips) return;
 
   const positions = [...new Set(personajes.map(p => p.posicion).filter(Boolean))].sort();
+  if (dialogSelectedPosition && !positions.includes(dialogSelectedPosition)) {
+    positions.unshift(dialogSelectedPosition);
+  }
   const chips = [`<button class="position-chip ${dialogSelectedPosition === "" ? "active" : ""}" data-pos="" type="button">Todas</button>`]
     .concat(positions.map(pos => `
       <button class="position-chip ${dialogSelectedPosition === pos ? "active" : ""}" data-pos="${escapeAttribute(pos)}" type="button">
@@ -273,6 +313,7 @@ function renderDialogPositionChips() {
 }
 
 function changeFormation(name) {
+  saveActiveTemplateState();
   currentFormation = name;
   formationSelect.value = name;
   placedPlayers = {};
@@ -285,6 +326,7 @@ function renderAll() {
   renderHud();
   generateOutput();
   bindChemistryTooltipEvents();
+  saveActiveTemplateState();
 }
 
 function renderSlots() {
@@ -389,6 +431,10 @@ function renderRosterCard(type, index, label, player, isCoach = false) {
 }
 
 function renderPlayers() {
+  if (templateModeValue === "free") {
+    playersList.innerHTML = "";
+    return;
+  }
   const filtered = getFilteredPlayers(searchInput.value, teamFilter.value, positionFilter.value);
   playersList.innerHTML = filtered.map(player => renderChoiceCard(player)).join("");
 
@@ -412,6 +458,10 @@ function addToNextFreePlace(player) {
 }
 
 function openPicker(type, index) {
+  if (templateModeValue === "free") {
+    openFreePlayerDialog(type, index);
+    return;
+  }
   selectedTarget = { type, index };
   const label = targetLabel(type, index);
   selectedSlotInfo.innerHTML = `<strong>Espacio seleccionado:</strong> ${escapeHtml(label)}<br><small>Elige una tarjeta. Si el espacio ya estaba ocupado, se sustituye.</small>`;
@@ -459,8 +509,8 @@ function renderDialogPlayers() {
 function sortForTarget(a, b) {
   if (!selectedTarget || selectedTarget.type !== "field") return a.nombre.localeCompare(b.nombre);
   const slot = formaciones[currentFormation]?.[selectedTarget.index];
-  const aMatch = normalize(a.posicion) === normalize(slot?.rol) ? -1 : 0;
-  const bMatch = normalize(b.posicion) === normalize(slot?.rol) ? -1 : 0;
+  const aMatch = positionsAreCompatible(a.posicion, slot?.rol) ? -1 : 0;
+  const bMatch = positionsAreCompatible(b.posicion, slot?.rol) ? -1 : 0;
   return aMatch - bMatch || a.nombre.localeCompare(b.nombre);
 }
 
@@ -575,12 +625,71 @@ function enableDrop(element) {
   });
 }
 
+
+const POSITION_GROUPS = {
+  POR: ["POR", "PT", "PORTERO", "GK"],
+  DFC: ["DFC", "DF", "DEF", "DEFENSA", "CENTRAL", "CB"],
+  LI: ["LI", "LTI", "LATERAL IZQUIERDO", "LB"],
+  LD: ["LD", "LTD", "LATERAL DERECHO", "RB"],
+  CAD: ["CAD", "CARRILERO DERECHO", "RWB"],
+  CAI: ["CAI", "CARRILERO IZQUIERDO", "LWB"],
+  MCD: ["MCD", "CDM", "PIVOTE", "MEDIOCENTRO DEFENSIVO"],
+  VOL: ["VOL", "MCD", "MC", "MEDIOCENTRO", "CENTROCAMPISTA", "CDM", "CM", "PIVOTE"],
+  MC: ["MC", "VOL", "MCD", "MCO", "MEDIOCENTRO", "CENTROCAMPISTA", "CM", "CDM", "CAM"],
+  MCO: ["MCO", "MP", "CAM", "MEDIAPUNTA", "ENGANCHE"],
+  MI: ["MI", "LM", "INTERIOR IZQUIERDO", "MEDIO IZQUIERDO"],
+  MD: ["MD", "RM", "INTERIOR DERECHO", "MEDIO DERECHO"],
+  EI: ["EI", "ED", "EXTREMO", "EXTREMO IZQUIERDO", "LW", "RW"],
+  ED: ["ED", "EI", "EXTREMO", "EXTREMO DERECHO", "RW", "LW"],
+  SD: ["SD", "SEGUNDO DELANTERO", "MEDIAPUNTA", "MCO", "MP", "CF"],
+  DC: ["DC", "DELANTERO", "DELANTERA", "ST", "DEL", "AR"],
+  DEL: ["DEL", "DC", "EI", "ED", "SD", "DELANTERO", "DELANTERA", "EXTREMO", "ST", "LW", "RW", "CF"],
+  GERENTE: ["GERENTE", "GE", "MANAGER"],
+  ENTRENADOR: ["ENTRENADOR", "DT", "COACH"]
+};
+
+function positionTokens(value) {
+  const raw = normalize(value).toUpperCase().replace(/[^A-Z0-9Ñ]+/g, " ").trim();
+  if (!raw) return [];
+  const compact = raw.replace(/\s+/g, "");
+  const tokens = [raw, compact];
+  raw.split(/\s+/).filter(Boolean).forEach(part => tokens.push(part));
+  return [...new Set(tokens)];
+}
+
+function getPositionAliases(position) {
+  const tokens = positionTokens(position);
+  const aliases = new Set(tokens);
+
+  tokens.forEach(token => {
+    Object.entries(POSITION_GROUPS).forEach(([key, values]) => {
+      if (key === token || values.map(v => normalize(v).toUpperCase().replace(/[^A-Z0-9Ñ]+/g, "")).includes(token.replace(/\s+/g, ""))) {
+        aliases.add(key);
+        values.forEach(value => positionTokens(value).forEach(alias => aliases.add(alias)));
+      }
+    });
+  });
+
+  return aliases;
+}
+
+function positionsAreCompatible(playerPosition, targetPosition) {
+  if (!targetPosition) return true;
+  if (!playerPosition) return false;
+  const playerAliases = getPositionAliases(playerPosition);
+  const targetAliases = getPositionAliases(targetPosition);
+  for (const alias of playerAliases) {
+    if (targetAliases.has(alias)) return true;
+  }
+  return false;
+}
+
 function defaultPositionForTarget(type, index) {
+  if (type === "manager") return "Gerente";
+  if (type === "coach") return "Entrenador";
   if (type !== "field") return "";
   const slot = formaciones[currentFormation]?.[index];
-  const slotRole = slot?.rol ?? "";
-  const exists = personajes.some(player => normalize(player.posicion) === normalize(slotRole));
-  return exists ? personajes.find(player => normalize(player.posicion) === normalize(slotRole)).posicion : "";
+  return slot?.rol ?? "";
 }
 
 function targetLabel(type, index) {
@@ -612,14 +721,15 @@ function getFilteredPlayers(query, team, position) {
     const haystack = normalize(`${player.nombre} ${player.equipo} ${player.posicion} ${player.raza ?? ""} ${player.estado ?? ""}`);
     const matchesQuery = !q || haystack.includes(q);
     const matchesTeam = !team || player.equipo === team;
-    const matchesPosition = !position || player.posicion === position;
+    const matchesPosition = !position || positionsAreCompatible(player.posicion, position);
     return matchesQuery && matchesTeam && matchesPosition;
   });
 }
 
 function renderAvatar(player) {
-  if (player?.foto) {
-    return `<img class="avatar" src="${escapeHtml(player.foto)}" alt="${escapeHtml(player.nombre)}" onerror="this.replaceWith(fallbackAvatar('${escapeAttribute(player.nombre)}'))">`;
+  const imageUrl = player?.foto || player?.imagen || player?.imageUrl || player?.url || "";
+  if (imageUrl) {
+    return `<img class="avatar" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(player.nombre)}" onerror="this.replaceWith(fallbackAvatar('${escapeAttribute(player.nombre)}'))">`;
   }
   return `<div class="avatar avatar-fallback">${initials(player?.nombre ?? "?")}</div>`;
 }
@@ -639,6 +749,7 @@ function updateBoardTitle() {
   boardEventName.textContent = eventoInput.value.trim() || "Evento sin nombre";
   boardTeamName.textContent = equipoInput.value.trim() || "Equipo sin definir";
   generateOutput();
+  saveActiveTemplateState();
 }
 
 
@@ -1314,16 +1425,38 @@ function getAutoJerseys() {
 }
 
 function getJerseyForTarget(type, index) {
+  const player = getTargetPlayer(type, index);
+  if (player?.freePlayer && player.dorsal) return player.dorsal;
   return getAutoJerseys()[getTargetKey(type, index)] ?? null;
 }
 
 function getPersonKey(player) {
   if (!player) return null;
+  if (player.freePlayer) {
+    return {
+      freePlayer: true,
+      nombre: player.nombre || "Jugador libre",
+      posicion: player.posicion || "",
+      equipo: player.equipo || "Libre",
+      dorsal: player.dorsal || "",
+      foto: player.foto || player.imagen || player.imageUrl || player.url || ""
+    };
+  }
   return player.id ?? player.nombre ?? null;
 }
 
 function findPersonByKey(key) {
   if (!key) return null;
+  if (typeof key === "object") {
+    return {
+      freePlayer: true,
+      nombre: key.nombre || key.name || "Jugador libre",
+      posicion: key.posicion || key.position || "",
+      equipo: key.equipo || key.team || "Libre",
+      dorsal: key.dorsal || key.number || "",
+      foto: key.foto || key.imagen || key.imageUrl || key.url || ""
+    };
+  }
   return personajes.find(player => String(player.id ?? player.nombre) === String(key)) || null;
 }
 
@@ -1335,6 +1468,11 @@ function getTemplateData() {
     eventName: eventoInput.value.trim(),
     teamName: equipoInput.value.trim(),
     formation: currentFormation,
+    mode: templateModeValue,
+    fieldStyle: fieldStyleValue,
+    theme: themeValue,
+    zoom: zoomValue,
+    templateName: getActiveTemplate()?.name || teamNameOrDefault(),
     starters: Object.fromEntries(
       Object.entries(placedPlayers).map(([index, player]) => [index, getPersonKey(player)])
     ),
@@ -1389,8 +1527,18 @@ async function copyTemplateCode() {
 }
 
 function loadTemplateData(data) {
+  isLoadingTemplate = true;
   eventoInput.value = data.eventName ?? data.evento ?? "";
   equipoInput.value = data.teamName ?? data.equipo ?? "";
+  templateModeValue = data.mode || data.tipo || "normal";
+  fieldStyleValue = data.fieldStyle || data.campo || "classic";
+  themeValue = data.theme || data.tema || "ds";
+  zoomValue = Number(data.zoom || 100);
+  if (templateMode) templateMode.value = templateModeValue;
+  if (fieldStyleSelect) fieldStyleSelect.value = fieldStyleValue;
+  if (themeSelect) themeSelect.value = themeValue;
+  if (zoomRange) zoomRange.value = String(zoomValue);
+  applyVisualSettings();
 
   const importedFormation = data.formation ?? data.formacion;
   if (importedFormation && formaciones[importedFormation]) {
@@ -1422,6 +1570,7 @@ function loadTemplateData(data) {
 
   updateBoardTitle();
   renderAll();
+  isLoadingTemplate = false;
 }
 
 function importTemplateFromPaste() {
@@ -1472,6 +1621,251 @@ function clearBoard() {
   managers = Array(MANAGER_SIZE).fill(null);
   coach = null;
   matchStats = {};
+  renderAll();
+}
+
+
+function teamNameOrDefault() {
+  return equipoInput?.value?.trim() || eventoInput?.value?.trim() || "Plantilla";
+}
+
+function getActiveTemplate() {
+  return templates.find(template => template.id === activeTemplateId) || null;
+}
+
+function collectCurrentTemplateData() {
+  return {
+    version: 3,
+    id: activeTemplateId,
+    name: getActiveTemplate()?.name || teamNameOrDefault(),
+    eventName: eventoInput.value.trim(),
+    teamName: equipoInput.value.trim(),
+    formation: currentFormation,
+    mode: templateModeValue,
+    fieldStyle: fieldStyleValue,
+    theme: themeValue,
+    zoom: zoomValue,
+    starters: Object.fromEntries(Object.entries(placedPlayers).map(([index, player]) => [index, getPersonKey(player)])),
+    bench: benchPlayers.map(getPersonKey),
+    managers: managers.map(getPersonKey),
+    coach: getPersonKey(coach),
+    stats: matchStats,
+    chemistryEnabled,
+    text: output?.value || ""
+  };
+}
+
+function saveActiveTemplateState() {
+  if (isLoadingTemplate || !activeTemplateId) return;
+  const template = getActiveTemplate();
+  if (!template) return;
+  const data = collectCurrentTemplateData();
+  Object.assign(template, data);
+  template.name = (equipoInput.value.trim() || eventoInput.value.trim() || template.name || "Plantilla").slice(0, 42);
+  renderTemplateSelect();
+}
+
+function initTemplateSystem() {
+  templates = [{
+    id: `tpl-${Date.now()}`,
+    name: "Plantilla 1",
+    eventName: "",
+    teamName: "",
+    formation: currentFormation || Object.keys(formaciones)[0],
+    mode: "normal",
+    fieldStyle: "classic",
+    theme: "ds",
+    zoom: 100,
+    starters: {},
+    bench: Array(BENCH_SIZE).fill(null),
+    managers: Array(MANAGER_SIZE).fill(null),
+    coach: null,
+    stats: {},
+    chemistryEnabled: true
+  }];
+  activeTemplateId = templates[0].id;
+  renderTemplateSelect();
+  applyVisualSettings();
+}
+
+function renderTemplateSelect() {
+  if (!templateSelect) return;
+  const currentValue = templateSelect.value || activeTemplateId;
+  templateSelect.innerHTML = templates.map(template => `<option value="${escapeAttribute(template.id)}">${escapeHtml(template.name || "Plantilla")}</option>`).join("");
+  templateSelect.value = templates.some(t => t.id === currentValue) ? currentValue : activeTemplateId;
+}
+
+function switchTemplate(id) {
+  if (!id || id === activeTemplateId) return;
+  saveActiveTemplateState();
+  activeTemplateId = id;
+  const template = getActiveTemplate();
+  if (template) loadTemplateData(template);
+  renderTemplateSelect();
+}
+
+function createNewTemplate() {
+  saveActiveTemplateState();
+  const count = templates.length + 1;
+  const template = {
+    id: `tpl-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    name: `Plantilla ${count}`,
+    eventName: "",
+    teamName: "",
+    formation: currentFormation || Object.keys(formaciones)[0],
+    mode: templateModeValue || "normal",
+    fieldStyle: fieldStyleValue || "classic",
+    theme: themeValue || "ds",
+    zoom: zoomValue || 100,
+    starters: {},
+    bench: Array(BENCH_SIZE).fill(null),
+    managers: Array(MANAGER_SIZE).fill(null),
+    coach: null,
+    stats: {},
+    chemistryEnabled: true
+  };
+  templates.push(template);
+  activeTemplateId = template.id;
+  loadTemplateData(template);
+  renderTemplateSelect();
+}
+
+function duplicateTemplate() {
+  saveActiveTemplateState();
+  const base = getActiveTemplate();
+  if (!base) return;
+  const copy = JSON.parse(JSON.stringify(base));
+  copy.id = `tpl-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  copy.name = `${base.name || "Plantilla"} copia`;
+  templates.push(copy);
+  activeTemplateId = copy.id;
+  loadTemplateData(copy);
+  renderTemplateSelect();
+}
+
+function deleteTemplate() {
+  if (templates.length <= 1) {
+    alert("Debe existir al menos una plantilla.");
+    return;
+  }
+  const template = getActiveTemplate();
+  if (!confirm(`¿Borrar ${template?.name || "esta plantilla"}?`)) return;
+  templates = templates.filter(item => item.id !== activeTemplateId);
+  activeTemplateId = templates[0].id;
+  loadTemplateData(templates[0]);
+  renderTemplateSelect();
+}
+
+
+function switchTemplateByOffset(offset) {
+  if (!templates.length) return;
+  saveActiveTemplateState();
+  const currentIndex = Math.max(0, templates.findIndex(template => template.id === activeTemplateId));
+  const nextIndex = (currentIndex + offset + templates.length) % templates.length;
+  switchTemplate(templates[nextIndex].id);
+}
+
+function bindLayoutTools() {
+  templateSelect?.addEventListener("change", () => switchTemplate(templateSelect.value));
+  btnNuevaPlantilla?.addEventListener("click", createNewTemplate);
+  btnDuplicarPlantilla?.addEventListener("click", duplicateTemplate);
+  btnBorrarPlantilla?.addEventListener("click", deleteTemplate);
+  btnPlantillaAnterior?.addEventListener("click", () => switchTemplateByOffset(-1));
+  btnPlantillaSiguiente?.addEventListener("click", () => switchTemplateByOffset(1));
+
+  templateMode?.addEventListener("change", () => {
+    templateModeValue = templateMode.value;
+    applyVisualSettings();
+    renderPlayers();
+    saveActiveTemplateState();
+  });
+  fieldStyleSelect?.addEventListener("change", () => {
+    fieldStyleValue = fieldStyleSelect.value;
+    applyVisualSettings();
+    saveActiveTemplateState();
+  });
+  themeSelect?.addEventListener("change", () => {
+    themeValue = themeSelect.value;
+    applyVisualSettings();
+    saveActiveTemplateState();
+  });
+  zoomRange?.addEventListener("input", () => {
+    zoomValue = Number(zoomRange.value || 100);
+    applyVisualSettings();
+    saveActiveTemplateState();
+  });
+
+  quickCopiar?.addEventListener("click", () => btnCopiar?.click());
+  quickCodigo?.addEventListener("click", () => btnCopiarCodigo?.click());
+  quickExportar?.addEventListener("click", () => btnExportar?.click());
+  quickImportar?.addEventListener("click", () => btnImportar?.click());
+  quickFullscreen?.addEventListener("click", () => document.body.classList.toggle("focus-field"));
+  document.addEventListener("keydown", event => {
+    if (event.target && ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)) return;
+    if (event.key === "ArrowLeft") switchTemplateByOffset(-1);
+    if (event.key === "ArrowRight") switchTemplateByOffset(1);
+  });
+
+  [freeName, freePosition, freeNumber, freeImage, freeTeam].forEach(input => input?.addEventListener("input", updateFreePreview));
+  freeSave?.addEventListener("click", saveFreePlayer);
+  freeRemove?.addEventListener("click", () => {
+    if (!freeSelectedTarget) return;
+    setTargetPlayer(freeSelectedTarget.type, freeSelectedTarget.index, null);
+    freePlayerDialog?.close();
+    renderAll();
+  });
+  freeClose?.addEventListener("click", () => freePlayerDialog?.close());
+}
+
+function applyVisualSettings() {
+  document.body.classList.toggle("mode-free", templateModeValue === "free");
+  document.body.classList.remove("theme-go", "theme-victory", "theme-dark", "theme-aero");
+  if (themeValue && themeValue !== "ds") document.body.classList.add(`theme-${themeValue}`);
+  document.documentElement.style.setProperty("--field-zoom", String((Number(zoomValue) || 100) / 100));
+  const board = document.getElementById("board");
+  if (board) {
+    board.className = board.className.split(" ").filter(cls => !cls.startsWith("field-")).join(" ");
+    board.classList.add(`field-${fieldStyleValue || "classic"}`);
+  }
+}
+
+function openFreePlayerDialog(type, index) {
+  freeSelectedTarget = { type, index };
+  const current = getTargetPlayer(type, index);
+  if (freeSlotInfo) freeSlotInfo.textContent = `Hueco seleccionado: ${targetLabel(type, index)}`;
+  if (freeName) freeName.value = current?.nombre || "";
+  if (freePosition) freePosition.value = current?.posicion || (type === "field" ? (formaciones[currentFormation]?.[index]?.rol || "") : "");
+  if (freeNumber) freeNumber.value = current?.dorsal || "";
+  if (freeImage) freeImage.value = current?.foto || current?.imagen || current?.imageUrl || current?.url || "";
+  if (freeTeam) freeTeam.value = current?.equipo || equipoInput.value.trim() || "Rival temporal";
+  updateFreePreview();
+  freePlayerDialog?.showModal();
+}
+
+function updateFreePreview() {
+  if (!freePreview) return;
+  const name = freeName?.value?.trim() || "Jugador libre";
+  const image = freeImage?.value?.trim();
+  const pos = freePosition?.value?.trim() || "Posición";
+  if (image) {
+    freePreview.innerHTML = `<img src="${escapeAttribute(image)}" alt="${escapeAttribute(name)}" onerror="this.remove()"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(pos)}</span>`;
+  } else {
+    freePreview.innerHTML = `<strong>${escapeHtml(name)}</strong><span>${escapeHtml(pos)}</span>`;
+  }
+}
+
+function saveFreePlayer() {
+  if (!freeSelectedTarget) return;
+  const player = {
+    freePlayer: true,
+    nombre: freeName?.value?.trim() || "Jugador libre",
+    posicion: freePosition?.value?.trim() || "",
+    dorsal: freeNumber?.value?.trim() || "",
+    foto: freeImage?.value?.trim() || "",
+    equipo: freeTeam?.value?.trim() || "Libre"
+  };
+  setTargetPlayer(freeSelectedTarget.type, freeSelectedTarget.index, player);
+  freePlayerDialog?.close();
   renderAll();
 }
 

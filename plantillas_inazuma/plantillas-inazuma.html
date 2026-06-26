@@ -61,6 +61,14 @@
       </div>
     </section>
 
+    <nav class="quick-actions" aria-label="Acciones rápidas">
+      <button id="quickCopiar" type="button">📋 Copiar</button>
+      <button id="quickCodigo" type="button">🔗 Código</button>
+      <button id="quickExportar" type="button">💾 Exportar</button>
+      <button id="quickImportar" type="button">📂 Importar</button>
+      <button id="quickFullscreen" type="button">⛶ Campo</button>
+    </nav>
+
     <section class="layout">
       <aside class="panel">
         <div class="panel-header">MENÚ DE EQUIPO</div>
@@ -70,6 +78,50 @@
 
         <label>Equipo</label>
         <input id="equipoInput" type="text" placeholder="Ej: Japón" />
+
+        <div class="template-tools">
+          <label>Plantilla activa</label>
+          <div class="template-switcher">
+            <button id="btnPlantillaAnterior" class="template-arrow" type="button" title="Plantilla anterior">◀</button>
+            <select id="templateSelect"></select>
+            <button id="btnPlantillaSiguiente" class="template-arrow" type="button" title="Plantilla siguiente">▶</button>
+          </div>
+          <div class="template-buttons">
+            <button id="btnNuevaPlantilla" type="button">+ Nueva</button>
+            <button id="btnDuplicarPlantilla" type="button">Duplicar</button>
+            <button id="btnBorrarPlantilla" type="button">Borrar</button>
+          </div>
+        </div>
+
+        <label>Tipo de plantilla</label>
+        <select id="templateMode">
+          <option value="normal">Plantilla normal</option>
+          <option value="free">Plantilla libre por URL</option>
+        </select>
+
+        <label>Campo</label>
+        <select id="fieldStyleSelect">
+          <option value="classic">Campo clásico</option>
+          <option value="raimon">Estadio Raimon</option>
+          <option value="alpine">Alpino</option>
+          <option value="zeus">Zeus</option>
+          <option value="galaxy">Galaxia</option>
+          <option value="night">Nocturno</option>
+          <option value="rain">Lluvia</option>
+          <option value="desert">Desierto</option>
+        </select>
+
+        <label>Tema visual</label>
+        <select id="themeSelect">
+          <option value="ds">Nintendo DS</option>
+          <option value="go">GO Chrono Stones</option>
+          <option value="victory">Victory Road</option>
+          <option value="dark">Oscuro</option>
+          <option value="aero">Frutiger Aero</option>
+        </select>
+
+        <label>Zoom del campo</label>
+        <input id="zoomRange" type="range" min="80" max="160" value="100" step="10" />
 
         <label>Formación</label>
         <select id="formationSelect"></select>
@@ -180,6 +232,34 @@
       <button id="statsChangePlayer" type="button">Cambiar jugador</button>
       <button id="statsClearPlayer" type="button">Quitar jugador</button>
       <button id="statsDialogClose" type="button">Cerrar</button>
+    </div>
+  </dialog>
+
+  <dialog id="freePlayerDialog" class="free-player-dialog">
+    <h2>Añadir jugador por URL</h2>
+    <p id="freeSlotInfo">Rellena los datos del jugador temporal.</p>
+
+    <label>Nombre</label>
+    <input id="freeName" type="text" placeholder="Ej: Rival misterioso" />
+
+    <label>Posición</label>
+    <input id="freePosition" type="text" placeholder="Ej: Delantero, MC, Portero..." />
+
+    <label>Dorsal</label>
+    <input id="freeNumber" type="number" min="1" max="99" placeholder="10" />
+
+    <label>URL de imagen</label>
+    <input id="freeImage" type="url" placeholder="https://..." />
+
+    <label>Equipo / nota</label>
+    <input id="freeTeam" type="text" placeholder="Ej: Rival temporal" />
+
+    <div class="free-preview" id="freePreview">Vista previa</div>
+
+    <div class="stats-dialog-actions">
+      <button id="freeSave" type="button">Guardar</button>
+      <button id="freeRemove" type="button">Vaciar hueco</button>
+      <button id="freeClose" type="button">Cerrar</button>
     </div>
   </dialog>
 
