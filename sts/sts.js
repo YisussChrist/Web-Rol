@@ -47,10 +47,10 @@ const escudosEquipos = {
 };
 
 const iconosGrado = {
-  G2: "Grados/G2.webp",
-  G3: "Grados/G3.webp",
-  G4: "Grados/G4.webp",
-  G5: "Grados/G5.webp"
+  G2: "grados/G2.webp",
+  G3: "grados/G3.webp",
+  G4: "grados/G4.webp",
+  G5: "grados/G5.webp"
 };
 
 const personajes = [

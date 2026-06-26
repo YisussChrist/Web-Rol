@@ -656,6 +656,52 @@ if (!pagina) {
 const chatotWebhook = new WebhookClient({
     url: process.env.CHATOT_WEBHOOK
 });
+
+if (contenido.toLowerCase() === "-helpst") {
+    const embed = new EmbedBuilder()
+        .setColor(0xFFD700)
+        .setTitle("⚡ Sistema de Supertécnicas")
+        .setDescription(
+            "El comando `-st` permite enfrentar **supertécnicas**, **Espíritus Guerreros** y **Armaduras**.\n\n" +
+
+            "## 🕹️ Uso\n" +
+            "`-st Ren 5, Mavuika eg`\n" +
+            "`-st Ren arm, Mavuika steg`\n\n" +
+
+            "## 📘 Leyenda\n" +
+            "`0` → Duelo sin ST **(1 choose)**\n" +
+            "`1` → ST Base **(2 chooses)**\n" +
+            "`2` → Grado 2 **(3 chooses)**\n" +
+            "`3` → Grado 3 **(4 chooses)**\n" +
+            "`4` → Grado 4 **(5 chooses)**\n" +
+            "`5` → Grado 5 **(6 chooses)**\n\n" +
+
+            "## ⚔️ Especiales\n" +
+            "`eg` → Espíritu Guerrero **(7 chooses)**\n" +
+            "`arm` → Armadura **(8 chooses)**\n" +
+            "`armst` → ST + Armadura **(9 chooses)**\n" +
+            "`steg` → ST + Espíritu Guerrero **(10 chooses)**\n\n" +
+
+            "## 🎲 Funcionamiento\n" +
+            "Cada técnica mete sus **chooses** en una bolsa imaginaria.\n" +
+            "Cuantos más **chooses** tenga una técnica, mayores serán sus probabilidades de ganar.\n\n" +
+            "El resultado final sigue siendo aleatorio."
+        )
+        .addFields(
+            {
+                name: "📌 Ejemplo rápido",
+                value:
+                    "`Ren 4` → 5 chooses\n" +
+                    "`Mavuika eg` → 7 chooses\n\n" +
+                    "Mavuika tendría más probabilidades, pero Ren todavía puede ganar."
+            }
+        )
+        .setFooter({ text: "Sistema de Supertécnicas Web-Rol" })
+        .setTimestamp();
+
+    return message.channel.send({ embeds: [embed] });
+}
+
 if (contenido.toLowerCase().startsWith("-st ")) {
     const texto = contenido.slice(4).trim();
     const partes = texto.split(",").map(x => x.trim()).filter(Boolean);
