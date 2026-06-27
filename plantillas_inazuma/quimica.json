@@ -1,47 +1,740 @@
 {
-  "relaciones": [
+  "tiposRelaciones": {
+    "pareja": {
+      "icono": "❤️",
+      "color": "#ff4fa3",
+      "descripcion": "Pareja canon"
+    },
+    "expareja": {
+      "icono": "💔",
+      "color": "#d63031",
+      "descripcion": "Relación rota"
+    },
+    "familia": {
+      "icono": "👨‍👩‍👧",
+      "color": "#2ecc71",
+      "descripcion": "Familia"
+    },
+    "amistad": {
+      "icono": "🤝",
+      "color": "#36d7ff",
+      "descripcion": "Mejores amigos"
+    },
+    "rivalidad": {
+      "icono": "⚡",
+      "color": "#ff8c1a",
+      "descripcion": "Rivalidad"
+    },
+    "capitan": {
+      "icono": "👑",
+      "color": "#ffd43b",
+      "descripcion": "Liderazgo"
+    }
+  },
+  "parejas": [
+    {
+      "jugadores": [
+        "Akari Foster",
+        "Jiro"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Candace Foster",
+        "Hikaru Hoshihara"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Sen Kaibara",
+        "Jibril Foster"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Justin Kaido",
+        "Rumi Kurogane"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Rebecca Whitering",
+        "Víctor Koga"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Siete de Marzo",
+        "Ryuji"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Xavier Foster",
+        "Dayann Midford"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Chisato",
+        "Shu Ogata"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Yokoya Hitoyoshi",
+        "Shinoa Hiiragi"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Dan Heng",
+        "Kyoko"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Nalu Tanaka",
+        "Alya"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Jikan Alonso",
+        "Yachiho Azuma"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Fubuki Sumiye",
+        "Mavuika Heartless"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Norman Heartless",
+        "Irina Greenway"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Aika",
+        "Yuichiro"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Shinbad",
+        "Delta"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Tsumiki",
+        "Top Blaze"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Shin",
+        "Bronya Wingate"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Kuro Fujimoto",
+        "Kiyoka Sendou"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Shuichi",
+        "Miu Iruma"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Chiaki Nanami",
+        "Senku"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Waru",
+        "Diamond"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Shiro Harukawa",
+        "Lambda Zinaida"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Rikuo Nura",
+        "Akane Owari"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Leii Ishikawa",
+        "Lylia Cardson"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Giyuu Tomioka",
+        "Peko Pekoyama"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Lee",
+        "Shizuka"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Ciro Castañeda",
+        "Power Aoyama"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "Renzu Itō",
+        "Wang Qing"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    },
+    {
+      "jugadores": [
+        "James Smith",
+        "Abigail Jones"
+      ],
+      "puntos": 8,
+      "nivel": "perfect",
+      "motivo": "pareja canon",
+      "tipo": "pareja"
+    }
+  ],
+  "exparejas": [
     {
       "jugadores": [
         "Renzu Itō",
         "Jeanne d'Arc"
       ],
-      "puntos": 8,
+      "puntos": -4,
+      "nivel": "dead",
+      "motivo": "pareja rota y sin química",
+      "tipo": "expareja"
+    }
+  ],
+  "padres": [
+    {
+      "jugadores": [
+        "Jibril Foster",
+        "Xavier Foster"
+      ],
+      "puntos": 7,
       "nivel": "perfect",
-      "motivo": "pareja / vínculo canon"
+      "motivo": "familia: padre/madre e hijo/a",
+      "tipo": "familia"
     },
+    {
+      "jugadores": [
+        "Jibril Foster",
+        "Dayann Midford"
+      ],
+      "puntos": 7,
+      "nivel": "perfect",
+      "motivo": "familia: padre/madre e hijo/a",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Akari Foster",
+        "Xavier Foster"
+      ],
+      "puntos": 7,
+      "nivel": "perfect",
+      "motivo": "familia: padre/madre e hijo/a",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Akari Foster",
+        "Dayann Midford"
+      ],
+      "puntos": 7,
+      "nivel": "perfect",
+      "motivo": "familia: padre/madre e hijo/a",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Jikan Alonso",
+        "Kurumi Tokisaki"
+      ],
+      "puntos": 7,
+      "nivel": "perfect",
+      "motivo": "familia: padre/madre e hijo/a",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Jikan Alonso",
+        "Iker Alonso"
+      ],
+      "puntos": 7,
+      "nivel": "perfect",
+      "motivo": "familia: padre/madre e hijo/a",
+      "tipo": "familia"
+    }
+  ],
+  "hermanos": [
+    {
+      "jugadores": [
+        "Candace Foster",
+        "Lidia Foster"
+      ],
+      "puntos": 6,
+      "nivel": "perfect",
+      "motivo": "familia: hermanos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Mavuika Heartless",
+        "Norman Heartless"
+      ],
+      "puntos": 6,
+      "nivel": "perfect",
+      "motivo": "familia: hermanos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Jibril Foster",
+        "Akari Foster"
+      ],
+      "puntos": 6,
+      "nivel": "perfect",
+      "motivo": "familia: hermanos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Bronya Wingate",
+        "Aika"
+      ],
+      "puntos": 6,
+      "nivel": "perfect",
+      "motivo": "familia: hermanos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Bronya Wingate",
+        "Riko Wingate"
+      ],
+      "puntos": 6,
+      "nivel": "perfect",
+      "motivo": "familia: hermanos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Aika",
+        "Riko Wingate"
+      ],
+      "puntos": 6,
+      "nivel": "perfect",
+      "motivo": "familia: hermanos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Irene",
+        "David"
+      ],
+      "puntos": 6,
+      "nivel": "perfect",
+      "motivo": "familia: hermanos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Jeanne d'Arc",
+        "Joanna"
+      ],
+      "puntos": 6,
+      "nivel": "perfect",
+      "motivo": "familia: hermanos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Yachiho Azuma",
+        "Himari Azuma"
+      ],
+      "puntos": 6,
+      "nivel": "perfect",
+      "motivo": "familia: hermanos",
+      "tipo": "familia"
+    }
+  ],
+  "primos": [
+    {
+      "jugadores": [
+        "Lidia Foster",
+        "Lylia"
+      ],
+      "puntos": 3,
+      "nivel": "medium",
+      "motivo": "familia: primos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Lidia Foster",
+        "Jibril Foster"
+      ],
+      "puntos": 3,
+      "nivel": "medium",
+      "motivo": "familia: primos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Lidia Foster",
+        "Akari Foster"
+      ],
+      "puntos": 3,
+      "nivel": "medium",
+      "motivo": "familia: primos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Candace Foster",
+        "Lylia"
+      ],
+      "puntos": 3,
+      "nivel": "medium",
+      "motivo": "familia: primos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Candace Foster",
+        "Jibril Foster"
+      ],
+      "puntos": 3,
+      "nivel": "medium",
+      "motivo": "familia: primos",
+      "tipo": "familia"
+    },
+    {
+      "jugadores": [
+        "Candace Foster",
+        "Akari Foster"
+      ],
+      "puntos": 3,
+      "nivel": "medium",
+      "motivo": "familia: primos",
+      "tipo": "familia"
+    }
+  ],
+  "mejoresAmigos": [
     {
       "jugadores": [
         "Renzu Itō",
         "Mavuika Heartless"
       ],
-      "puntos": 6,
-      "nivel": "perfect",
-      "motivo": "mejor amiga y apoyo emocional"
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
     },
     {
       "jugadores": [
-        "Akari Foster",
-        "Jibril Foster"
+        "Renzu Itō",
+        "Ryuji"
       ],
-      "puntos": 6,
-      "nivel": "perfect",
-      "motivo": "familia Foster"
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
     },
     {
       "jugadores": [
-        "Dan Karman",
+        "Renzu Itō",
+        "Víctor Koga"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Renzu Itō",
+        "Jiro"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Renzu Itō",
+        "Fubuki Sumiye"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Siete de Marzo",
         "Serena Kitagawa"
       ],
-      "puntos": 7,
-      "nivel": "perfect",
-      "motivo": "pareja"
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Siete de Marzo",
+        "Wang Qing"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Kiyoka Sendou",
+        "Ryuji"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Kiyoka Sendou",
+        "Renzu Itō"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Víctor Koga",
+        "Ryuji"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Víctor Koga",
+        "Jiro"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Jibril Foster",
+        "Kyoko"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Jibril Foster",
+        "Kiyoka Sendou"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Lidia Foster",
+        "Miu Iruma"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Fubuki Sumiye",
+        "Chisato"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
+    },
+    {
+      "jugadores": [
+        "Fubuki Sumiye",
+        "Shu Ogata"
+      ],
+      "puntos": 5,
+      "nivel": "strong",
+      "motivo": "mejores amigos",
+      "tipo": "amistad"
     }
   ],
+  "rivales": [],
+  "relaciones": [],
   "ajustes": [
     {
       "jugador": "Hikaru Hoshihara",
       "puntos": 2,
-      "motivo": "Capitán del Equipo"
+      "motivo": "Capitán del equipo"
+    },
+    {
+      "jugador": "Candace Foster",
+      "puntos": 2,
+      "motivo": "Segunda capitana canónica del Raimon"
     }
   ],
   "efectos": [
@@ -54,7 +747,65 @@
         "Renzu Itō"
       ],
       "puntos": 1,
-      "motivo": "apoyo desde la banda: Ren gana química con sus enlaces"
+      "motivo": "apoyo desde la banda: Ren gana química con sus enlaces",
+      "nombre": "apoyo de Wang"
+    },
+    {
+      "fuente": "Lidia Foster",
+      "zonas": [
+        "bench"
+      ],
+      "objetivos": [
+        "*"
+      ],
+      "puntos": 2,
+      "motivo": "apoyo desde el banquillo: potencia a todos",
+      "nombre": "ayuda de reserva"
     }
-  ]
+  ],
+  "capitanes": [
+    {
+      "jugador": "Candace Foster",
+      "puntos": 2,
+      "motivo": "segunda capitana del Raimon"
+    },
+    {
+      "jugador": "Hikaru Hoshihara",
+      "puntos": 2,
+      "motivo": "capitán del equipo"
+    }
+  ],
+  "posicionesFavoritas": [
+    {
+      "jugador": "Renzu Itō",
+      "posiciones": [
+        "EI"
+      ],
+      "puntos": 2,
+      "motivo": "posición favorita indicada"
+    },
+    {
+      "jugador": "Kiyoka Sendou",
+      "posiciones": [
+        "MCD"
+      ],
+      "puntos": 2,
+      "motivo": "posición favorita indicada"
+    }
+  ],
+  "reglasGlobales": {
+    "equipoCompleto": {
+      "puntos": 3,
+      "motivo": "si los 11 titulares pertenecen al mismo equipo, afinidad global +3"
+    },
+    "capitan": {
+      "puntos": 2,
+      "motivo": "capitán seleccionado en datos del partido"
+    },
+    "afinidadesElementales": {
+      "activa": true,
+      "puntos": 1,
+      "motivo": "bono reservado para cuando estén puestas las afinidades"
+    }
+  }
 }

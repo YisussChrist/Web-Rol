@@ -67,6 +67,13 @@
       <button id="quickExportar" type="button">💾 Exportar</button>
       <button id="quickImportar" type="button">📂 Importar</button>
       <button id="quickFullscreen" type="button">⛶ Campo</button>
+      <button id="btnDraftV5" type="button">🎲 Draft</button>
+      <button id="btnMatchDataV5" type="button">📊 Datos partido</button>
+      <button id="btnUndoV5" type="button">↩ Deshacer</button>
+      <button id="btnRedoV5" type="button">↪ Rehacer</button>
+      <button id="btnToggleChemLinesV5" type="button">👁 Química</button>
+      <button id="btnSimMatchV5" type="button">📺 Simular</button>
+      <button id="btnStBuilderV5" type="button">⚡ Crear ST</button>
     </nav>
 
     <section class="layout">
@@ -260,6 +267,57 @@
       <button id="freeSave" type="button">Guardar</button>
       <button id="freeRemove" type="button">Vaciar hueco</button>
       <button id="freeClose" type="button">Cerrar</button>
+    </div>
+  </dialog>
+
+
+  <dialog id="draftStrategyDialog" class="v5-dialog">
+    <h2>🎲 Elegir modo de draft</h2>
+    <p>Elige cómo quieres que la web rellene la plantilla.</p>
+    <div class="v5-choice-grid">
+      <button id="draftRandomV5" type="button">🎲 Aleatorio</button>
+      <button id="draftBestV5" type="button">❤️ Mejor sinergia</button>
+      <button id="draftWorstV5" type="button">💀 Peor sinergia</button>
+    </div>
+    <button id="draftCloseV5" type="button">Cerrar</button>
+  </dialog>
+
+  <dialog id="matchDataDialogV5" class="v5-dialog v5-wide-dialog">
+    <h2>📊 Datos del partido</h2>
+    <p>Marca goles, asistencias, tarjetas y capitán sin llenar siempre la HUD.</p>
+    <div id="matchDataListV5" class="v5-match-list"></div>
+    <button id="matchDataCloseV5" type="button">Cerrar</button>
+  </dialog>
+
+  <dialog id="simMatchDialogV5" class="v5-dialog v5-wide-dialog">
+    <h2>📺 Modo retransmisión</h2>
+    <p id="simMatchScoreV5">Pulsa siguiente jugada para empezar.</p>
+    <div id="simMatchFeedV5" class="v5-feed"></div>
+    <div class="v5-choice-grid">
+      <button id="simNextV5" type="button">Siguiente jugada</button>
+      <button id="simCopyV5" type="button">Copiar resumen</button>
+      <button id="simCloseV5" type="button">Cerrar</button>
+    </div>
+  </dialog>
+
+  <dialog id="stBuilderDialogV5" class="v5-dialog v5-wide-dialog">
+    <h2>⚡ Constructor de Supertécnicas</h2>
+    <label>Nombre de la ST</label>
+    <input id="stNameV5" type="text" placeholder="Ej: Fuego Cruzado Cósmico" />
+    <label>Participantes</label>
+    <select id="stPlayerAV5"></select>
+    <select id="stPlayerBV5"></select>
+    <label>Tipo</label>
+    <select id="stTypeV5"><option>Tiro</option><option>Regate</option><option>Bloqueo</option><option>Parada</option></select>
+    <label>Grado / estado</label>
+    <select id="stGradeV5"><option>G1</option><option>G2</option><option>G3</option><option>G4</option><option>G5</option><option>EG</option><option>Armadura</option><option>ST + EG</option><option>ST + Armadura</option></select>
+    <label>Descripción</label>
+    <textarea id="stDescriptionV5" placeholder="Describe la técnica..."></textarea>
+    <textarea id="stOutputV5" readonly placeholder="Aquí saldrá el bloque listo para Discord."></textarea>
+    <div class="v5-choice-grid">
+      <button id="stGenerateV5" type="button">Generar</button>
+      <button id="stCopyV5" type="button">Copiar</button>
+      <button id="stCloseV5" type="button">Cerrar</button>
     </div>
   </dialog>
 
