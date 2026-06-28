@@ -626,62 +626,88 @@ function enableDrop(element) {
 }
 
 
+
+/* ===== V6: filtro de posiciones exacto y limpio =====
+   Antes los medios se agrupaban demasiado: MC encontraba MCD/MCO/MI/MD.
+   Ahora cada posición FIFA filtra su carril real. Solo MED es amplio. */
 const POSITION_GROUPS = {
   POR: ["POR", "PT", "PORTERO", "GK"],
+
   DFC: ["DFC", "DF", "DEF", "DEFENSA", "CENTRAL", "CB"],
   LI: ["LI", "LTI", "LATERAL IZQUIERDO", "LB"],
   LD: ["LD", "LTD", "LATERAL DERECHO", "RB"],
-  CAD: ["CAD", "CARRILERO DERECHO", "RWB"],
   CAI: ["CAI", "CARRILERO IZQUIERDO", "LWB"],
-  MCD: ["MCD", "CDM", "PIVOTE", "MEDIOCENTRO DEFENSIVO"],
-  VOL: ["VOL", "MCD", "MC", "MEDIOCENTRO", "CENTROCAMPISTA", "CDM", "CM", "PIVOTE"],
-  MC: ["MC", "VOL", "MCD", "MCO", "MEDIOCENTRO", "CENTROCAMPISTA", "CM", "CDM", "CAM"],
+  CAD: ["CAD", "CARRILERO DERECHO", "RWB"],
+
+  MCD: ["MCD", "CDM", "PIVOTE", "MEDIOCENTRO DEFENSIVO", "VOL"],
+  MC: ["MC", "CM", "MEDIOCENTRO", "CENTROCAMPISTA", "MEDIO CENTRO", "MED"],
   MCO: ["MCO", "MP", "CAM", "MEDIAPUNTA", "ENGANCHE"],
-  MI: ["MI", "LM", "INTERIOR IZQUIERDO", "MEDIO IZQUIERDO"],
-  MD: ["MD", "RM", "INTERIOR DERECHO", "MEDIO DERECHO"],
-  EI: ["EI", "ED", "EXTREMO", "EXTREMO IZQUIERDO", "LW", "RW"],
-  ED: ["ED", "EI", "EXTREMO", "EXTREMO DERECHO", "RW", "LW"],
-  SD: ["SD", "SEGUNDO DELANTERO", "MEDIAPUNTA", "MCO", "MP", "CF"],
-  DC: ["DC", "DELANTERO", "DELANTERA", "ST", "DEL", "AR"],
-  DEL: ["DEL", "DC", "EI", "ED", "SD", "DELANTERO", "DELANTERA", "EXTREMO", "ST", "LW", "RW", "CF"],
+  MI: ["MI", "LM", "INTERIOR IZQUIERDO", "MEDIO IZQUIERDO", "VOLANTE IZQUIERDO"],
+  MD: ["MD", "RM", "INTERIOR DERECHO", "MEDIO DERECHO", "VOLANTE DERECHO"],
+  MED: ["MC"],
+
+  EI: ["EI", "LW", "EXTREMO IZQUIERDO"],
+  ED: ["ED", "RW", "EXTREMO DERECHO"],
+  SD: ["SD", "SEGUNDO DELANTERO", "CF"],
+  DC: ["DC", "DELANTERO", "DELANTERA", "ST", "AR", "PUNTA"],
+  DEL: ["DEL", "DC", "DELANTERO", "DELANTERA", "EXTREMO", "ST", "LW", "RW", "CF"],
+
   GERENTE: ["GERENTE", "GE", "MANAGER"],
   ENTRENADOR: ["ENTRENADOR", "DT", "COACH"]
 };
 
+function cleanPositionToken(value) {
+  return normalize(String(value || ""))
+    .toUpperCase()
+    .replace(/[^A-Z0-9Ñ]+/g, " ")
+    .trim();
+}
+
+function compactPosition(value) {
+  return cleanPositionToken(value).replace(/\s+/g, "");
+}
+
 function positionTokens(value) {
-  const raw = normalize(value).toUpperCase().replace(/[^A-Z0-9Ñ]+/g, " ").trim();
+  const raw = cleanPositionToken(value);
   if (!raw) return [];
-  const compact = raw.replace(/\s+/g, "");
-  const tokens = [raw, compact];
+  const tokens = [raw, raw.replace(/\s+/g, "")];
   raw.split(/\s+/).filter(Boolean).forEach(part => tokens.push(part));
   return [...new Set(tokens)];
 }
 
-function getPositionAliases(position) {
-  const tokens = positionTokens(position);
-  const aliases = new Set(tokens);
-
-  tokens.forEach(token => {
-    Object.entries(POSITION_GROUPS).forEach(([key, values]) => {
-      if (key === token || values.map(v => normalize(v).toUpperCase().replace(/[^A-Z0-9Ñ]+/g, "")).includes(token.replace(/\s+/g, ""))) {
-        aliases.add(key);
-        values.forEach(value => positionTokens(value).forEach(alias => aliases.add(alias)));
-      }
-    });
-  });
-
-  return aliases;
+function canonicalPosition(value) {
+  const compact = compactPosition(value);
+  if (!compact) return "";
+  for (const [key, aliases] of Object.entries(POSITION_GROUPS)) {
+    if (key === compact) return key;
+    if (aliases.some(alias => compactPosition(alias) === compact)) return key;
+  }
+  return compact;
 }
 
 function positionsAreCompatible(playerPosition, targetPosition) {
   if (!targetPosition) return true;
   if (!playerPosition) return false;
-  const playerAliases = getPositionAliases(playerPosition);
-  const targetAliases = getPositionAliases(targetPosition);
-  for (const alias of playerAliases) {
-    if (targetAliases.has(alias)) return true;
-  }
-  return false;
+
+  const target = canonicalPosition(targetPosition);
+  const player = canonicalPosition(playerPosition);
+
+  // MED es el único filtro amplio: sirve para cualquier medio.
+  if (target === "MED") return ["MC"].includes(player);
+
+  // DEL y DEF pueden seguir funcionando como categorías amplias.
+  if (target === "DEL") return ["DC", "SD", "EI", "ED", "DEL"].includes(player);
+  if (target === "DEF") return ["DFC", "LI", "LD", "CAI", "CAD", "DF", "DEF"].includes(player);
+
+  // Filtro exacto para FIFA: MCD no enseña MC/MCO, MC no enseña MCD/MCO, etc.
+  return player === target;
+}
+
+function getPositionAliases(position) {
+  const canonical = canonicalPosition(position);
+  const aliases = new Set([canonical, ...positionTokens(position)]);
+  (POSITION_GROUPS[canonical] || []).forEach(value => positionTokens(value).forEach(alias => aliases.add(alias)));
+  return aliases;
 }
 
 function defaultPositionForTarget(type, index) {
@@ -716,6 +742,7 @@ function renderChoiceCard(player) {
 
 function getFilteredPlayers(query, team, position) {
   const q = normalize(query);
+  const target = canonicalPosition(position || "");
 
   return personajes.filter(player => {
     const haystack = normalize(`${player.nombre} ${player.equipo} ${player.posicion} ${player.raza ?? ""} ${player.estado ?? ""}`);
@@ -723,6 +750,11 @@ function getFilteredPlayers(query, team, position) {
     const matchesTeam = !team || player.equipo === team;
     const matchesPosition = !position || positionsAreCompatible(player.posicion, position);
     return matchesQuery && matchesTeam && matchesPosition;
+  }).sort((a, b) => {
+    if (!target) return a.nombre.localeCompare(b.nombre);
+    const aExact = canonicalPosition(a.posicion) === target ? -1 : 0;
+    const bExact = canonicalPosition(b.posicion) === target ? -1 : 0;
+    return aExact - bExact || a.nombre.localeCompare(b.nombre);
   });
 }
 

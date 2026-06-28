@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Creador de Plantillas Inazuma DS</title>
+  <title>Creador de Plantillas Inazuma V6</title>
   <link rel="stylesheet" href="plantillas-inazuma.css?v=quimica-presencia-1" />
 </head>
 <body>
@@ -32,7 +32,7 @@
         <div class="logo-ball">⚽</div>
         <div>
           <h1>Creador de Plantillas Inazuma</h1>
-          <p>Estilo táctico inspirado en la era DS.</p>
+          <p>V6 · Interfaz táctica limpia · Filtros FIFA precisos</p>
         </div>
       </div>
       <div class="actions">
@@ -78,7 +78,14 @@
 
     <section class="layout">
       <aside class="panel">
-        <div class="panel-header">MENÚ DE EQUIPO</div>
+        <div class="panel-header">CENTRO TÁCTICO</div>
+
+        <div class="v6-panel-tabs" aria-label="Secciones">
+          <button type="button" class="active">👥 Plantilla</button>
+          <button type="button">⚙ Equipo</button>
+          <button type="button">🎨 Diseño</button>
+          <button type="button">🧬 Química</button>
+        </div>
 
         <label>Nombre del evento</label>
         <input id="eventoInput" type="text" placeholder="Ej: Japón vs Francia" />
@@ -149,6 +156,10 @@
       </aside>
 
       <section class="board-wrap">
+        <div class="v6-board-header">
+          <span>⚽ Campo táctico</span>
+          <small>Click en una posición para filtrar exacto: MCD / MC / MCO / MI / MD</small>
+        </div>
         <div class="ds-frame">
           <div class="ds-top-screen">
             <div class="screen-gloss"></div>
