@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Árbol Familiar — Lista Oscura</title>
+  <title>Linajes Dragon Ball — Archivo Eternal</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Rajdhani:wght@400;500;600;700&display=swap');
 
@@ -512,6 +512,35 @@
       text-shadow:2px 2px 0 #7d230c, 4px 4px 0 rgba(0,0,0,.45);
     }
     .m-meta{margin:0; color:var(--muted); overflow-wrap:anywhere; font-weight:800; font-size:1.05rem}
+
+    .m-status-row{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:4px 0 2px}
+    .m-pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--border-strong);
+      background:rgba(0,0,0,.20);
+      color:var(--text); font-weight:900; font-size:.9rem;
+    }
+    .m-pill.good{background:rgba(56,224,123,.14); border-color:rgba(56,224,123,.38)}
+    .m-pill.locked{background:rgba(180,180,180,.13); border-color:rgba(180,180,180,.32)}
+    .m-details{display:grid; gap:10px; margin-top:8px}
+    .m-info-grid{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px}
+    .m-info, .m-note{
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(0,0,0,.14));
+      border-radius:14px;
+      padding:10px 12px;
+    }
+    .m-info b, .m-note b{
+      display:block;
+      color:var(--accent);
+      font:900 .76rem var(--mono);
+      letter-spacing:1px;
+      text-transform:uppercase;
+      margin-bottom:4px;
+    }
+    .m-info span, .m-note span{font-weight:800; color:var(--text); overflow-wrap:anywhere}
+    .m-note{grid-column:1 / -1}
     .m-actions{display:flex; justify-content:flex-end; gap:10px; padding:0 16px 16px; flex-wrap:wrap}
 
     .link{
@@ -617,18 +646,362 @@
       color:#230b00; font-weight:900; font-size:.72rem;
     }
 
+
+.tabs-shell{
+      position:relative;
+      margin:18px 0 0;
+      padding:0 10px;
+      border-bottom:2px solid color-mix(in srgb, var(--accent) 34%, transparent);
+    }
+
+    .tabs{
+      display:flex;
+      gap:4px;
+      align-items:flex-end;
+      overflow-x:auto;
+      scrollbar-width:thin;
+    }
+
+    .tab-btn{
+      position:relative;
+      min-width:150px;
+      padding:13px 20px 12px;
+      border:2px solid var(--border);
+      border-bottom:0;
+      border-radius:18px 18px 0 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.06), transparent 36%),
+        linear-gradient(180deg, color-mix(in srgb, var(--panel-3) 88%, transparent), color-mix(in srgb, var(--panel-2) 96%, transparent));
+      color:color-mix(in srgb, var(--text) 76%, var(--muted));
+      font-weight:900;
+      letter-spacing:.04em;
+      cursor:pointer;
+      box-shadow:inset 0 1px rgba(255,255,255,.08), 0 -1px 18px rgba(0,0,0,.18);
+      transform:translateY(2px);
+      transition:transform .15s ease, color .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .tab-btn:hover{
+      color:var(--text);
+      border-color:color-mix(in srgb, var(--accent) 46%, transparent);
+      background:
+        linear-gradient(180deg, rgba(255,176,0,.14), transparent 45%),
+        linear-gradient(180deg, var(--panel-3), var(--panel-2));
+      transform:translateY(0);
+    }
+
+    .tab-btn.active{
+      color:#230b00;
+      border-color:#ffd45f;
+      background:linear-gradient(180deg, #ffe889 0%, #ffc247 42%, #ff8c1a 100%);
+      box-shadow:0 -8px 26px rgba(255,176,0,.18), inset 0 1px rgba(255,255,255,.35);
+      transform:translateY(0);
+      z-index:2;
+    }
+
+    .tab-btn.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:-2px;
+      height:4px;
+      background:#ff8c1a;
+    }
+
+    .tab-panel{
+      border-top:0;
+      padding-top:18px;
+    }
+
+    .tab-panel.hidden{display:none}
+
+    .locked-panel{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-height:420px;
+      text-align:center;
+      border-radius:0 22px 22px 22px;
+    }
+
+    .locked-panel .lock{
+      font-size:5rem;
+      margin-bottom:18px;
+      filter:drop-shadow(0 0 18px rgba(255,176,0,.35));
+    }
+
+    .locked-panel h2{
+      margin:0 0 10px;
+      font-family:var(--display);
+      font-size:clamp(2rem, 4vw, 3rem);
+      color:#ffe66d;
+      text-shadow:2px 2px 0 #7d230c, 4px 4px 0 rgba(0,0,0,.45);
+    }
+
+    .locked-panel p{color:var(--muted);font-size:1.1rem;font-weight:800}
+
+
+
+/* === REDISEÑO 2026: interfaz tipo archivo/dashboard === */
+body{
+  background:
+    radial-gradient(circle at 12% 10%, rgba(255,199,70,.24), transparent 24%),
+    radial-gradient(circle at 85% 18%, rgba(54,167,255,.18), transparent 28%),
+    radial-gradient(circle at 50% 100%, rgba(255,75,31,.16), transparent 30%),
+    linear-gradient(135deg, #05030b 0%, #120817 44%, #080512 100%);
+}
+
+body::before{
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.04) 0 1px, transparent 1px 70px),
+    linear-gradient(25deg, rgba(255,176,0,.035) 0 1px, transparent 1px 58px),
+    radial-gradient(circle at center, transparent 0 40%, rgba(0,0,0,.48) 84%);
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:120;
+  border-bottom:1px solid rgba(255,220,112,.22);
+  background:rgba(7,5,14,.74);
+  backdrop-filter:blur(22px) saturate(1.25);
+}
+
+.header-inner{
+  display:grid;
+  grid-template-columns:minmax(260px, .9fr) minmax(520px, 1.35fr);
+  gap:18px;
+  align-items:stretch;
+  padding:18px 16px;
+}
+
+.brand{
+  padding:18px;
+  border:1px solid rgba(255,220,112,.22);
+  border-radius:26px;
+  background:
+    linear-gradient(135deg, rgba(255,176,0,.16), rgba(255,75,31,.08) 48%, rgba(54,167,255,.08)),
+    rgba(20,18,28,.58);
+  box-shadow:inset 0 1px rgba(255,255,255,.08), 0 18px 38px rgba(0,0,0,.22);
+}
+
+.brand h1{
+  font-size:clamp(2rem, 3.2vw, 3.7rem);
+  margin-top:4px;
+}
+
+.brand .sub{max-width:540px}
+
+.hero-metrics{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.hero-metrics span{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,220,112,.2);
+  background:rgba(0,0,0,.22);
+  color:var(--muted);
+  font-weight:900;
+}
+
+.hero-metrics b{color:#ffe66d;font-size:1.05rem}
+
+.controls{
+  display:grid;
+  grid-template-columns:minmax(260px, 1fr) auto auto;
+  gap:10px;
+  align-content:start;
+  align-items:center;
+  padding:14px;
+  border-radius:26px;
+  border:1px solid rgba(255,220,112,.18);
+  background:linear-gradient(180deg, rgba(31,27,42,.72), rgba(15,12,24,.76));
+  box-shadow:inset 0 1px rgba(255,255,255,.07), 0 18px 38px rgba(0,0,0,.20);
+}
+
+.control-title{
+  grid-column:1 / -1;
+  color:#ffd37a;
+  font:900 .8rem var(--mono);
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  padding:0 3px 2px;
+}
+
+.search{min-width:0; flex:initial}
+.search input{height:48px;border-radius:16px}
+.group{border-radius:16px;background:rgba(0,0,0,.18)}
+.btn{border-radius:13px;box-shadow:none}
+
+.tabs-shell{
+  margin:24px 0 18px;
+  padding:16px 16px 0;
+  border:1px solid rgba(255,220,112,.18);
+  border-radius:28px 28px 0 0;
+  background:
+    linear-gradient(180deg, rgba(255,176,0,.08), rgba(255,255,255,.02)),
+    rgba(15,12,24,.66);
+  box-shadow:0 18px 40px rgba(0,0,0,.22);
+}
+
+.tabs-kicker{
+  color:var(--muted);
+  font:900 .76rem var(--mono);
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin:0 0 10px 4px;
+}
+
+.tabs{gap:8px;overflow-x:auto;padding-bottom:0}
+.tab-btn{
+  min-width:210px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 17px;
+  text-align:left;
+  border-radius:20px 20px 0 0;
+  transform:none;
+}
+.tab-icon{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,.1);
+  font-weight:900;
+}
+.tab-text{display:flex;flex-direction:column;line-height:1.05}
+.tab-text strong{font-size:1rem}
+.tab-text small{margin-top:4px;color:inherit;opacity:.72;font-weight:800}
+.tab-btn.active .tab-icon{background:rgba(35,11,0,.16)}
+
+.tab-panel{padding-top:0}
+.layout{
+  grid-template-columns:minmax(0, 1fr) 300px;
+  gap:18px;
+}
+.panel{
+  border-radius:24px;
+  border:1px solid rgba(255,220,112,.18);
+}
+.sidebar{
+  top:calc(var(--header-h) + 24px);
+  border-radius:24px;
+}
+.sidebar::after{
+  content:"ÍNDICE";
+  position:absolute;
+  top:12px;
+  right:14px;
+  color:rgba(255,211,122,.38);
+  font:900 .75rem var(--mono);
+  letter-spacing:1.4px;
+}
+.legend{padding-top:16px}
+.index a{border-radius:13px;background:rgba(255,255,255,.04)}
+.family{
+  padding:0;
+  overflow:hidden;
+}
+.family-header{
+  padding:16px 18px;
+  margin:0;
+  background:linear-gradient(90deg, rgba(255,176,0,.15), rgba(54,167,255,.07));
+}
+.children{padding:14px}
+.card{
+  grid-template-columns:82px minmax(0,1fr) auto;
+  border-radius:18px;
+  background:linear-gradient(90deg, rgba(255,255,255,.055), rgba(255,176,0,.045)), rgba(14,11,22,.72);
+}
+.card-media{width:82px;height:82px;min-height:82px;border-radius:15px}
+.card h3{font-size:1.18rem}
+.results{border-radius:24px}
+.locked-panel{
+  min-height:520px;
+  border-radius:0 0 28px 28px;
+  background:
+    radial-gradient(circle at 50% 25%, rgba(255,176,0,.18), transparent 34%),
+    linear-gradient(135deg, rgba(255,255,255,.04), rgba(54,167,255,.04)),
+    rgba(15,12,24,.78);
+}
+.lock-card{
+  width:min(560px, 92%);
+  padding:34px 26px;
+  border-radius:28px;
+  border:1px solid rgba(255,220,112,.22);
+  background:linear-gradient(180deg, rgba(31,27,42,.9), rgba(9,7,16,.9));
+  box-shadow:0 24px 70px rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.08);
+}
+.locked-tag{
+  display:inline-flex;
+  padding:6px 11px;
+  border-radius:999px;
+  background:rgba(255,176,0,.12);
+  border:1px solid rgba(255,220,112,.22);
+  color:#ffd37a;
+  font:900 .76rem var(--mono);
+  letter-spacing:1.3px;
+}
+.locked-panel small{display:block;color:color-mix(in srgb, var(--muted) 80%, white);font-weight:800;margin-top:12px}
+footer{opacity:.82}
+
+@media (max-width: 1120px){
+  .header-inner{grid-template-columns:1fr}
+  .controls{grid-template-columns:minmax(240px,1fr) auto auto}
+}
+
+@media (max-width: 780px){
+  :root{--header-h: 320px;}
+  .header-inner{padding:12px;gap:12px}
+  .brand{padding:14px;border-radius:20px}
+  .controls{grid-template-columns:1fr;border-radius:20px}
+  .control-title{display:none}
+  .tabs-shell{margin-top:16px;border-radius:22px 22px 0 0;padding:12px 10px 0}
+  .tab-btn{min-width:172px;padding:10px 12px}
+  .tab-icon{width:32px;height:32px;border-radius:12px}
+  .layout{grid-template-columns:1fr}
+  .children{padding:10px}
+  .card{grid-template-columns:72px minmax(0,1fr)}
+  .card-media{width:72px;height:72px;min-height:72px}
+}
+
+@media (max-width: 480px){
+  :root{--header-h: 360px;}
+  .hero-metrics span{font-size:.86rem}
+  .brand h1{font-size:2rem}
+}
+
 </style>
 </head>
 <body>
   <header id="siteHeader">
     <div class="header-inner">
       <div class="brand">
-        <div class="tagline"><span class="dot"></span> FAMILIAS / DRAGON BALL</div>
-        <h1>Árbol Familiar</h1>
-        <p class="sub">Si lees esto, te quiero, guapo.</p>
+        <div class="tagline"><span class="dot"></span> ARCHIVO / DRAGON BALL</div>
+        <h1>Linajes Eternal</h1>
+        <p class="sub">Panel de familias, descendencia y generaciones del rol.</p>
+        <div class="hero-metrics" aria-label="Resumen del archivo">
+          <span><b id="metricFamilies">—</b> familias</span>
+          <span><b id="metricChildren">—</b> personajes</span>
+          <span><b id="metricBorn">—</b> nacidos</span>
+        </div>
       </div>
 
-      <div class="controls">
+      <div class="controls" aria-label="Panel de control">
+        <div class="control-title">Centro de control</div>
         <div class="search" role="search">
           <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="11" cy="11" r="8"></circle>
@@ -666,8 +1039,23 @@
     </div>
   </header>
 
-  <div class="container">
-    <div class="layout">
+  
+<div class="container">
+  <nav class="tabs-shell" aria-label="Secciones del árbol familiar">
+    <div class="tabs-kicker">Selecciona archivo</div>
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" type="button" role="tab" aria-selected="true" aria-controls="tab-eternal" data-tab="eternal">
+        <span class="tab-icon">⚔️</span>
+        <span class="tab-text"><strong>Guerreros Eternal</strong><small>Archivo principal</small></span>
+      </button>
+      <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-gen1" data-tab="gen1">
+        <span class="tab-icon">Ⅰ</span>
+        <span class="tab-text"><strong>Gen 1</strong><small>Próxima sección</small></span>
+      </button>
+    </div>
+  </nav>
+  <div id="tab-eternal" class="tab-panel" role="tabpanel">
+<div class="layout">
       <main>
         <section class="panel results hidden" id="results" aria-live="polite">
           <div class="title">Coincidencias</div>
@@ -708,6 +1096,19 @@
     </div>
   </div>
 
+  </div>
+  <div id="tab-gen1" class="tab-panel hidden" role="tabpanel">
+    <section class="panel locked-panel">
+      <div class="lock-card">
+        <div class="lock">🔒</div>
+        <span class="locked-tag">GEN 1</span>
+        <h2>Está bloqueado</h2>
+        <p>Sección en construcción.</p>
+        <small>Cuando la desbloquees, los personajes irán en <b>GEN1_DATA</b>, usando la misma estructura que DATA.</small>
+      </div>
+    </section>
+  </div>
+
   <footer>
     Tip rápido: pulsa <b>/</b> para enfocar búsqueda · <b>Esc</b> cierra la ficha · Click en una card para abrir.
   </footer>
@@ -720,6 +1121,8 @@
       <div class="m-body">
         <h3 class="m-title" id="mTitle"></h3>
         <p class="m-meta" id="mMeta"></p>
+        <div class="m-status-row" id="mStatusRow"></div>
+        <div class="m-details" id="mDetails"></div>
       </div>
     </div>
     <div class="m-actions">
@@ -736,230 +1139,251 @@
     // Si dejas img: '' o no pones img, saldrán las iniciales como antes.
     //todos estos personajes son la caña de España
 
+    // =========================
+    // PERSONAJES DE GEN 1
+    // =========================
+    // Cuando quieras desbloquear la pestaña "Gen 1", puedes poner aquí sus familias/personajes
+    // usando la MISMA estructura que DATA. Ejemplo:
+    //
+    // const GEN1_DATA = [
+    //   { family: 'Nombre Padre y Nombre Madre', parents: [
+    //     { name: 'Padre', img: 'ruta/foto-padre.jpg' },
+    //     { name: 'Madre', img: 'ruta/foto-madre.jpg' }
+    //   ], children: [
+    //     { name: 'Hijo/a', img: 'ruta/foto-hijo.jpg', gender: 'F', tag: 'Y', series: 'Serie', meta: 'Personaje original — Serie', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
+    //   ]}
+    // ];
+    //
+    // De momento Gen 1 está bloqueado visualmente, así que estos datos no se muestran todavía.
+    const GEN1_DATA = [];
+
+    // Campos extra editables para cada personaje:
+    // age: '', role: '', personality: '', powers: '', notes: ''
+
     const DATA = [
       { family: 'Alma y Exusiai', parents: [
         { name: 'Alma Azkaban', img: 'fotos-poderes/Alma Azkaban.jpg' },
         { name: 'Exusiai', img: 'fotos-poderes/Exusiai.jpg' }
       ], children: [
-        { name: 'Kiriya Azkaban', img: 'Hijos/Alma y Exusiai/Kiriya Azkaban.jpg', gender: 'F', tag: 'Y', series: "Goddess' Dorm", meta: "Kiriya Sensho — Dorm Mother of the Goddess' Dorm", link: '#', born: true }
+        { name: 'Kiriya Azkaban', img: 'Hijos/Alma y Exusiai/Kiriya Azkaban.jpg', gender: 'F', tag: 'Y', series: "Goddess' Dorm", meta: "Kiriya Sensho — Dorm Mother of the Goddess' Dorm", link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Lancelot y Tokishikko', parents: [
         { name: 'Lancelot Tsukue', img: "fotos-poderes/Lancelot Tsukue.jpg" },
         { name: 'Tokishikko Dana', img: "fotos-poderes/Tokishikko Dana.jpg" }
       ], children: [
-        { name: 'Kabane Tsukue', img: "Hijos/Lancelot y Tokishikko/Kabane Tsukue.jpg", gender: 'M', tag: 'S', series: 'Kemono Jihen', meta: 'Kabane Kusaka — Kemono Jihen', link: '#', born: true },
-        { name: 'Ellen Tsukue', img: "Hijos/Lancelot y Tokishikko/Ellen Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Zenless Zone Zero', meta: 'Ellen Joe - Zenless Zone Zero', link: '#', born: false },
-        { name: 'Lumine Tsukue', img: "Hijos/Lancelot y Tokishikko/Lumine Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Genshin Impact', meta: 'Lumine - Genshin Impact', link: '#', born: false }
+        { name: 'Kabane Tsukue', img: "Hijos/Lancelot y Tokishikko/Kabane Tsukue.jpg", gender: 'M', tag: 'S', series: 'Kemono Jihen', meta: 'Kabane Kusaka — Kemono Jihen', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Ellen Tsukue', img: "Hijos/Lancelot y Tokishikko/Ellen Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Zenless Zone Zero', meta: 'Ellen Joe - Zenless Zone Zero', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Lumine Tsukue', img: "Hijos/Lancelot y Tokishikko/Lumine Tsukue.jpg",gender: 'F', tag: 'Y', series: 'Genshin Impact', meta: 'Lumine - Genshin Impact', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Law y Gogo', parents: [
         { name: 'Law Vireon', img: 'fotos-poderes/Law Vireon.jpg' },
         { name: 'Gogo Karashina', img: 'fotos-poderes/Gogo Karashina.jpg' }
       ], children: [
-        { name: 'Fujimaru Vireon', img: 'Hijos/Law y Gogo/Fujimaru Vireon.jpg', gender: 'M', tag: 'L', series: 'Fate', meta: 'Fujimaru Ritsuka — Fate', link: '#', born: false }
+        { name: 'Fujimaru Vireon', img: 'Hijos/Law y Gogo/Fujimaru Vireon.jpg', gender: 'M', tag: 'L', series: 'Fate', meta: 'Fujimaru Ritsuka — Fate', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Skadi y Beelzebub', parents: [
         { name: 'Skadi Dragenfelt', img: 'fotos-poderes/Skadi Dragenfelt.jpg' },
         { name: 'Beelzebub', img: 'fotos-poderes/Beelzebub.jpg' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Ares y Tao', parents: [
         { name: 'Ares Kane', img: 'fotos-poderes/Ares Kane.jpg' },
-        { name: '', img: 'fotos-poderes/Tao Saotome.jpg' }
+        { name: 'Tao Saotome', img: 'fotos-poderes/Tao Saotome.jpg' }
       ], children: [
-        { name: 'Hermes Kane', img: "Hijos/Ares y Tao/Hermes Kane.jpg", gender: 'M', tag: 'S', series: 'The Yozakura Family', meta: 'Sui Aoi — The Yozakura Family', link: '#', born: true },
-        { name: 'Thalia Kane', img: "Hijos/Ares y Tao/Thalia Kane.webp", gender: 'F', tag: 'Y', series: 'The Academy’s Sashimi Sword Master', meta: 'Medea Poison — The Academy’s Sashimi Sword Master', link: '#', born: true },
-        { name: 'Hestia Kane', img: "Hijos/Ares y Tao/Hestia Kane.jpg", gender: 'F', tag: 'Y', series: 'Someone Stop Her!', meta: 'Yoonda Cha — Someone Stop Her!', link: '#', born: false }
+        { name: 'Hermes Kane', img: "Hijos/Ares y Tao/Hermes Kane.jpg", gender: 'M', tag: 'S', series: 'The Yozakura Family', meta: 'Sui Aoi — The Yozakura Family', link: '#', born: true , age: '5', role: '', personality: '', powers: 'Saiyan', notes: ''},
+        { name: 'Thalia Kane', img: "Hijos/Ares y Tao/Thalia Kane.webp", gender: 'F', tag: 'Y', series: 'The Academy’s Sashimi Sword Master', meta: 'Medea Poison — The Academy’s Sashimi Sword Master', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Hestia Kane', img: "Hijos/Ares y Tao/Hestia Kane.jpg", gender: 'F', tag: 'Y', series: 'Someone Stop Her!', meta: 'Yoonda Cha — Someone Stop Her!', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'David y Kurumi', parents: [
         { name: 'David Martínez', img: 'fotos-poderes/David Martinez.jpg' },
         { name: 'Kurumi Tokisaki', img: 'fotos-poderes/Kurumi Tokisaki.jpg' }
       ], children: [
-        { name: 'Kiawa Martínez', img: "Hijos/David y Kurumi/Kiawa Martinez.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Sparkle — Honkai Star Rail', link: '#', born: true }
+        { name: 'Kiawa Martínez', img: "Hijos/David y Kurumi/Kiawa Martinez.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Sparkle — Honkai Star Rail', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Zelda y Waru', parents: [
         { name: 'Zelda Hellsdothir', img: 'fotos-poderes/Zelda Hellsdothir.jpg' },
         { name: 'Waru Shintarou', img: 'fotos-poderes/Waru Shintarou.webp' }
       ], children: [
-        { name: 'Galbrena Shintarou', img: "Hijos/Waru y Zelda/Galbrena Shintarou.jpg", gender: 'F', tag: 'L', series: 'Wuthering Waves', meta: 'Galbrena — Wuthering Waves', link: '#', born: false },
-        { name: 'Setsuna Shintarou', img: "Hijos/Waru y Zelda/Setsuna Shintarou.jpg", gender: 'F', tag: 'L', series: 'Redo of Healer', meta: 'Setsuna — Redo of Healer', link: '#', born: false },
-        { name: 'Kawaki Shintarou', img: "Hijos/Waru y Zelda/Kawaki Shintarou.jpg", gender: 'M', tag: 'L', series: 'Naruto', meta: 'Kawaki — Naruto', link: '#', born: false },
-        { name: 'Ciel Shintarou', img: "Hijos/Waru y Zelda/Ciel Shintarou.jpg", gender: 'M', tag: 'Y', series: 'Elsword', meta: 'Ciel — Elsword', link: '#', born: false }
+        { name: 'Galbrena Shintarou', img: "Hijos/Waru y Zelda/Galbrena Shintarou.jpg", gender: 'F', tag: 'L', series: 'Wuthering Waves', meta: 'Galbrena — Wuthering Waves', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Setsuna Shintarou', img: "Hijos/Waru y Zelda/Setsuna Shintarou.jpg", gender: 'F', tag: 'L', series: 'Redo of Healer', meta: 'Setsuna — Redo of Healer', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Kawaki Shintarou', img: "Hijos/Waru y Zelda/Kawaki Shintarou.jpg", gender: 'M', tag: 'L', series: 'Naruto', meta: 'Kawaki — Naruto', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Ciel Shintarou', img: "Hijos/Waru y Zelda/Ciel Shintarou.jpg", gender: 'M', tag: 'Y', series: 'Elsword', meta: 'Ciel — Elsword', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Hak y Yoruichi', parents: [
         { name: 'Hak Aethereon', img: 'fotos-poderes/Hak.jpg' },
         { name: 'Yoruichi Shinhouin', img: 'fotos-poderes/Yoruichi Shihoin.jpg' }
       ], children: [
-        { name: 'Dax Aethereon', img: "Hijos/Hak y Yoruichi/Dax Aethereon.jpg", gender: 'M', tag: 'L', series: 'Juusen Battle Monsuno', meta: 'Dax — Juusen Battle Monsuno', link: '#', born: true },
-        { name: 'Chun Aethereon', img: "Hijos/Hak y Yoruichi/Chun Aethereon.jpg", gender: 'F', tag: 'L', series: 'Record of Ragnarok', meta: 'Chun Yun — Record of Ragnarok', link: '#', born: false }
+        { name: 'Dax Aethereon', img: "Hijos/Hak y Yoruichi/Dax Aethereon.jpg", gender: 'M', tag: 'L', series: 'Juusen Battle Monsuno', meta: 'Dax — Juusen Battle Monsuno', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Chun Aethereon', img: "Hijos/Hak y Yoruichi/Chun Aethereon.jpg", gender: 'F', tag: 'L', series: 'Record of Ragnarok', meta: 'Chun Yun — Record of Ragnarok', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Add y Albedo', parents: [
         { name: 'David Martínez', img: 'fotos-poderes/Add.jpg' },
         { name: 'Kurumi Tokisaki', img: 'fotos-poderes/Albedo.jpg' }
       ], children: [
-        { name: 'Utena Vileborne', img: "Hijos/Add y Albedo/Utena Vileborne.jpg", gender: 'F', tag: 'S', series: 'Mahou Shoujo ni Akogarete', meta: 'Utena Hiiragi — Mahou Shoujo ni Akogarete', link: '#', born: true }
+        { name: 'Utena Vileborne', img: "Hijos/Add y Albedo/Utena Vileborne.jpg", gender: 'F', tag: 'S', series: 'Mahou Shoujo ni Akogarete', meta: 'Utena Hiiragi — Mahou Shoujo ni Akogarete', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Nara y Khrome', parents: [
         { name: 'Nara Midori', img: 'fotos-poderes/Nara Midori.jpg' },
         { name: 'Khrome Ryugu', img: 'fotos-poderes/Khrome2.jpg' }
       ], children: [
-        { name: 'Ibuki Ryugu', img: "Hijos/Khrome y Nara/Ibuki Ryugu.jpg", gender: 'F', tag: 'L', series: 'Fate', meta: 'Ibuki-douji — Fate', link: '#', born: true },
-        { name: 'Lapis Ryugu', img: "Hijos/Khrome y Nara/Lapis Ryugu.png", gender: 'F', tag: 'Y', series: 'OC', meta: 'Original Character', link: '#', born: false },
-        { name: 'Chronoa Ryugu', img: "Hijos/Khrome y Nara/Chronoa Ryugu.jpg", gender: 'F', tag: 'Y', series: 'Dragon Ball Heroes', meta: 'Chronoa - Dragon Ball Heroes', link: '#', born: false },
+        { name: 'Ibuki Ryugu', img: "Hijos/Khrome y Nara/Ibuki Ryugu.jpg", gender: 'F', tag: 'L', series: 'Fate', meta: 'Ibuki-douji — Fate', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Lapis Ryugu', img: "Hijos/Khrome y Nara/Lapis Ryugu.png", gender: 'F', tag: 'Y', series: 'OC', meta: 'Original Character', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Chronoa Ryugu', img: "Hijos/Khrome y Nara/Chronoa Ryugu.jpg", gender: 'F', tag: 'Y', series: 'Dragon Ball Heroes', meta: 'Chronoa - Dragon Ball Heroes', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
       ]},
       { family: 'Plasma y Magilou', parents: [
         { name: 'Killua Zaoldyeck', img: 'fotos-poderes/Plasma.jpg' },
         { name: '', img: 'fotos-poderes/Magilou Mayvin.jpg' }
       ], children: [
-        { name: 'Luna Zaoldyeck', img: "Hijos/Plasma y Magilou/Luna Zaoldyeck.jpg", gender: 'F', tag: 'L', series: "Li'l Miss Vampire Can't Suck Right", meta: "Luna Ishikawa — Li'l Miss Vampire Can't Suck Right", link: '#', born: false }
+        { name: 'Luna Zaoldyeck', img: "Hijos/Plasma y Magilou/Luna Zaoldyeck.jpg", gender: 'F', tag: 'L', series: "Li'l Miss Vampire Can't Suck Right", meta: "Luna Ishikawa — Li'l Miss Vampire Can't Suck Right", link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: "Scar y Wis'Adel", parents: [
         { name: 'Scar', img: 'fotos-poderes/Scar.jpg' },
         { name: 'W', img: 'fotos-poderes/W.jpg' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Simon y Ryuko', parents: [
         { name: 'Simon Drayton', img: 'fotos-poderes/Simon Drayton.jpg' },
         { name: 'Ryuko Matoi', img: 'fotos-poderes/Ryuko Matoi.jpg' }
       ], children: [
-        { name: 'Shiki Drayton', img: 'Hijos/Ryuko y Simon/Shiki Drayton.png', gender: 'M', tag: 'S', series: 'Edens Zero', meta: 'Shiki Granbell — Edens Zero', link: '#', born: false },
-        { name: 'Kanade Drayton', img: 'Hijos/Ryuko y Simon/Kanade Drayton.jpg', gender: 'F', tag: 'L', series: 'Symphogear', meta: 'Kadane Amou — Symphogear', link: '#', born: false },
-        { name: 'Kayama Drayton', img: 'Hijos/Ryuko y Simon/Kayama Drayton.png', gender: 'F', tag: 'L', series: 'My Hero Academia', meta: 'Midnight — My Hero Academia', link: '#', born: false }
+        { name: 'Shiki Drayton', img: 'Hijos/Ryuko y Simon/Shiki Drayton.png', gender: 'M', tag: 'S', series: 'Edens Zero', meta: 'Shiki Granbell — Edens Zero', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Kanade Drayton', img: 'Hijos/Ryuko y Simon/Kanade Drayton.jpg', gender: 'F', tag: 'L', series: 'Symphogear', meta: 'Kadane Amou — Symphogear', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Kayama Drayton', img: 'Hijos/Ryuko y Simon/Kayama Drayton.png', gender: 'F', tag: 'L', series: 'My Hero Academia', meta: 'Midnight — My Hero Academia', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Kael y Jibril', parents: [
         { name: 'Kael Kane', img: 'fotos-poderes/Kael.jpg' },
         { name: 'Jibril Hellsdothir', img: 'fotos-poderes/Jibril.jpg' }
       ], children: [
-        { name: 'Milim Kane', img: "Hijos/Kael y Jibril/Milim Kane.jpg", gender: 'F', tag: 'Y', series: 'That Time I Got Reincarnated as a Slime', meta: 'Milim Nava — That Time I Got Reincarnated as a Slime', link: '#', born: false },
-        { name: 'Joryuu Kane', img: "Hijos/Kael y Jibril/Jouryuu Kane.jpg", gender: 'F', tag: 'L', series: 'Mato Seihei no Slave', meta: 'Jouryuu — Mato Seihei no Slave', link: '#', born: false }
+        { name: 'Milim Kane', img: "Hijos/Kael y Jibril/Milim Kane.jpg", gender: 'F', tag: 'Y', series: 'That Time I Got Reincarnated as a Slime', meta: 'Milim Nava — That Time I Got Reincarnated as a Slime', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Joryuu Kane', img: "Hijos/Kael y Jibril/Jouryuu Kane.jpg", gender: 'F', tag: 'L', series: 'Mato Seihei no Slave', meta: 'Jouryuu — Mato Seihei no Slave', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
 
       ]},
       { family: 'Shionne y Goliat', parents: [
         { name: 'Shionne Imeris', img: 'fotos-poderes/Shionne Imeris.jpg' },
         { name: 'Goliat', img: 'fotos-poderes/Goliat.webp' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Gilthunder y Undyne', parents: [
         { name: 'Gilthunder Rainford', img: 'fotos-poderes/Gilthunder.jpg' },
         { name: 'Undyne', img: 'fotos-poderes/Undyne.png' }
       ], children: [
-        { name: 'Sirius Rainford', img: "Hijos/Gilthunder y Undyne/Sirius Rainford.jpg", gender: 'F', tag: 'Y', series: 'Boku no Hero', meta: 'Sirius — Boku no Hero', link: '#', born: false }
+        { name: 'Sirius Rainford', img: "Hijos/Gilthunder y Undyne/Sirius Rainford.jpg", gender: 'F', tag: 'Y', series: 'Boku no Hero', meta: 'Sirius — Boku no Hero', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Billy y Frostleaf', parents: [
         { name: 'Billy Kid', img: 'fotos-poderes/Billy Kid.jpg' },
         { name: 'Yelena Vetrova', img: 'fotos-poderes/Flostleaf.jpg' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Artemisa y Zeo', parents: [
         { name: 'Artemisa Kane', img: 'fotos-poderes/Artemisa Kane.jpg' },
         { name: 'Zeo Torzeus', img: 'fotos-poderes/Zeo Torzeus.jpg' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Venus y Jade', parents: [
         { name: 'Venus Shintarou', img: 'fotos-poderes/Venus Shintarou.jpg' },
         { name: 'Jade Karashina', img: 'fotos-poderes/Jade Karashina.webp' }
       ], children: [
-        { name: 'Genos Shintarou', img: "Hijos/Venus y Jade/Genos Shintarou.jpg", gender: 'M', tag: 'L', series: 'One Punch Man', meta: 'Genos — One Punch Man', link: '#', born: false }
+        { name: 'Genos Shintarou', img: "Hijos/Venus y Jade/Genos Shintarou.jpg", gender: 'M', tag: 'L', series: 'One Punch Man', meta: 'Genos — One Punch Man', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Uzui y Feixiao', parents: [
         { name: 'Uzui Tengen', img: 'fotos-poderes/Uzui Tengen.jpeg' },
         { name: 'Feixiao Hatsuse', img: 'fotos-poderes/Feixiao.jpg' }
       ], children: [
-        { name: 'Fohl Tengen', img: "Hijos/Uzui y Feixiao/Fohl Tengen.jpg", gender: 'M', tag: 'L', series: 'The Rising of the Shield Hero', meta: 'Fohl Fayon — The Rising of the Shield Hero', link: '#', born: true },
-        { name: 'Cipher Tengen', img: "Hijos/Uzui y Feixiao/Cipher Tengen.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Cipher — Honkai Star Rail', link: '#', born: false },
-        { name: 'Yachiyo Tengen', img: "Hijos/Uzui y Feixiao/Yachiya Tengen.jpg", gender: 'F', tag: 'L', series: 'Cosmic Princess Kaguya!', meta: 'Yachiyo Runami — Cosmic Princess Kaguya!', link: '#', born: false }
+        { name: 'Fohl Tengen', img: "Hijos/Uzui y Feixiao/Fohl Tengen.jpg", gender: 'M', tag: 'L', series: 'The Rising of the Shield Hero', meta: 'Fohl Fayon — The Rising of the Shield Hero', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Cipher Tengen', img: "Hijos/Uzui y Feixiao/Cipher Tengen.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Cipher — Honkai Star Rail', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Yachiyo Tengen', img: "Hijos/Uzui y Feixiao/Yachiya Tengen.jpg", gender: 'F', tag: 'L', series: 'Cosmic Princess Kaguya!', meta: 'Yachiyo Runami — Cosmic Princess Kaguya!', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Jin y Freyja', parents: [
         { name: 'Jin Mori', img: 'fotos-poderes/Jin Mori.jpg' },
         { name: 'Freyja Kane', img: 'fotos-poderes/Freyja Kane.jpg' }
       ], children: [
-        { name: 'Hera Mori', img: "Hijos/Jin y Freyja/Hera Mori.png", gender: 'F', tag: 'Y', series: 'Alchemy Star', meta: 'Regina — Alchemy Stars', link: '#', born: false },
-        { name: 'Eris Mori', img: "Hijos/Jin y Freyja/Eris Mori.jpg", gender: 'F', tag: 'L', series: 'The Rising Of The Shield Hero', meta: 'Malty Melromac — The Rising Of The Shield Hero', link: '#', born: false }
+        { name: 'Hera Mori', img: "Hijos/Jin y Freyja/Hera Mori.png", gender: 'F', tag: 'Y', series: 'Alchemy Star', meta: 'Regina — Alchemy Stars', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Eris Mori', img: "Hijos/Jin y Freyja/Eris Mori.jpg", gender: 'F', tag: 'L', series: 'The Rising Of The Shield Hero', meta: 'Malty Melromac — The Rising Of The Shield Hero', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
 
       ]},
       { family: 'Hakuryuu y Velvet', parents: [
         { name: 'Hakuryuu Ren', img: 'fotos-poderes/Hakuryuu Ren.jpg' },
         { name: 'Velvet Crowe', img: 'fotos-poderes/Velvet Crowe.jpg' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Sukuna y Sentencia', parents: [
         { name: 'Ryoomen Sukuna', img: 'fotos-poderes/Sukuna.jpg' },
         { name: 'Urtiel', img: 'fotos-poderes/Urtiel.png' } 
       ], children: [
-        { name: 'Lilith Sukuna', img:'Hijos/Sukuna y Sentencia/Lilith Sukuna.jpg',gender: 'F', tag: 'Y', series: 'Path to Nowhere', meta: 'Ninety-Nine — Path to Nowhere', link: '#', born: false },
-        { name: 'Heine Sukuna', img:'Hijos/Sukuna y Sentencia/Heine Sukuna.png', gender: 'F', tag: 'S', series: 'Sentouin, Hakenshimasu!', meta: 'Heine — Sentouin, Hakenshimasu!', link: '#', born: false }
+        { name: 'Lilith Sukuna', img:'Hijos/Sukuna y Sentencia/Lilith Sukuna.jpg',gender: 'F', tag: 'Y', series: 'Path to Nowhere', meta: 'Ninety-Nine — Path to Nowhere', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Heine Sukuna', img:'Hijos/Sukuna y Sentencia/Heine Sukuna.png', gender: 'F', tag: 'S', series: 'Sentouin, Hakenshimasu!', meta: 'Heine — Sentouin, Hakenshimasu!', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Grimmjow y Justicia', parents: [
         { name: 'Grimmjow Jearjearquez', img: 'fotos-poderes/Grimmjow.png' },
         { name: 'Adalet', img: 'fotos-poderes/Adalet.png' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Juri y Vega', parents: [
         { name: 'Juri Han', img: 'fotos-poderes/Juri Han.jpg' },
         { name: 'Hugo Vega', img: 'fotos-poderes/Hugo Vega.png' }
       ], children: [
-        { name: 'Homare Vega', img: "Hijos/Vega y Juri/Homare Vega.jpg", gender: 'F', tag: 'L', series: 'Mato Seihei no Slave', meta: 'Homare Azuma — Mato Seihei no Slave', link: '#', born: false }
+        { name: 'Homare Vega', img: "Hijos/Vega y Juri/Homare Vega.jpg", gender: 'F', tag: 'L', series: 'Mato Seihei no Slave', meta: 'Homare Azuma — Mato Seihei no Slave', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Tier y Rokurou', parents: [
         { name: 'Tier Harribel', img: 'fotos-poderes/Tier Harribel.jpg' },
         { name: 'Rokurou', img: 'fotos-poderes/Rokurou.png' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Medaka y Kiba', parents: [
         { name: 'Kurokami Medaka', img: 'fotos-poderes/Kurokami Medaka.jpg' },
         { name: 'Kiba', img: 'fotos-poderes/Yuuto Kiba.jpg' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Yuno y Eula', parents: [
         { name: 'Yuno Grinberryal', img: 'fotos-poderes/Yuno Grinberryal.jpg' },
         { name: 'Eula Lawrence', img: 'fotos-poderes/Eula.jpg' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Toga, Toru y Hitoshi', parents: [
         { name: 'Himiko Toga', img: 'fotos-poderes/Himiko Toga.png' },
         { name: 'Toru Hagakure', img: 'fotos-poderes/Toru Hagakure.png' },
         { name: 'Hitoshi Shinso', img: 'fotos-poderes/Hitoshi Shinso.png' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ??? — [Madre]', link: '#' }
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ??? — [Madre]', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Zenos y Rias', parents: [
         { name: 'Zenos Sochiku', img: 'fotos-poderes/Zenos.jpg' },
         { name: 'Rias Gremory', img: 'fotos-poderes/Rias Gremory.jpg' }
       ], children: [
-        { name: 'Millicas Shochiku', img: "Hijos/Zenos y cñia/Rias/Millica Shochiku.png", gender: 'M', tag: 'S', series: 'Highschool DxD', meta: 'Millicas Gremory — Highschool DxD — [Rias Gremory]', link: '#', born: false }
+        { name: 'Millicas Shochiku', img: "Hijos/Zenos y cñia/Rias/Millica Shochiku.png", gender: 'M', tag: 'S', series: 'Highschool DxD', meta: 'Millicas Gremory — Highschool DxD — [Rias Gremory]', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Shoto y Mina', parents: [
         { name: 'Shoto Todoroki', img: 'fotos-poderes/Todoroki.jpg' }, //* Devuélveme a mi puta novia *// 
         { name: 'Mina Ashido', img: 'fotos-poderes/Mina Ashido.jpg' }
       ], children: [
-        { name: 'Tōshirō Todoroki', img: "Hijos/Shoto y Mina/Tōshirō Todoroki.jpg", gender: 'M', tag: 'L', series: 'Bleach', meta: 'Tōshirō Hitsugaya — Bleach', link: '#', born: false },
-        { name: 'Uta Todoroki', img: "Hijos/Shoto y Mina/Uta Todoroki.jpg", gender: 'F', tag: 'L', series: 'One Piece', meta: 'Uta — One Piece', link: '#', born: false },
-        { name: 'Tao Todoroki', img: "Hijos/Shoto y Mina/Tao Todoroki.jpg", gender: 'F', tag: 'S', series: 'Jigokuraku', meta: 'Tao — Jigokuraku', link: '#', born: false },
-        { name: 'Takako Todoroki', img: "Hijos/Shoto y Mina/Takako Todoroki.jpg", gender: 'F', tag: 'L', series: 'Jujutsu Kaisen', meta: 'Takako — Jujutsu Kaisen', link: '#', born: false }
+        { name: 'Tōshirō Todoroki', img: "Hijos/Shoto y Mina/Tōshirō Todoroki.jpg", gender: 'M', tag: 'L', series: 'Bleach', meta: 'Tōshirō Hitsugaya — Bleach', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Uta Todoroki', img: "Hijos/Shoto y Mina/Uta Todoroki.jpg", gender: 'F', tag: 'L', series: 'One Piece', meta: 'Uta — One Piece', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Tao Todoroki', img: "Hijos/Shoto y Mina/Tao Todoroki.jpg", gender: 'F', tag: 'S', series: 'Jigokuraku', meta: 'Tao — Jigokuraku', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Takako Todoroki', img: "Hijos/Shoto y Mina/Takako Todoroki.jpg", gender: 'F', tag: 'L', series: 'Jujutsu Kaisen', meta: 'Takako — Jujutsu Kaisen', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Keigo y Baiken', parents: [
         { name: 'Keigo Magami', img: 'fotos-poderes/Keigo Magami.jpg' },
         { name: 'Baiken Tatakai', img: 'fotos-poderes/Baiken.jpg' }
       ], children: [
-        { name: 'Reid Magami', img: "Hijos/Keigo y Baiken/Reid Magami.jpg", gender: 'M', tag: 'Y', series: 'RE:Zero', meta: 'Reid Astrea — RE:Zero', link: '#', born: false },
-        { name: 'Hinako Magami', img: "Hijos/Keigo y Baiken/Hinako Magami.png", gender: 'F', tag: 'L', series: 'Mission Yozakura Family', meta: 'Rin Fudou — Mission Yozakura Family', link: '#', born: false }
+        { name: 'Reid Magami', img: "Hijos/Keigo y Baiken/Reid Magami.jpg", gender: 'M', tag: 'Y', series: 'RE:Zero', meta: 'Reid Astrea — RE:Zero', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Hinako Magami', img: "Hijos/Keigo y Baiken/Hinako Magami.png", gender: 'F', tag: 'L', series: 'Mission Yozakura Family', meta: 'Rin Fudou — Mission Yozakura Family', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Garou y Kuroka', parents: [
         { name: 'Garou Silverfang', img: 'fotos-poderes/Garou.jpg' },
         { name: 'Kuroka Toujou', img: 'fotos-poderes/Kuroka Toujou.jpg' }
       ], children: [
-        { name: 'Wolf Silverfang', img: "Hijos/Garou y Kuroka/Wolf Silverfang.webp", gender: 'M', tag: 'S', series: 'Witch Watch', meta: 'Wolf — Witch Watch', link: '#', born: false },
-        { name: 'Nezumii Silverfang', img: "Hijos/Garou y Kuroka/Lisiá.jpg", gender: 'F', tag: 'L', series: 'Rememento: White Shadow', meta: 'Li Xiang — Rememento: White Shadow', link: '#', born: false },
-        { name: 'Zen Silerfang', img: "Hijos/Garou y Kuroka/Zen Silverfang.jpg", gender: 'M', tag: 'L', series: 'Blood Lad', meta: 'Wolf — Blood Lad', link: '#', born: false } //* 💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀 Deadpool — Deadpool', link: '#' }
+        { name: 'Wolf Silverfang', img: "Hijos/Garou y Kuroka/Wolf Silverfang.webp", gender: 'M', tag: 'S', series: 'Witch Watch', meta: 'Wolf — Witch Watch', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Nezumii Silverfang', img: "Hijos/Garou y Kuroka/Lisiá.jpg", gender: 'F', tag: 'L', series: 'Rememento: White Shadow', meta: 'Li Xiang — Rememento: White Shadow', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Zen Silerfang', img: "Hijos/Garou y Kuroka/Zen Silverfang.jpg", gender: 'M', tag: 'L', series: 'Blood Lad', meta: 'Wolf — Blood Lad', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''} //* 💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀 Deadpool — Deadpool', link: '#' }
       ]}
     ];
 
@@ -1100,6 +1524,13 @@
                 data-gender="${escapeHTML(kid.gender)}"
                 data-tag="${escapeHTML(kid.tag)}"
                 data-link="${escapeHTML(kid.link)}"
+                data-age="${escapeHTML(kid.age)}"
+                data-role="${escapeHTML(kid.role)}"
+                data-personality="${escapeHTML(kid.personality)}"
+                data-powers="${escapeHTML(kid.powers)}"
+                data-notes="${escapeHTML(kid.notes)}"
+                data-parents-label="${escapeHTML(fam.parents.map(parentName).filter(Boolean).join(' y '))}"
+                data-born-label="${escapeHTML(kid.born === true ? 'Nacido/a' : kid.born === false ? 'No nacido/a' : 'Estado desconocido')}"
               >
                 <div class="card-media ${isValidImage(kid.img) ? 'has-img' : ''}">
                   ${imageOrFallback(
@@ -1290,7 +1721,22 @@
     sortBtns.forEach(btn => btn.addEventListener('click', () => {
       state.sort = btn.dataset.sort || 'alpha';
       sortBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
-      renderFamilies();
+      function updateDashboardMetrics(){
+      const families = DATA.length;
+      const children = DATA.reduce((total, fam) => total + fam.children.length, 0);
+      const born = DATA.reduce((total, fam) => total + fam.children.filter(kid => kid.born === true).length, 0);
+
+      const metricFamilies = document.getElementById('metricFamilies');
+      const metricChildren = document.getElementById('metricChildren');
+      const metricBorn = document.getElementById('metricBorn');
+
+      if(metricFamilies) metricFamilies.textContent = families;
+      if(metricChildren) metricChildren.textContent = children;
+      if(metricBorn) metricBorn.textContent = born;
+    }
+
+    updateDashboardMetrics();
+    renderFamilies();
     }));
 
     document.getElementById('reset').addEventListener('click', () => {
@@ -1311,6 +1757,8 @@
     const mTitle = document.getElementById('mTitle');
     const mMeta = document.getElementById('mMeta');
     const mLink = document.getElementById('mLink');
+    const mStatusRow = document.getElementById('mStatusRow');
+    const mDetails = document.getElementById('mDetails');
     const mClose = document.getElementById('mClose');
 
     let lastFocusedCard = null;
@@ -1322,10 +1770,35 @@
       const meta = card.querySelector('p')?.textContent || '';
       const mediaHTML = card.querySelector('.card-media')?.innerHTML || '';
       const link = card.dataset.link || '#';
+      const bornLabel = card.dataset.bornLabel || 'Estado desconocido';
+      const tag = card.dataset.tag || '?';
+      const gender = card.dataset.gender || '?';
+      const parentsLabel = card.dataset.parentsLabel || '';
+      const details = [
+        ['Padres', parentsLabel],
+        ['Edad', card.dataset.age],
+        ['Rol', card.dataset.role],
+        ['Personalidad', card.dataset.personality, true],
+        ['Poderes', card.dataset.powers, true],
+        ['Notas', card.dataset.notes, true]
+      ];
 
       mBox.innerHTML = mediaHTML;
       mTitle.textContent = title;
       mMeta.textContent = meta;
+      mStatusRow.innerHTML = `
+        <span class="m-pill ${bornLabel.includes('No') ? 'locked' : bornLabel.includes('Nacido') ? 'good' : ''}">${escapeHTML(bornLabel)}</span>
+        <span class="m-pill">${escapeHTML(genderMark(gender))}</span>
+        <span class="m-pill">TAG ${escapeHTML(tag)}</span>
+      `;
+      mDetails.innerHTML = `
+        <div class="m-info-grid">
+          ${details
+            .filter(([, value]) => String(value || '').trim() !== '')
+            .map(([label, value, wide]) => `<div class="${wide ? 'm-note' : 'm-info'}"><b>${escapeHTML(label)}</b><span>${escapeHTML(value)}</span></div>`)
+            .join('')}
+        </div>
+      `;
 
       if(isValidLink(link)){
         mLink.href = link;
@@ -1404,6 +1877,20 @@
     });
 
     renderFamilies();
-  </script>
+  
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+ btn.addEventListener('click',()=>{
+   document.querySelectorAll('.tab-btn').forEach(b=>{
+     const active = b === btn;
+     b.classList.toggle('active', active);
+     b.setAttribute('aria-selected', String(active));
+   });
+   document.getElementById('tab-eternal').classList.toggle('hidden',btn.dataset.tab!=='eternal');
+   document.getElementById('tab-gen1').classList.toggle('hidden',btn.dataset.tab!=='gen1');
+   updateHeaderHeight();
+ });
+});
+
+</script>
 </body>
 </html>

@@ -167,7 +167,7 @@ const personajes = [
     talento: {
       "nombre": "Ajuste Táctico",
       "ingles": "Tactical Setting",
-      "descripcion": ""
+      "descripcion": "Una vez por parte puede elegir el talento de uno de sus compañeros. El talento se lo quedará lo que reste de mitad."
     },
     espirituGuerrero: {
       nombre: "Ángel Del Caos Y La Destrucción, Lucifer",
@@ -227,7 +227,7 @@ const personajes = [
   talento: {
     nombre: "Casanova",
     ingles: "Casanova",
-    descripcion: ""
+    descripcion: "Los duelos contra chicas tienen una opcion extra de choose"
   },
   espirituGuerrero: {
     nombre: "",
@@ -607,7 +607,7 @@ const personajes = [
   titulo: "",
   equipo: "Raimon",
   imagen: "../Hijos Inazuma/pjs/LidiaAdolescente.jpg",
-  elemento: "",
+  elemento: "Luz",
   posicion: "Defensa",
   tecnicas: [
     [
@@ -616,18 +616,22 @@ const personajes = [
         "G5",
         "Bloqueo",
         "Con Candace",
+        "Bosque"
     ],
     [
         "Ojo De Dios",
         "God's Eye",
         "G5",
-        "Regate"
+        "Regate",
+        "",
+      
     ],
     [
         "Deslumbramiento Celestial",
         "Heaven's Dazzle",
         "G5",
-        "Bloqueo"
+        "Bloqueo",
+        "",
     ]
 ],
   talento: {
@@ -729,7 +733,7 @@ const personajes = [
   titulo: "",
   equipo: "Universal",
   imagen: "../Hijos Inazuma/pjs/Norman Hearthless.jpg",
-  elemento: "",
+  elemento: "Fuego",
   posicion: "",
   tecnicas: [
     [
@@ -754,7 +758,9 @@ const personajes = [
         "Bomba Espectral",
         "Spectral Bomb",
         "G5",
-        "Bloqueo"
+        "Bloqueo",
+        "",
+        "Sombra"
     ]
 ],
   talento: {
