@@ -2152,59 +2152,234 @@ const ficha = document.getElementById("ficha-personaje");
 const buscador = document.getElementById("buscador-personajes");
 const contador = document.getElementById("contador-personajes");
 
-let personajeActivo = 0;
-let filtroActual = "";
+const filtroAfinidad = document.getElementById("filtro-afinidad");
+const filtroPosicion = document.getElementById("filtro-posicion");
+const filtroEquipo = document.getElementById("filtro-equipo");
+const filtroTipo = document.getElementById("filtro-tipo");
+const limpiarFiltrosBtn = document.getElementById("limpiar-filtros");
+const toggleFiltrosBtn = document.getElementById("toggle-filtros");
+const filtrosPanel = document.getElementById("filtros-panel");
+const filtrosContenido = document.getElementById("filtros-contenido");
+const chipsEspeciales = Array.from(document.querySelectorAll(".filtro-chip"));
 
-function textoBusqueda(pj) {
-  return [
-    pj.nombre,
-    pj.titulo,
-    pj.equipo,
-    pj.elemento,
-    pj.posicion,
-    ...(pj.tecnicas || []).flat(),
-    pj.talento?.nombre,
-    pj.talento?.ingles,
-    pj.espirituGuerrero?.nombre,
-    pj.espirituGuerrero?.ingles,
-    pj.miximax?.nombre
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLocaleLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
+let personajeActivo = 0;
+
+const estadoFiltros = {
+  busqueda: "",
+  afinidad: "",
+  posicion: "",
+  equipo: "",
+  tipo: "",
+  especiales: new Set()
+};
 
 function normalizarTexto(texto = "") {
-  return texto
-    .toLocaleLowerCase()
+  return String(texto ?? "")
+    .toLocaleLowerCase("es")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 }
 
+function posicionCanonica(posicion = "") {
+  const p = normalizarTexto(posicion);
+  const posiciones = {
+    portero: "Portero",
+    por: "Portero",
+    pt: "Portero",
+    defensa: "Defensa",
+    defemsa: "Defensa",
+    df: "Defensa",
+    def: "Defensa",
+    mediocentro: "Mediocentro",
+    medio: "Mediocentro",
+    centrocampista: "Mediocentro",
+    mc: "Mediocentro",
+    delantero: "Delantero",
+    delantera: "Delantero",
+    dc: "Delantero",
+    dl: "Delantero",
+    gerente: "Gerente",
+    ge: "Gerente",
+    entrenador: "Entrenador",
+    dt: "Entrenador"
+  };
+
+  return posiciones[p] || String(posicion || "").trim();
+}
+
+function tecnicaTipo(tecnica = []) {
+  const tipo = normalizarTexto(tecnica?.[3]);
+  if (["tiro", "disparo"].includes(tipo)) return "Tiro";
+  if (["regate", "drible", "dribble"].includes(tipo)) return "Regate";
+  if (["bloqueo", "defensa"].includes(tipo)) return "Bloqueo";
+  if (["parada", "atajada", "portero"].includes(tipo)) return "Parada";
+  return String(tecnica?.[3] || "").trim();
+}
+
+function tecnicaAfinidad(tecnica = [], pj = {}) {
+  return String(tecnica?.[5] || pj.elemento || "").trim();
+}
+
+function textoBusqueda(pj) {
+  const tecnicas = (pj.tecnicas || []).flatMap(st => st || []);
+  const eg = [
+    pj.espirituGuerrero?.nombre,
+    pj.espirituGuerrero?.ingles,
+    ...(pj.espirituGuerrero?.tecnicas || []).flat()
+  ];
+  const miximax = [
+    pj.miximax?.nombre,
+    ...(pj.miximax?.tecnicas || []).flat()
+  ];
+
+  return normalizarTexto([
+    pj.nombre,
+    pj.titulo,
+    pj.equipo,
+    pj.elemento,
+    pj.posicion,
+    posicionCanonica(pj.posicion),
+    pj.talento?.nombre,
+    pj.talento?.ingles,
+    pj.talento?.descripcion,
+    ...tecnicas,
+    ...eg,
+    ...miximax
+  ].filter(Boolean).join(" "));
+}
+
+function opcionesUnicas(valores) {
+  return [...new Set(
+    valores
+      .map(v => String(v || "").trim())
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+}
+
+function rellenarSelect(select, textoTodas, opciones) {
+  if (!select) return;
+  const valorPrevio = select.value;
+  select.innerHTML = `<option value="">${textoTodas}</option>` +
+    opciones.map(opcion => `<option value="${opcion}">${opcion}</option>`).join("");
+  select.value = opciones.includes(valorPrevio) ? valorPrevio : "";
+}
+
+function tieneEG(pj) {
+  return Boolean(
+    pj.espirituGuerrero?.nombre ||
+    pj.espirituGuerrero?.ingles ||
+    (pj.espirituGuerrero?.tecnicas || []).length
+  );
+}
+
+function tieneMiximax(pj) {
+  return Boolean(
+    pj.miximax?.nombre ||
+    (pj.miximax?.tecnicas || []).length
+  );
+}
+
+function tieneCombinada(pj) {
+  return (pj.tecnicas || []).some(st => {
+    const extra = normalizarTexto(st?.[4]);
+    return extra.startsWith("con ") || extra.includes(" con ");
+  });
+}
+
+function sincronizarEstadoDesdeHTML() {
+  estadoFiltros.busqueda = normalizarTexto(buscador?.value || "");
+  estadoFiltros.afinidad = filtroAfinidad?.value || "";
+  estadoFiltros.posicion = filtroPosicion?.value || "";
+  estadoFiltros.equipo = filtroEquipo?.value || "";
+  estadoFiltros.tipo = filtroTipo?.value || "";
+}
+
+function hayFiltrosActivos() {
+  return Boolean(
+    estadoFiltros.busqueda ||
+    estadoFiltros.afinidad ||
+    estadoFiltros.posicion ||
+    estadoFiltros.equipo ||
+    estadoFiltros.tipo ||
+    estadoFiltros.especiales.size
+  );
+}
+
+function actualizarEstadoVisualFiltros() {
+  filtrosPanel?.classList.toggle("tiene-filtros", hayFiltrosActivos());
+
+  chipsEspeciales.forEach(chip => {
+    chip.classList.toggle("activo", estadoFiltros.especiales.has(chip.dataset.especial));
+  });
+}
+
+function coincideConEspeciales(pj) {
+  if (!estadoFiltros.especiales.size) return true;
+  if (estadoFiltros.especiales.has("eg") && !tieneEG(pj)) return false;
+  if (estadoFiltros.especiales.has("miximax") && !tieneMiximax(pj)) return false;
+  if (estadoFiltros.especiales.has("combinada") && !tieneCombinada(pj)) return false;
+  return true;
+}
+
 function personajesFiltrados() {
-  const filtro = normalizarTexto(filtroActual);
-  if (!filtro) return personajes.map((pj, index) => ({ pj, index }));
+  const afinidad = normalizarTexto(estadoFiltros.afinidad);
+  const posicion = normalizarTexto(estadoFiltros.posicion);
+  const equipo = normalizarTexto(estadoFiltros.equipo);
+  const tipo = normalizarTexto(estadoFiltros.tipo);
+  const busqueda = estadoFiltros.busqueda;
 
   return personajes
     .map((pj, index) => ({ pj, index }))
-    .filter(({ pj }) => textoBusqueda(pj).includes(filtro));
+    .filter(({ pj }) => {
+      const coincideBusqueda = !busqueda || textoBusqueda(pj).includes(busqueda);
+      const coincideAfinidad = !afinidad ||
+        normalizarTexto(pj.elemento) === afinidad ||
+        (pj.tecnicas || []).some(st => normalizarTexto(tecnicaAfinidad(st, pj)) === afinidad);
+      const coincidePosicion = !posicion || normalizarTexto(posicionCanonica(pj.posicion)) === posicion;
+      const coincideEquipo = !equipo || normalizarTexto(pj.equipo) === equipo;
+      const coincideTipo = !tipo || (pj.tecnicas || []).some(st => normalizarTexto(tecnicaTipo(st)) === tipo);
+
+      return coincideBusqueda && coincideAfinidad && coincidePosicion && coincideEquipo && coincideTipo && coincideConEspeciales(pj);
+    });
+}
+
+function inicializarFiltros() {
+  const afinidades = opcionesUnicas([
+    ...personajes.map(pj => pj.elemento),
+    ...personajes.flatMap(pj => (pj.tecnicas || []).map(st => tecnicaAfinidad(st, pj)))
+  ]);
+
+  const posiciones = opcionesUnicas(personajes.map(pj => posicionCanonica(pj.posicion)));
+  const equipos = opcionesUnicas(personajes.map(pj => pj.equipo));
+  const tipos = opcionesUnicas(personajes.flatMap(pj => (pj.tecnicas || []).map(st => tecnicaTipo(st))));
+
+  rellenarSelect(filtroAfinidad, "Todas", afinidades);
+  rellenarSelect(filtroPosicion, "Todas", posiciones);
+  rellenarSelect(filtroEquipo, "Todos", equipos);
+  rellenarSelect(filtroTipo, "Todas", tipos);
+}
+
+function asegurarPersonajeVisible(visibles) {
+  if (!visibles.length) return;
+  if (!visibles.some(({ index }) => index === personajeActivo)) {
+    personajeActivo = visibles[0].index;
+  }
 }
 
 function renderSelector() {
   const visibles = personajesFiltrados();
+  asegurarPersonajeVisible(visibles);
 
-  if (contador) {
-    contador.textContent = `${visibles.length}/${personajes.length}`;
-  }
+  if (contador) contador.textContent = `${visibles.length}/${personajes.length}`;
+
+  if (!selector) return;
 
   if (!visibles.length) {
     selector.innerHTML = `
       <div class="sin-resultados">
         <strong>No hay jugadores</strong>
-        <span>Prueba con otro nombre, equipo, elemento o posición.</span>
+        <span>Prueba con otra afinidad, posición, equipo, tipo de ST o búsqueda.</span>
       </div>
     `;
     return;
@@ -2212,29 +2387,31 @@ function renderSelector() {
 
   selector.innerHTML = visibles.map(({ pj, index }, orden) => {
     const activo = index === personajeActivo ? "activo" : "";
-    const iconoElemento = iconosAfinidad[pj.elemento] || "";
-    const iconoPosicion = iconosPosicion[pj.posicion] || "";
+    const elemento = pj.elemento || "";
+    const iconoElemento = iconosAfinidad[elemento] || "";
+    const posicion = posicionCanonica(pj.posicion);
+    const iconoPosicion = iconosPosicion[posicion] || "";
 
     return `
-      <button class="slot-personaje ${activo} afinidad-${afinidadClase(pj.elemento)}" data-index="${index}" style="--delay:${orden * 22}ms">
+      <button class="slot-personaje ${activo} afinidad-${afinidadClase(elemento)}" data-index="${index}" style="--delay:${orden * 18}ms">
         <div class="slot-foto">
           <img src="${pj.imagen}" alt="${pj.nombre}">
         </div>
 
         <div class="slot-info">
           <strong>${pj.nombre}</strong>
-          <span>${pj.titulo || pj.equipo || "Jugador"}</span>
+          <span>${pj.titulo || pj.equipo || posicion || "Jugador"}</span>
         </div>
 
         <div class="slot-mini-icons">
-          ${iconoElemento ? `<img src="${iconoElemento}" alt="${pj.elemento}">` : ""}
-          ${iconoPosicion ? `<img src="${iconoPosicion}" alt="${pj.posicion}">` : ""}
+          ${iconoElemento ? `<img src="${iconoElemento}" alt="${elemento}">` : ""}
+          ${iconoPosicion ? `<img src="${iconoPosicion}" alt="${posicion}">` : ""}
         </div>
       </button>
     `;
   }).join("");
 
-  document.querySelectorAll(".slot-personaje").forEach(btn => {
+  selector.querySelectorAll(".slot-personaje").forEach(btn => {
     btn.addEventListener("click", () => {
       personajeActivo = Number(btn.dataset.index);
       renderSelector();
@@ -2246,6 +2423,7 @@ function renderSelector() {
 function crearTecnica(tecnica, elementoPersonaje) {
   const [nombre, ingles, grado, tipo, extra, afinidad] = tecnica;
   const elementoTecnica = afinidad || elementoPersonaje;
+  const tipoLimpio = tecnicaTipo(tecnica);
   const icono = iconosAfinidad[elementoTecnica] || "";
   const iconoGrado = iconosGrado[grado] || "";
   const claseAfinidad = afinidadClase(elementoTecnica);
@@ -2262,7 +2440,7 @@ function crearTecnica(tecnica, elementoPersonaje) {
 
       <div class="tecnica-tags">
         ${iconoGrado ? `<img class="icono-grado" src="${iconoGrado}" alt="${grado}">` : grado ? `<b>${grado}</b>` : ""}
-        ${tipo ? `<em>${tipo}</em>` : ""}
+        ${tipoLimpio ? `<em>${tipoLimpio}</em>` : ""}
         ${extra ? `<small>${extra}</small>` : ""}
       </div>
     </li>
@@ -2286,7 +2464,7 @@ function renderListaExtra(titulo, subtitulo, lista, tipoFallback = "") {
               </div>
             </div>
             <div class="tecnica-tags">
-              ${st[2] || tipoFallback ? `<em>${st[2] || tipoFallback}</em>` : ""}
+              ${st[2] || tipoFallback ? `<em>${tecnicaTipo(["", "", "", st[2] || tipoFallback])}</em>` : ""}
             </div>
           </li>
         `).join("")}
@@ -2296,12 +2474,16 @@ function renderListaExtra(titulo, subtitulo, lista, tipoFallback = "") {
 }
 
 function renderFicha(pj) {
-  const iconoElemento = iconosAfinidad[pj.elemento] || "";
-  const iconoPosicion = iconosPosicion[pj.posicion] || "";
+  if (!ficha || !pj) return;
+
+  const elemento = pj.elemento || "";
+  const iconoElemento = iconosAfinidad[elemento] || "";
+  const posicion = posicionCanonica(pj.posicion);
+  const iconoPosicion = iconosPosicion[posicion] || "";
   const escudo = pj.equipo && escudosEquipos[pj.equipo] ? escudosEquipos[pj.equipo] : "";
 
   ficha.innerHTML = `
-    <article class="panel-ficha afinidad-${afinidadClase(pj.elemento)}">
+    <article class="panel-ficha afinidad-${afinidadClase(elemento)}">
       <section class="hero-jugador">
         <div class="retrato-grande">
           <img src="${pj.imagen}" alt="${pj.nombre}">
@@ -2314,16 +2496,16 @@ function renderFicha(pj) {
           ${pj.titulo ? `<h3>${pj.titulo}</h3>` : ""}
 
           <div class="datos-rapidos">
-            ${pj.elemento ? `
-              <span class="chip-afinidad afinidad-${afinidadClase(pj.elemento)}">
-                ${iconoElemento ? `<img src="${iconoElemento}" alt="${pj.elemento}">` : ""}
-                ${pj.elemento}
+            ${elemento ? `
+              <span class="chip-afinidad afinidad-${afinidadClase(elemento)}">
+                ${iconoElemento ? `<img src="${iconoElemento}" alt="${elemento}">` : ""}
+                ${elemento}
               </span>` : ""}
 
-            ${pj.posicion ? `
+            ${posicion ? `
               <span class="chip-posicion">
-                ${iconoPosicion ? `<img src="${iconoPosicion}" alt="${pj.posicion}">` : ""}
-                ${pj.posicion}
+                ${iconoPosicion ? `<img src="${iconoPosicion}" alt="${posicion}">` : ""}
+                ${posicion}
               </span>` : ""}
 
             ${pj.equipo ? `<span class="chip-equipo">${pj.equipo}</span>` : ""}
@@ -2337,7 +2519,7 @@ function renderFicha(pj) {
         <section class="bloque bloque-tecnicas">
           <h4>Supertécnicas</h4>
           <ul>
-            ${(pj.tecnicas || []).map(t => crearTecnica(t, pj.elemento)).join("") || `<p class="sub">Sin técnicas registradas.</p>`}
+            ${(pj.tecnicas || []).map(t => crearTecnica(t, elemento)).join("") || `<p class="sub">Sin técnicas registradas.</p>`}
           </ul>
         </section>
 
@@ -2361,12 +2543,84 @@ function renderFicha(pj) {
   ficha.classList.add("animar-ficha");
 }
 
-if (buscador) {
-  buscador.addEventListener("input", e => {
-    filtroActual = e.target.value;
-    renderSelector();
+function aplicarFiltrosYRenderizar() {
+  sincronizarEstadoDesdeHTML();
+  const visibles = personajesFiltrados();
+  asegurarPersonajeVisible(visibles);
+  actualizarEstadoVisualFiltros();
+  renderSelector();
+
+  if (visibles.length) {
+    renderFicha(personajes[personajeActivo]);
+  } else if (ficha) {
+    ficha.innerHTML = `
+      <article class="panel-ficha panel-sin-resultados">
+        <section class="bloque sin-resultados-grande">
+          <h4>Sin resultados</h4>
+          <p>No hay ningún jugador que cumpla esos filtros.</p>
+        </section>
+      </article>
+    `;
+  }
+}
+
+function limpiarTodosLosFiltros() {
+  if (buscador) buscador.value = "";
+  [filtroAfinidad, filtroPosicion, filtroEquipo, filtroTipo].forEach(select => {
+    if (select) select.value = "";
+  });
+
+  estadoFiltros.busqueda = "";
+  estadoFiltros.afinidad = "";
+  estadoFiltros.posicion = "";
+  estadoFiltros.equipo = "";
+  estadoFiltros.tipo = "";
+  estadoFiltros.especiales.clear();
+
+  personajeActivo = 0;
+  aplicarFiltrosYRenderizar();
+}
+
+function conectarEventosFiltros() {
+  buscador?.addEventListener("input", aplicarFiltrosYRenderizar);
+
+  [filtroAfinidad, filtroPosicion, filtroEquipo, filtroTipo].forEach(select => {
+    select?.addEventListener("change", aplicarFiltrosYRenderizar);
+  });
+
+  chipsEspeciales.forEach(chip => {
+    chip.addEventListener("click", () => {
+      const especial = chip.dataset.especial;
+      if (!especial) return;
+
+      if (estadoFiltros.especiales.has(especial)) {
+        estadoFiltros.especiales.delete(especial);
+      } else {
+        estadoFiltros.especiales.add(especial);
+      }
+
+      aplicarFiltrosYRenderizar();
+    });
+  });
+
+  limpiarFiltrosBtn?.addEventListener("click", limpiarTodosLosFiltros);
+
+  toggleFiltrosBtn?.addEventListener("click", () => {
+    const abierto = filtrosPanel?.classList.toggle("abierto");
+    toggleFiltrosBtn.setAttribute("aria-expanded", String(Boolean(abierto)));
+
+    if (filtrosContenido) {
+      filtrosContenido.hidden = false;
+    }
   });
 }
 
-renderSelector();
-renderFicha(personajes[personajeActivo]);
+function iniciarPagina() {
+  inicializarFiltros();
+  conectarEventosFiltros();
+  sincronizarEstadoDesdeHTML();
+  actualizarEstadoVisualFiltros();
+  aplicarFiltrosYRenderizar();
+}
+
+iniciarPagina();

@@ -21,6 +21,45 @@
           <input id="buscador-personajes" type="search" placeholder="Ej: Ren, Fuego, Raimon, Portero...">
         </div>
 
+        <div class="filtros-panel" id="filtros-panel">
+          <div class="filtros-top">
+            <button id="toggle-filtros" class="toggle-filtros" type="button" aria-expanded="false" aria-controls="filtros-contenido">
+              ⚙️ Filtros
+            </button>
+            <button id="limpiar-filtros" type="button">Limpiar</button>
+          </div>
+
+          <div class="filtros-contenido" id="filtros-contenido">
+            <div class="filtros-grid">
+            <label>
+              Afinidad
+              <select id="filtro-afinidad"></select>
+            </label>
+
+            <label>
+              Posición
+              <select id="filtro-posicion"></select>
+            </label>
+
+            <label>
+              Equipo
+              <select id="filtro-equipo"></select>
+            </label>
+
+            <label>
+              Tipo ST
+              <select id="filtro-tipo"></select>
+            </label>
+            </div>
+
+            <div class="filtros-especiales" aria-label="Filtros especiales">
+            <button class="filtro-chip" type="button" data-especial="eg">EG</button>
+            <button class="filtro-chip" type="button" data-especial="miximax">Miximax</button>
+              <button class="filtro-chip" type="button" data-especial="combinada">Combinadas</button>
+            </div>
+          </div>
+        </div>
+
         <div class="selector-header">
           <strong>Plantilla</strong>
           <span id="contador-personajes"></span>
