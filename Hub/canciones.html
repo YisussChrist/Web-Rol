@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generador de canciones</title>
+  <link rel="stylesheet" href="hub.css" />
+</head>
+<body>
+
+<main class="hub">
+  <section class="hero">
+    <p class="eyebrow">ResonanceTM Tools</p>
+    <h1>Generador de canciones</h1>
+    <p>Rellena los campos y copia el código generado para pasárselo a Yisus sin romperle la cabeza.</p>
+  </section>
+
+  <div class="guide-card">
+    <h2>📖 Guía rápida</h2>
+
+    <ul>
+        <li><strong>Imagen del personaje:</strong> Escribe solo el nombre del archivo. <code>freyja.png</code></li>
+        <li><strong>Cover:</strong> Escribe solo el nombre del archivo. <code>NombreCover.png</code></li>
+        <li><strong>Audio:</strong> Escribe solo el nombre del archivo. <code>NombreAudio.mp3</code></li>
+        <li><strong>Tags:</strong> Sepáralos por comas. Ejemplo: <code>batalla, épica, transformación</code></li>
+        <li><strong>Lore:</strong> Si no quieres añadir uno, puedes dejar el campo vacío.</li>
+    </ul>
+
+    <div class="guide-note">
+        💡 <strong>Importante:</strong> No hace falta escribir las carpetas
+        <code>img/</code> ni <code>audio/</code>. El generador las añade automáticamente.
+    </div>
+</div>
+
+  <section class="generator">
+    <div class="form-card">
+      <h2>Datos del personaje</h2>
+
+      <label>Nombre del personaje</label>
+      <input id="character" placeholder="Ej: Freyja Kane">
+
+      <label>Imagen del personaje</label>
+      <input id="characterFace" placeholder="Ej: freyja.png">
+
+      <label>Lore del personaje</label>
+      <textarea id="characterLore" placeholder="Breve descripción del personaje"></textarea>
+
+      <hr>
+
+      <h2>Canción</h2>
+
+      <label>Título de la canción</label>
+      <input id="songTitle" placeholder="Ej: Nos guía tu corazón">
+
+      <label>Descripción</label>
+      <textarea id="songDescription" placeholder="Explica qué representa esta canción"></textarea>
+
+      <label>Cover</label>
+      <input id="songCover" placeholder="Ej: Cover.png">
+
+      <label>Audio</label>
+      <input id="audio" placeholder="Ej: cancion.mp3">
+
+      <label>Tags separados por comas</label>
+      <input id="tags" placeholder="Ej: batalla, épica, transformación">
+
+      <label>Lore de la canción</label>
+      <textarea id="songLore" placeholder="Contexto de la canción dentro del rol"></textarea>
+
+      <button onclick="generateCode()">Generar código</button>
+    </div>
+
+    <div class="output-card">
+      <h2>Código generado</h2>
+      <pre id="output"></pre>
+      <button onclick="copyCode()">Copiar código</button>
+    </div>
+  </section>
+</main>
+
+<script>
+function cleanText(value) {
+  return value
+    .replaceAll("\\", "\\\\")
+    .replaceAll('"', '\\"')
+    .trim();
+}
+
+function addFolder(value, folder, defaultFile = "") {
+  let cleanValue = value.trim();
+
+  if (!cleanValue && defaultFile) {
+    cleanValue = defaultFile;
+  }
+
+  if (!cleanValue) {
+    return folder + "/";
+  }
+
+  cleanValue = cleanValue.replace(/^\/+/, "");
+
+  if (cleanValue.startsWith(folder + "/")) {
+    return cleanValue;
+  }
+
+  return folder + "/" + cleanValue;
+}
+
+function generateCode() {
+  const character = cleanText(document.getElementById("character").value);
+  const characterFace = cleanText(addFolder(document.getElementById("characterFace").value, "img"));
+  const characterLore = cleanText(document.getElementById("characterLore").value);
+
+  const songTitle = cleanText(document.getElementById("songTitle").value);
+  const songDescription = cleanText(document.getElementById("songDescription").value);
+  const songCover = cleanText(addFolder(document.getElementById("songCover").value, "img", "Cover.png"));
+  const audio = cleanText(addFolder(document.getElementById("audio").value, "audio"));
+  const tagsRaw = document.getElementById("tags").value;
+
+  const tags = tagsRaw
+    .split(",")
+    .map(tag => tag.trim())
+    .filter(tag => tag.length > 0)
+    .map(tag => `"${cleanText(tag)}"`)
+    .join(", ");
+
+  const songLore = cleanText(document.getElementById("songLore").value || ".");
+
+  const code = `{
+    character: "${character}",
+    characterFace: "${characterFace}",
+    lore: "${characterLore}",
+    tracks: [
+        {
+            songTitle: "${songTitle}",
+            songDescription: "${songDescription}",
+            songCover: "${songCover}",
+            audio: "${audio}",
+            tags: [${tags}],
+            lore: "${songLore}"
+        }
+    ]
+},`;
+
+  document.getElementById("output").textContent = code;
+}
+
+function copyCode() {
+  const code = document.getElementById("output").textContent;
+
+  if (!code.trim()) {
+    alert("Primero genera el código.");
+    return;
+  }
+
+  navigator.clipboard.writeText(code);
+  alert("Código copiado.");
+}
+</script>
+
+</body>
+</html>

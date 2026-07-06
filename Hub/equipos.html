@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generador de equipos Pokémon</title>
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:#11131c;
+      color:#f4f4f5;
+    }
+
+    .hub{
+      width:min(1200px, 92%);
+      margin:0 auto;
+      padding:40px 0;
+    }
+
+    .hero{
+      text-align:center;
+      margin-bottom:30px;
+    }
+
+    .eyebrow{
+      color:#b561ff;
+      text-transform:uppercase;
+      letter-spacing:2px;
+      font-weight:700;
+      font-size:.8rem;
+    }
+
+    h1{
+      margin:8px 0;
+      font-size:clamp(2rem, 5vw, 3.3rem);
+    }
+
+    .hero p:last-child{
+      color:#c7c7d1;
+      max-width:720px;
+      margin:0 auto;
+      line-height:1.6;
+    }
+
+    .guide-card,
+    .form-card,
+    .output-card{
+      background:#1b1f2d;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:24px;
+      box-shadow:0 18px 45px rgba(0,0,0,.25);
+    }
+
+    .guide-card{
+      margin-bottom:25px;
+    }
+
+    .guide-card h2,
+    .form-card h2,
+    .output-card h2{
+      margin-top:0;
+    }
+
+    .guide-card h3{
+      color:#d7b7ff;
+      margin-top:22px;
+    }
+
+    .guide-card p,
+    .guide-card li{
+      color:#d8d8e2;
+      line-height:1.65;
+    }
+
+    .guide-card code,
+    pre{
+      font-family:Consolas, monospace;
+    }
+
+    .guide-card code{
+      background:#111827;
+      color:#7ee7ff;
+      padding:2px 6px;
+      border-radius:5px;
+    }
+
+    .guide-card pre,
+    .output-card pre{
+      background:#111827;
+      color:#f8fafc;
+      padding:16px;
+      border-radius:12px;
+      overflow:auto;
+      white-space:pre-wrap;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .guide-note{
+      margin-top:18px;
+      padding:14px 16px;
+      background:#27344d;
+      border-left:4px solid #b561ff;
+      border-radius:10px;
+    }
+
+    .generator{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:24px;
+      align-items:start;
+    }
+
+    label{
+      display:block;
+      margin-top:16px;
+      margin-bottom:7px;
+      font-weight:700;
+      color:#ececf5;
+    }
+
+    input,
+    textarea,
+    select{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.12);
+      background:#111827;
+      color:#f8fafc;
+      outline:none;
+      font-size:1rem;
+    }
+
+    textarea{
+      min-height:90px;
+      resize:vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus{
+      border-color:#b561ff;
+      box-shadow:0 0 0 3px rgba(181,97,255,.18);
+    }
+
+    hr{
+      border:0;
+      border-top:1px solid rgba(255,255,255,.1);
+      margin:24px 0;
+    }
+
+    .pokemon-card{
+      background:#151927;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:16px;
+      margin-top:16px;
+    }
+
+    .pokemon-card h3{
+      margin:0 0 10px;
+      color:#d7b7ff;
+    }
+
+    .custom-row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-top:14px;
+    }
+
+    .custom-row input{
+      width:auto;
+      transform:scale(1.1);
+    }
+
+    .custom-row label{
+      margin:0;
+      font-weight:700;
+    }
+
+    .image-container{
+      display:none;
+    }
+
+    button{
+      border:0;
+      border-radius:12px;
+      padding:13px 18px;
+      cursor:pointer;
+      font-weight:800;
+      color:white;
+      background:linear-gradient(135deg, #8900ff, #b561ff);
+      margin-top:18px;
+      transition:transform .15s ease, filter .15s ease;
+    }
+
+    button:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.08);
+    }
+
+    .secondary-btn{
+      background:#30384f;
+    }
+
+    .danger-btn{
+      background:#7f1d1d;
+    }
+
+    .button-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .output-card{
+      position:sticky;
+      top:20px;
+    }
+
+    .small-help{
+      margin-top:6px;
+      color:#a9acb8;
+      font-size:.9rem;
+    }
+
+    @media (max-width:900px){
+      .generator{
+        grid-template-columns:1fr;
+      }
+
+      .output-card{
+        position:static;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<main class="hub">
+  <section class="hero">
+    <p class="eyebrow">ResonanceTM Tools</p>
+    <h1>Generador de equipos Pokémon</h1>
+    <p>Rellena los datos del entrenador y sus Pokémon. Después copia el código generado para añadirlo al proyecto.</p>
+  </section>
+
+  <section class="guide-card">
+    <h2>📖 Guía de formato</h2>
+
+    <p>
+      Cada entrenador puede tener hasta <strong>6 Pokémon</strong>. Hay dos formas de añadirlos: Pokémon oficiales y Pokémon custom.
+    </p>
+
+    <h3>Pokémon oficial</h3>
+    <p>Para un Pokémon oficial solo hace falta poner su <strong>ID de Pokédex</strong>, su <strong>nombre interno</strong> y sus <strong>tipos</strong>.</p>
+
+<pre><code>{
+  id: 160,
+  name: "feraligatr",
+  types: ["water"]
+}</code></pre>
+
+    <h3>Pokémon custom</h3>
+    <p>
+      Si el Pokémon es personalizado, marca la casilla <strong>Pokémon Custom</strong> y escribe solo el nombre del archivo de imagen.
+      El generador añadirá automáticamente <code>Pokemon Custom/</code>.
+    </p>
+
+<pre><code>{
+  id: 1126,
+  name: "chattoroti",
+  image: "Pokemon Custom/Chattoroti.png",
+  types: ["normal", "flying"]
+}</code></pre>
+
+    <div class="guide-note">
+      💡 <strong>Importante:</strong> para Pokémon custom, usa un ID nuevo si puedes, por ejemplo desde el 1000 en adelante. Si usas un custom, pásame también la imagen.
+    </div>
+  </section>
+
+  <section class="generator">
+    <div class="form-card">
+      <h2>Datos del entrenador</h2>
+
+      <label>Nombre del entrenador</label>
+      <input id="trainer" placeholder="Ej: Shin Haein">
+
+      <label>Título</label>
+      <input id="title" placeholder="Ej: Entrenadora Cantante">
+
+      <label>Región</label>
+      <input id="region" placeholder="Ej: Etruria">
+
+      <label>Estilo</label>
+      <input id="style" placeholder="Ej: Especial">
+
+      <label>Color 1</label>
+      <input id="color1" placeholder="Ej: #8900FF">
+
+      <label>Color 2</label>
+      <input id="color2" placeholder="Ej: #B561FF">
+
+      <label>Nota del entrenador</label>
+      <textarea id="note" placeholder="Ej: Una chica que ama la música..."></textarea>
+
+      <hr>
+
+      <h2>Pokémon</h2>
+      <div id="pokemonList"></div>
+
+      <div class="button-row">
+        <button type="button" onclick="addPokemon()">Añadir Pokémon</button>
+        <button type="button" class="secondary-btn" onclick="generateCode()">Generar código</button>
+      </div>
+    </div>
+
+    <div class="output-card">
+      <h2>Código generado</h2>
+      <pre id="output"></pre>
+      <div class="button-row">
+        <button type="button" onclick="copyCode()">Copiar código</button>
+        <button type="button" class="danger-btn" onclick="clearAll()">Limpiar todo</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+let pokemonCount = 0;
+const maxPokemon = 6;
+
+function cleanText(value) {
+  return String(value || "")
+    .replaceAll("\\", "\\\\")
+    .replaceAll('"', '\\"')
+    .trim();
+}
+
+function addPokemon() {
+  if (pokemonCount >= maxPokemon) {
+    alert("Un equipo solo puede tener hasta 6 Pokémon.");
+    return;
+  }
+
+  pokemonCount++;
+
+  const container = document.createElement("div");
+  container.className = "pokemon-card";
+  container.dataset.index = pokemonCount;
+
+  container.innerHTML = `
+    <h3>Pokémon ${pokemonCount}</h3>
+
+    <label>ID</label>
+    <input class="pokemon-id" placeholder="Ej: 160">
+    <p class="small-help">Oficial: número de Pokédex. Custom: ID nuevo, preferiblemente 1000+.</p>
+
+    <label>Nombre</label>
+    <input class="pokemon-name" placeholder="Ej: feraligatr">
+
+    <label>Tipos separados por comas</label>
+    <input class="pokemon-types" placeholder="Ej: water, flying">
+
+    <div class="custom-row">
+      <input type="checkbox" class="pokemon-custom" onchange="toggleCustomImage(this)">
+      <label>Pokémon Custom</label>
+    </div>
+
+    <div class="image-container">
+      <label>Imagen custom</label>
+      <input class="pokemon-image" placeholder="Ej: Chattoroti.png">
+      <p class="small-help">No pongas Pokemon Custom/. El generador lo añade solo.</p>
+    </div>
+
+    <button type="button" class="danger-btn" onclick="removePokemon(this)">Eliminar este Pokémon</button>
+  `;
+
+  document.getElementById("pokemonList").appendChild(container);
+}
+
+function removePokemon(button) {
+  button.closest(".pokemon-card").remove();
+  pokemonCount = document.querySelectorAll(".pokemon-card").length;
+  renumberPokemon();
+}
+
+function renumberPokemon() {
+  document.querySelectorAll(".pokemon-card").forEach((card, index) => {
+    card.querySelector("h3").textContent = `Pokémon ${index + 1}`;
+  });
+}
+
+function toggleCustomImage(checkbox) {
+  const card = checkbox.closest(".pokemon-card");
+  const imageContainer = card.querySelector(".image-container");
+  imageContainer.style.display = checkbox.checked ? "block" : "none";
+}
+
+function formatImagePath(image) {
+  const cleanedImage = cleanText(image);
+
+  if (!cleanedImage) return "";
+  if (cleanedImage.startsWith("Pokemon Custom/")) return cleanedImage;
+
+  return "Pokemon Custom/" + cleanedImage;
+}
+
+function generateCode() {
+  const trainer = cleanText(document.getElementById("trainer").value);
+  const title = cleanText(document.getElementById("title").value);
+  const region = cleanText(document.getElementById("region").value);
+  const style = cleanText(document.getElementById("style").value);
+  const color1 = cleanText(document.getElementById("color1").value || "#8900FF");
+  const color2 = cleanText(document.getElementById("color2").value || "#B561FF");
+  const note = cleanText(document.getElementById("note").value);
+
+  const pokemonCards = document.querySelectorAll(".pokemon-card");
+
+  if (pokemonCards.length === 0) {
+    alert("Añade al menos un Pokémon.");
+    return;
+  }
+
+  const pokemonCode = Array.from(pokemonCards).map(card => {
+    const id = cleanText(card.querySelector(".pokemon-id").value);
+    const name = cleanText(card.querySelector(".pokemon-name").value).toLowerCase();
+    const typesRaw = card.querySelector(".pokemon-types").value;
+    const isCustom = card.querySelector(".pokemon-custom").checked;
+    const image = formatImagePath(card.querySelector(".pokemon-image").value);
+
+    const types = typesRaw
+      .split(",")
+      .map(type => type.trim().toLowerCase())
+      .filter(type => type.length > 0)
+      .map(type => `"${cleanText(type)}"`)
+      .join(", ");
+
+    if (isCustom) {
+      return `          {
+            id: ${id || 1000},
+            name: "${name}",
+            image: "${image}",
+            types: [${types}]
+          }`;
+    }
+
+    return `          { id: ${id || 0}, name: "${name}", types: [${types}] }`;
+  }).join(",\n");
+
+  const code = `{
+        trainer: "${trainer}",
+        title: "${title}",
+        region: "${region}",
+        style: "${style}",
+        colors: ["${color1}", "${color2}"],
+        note: "${note}",
+        pokemon: [
+${pokemonCode}
+        ]
+      },`;
+
+  document.getElementById("output").textContent = code;
+}
+
+function copyCode() {
+  const code = document.getElementById("output").textContent;
+
+  if (!code.trim()) {
+    alert("Primero genera el código.");
+    return;
+  }
+
+  navigator.clipboard.writeText(code);
+  alert("Código copiado.");
+}
+
+function clearAll() {
+  if (!confirm("¿Seguro que quieres limpiar todo?")) return;
+
+  document.querySelectorAll("input, textarea").forEach(field => {
+    if (field.type === "checkbox") {
+      field.checked = false;
+    } else {
+      field.value = "";
+    }
+  });
+
+  document.getElementById("pokemonList").innerHTML = "";
+  document.getElementById("output").textContent = "";
+  pokemonCount = 0;
+
+  addPokemon();
+}
+
+addPokemon();
+</script>
+
+</body>
+</html>
