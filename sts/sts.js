@@ -637,7 +637,7 @@ const personajes = [
   talento: {
     nombre: "Ayuda De Reserva",
     ingles: "Reserve Assist",
-    descripcion: ""
+    descripcion: "Si Lidia se encuentra en el banquillo da un +1 a todos los jugadores aliados el en campo"
   },
   espirituGuerrero: {
     nombre: "",
@@ -913,7 +913,7 @@ const personajes = [
   equipo: "Espejismo",
   imagen: "../Hijos Inazuma/pjs/Shinoa Hiiragi.jpg",
   elemento: "Sangre",
-  posicion: "",
+  posicion: "Defensa",
   tecnicas: [
     [
         "Luna Roja",
@@ -946,7 +946,7 @@ const personajes = [
   talento: {
     nombre: "Runa Vampírica",
     ingles: "Vampiric Rune",
-    descripcion: ""
+    descripcion: "De 00:00 a 06:00 sus supertécnicas aumentan en +3, disminuye en -1 fuera de esa franja de horario"
   },
   espirituGuerrero: {
     nombre: "Shikamadōji",
@@ -966,12 +966,12 @@ const personajes = [
   }
 },
 {
-  nombre: "Shinbad",
+  nombre: "Shinbad Ramírez",
   titulo: "",
   equipo: "Osasuna",
   imagen: "../Hijos Inazuma/pjs/Shinbad Ramirez.jpg",
   elemento: "Fuerza",
-  posicion: "",
+  posicion: "Defensa",
   tecnicas: [
     [
         "Aullido Cometa",
@@ -995,7 +995,7 @@ const personajes = [
   talento: {
     nombre: "Fuerza De Tiro",
     ingles: "Power Shot",
-    descripcion: ""
+    descripcion: "Aumenta en 1 las acciones de tiro de todo el equipo"
   },
   espirituGuerrero: {
     nombre: "",
@@ -1118,7 +1118,7 @@ const personajes = [
   talento: {
     nombre: "Poder Dorado",
     ingles: "Golden Power",
-    descripcion: ""
+    descripcion: "Si un duelo es un 1vs3 el duelo lo ganan automáticamente los 3 jugadores, llevándose el balón Pan"
   },
   espirituGuerrero: {
     nombre: "",

@@ -711,12 +711,13 @@ if (contenido.toLowerCase().startsWith("-st ")) {
     }
 
     function leerLado(textoLado) {
-        const match = textoLado.trim().match(/(.+)\s+(\d+|eg|arm|steg|armst)$/i);
+        const match = textoLado.trim().match(/(.+?)\s+(\d+|eg|arm|steg|armst)(?:\s+([+-]\d+))?$/i);
 
         if (!match) return null;
 
         const nombre = match[1].trim();
         const valor = match[2].toLowerCase();
+        const modificador = match[3] ? Number(match[3]) : 0;
 
         const pesos = {
             eg: 7,
@@ -732,20 +733,26 @@ if (contenido.toLowerCase().startsWith("-st ")) {
             steg: "ST + Espíritu Guerrero"
         };
 
+        let etiqueta;
+        let papeletasBase;
+
         if (!isNaN(valor)) {
             const grado = Number(valor);
-
-            return {
-                nombre,
-                etiqueta: `Grado ${grado}`,
-                papeletas: grado + 1
-            };
+            etiqueta = grado === 0 ? "Sin ST" : `Grado ${grado}`;
+            papeletasBase = grado + 1;
+        } else {
+            etiqueta = etiquetas[valor];
+            papeletasBase = pesos[valor];
         }
+
+        const papeletasFinales = Math.max(1, papeletasBase + modificador);
 
         return {
             nombre,
-            etiqueta: etiquetas[valor],
-            papeletas: pesos[valor]
+            etiqueta,
+            papeletasBase,
+            modificador,
+            papeletas: papeletasFinales
         };
     }
 
@@ -755,7 +762,8 @@ if (contenido.toLowerCase().startsWith("-st ")) {
         return message.reply(
             "Uso:\n" +
             "`-st Ren 5, Mavuika eg, Shu 3`\n" +
-            "`-st Ren steg, Mavuika armst, Victor 2`"
+            "`-st Ren steg +2, Mavuika armst -1, Victor 2`\n\n" +
+            "Puedes añadir o quitar chooses extra con `+X` o `-X`."
         );
     }
 
@@ -772,31 +780,44 @@ if (contenido.toLowerCase().startsWith("-st ")) {
     const ganador = bolsa[Math.floor(Math.random() * bolsa.length)];
 
     const descripcion = participantes
-        .map(p => `**${p.nombre}** (${p.etiqueta})`)
+        .map(p => {
+            const extra = p.modificador !== 0
+                ? ` ${p.modificador > 0 ? "+" : ""}${p.modificador} extra`
+                : "";
+
+            return `**${p.nombre}** (${p.etiqueta}${extra})`;
+        })
         .join("\nVS\n");
 
     const probabilidades = participantes
         .map(p => {
             const prob = ((p.papeletas / total) * 100).toFixed(1);
-            return `${p.nombre}: ${prob}% (${p.papeletas} chooses)`;
+
+            let detalle = `${p.papeletas} chooses`;
+
+            if (p.modificador !== 0) {
+                detalle += ` | ${p.papeletasBase} base ${p.modificador > 0 ? "+" : ""}${p.modificador}`;
+            }
+
+            return `${p.nombre}: ${prob}% (${detalle})`;
         })
         .join("\n");
 
     const embed = new EmbedBuilder()
-    .setColor(0xFFD700)
-    .setTitle("⚡ Duelo de Supertécnicas")
-    .setDescription(
-        `${descripcion}\n\n` +
-        `🏆 **GANADOR**\n` +
-        `# ${ganador}`
-    )
-    .addFields(
-        {
-            name: "📊 Probabilidades",
-            value: probabilidades
-        }
-    )
-    .setTimestamp();
+        .setColor(0xFFD700)
+        .setTitle("⚡ Duelo de Supertécnicas")
+        .setDescription(
+            `${descripcion}\n\n` +
+            `🏆 **GANADOR**\n` +
+            `# ${ganador}`
+        )
+        .addFields(
+            {
+                name: "📊 Probabilidades",
+                value: probabilidades
+            }
+        )
+        .setTimestamp();
 
     return message.channel.send({ embeds: [embed] });
 }
