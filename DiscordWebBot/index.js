@@ -679,7 +679,9 @@ if (contenido.toLowerCase() === "-helpst") {
             "## ⚔️ Especiales\n" +
             "`eg` → Espíritu Guerrero **(7 chooses)**\n" +
             "`arm` → Armadura **(8 chooses)**\n" +
+            "`miximax` → Mixi Max **(8 chooses)**\n" +
             "`armst` → ST + Armadura **(9 chooses)**\n" +
+            "`miximaxst` → ST + Mixi Max **(9 chooses)**\n" +
             "`steg` → ST + Espíritu Guerrero **(10 chooses)**\n\n" +
 
             "## 🎲 Funcionamiento\n" +
@@ -711,7 +713,7 @@ if (contenido.toLowerCase().startsWith("-st ")) {
     }
 
     function leerLado(textoLado) {
-        const match = textoLado.trim().match(/(.+?)\s+(\d+|eg|arm|steg|armst)(?:\s+([+-]\d+))?$/i);
+        const match = textoLado.trim().match(/(.+?)\s+(\d+|eg|arm|miximax|steg|armst|miximaxst)(?:\s+([+-]\d+))?$/i);
 
         if (!match) return null;
 
@@ -722,14 +724,18 @@ if (contenido.toLowerCase().startsWith("-st ")) {
         const pesos = {
             eg: 7,
             arm: 8,
+            miximax: 8,
             armst: 9,
+            miximaxst: 9,
             steg: 10
         };
 
         const etiquetas = {
             eg: "Espíritu Guerrero",
             arm: "Armadura",
+            miximax: "Mixi Max",
             armst: "ST + Armadura",
+            miximaxst: "ST + Mixi Max",
             steg: "ST + Espíritu Guerrero"
         };
 

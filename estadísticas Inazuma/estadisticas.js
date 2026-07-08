@@ -2,7 +2,7 @@
 const estadisticas = {
   goles: [
     ["Mavuika", 9],
-    ["Ren", 8],
+    ["Ren", 9],
     ["Victor", 4],
     ["Jikan", 2],
     ["Pan", 1],
@@ -23,11 +23,11 @@ const estadisticas = {
     ["Rikuo", 2],
     ["Victor", 2],
     ["Dan", 2],
+    ["Chisato", 2],
     ["Shiro", 1],
     ["Lambda", 1],
     ["Jibril", 1],
     ["Candace", 1],
-    ["Chisato", 1],
     ["Hikaru", 1],
     ["Shinbad", 1],
   ],
