@@ -1057,3 +1057,78 @@ ul {
     content: " activos";
   }
 }
+
+.datos-eg {
+  margin: 10px 0 14px;
+}
+
+.chip-especial {
+  background: linear-gradient(90deg, var(--amarillo), var(--naranja)) !important;
+}
+
+.icono-especial {
+  width: 34px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(2px 2px 0 rgba(0,0,0,.55));
+}
+
+.eg-nombre {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eg-nombre small {
+  color: #bfeaff;
+  font-weight: 800;
+}
+
+.eg-icono-nombre {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(140, 92, 255, .65));
+}
+
+.eg-info-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 10px 0 14px;
+}
+
+.eg-afinidad {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--afinidad);
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.eg-afinidad img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.armadura-desbloqueada {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  color: var(--amarillo);
+  font-size: 18px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 rgba(0,0,0,.65);
+}
+
+.armadura-desbloqueada img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 216, 77, .45));
+}

@@ -42,7 +42,8 @@ const escudosEquipos = {
   Universal: "escudos/Universal.webp",
   Espejismo: "escudos/Espejismo.webp",
   Osasuna: "escudos/Osasuna.png",
-  MaryTimes: "escudos/Mary Times.webp"
+  MaryTimes: "escudos/Mary Times.webp",
+  "Protocolo Omega 4.0": "escudos/Protocolo Omega 4.png",
 
 };
 
@@ -51,6 +52,11 @@ const iconosGrado = {
   G3: "grados/G3.webp",
   G4: "grados/G4.webp",
   G5: "grados/G5.webp"
+};
+
+const iconosEspeciales = {
+  eg: "especiales/EG.webp",
+  armadura: "especiales/Armadura.png"
 };
 
 const personajes = [
@@ -79,8 +85,10 @@ const personajes = [
     espirituGuerrero: {
       nombre: "Gracia del Sol, Escanor",
       ingles: "Sun Grace, Escanor",
+      afinidad: "Fuego",
+      armadura: true,
       tecnicas: [
-        ["Final Prominence", "Prominencia Final", "Tiro"]
+        ["Final Prominence", "Prominencia Final", "G5", "Tiro", "", "Fuego"]
       ]
     },
     miximax: {
@@ -112,6 +120,8 @@ const personajes = [
     espirituGuerrero: {
       nombre: "Dragón Divino Desterrado, Giratina",
       ingles: "Exiled Divine Angel,",
+      afinidad: "Sombra",
+      armadura: true,
       tecnicas: [
         ["Impacto Distorsión", "Distorsion Impact", "Tiro"]
       ]
@@ -677,7 +687,8 @@ const personajes = [
   },
   espirituGuerrero: {
     nombre: "Dios Del Tiempo, Chronos",
-    ingles: "God Of Time, Chronos (Armadura)",
+    ingles: "God Of Time, Chronos",
+    armadura: true,
     tecnicas: [
     [
         "Bala De Oro",
@@ -998,9 +1009,13 @@ const personajes = [
     descripcion: "Aumenta en 1 las acciones de tiro de todo el equipo"
   },
   espirituGuerrero: {
-    nombre: "",
-    ingles: "",
-    tecnicas: []
+    nombre: "Duque del Infierno, Valefor",
+    ingles: "Duke of the Hell, Valefor",
+    tecnicas: [
+      [
+
+      ]
+    ]
   },
   miximax: {
     nombre: "",
@@ -1126,13 +1141,10 @@ const personajes = [
     tecnicas: []
   },
   miximax: {
-    nombre: "Supersaiyan",
+    nombre: "Supersaiyan 4",
     tecnicas: [
     [
-        "Genkidama De Oro",
-        "Golden Spirit Bomb",
-        "G5",
-        "Tiro"
+
     ]
 ]
   }
@@ -1501,6 +1513,7 @@ const personajes = [
   espirituGuerrero: {
     nombre: "Emperador del Tiempo, Zaphkiel",
     ingles: "Time's Emperoor, Zaphkiel [Armadura]",
+    armadura: true,
     tecnicas: [
     [
         "Zaphkiel Tercera Bala: Gimmel",
@@ -2119,6 +2132,84 @@ const personajes = [
     tecnicas: []
   }
 },
+{
+  nombre: "Willow Proude",
+  titulo: "Romeo",
+  equipo: "Protocolo Omega 4.0",
+  imagen: "../Hijos Inazuma/pjs/Willow Proude.jpg",
+  elemento: "Aire",
+  posicion: "Delantero",
+  tecnicas: [
+    [
+        "Espejismo de Balón",
+        "Illusory Ball",
+        "G5",
+        "Regate",
+        "",
+        "Bosque"
+    ],
+    [
+        "Sierra Celestial",
+        "Celestial Saw",
+        "G5",
+        "Tiro",
+        "",
+        ""
+    ],
+    [
+        "Zona Sigma",
+        "Sigma Zone",
+        "G5",
+        "Regate",
+        "Con Heaven +1",
+        "Bosque"
+    ],
+    [
+      "Tuya-Mía Doble",
+      "Dual Pass",
+      "G5",
+      "Regate",
+      "Con Heaven",
+      "Bosque"
+    ],
+    [
+      "Tornado, Tormenta, Hucacán!",
+      "Twister Tornado",
+      "G5",
+      "Tiro",
+      "",
+    ],
+    [
+      "Segadora",
+      "Harvest",
+      "G5",
+      "Bloqueo",
+      "Con Heaven",
+      "Bosque"
+    ]
+],
+  talento: {
+    nombre: "",
+    ingles: "",
+    descripcion: ""
+  },
+  espirituGuerrero: {
+    nombre: "Guerrero Fiel, Gallade",
+    ingles: "Faithful Warrior, Gallade",
+    armadura: true,
+    tecnicas: [
+      [
+        "Espada Santa",
+        "Sacred Sword",
+        "Tiro",
+      ]
+    ]
+  },
+  miximax: {
+    nombre: "",
+    tecnicas: []
+  }
+},
   // Copia este bloque para añadir más personajes:
   /*
   {
@@ -2319,6 +2410,7 @@ function coincideConEspeciales(pj) {
   if (estadoFiltros.especiales.has("eg") && !tieneEG(pj)) return false;
   if (estadoFiltros.especiales.has("miximax") && !tieneMiximax(pj)) return false;
   if (estadoFiltros.especiales.has("combinada") && !tieneCombinada(pj)) return false;
+  if (estadoFiltros.especiales.has("armadura") && !pj.espirituGuerrero?.armadura) return false;
   return true;
 }
 
@@ -2420,7 +2512,7 @@ function renderSelector() {
   });
 }
 
-function crearTecnica(tecnica, elementoPersonaje) {
+function crearTecnica(tecnica, elementoPersonaje, especial = "") {
   const [nombre, ingles, grado, tipo, extra, afinidad] = tecnica;
   const elementoTecnica = afinidad || elementoPersonaje;
   const tipoLimpio = tecnicaTipo(tecnica);
@@ -2430,6 +2522,7 @@ function crearTecnica(tecnica, elementoPersonaje) {
 
   return `
     <li class="tecnica afinidad-${claseAfinidad}">
+    
       <div class="tecnica-main">
         ${icono ? `<img class="icono-tecnica" src="${icono}" alt="${elementoTecnica}">` : ""}
         <div>
@@ -2447,27 +2540,47 @@ function crearTecnica(tecnica, elementoPersonaje) {
   `;
 }
 
-function renderListaExtra(titulo, subtitulo, lista, tipoFallback = "") {
-  const hayContenido = subtitulo || (lista && lista.length);
+function renderListaExtra(titulo, bloque = {}, elementoPersonaje = "", tipo = "") {
+  const subtitulo = bloque?.nombre || "";
+  const ingles = bloque?.ingles || "";
+  const lista = bloque?.tecnicas || [];
+  const afinidadBloque = bloque?.afinidad || elementoPersonaje;
+  const iconoAfinidad = iconosAfinidad[afinidadBloque] || "";
+  const iconoEG = tipo === "eg" ? iconosEspeciales.eg : "";
+  const iconoArmadura = tipo === "eg" && bloque?.armadura ? iconosEspeciales.armadura : "";
+  const hayContenido = subtitulo || ingles || lista.length;
 
   return `
     <section class="bloque bloque-extra ${!hayContenido ? "bloque-vacio" : ""}">
       <h4>${titulo}</h4>
-      ${subtitulo ? `<h5>${subtitulo}</h5>` : `<p class="sub">No registrado.</p>`}
+
+      ${subtitulo ? `
+        <h5 class="eg-nombre">
+  ${iconoEG ? `<img class="eg-icono-nombre" src="${iconoEG}" alt="EG">` : ""}
+  <span>
+    ${subtitulo} ${ingles ? `<small>/ ${ingles}</small>` : ""}
+  </span>
+</h5>
+
+        <div class="eg-info-line">
+  ${iconoAfinidad ? `
+    <span class="eg-afinidad afinidad-${afinidadClase(afinidadBloque)}">
+      <img src="${iconoAfinidad}" alt="${afinidadBloque}">
+      ${afinidadBloque}
+    </span>
+  ` : ""}
+
+  ${iconoArmadura ? `
+    <span class="armadura-desbloqueada">
+      <img src="${iconoArmadura}" alt="Armadura">
+      Armadura desbloqueada
+    </span>
+  ` : ""}
+</div>
+      ` : `<p class="sub">No registrado.</p>`}
+
       <ul>
-        ${(lista || []).map(st => `
-          <li class="tecnica">
-            <div class="tecnica-main">
-              <div>
-                <strong>${st[0] || "Técnica"}</strong>
-                ${st[1] ? `<span>/ ${st[1]}</span>` : ""}
-              </div>
-            </div>
-            <div class="tecnica-tags">
-              ${st[2] || tipoFallback ? `<em>${tecnicaTipo(["", "", "", st[2] || tipoFallback])}</em>` : ""}
-            </div>
-          </li>
-        `).join("")}
+        ${lista.map(st => crearTecnica(st, afinidadBloque, tipo)).join("")}
       </ul>
     </section>
   `;
@@ -2531,9 +2644,8 @@ function renderFicha(pj) {
           ` : `<p class="sub">No registrado.</p>`}
         </section>
 
-        ${renderListaExtra("Espíritu Guerrero", pj.espirituGuerrero?.nombre, pj.espirituGuerrero?.tecnicas)}
-        ${pj.espirituGuerrero?.ingles ? `<p class="eg-ingles">${pj.espirituGuerrero.ingles}</p>` : ""}
-        ${renderListaExtra("Miximax", pj.miximax?.nombre, pj.miximax?.tecnicas)}
+        ${renderListaExtra("Espíritu Guerrero", pj.espirituGuerrero, elemento, "eg")}
+        ${renderListaExtra("Miximax", pj.miximax, elemento, "miximax")}
       </section>
     </article>
   `;
