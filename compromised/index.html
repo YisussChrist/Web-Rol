@@ -3,167 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Evolink HUD</title>
+  <title>Evolink · Etruria</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="ambient"></div>
-  <main class="device-shell" id="deviceShell">
-    <section class="boot-screen" id="bootScreen">
-      <div class="boot-logo">
-        <span class="infinity-mark">∞</span>
-        <h1>EVOLINK</h1>
-        <p>OS v2.4.7</p>
+  <div class="world-bg" aria-hidden="true"></div>
+
+  <main class="evolink-device" id="device">
+    <section class="boot" id="bootScreen" aria-label="Arranque del Evolink">
+      <div class="boot-symbol">∞</div>
+      <h1>EVOLINK</h1>
+      <p class="boot-subtitle">Red Regional de Etruria</p>
+      <div class="boot-log">
+        <span>Sincronizando entrenador...</span>
+        <span>Verificando medallas...</span>
+        <span>Conectando con Romaine...</span>
+        <span>Bienvenido.</span>
       </div>
-      <div class="boot-lines" id="bootLines">
-        <p>Inicializando núcleo holográfico...</p>
-        <p>Conectando con Red Regional de Etruria...</p>
-        <p>Sincronizando perfil de entrenador...</p>
-        <p>Validando módulos del Infinity Y Institute...</p>
-      </div>
-      <div class="boot-bar"><span></span></div>
+      <div class="boot-progress"><span></span></div>
     </section>
 
-    <section class="evolink" id="evolinkApp" aria-live="polite">
-      <header class="topbar">
-        <button class="icon-btn back hidden" id="backBtn" title="Volver">‹</button>
+    <section class="screen-shell" id="app" aria-live="polite">
+      <header class="hud-header">
         <div>
-          <span class="eyebrow">EVOLINK</span>
-          <h2 id="screenTitle">Menú principal</h2>
+          <span class="kicker">EVOLINK</span>
+          <h2 id="viewTitle">Inicio</h2>
         </div>
-        <div class="status-cluster">
-          <span id="clock">12:45</span>
-          <span class="signal">▰▰▰▰▰</span>
-          <button class="notification-dot" id="notifyBtn" title="Notificaciones">3</button>
+        <div class="hud-status">
+          <span id="clock">--:--</span>
+          <button class="pill-button" id="notifyButton">2 avisos</button>
         </div>
       </header>
 
-      <section class="screen active" id="screen-home">
-        <div class="home-hero">
-          <div class="trainer-card-mini">
-            <div class="avatar-ring"><img id="homeAvatar" src="" alt="Avatar" /></div>
+      <section class="view active" id="view-home">
+        <article class="map-card" id="openMap">
+          <div class="map-visual">
+            <span class="map-pin main">Meseta Arcanum</span>
+            <span class="map-pin route">Ruta 7</span>
+            <span class="map-pin city">Ciudad Académica</span>
+            <div class="map-lines"></div>
+          </div>
+          <div class="map-info">
+            <span class="kicker">Mapa regional</span>
+            <h3>Etruria</h3>
+            <p>Ruta posterior a la segunda medalla. Pulsa para abrir el mapa completo.</p>
+          </div>
+        </article>
+
+        <div class="home-grid">
+          <article class="trainer-summary card-soft">
+            <img id="trainerAvatar" alt="Avatar del entrenador" />
             <div>
-              <span>Entrenador sincronizado</span>
-              <strong id="homeName">Link</strong>
-              <small id="homeStatus">2 medallas · En ruta</small>
+              <span class="kicker">Entrenador activo</span>
+              <h3 id="trainerName">Link</h3>
+              <p id="trainerStatus">2 medallas · En ruta</p>
             </div>
+          </article>
+
+          <article class="alert-card card-soft" id="infinityShortcut">
+            <span class="y-mark">Y</span>
+            <div>
+              <span class="kicker">Infinity Y Institute</span>
+              <h3>Invitación pendiente</h3>
+              <p>Compatible con tu progreso actual.</p>
+            </div>
+          </article>
+        </div>
+
+        <section class="quick-panel">
+          <button data-view="messages"><span>Mensajes</span><b id="messageCount">2 nuevos</b></button>
+          <button data-view="calls"><span>Llamadas</span><b>Romaine disponible</b></button>
+          <button data-view="profile"><span>Perfil</span><b>Ficha entrenador</b></button>
+          <button data-view="research"><span>Investigación</span><b>4 informes públicos</b></button>
+        </section>
+      </section>
+
+      <section class="view" id="view-messages">
+        <div class="split-layout">
+          <aside class="list-panel" id="messageList"></aside>
+          <article class="detail-panel" id="messageDetail"></article>
+        </div>
+      </section>
+
+      <section class="view" id="view-calls">
+        <div class="split-layout">
+          <aside class="list-panel" id="contactList"></aside>
+          <article class="call-panel" id="callPanel">
+            <div class="call-idle">Selecciona un contacto para iniciar comunicación.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-profile">
+        <div class="profile-card" id="profileCard"></div>
+      </section>
+
+      <section class="view" id="view-research">
+        <div class="research-board" id="researchBoard"></div>
+      </section>
+
+      <section class="view" id="view-infinity">
+        <article class="infinity-panel">
+          <span class="redacted">████████████████</span>
+          <span class="y-mark large">Y</span>
+          <h3>INFINITY Y INSTITUTE</h3>
+          <p>Entrenador compatible detectado. Nivel de autorización provisional: III.</p>
+          <div class="access-box">
+            <span>Estado</span><strong>Invitación disponible</strong>
+            <span>Requisito</span><strong>2 medallas obtenidas</strong>
           </div>
-          <div class="system-card">
-            <span>Conexión regional</span>
-            <strong>Estable</strong>
-            <small>Meseta Arcanum / Red Etruria</small>
-          </div>
-        </div>
-
-        <nav class="app-grid">
-          <button data-open="calls" class="app-btn"><span>📞</span><strong>Llamadas</strong><small>Contactos</small></button>
-          <button data-open="messages" class="app-btn"><span>💬</span><strong>Mensajes</strong><small>Avisos</small></button>
-          <button data-action="map" class="app-btn"><span>🗺️</span><strong>Mapa</strong><small>Etruria</small></button>
-          <button data-open="profile" class="app-btn featured"><span>👤</span><strong>Perfil</strong><small>¿Quién eres?</small></button>
-          <button data-open="research" class="app-btn"><span>🔬</span><strong>Investigación</strong><small>Informes</small></button>
-          <button data-open="settings" class="app-btn"><span>⚙️</span><strong>Ajustes</strong><small>Sistema</small></button>
-        </nav>
+          <button class="primary-action" id="requestAccess">Solicitar acceso</button>
+        </article>
       </section>
 
-      <section class="screen" id="screen-profile">
-        <div class="panel-title"><h3>¿Quién eres?</h3><p>Selecciona el perfil activo del Evolink.</p></div>
-        <div class="profile-layout">
-          <div class="selector-list" id="profileSelector"></div>
-          <article class="trainer-profile" id="trainerProfile"></article>
-        </div>
-      </section>
-
-      <section class="screen" id="screen-calls">
-        <div class="panel-title"><h3>Contactos</h3><p>Lista de llamadas registradas.</p></div>
-        <div class="calls-layout">
-          <div class="contact-list" id="contactList"></div>
-          <div class="call-display" id="callDisplay">
-            <div class="call-avatar">📞</div>
-            <h3>Selecciona un contacto</h3>
-            <p>El Evolink simulará una llamada entrante/saliente con el contacto elegido.</p>
-          </div>
-        </div>
-      </section>
-
-
-
-      <section class="screen overlay-screen" id="screen-incoming-call">
-        <div class="incoming-call-panel" id="incomingCallPanel">
-          <div class="incoming-rings" aria-hidden="true">
-            <span></span><span></span><span></span>
-          </div>
-          <div class="incoming-avatar" id="incomingAvatar">🧪</div>
-          <span class="incoming-label">Llamada entrante</span>
-          <h3 id="incomingName">Profesora Romaine</h3>
-          <p id="incomingRole">Profesora Pokémon</p>
-          <div class="incoming-actions">
-            <button id="declineIncoming" class="decline-btn">Colgar</button>
-            <button id="acceptIncoming" class="accept-btn">Aceptar</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="screen" id="screen-messages">
-        <div class="panel-title"><h3>Bandeja de mensajes</h3><p>Notificaciones de viaje y avisos del Instituto.</p></div>
-        <div class="message-list" id="messageList"></div>
-      </section>
-
-      <section class="screen overlay-screen" id="screen-invite">
-  <div class="invite-panel">
-    <span class="invite-logo">Y</span>
-    <h3>Infinity Y Institute</h3>
-    <p>El instituto abre sus puertas a entrenadores con dos medallas o más.</p>
-
-    <div class="invite-box">
-      <strong>Invitación pendiente</strong>
-      <span>Estado: compatible con tu progreso actual.</span>
-      <span>Requisito: 2 medallas obtenidas.</span>
-    </div>
-
-    <button id="requestInvite" class="main-action">Solicitar acceso</button>
-    <button id="closeInvite" class="ghost-btn">Cerrar</button>
-  </div>
-</section>
-
-      <section class="screen" id="screen-research">
-        <div class="panel-title"><h3>Base de datos</h3><p>Informes públicos desbloqueados según progreso.</p></div>
-        <div class="research-grid" id="researchGrid"></div>
-        <div class="locked-banner">
-          <strong>🔒 Archivos restringidos</strong>
-          <span>El acceso a proyectos clasificados requiere autorización superior.</span>
-        </div>
-      </section>
-
-      <section class="screen" id="screen-settings">
-        <div class="panel-title"><h3>Ajustes</h3><p>Personaliza el comportamiento del Evolink.</p></div>
-        <div class="settings-grid">
-          <label class="setting-card"><span>Tema visual</span><select id="themeSelect"><option value="default">Infinity Azul</option><option value="tera">Tera Cristal</option><option value="mega">Megaenergía</option><option value="dark">Modo Noche</option></select></label>
-          <label class="setting-card"><span>Brillo HUD</span><input id="brightnessRange" type="range" min="70" max="120" value="100" /></label>
-          <label class="setting-card"><span>Tamaño de texto</span><select id="fontSelect"><option value="normal">Normal</option><option value="large">Grande</option><option value="compact">Compacto</option></select></label>
-          <label class="setting-card toggle"><span>Reducir animaciones</span><input id="motionToggle" type="checkbox" /></label>
-          <label class="setting-card toggle"><span>Modo simplificado</span><input id="simpleToggle" type="checkbox" /></label>
-          <button class="setting-card action" id="resetBtn">Reiniciar Evolink</button>
-        </div>
-        <div class="system-info">
-          <p><b>Versión:</b> Evolink OS v2.4.7</p>
-          <p><b>Estado:</b> Conectado a Red Regional de Etruria</p>
-          <p><b>Ruta mapa:</b> <code>mapa-etruria.html</code></p>
-        </div>
-      </section>
-
-      <section class="screen overlay-screen" id="screen-mapload">
-        <div class="map-loader">
-          <span class="pulse-globe">◎</span>
-          <h3>Conectando con el Mapa Regional</h3>
+      <section class="view overlay-view" id="view-mapload">
+        <div class="loader-card">
+          <span class="loader-globe">◎</span>
+          <h3>Abriendo mapa regional</h3>
           <p id="mapLoadText">Estableciendo enlace con Etruria...</p>
-          <div class="boot-bar map"><span></span></div>
-          <button id="cancelMap" class="ghost-btn">Cancelar</button>
+          <div class="boot-progress"><span></span></div>
+          <button class="ghost-action" data-view="home">Cancelar</button>
         </div>
       </section>
 
-      <aside class="toast-panel" id="toastPanel"></aside>
+      <nav class="bottom-nav" aria-label="Navegación Evolink">
+        <button class="active" data-view="home">Inicio</button>
+        <button data-view="messages">Mensajes</button>
+        <button data-view="calls">Llamadas</button>
+        <button data-view="profile">Perfil</button>
+      </nav>
+
+      <aside class="toast-stack" id="toastStack"></aside>
     </section>
   </main>
+
   <script src="script.js"></script>
 </body>
 </html>

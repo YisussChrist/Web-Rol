@@ -131,7 +131,34 @@ async function init() {
   btnChemistryDetails?.addEventListener("click", openChemistryDetailsDialog);
   chemistryDialogClose?.addEventListener("click", () => chemistryDialog?.close());
   btnLimpiar.addEventListener("click", clearBoard);
-  btnVista?.addEventListener("click", () => document.body.classList.toggle("wide-view"));
+  const BOARD_VIEW_KEY = "inazuma_board_view";
+const BOARD_VIEWS = ["compact", "balanced", "presentation"];
+let boardViewMode = localStorage.getItem(BOARD_VIEW_KEY) || "balanced";
+
+function applyBoardViewMode() {
+  if (!BOARD_VIEWS.includes(boardViewMode)) boardViewMode = "balanced";
+  document.body.classList.remove("wide-view", "view-compact", "view-balanced", "view-presentation");
+  document.body.classList.add(`view-${boardViewMode}`);
+  if (btnVista) {
+    const labels = {
+      compact: "Vista: compacta",
+      balanced: "Vista: equilibrada",
+      presentation: "Vista: presentación"
+    };
+    btnVista.textContent = labels[boardViewMode] || "Vista";
+    btnVista.title = "Cambia entre compacta, equilibrada y presentación";
+  }
+  try { localStorage.setItem(BOARD_VIEW_KEY, boardViewMode); } catch (error) {}
+}
+
+function cycleBoardViewMode() {
+  const currentIndex = BOARD_VIEWS.indexOf(boardViewMode);
+  boardViewMode = BOARD_VIEWS[(currentIndex + 1) % BOARD_VIEWS.length] || "balanced";
+  applyBoardViewMode();
+}
+
+btnVista?.addEventListener("click", cycleBoardViewMode);
+applyBoardViewMode();
   btnExportar?.addEventListener("click", exportTemplateJson);
   btnImportar?.addEventListener("click", () => importFile?.click());
   importFile?.addEventListener("change", importTemplateJson);
@@ -288,24 +315,39 @@ function fillDialogFilters() {
   renderDialogPositionChips();
 }
 
+const DIALOG_POSITION_FILTERS = [
+  { value: "", label: "Todas" },
+  { value: "DC", label: "DC" },
+  { value: "DFC", label: "DFC" },
+  { value: "ED", label: "ED" },
+  { value: "EI", label: "EI" },
+  { value: "ENT", label: "ENT" },
+  { value: "GER", label: "GER" },
+  { value: "LD", label: "LD" },
+  { value: "LI", label: "LI" },
+  { value: "MC", label: "MC" },
+  { value: "MCD", label: "MCD" },
+  { value: "MCO", label: "MCO" },
+  { value: "MD", label: "MD" },
+  { value: "MI", label: "MI" },
+  { value: "POR", label: "POR" }
+];
+
 function renderDialogPositionChips() {
   if (!dialogPositionChips) return;
 
-  const positions = [...new Set(personajes.map(p => p.posicion).filter(Boolean))].sort();
-  if (dialogSelectedPosition && !positions.includes(dialogSelectedPosition)) {
-    positions.unshift(dialogSelectedPosition);
-  }
-  const chips = [`<button class="position-chip ${dialogSelectedPosition === "" ? "active" : ""}" data-pos="" type="button">Todas</button>`]
-    .concat(positions.map(pos => `
-      <button class="position-chip ${dialogSelectedPosition === pos ? "active" : ""}" data-pos="${escapeAttribute(pos)}" type="button">
-        ${escapeHtml(pos)}
-      </button>
-    `));
+  const selected = canonicalDialogPosition(dialogSelectedPosition);
+  if (dialogSelectedPosition !== selected) dialogSelectedPosition = selected;
 
-  dialogPositionChips.innerHTML = chips.join("");
+  dialogPositionChips.innerHTML = DIALOG_POSITION_FILTERS.map(pos => `
+    <button class="position-chip ${selected === pos.value ? "active" : ""}" data-pos="${escapeAttribute(pos.value)}" type="button">
+      ${escapeHtml(pos.label)}
+    </button>
+  `).join("");
+
   dialogPositionChips.querySelectorAll(".position-chip").forEach(chip => {
     chip.addEventListener("click", () => {
-      dialogSelectedPosition = chip.dataset.pos || "";
+      dialogSelectedPosition = canonicalDialogPosition(chip.dataset.pos || "");
       renderDialogPositionChips();
       renderDialogPlayers();
     });
@@ -633,27 +675,29 @@ function enableDrop(element) {
 const POSITION_GROUPS = {
   POR: ["POR", "PT", "PORTERO", "GK"],
 
-  DFC: ["DFC", "DF", "DEF", "DEFENSA", "CENTRAL", "CB"],
-  LI: ["LI", "LTI", "LATERAL IZQUIERDO", "LB"],
-  LD: ["LD", "LTD", "LATERAL DERECHO", "RB"],
-  CAI: ["CAI", "CARRILERO IZQUIERDO", "LWB"],
-  CAD: ["CAD", "CARRILERO DERECHO", "RWB"],
+  DFC: ["DFC", "DF", "DEF", "DEFENSA", "DEFENSA CENTRAL", "CENTRAL", "CB"],
+  LI: ["LI", "LTI", "LATERAL IZQUIERDO", "LATERAL IZQ", "LB"],
+  LD: ["LD", "LTD", "LATERAL DERECHO", "LATERAL DER", "RB"],
 
-  MCD: ["MCD", "CDM", "PIVOTE", "MEDIOCENTRO DEFENSIVO", "VOL"],
-  MC: ["MC", "CM", "MEDIOCENTRO", "CENTROCAMPISTA", "MEDIO CENTRO", "MED"],
+  MCD: ["MCD", "CDM", "PIVOTE", "MEDIOCENTRO DEFENSIVO"],
+  MC: ["MC", "CM", "MEDIOCENTRO", "CENTROCAMPISTA", "MEDIO CENTRO", "MEDIO"],
   MCO: ["MCO", "MP", "CAM", "MEDIAPUNTA", "ENGANCHE"],
-  MI: ["MI", "LM", "INTERIOR IZQUIERDO", "MEDIO IZQUIERDO", "VOLANTE IZQUIERDO"],
-  MD: ["MD", "RM", "INTERIOR DERECHO", "MEDIO DERECHO", "VOLANTE DERECHO"],
-  MED: ["MC"],
+  MI: ["MI", "LM", "VOLANTE IZQUIERDO", "INTERIOR IZQUIERDO", "MEDIO IZQUIERDO"],
+  MD: ["MD", "RM", "VOLANTE DERECHO", "INTERIOR DERECHO", "MEDIO DERECHO"],
 
   EI: ["EI", "LW", "EXTREMO IZQUIERDO"],
   ED: ["ED", "RW", "EXTREMO DERECHO"],
-  SD: ["SD", "SEGUNDO DELANTERO", "CF"],
-  DC: ["DC", "DELANTERO", "DELANTERA", "ST", "AR", "PUNTA"],
-  DEL: ["DEL", "DC", "DELANTERO", "DELANTERA", "EXTREMO", "ST", "LW", "RW", "CF"],
+  DC: ["DC", "DELANTERO CENTRO", "DELANTERO", "DELANTERA", "ST", "AR", "PUNTA", "9"],
 
-  GERENTE: ["GERENTE", "GE", "MANAGER"],
-  ENTRENADOR: ["ENTRENADOR", "DT", "COACH"]
+  GER: ["GER", "GERENTE", "GE", "MANAGER"],
+  ENT: ["ENT", "ENTRENADOR", "DT", "COACH"],
+
+  // Categorías internas para compatibilidad con reglas antiguas. No aparecen como chips del diálogo.
+  MED: ["MED"],
+  DEL: ["DEL"],
+  DEF: ["DEF"],
+  GERENTE: ["GERENTE", "GER", "GE", "MANAGER"],
+  ENTRENADOR: ["ENTRENADOR", "ENT", "DT", "COACH"]
 };
 
 function cleanPositionToken(value) {
@@ -685,21 +729,70 @@ function canonicalPosition(value) {
   return compact;
 }
 
+function canonicalDialogPosition(value) {
+  const canonical = canonicalPosition(value);
+  if (canonical === "GERENTE") return "GER";
+  if (canonical === "ENTRENADOR") return "ENT";
+  if (canonical === "DF" || canonical === "DEF") return "DFC";
+  if (canonical === "DEL") return "DC";
+  if (canonical === "MED") return "MC";
+  return canonical;
+}
+
+function filterForFieldSlot(slot) {
+  if (!slot) return "";
+
+  const role = String(slot.rol || slot.role || "");
+  const compact = compactPosition(role);
+  const canonical = canonicalDialogPosition(role);
+  const x = Number(slot.x);
+
+  if (["POR", "DFC", "LI", "LD", "DC", "EI", "ED", "MC", "MCD", "MCO", "MI", "MD"].includes(canonical)) return canonical;
+
+  if (/PORTERO|POR|GK|PT/.test(compact)) return "POR";
+
+  if (/EXTREMO|DELANTERO|DELANTERA|PUNTA|AR|DC|EI|ED|LW|RW|ST/.test(compact)) {
+    if (/IZQUIER|EI|LW/.test(role.toUpperCase()) || x < 42) return "EI";
+    if (/DERECH|ED|RW/.test(role.toUpperCase()) || x > 58) return "ED";
+    return "DC";
+  }
+
+  if (/LATERAL|DEFENSA|CENTRAL|DF|DFC|LI|LD|LB|RB/.test(compact)) {
+    if (/IZQUIER|LI|LB/.test(role.toUpperCase()) || x < 42) return "LI";
+    if (/DERECH|LD|RB/.test(role.toUpperCase()) || x > 58) return "LD";
+    return "DFC";
+  }
+
+  if (/MCD|PIVOTE|DEFENSIVO|CDM/.test(compact)) return "MCD";
+  if (/MCO|MEDIAPUNTA|ENGANCHE|MP|CAM/.test(compact)) return "MCO";
+  if (/VOLANTE|INTERIOR|MEDIO|MEDIOCENTRO|MC|MI|MD|CM|LM|RM/.test(compact)) {
+    if (/IZQUIER|MI|LM/.test(role.toUpperCase()) || x < 40) return "MI";
+    if (/DERECH|MD|RM/.test(role.toUpperCase()) || x > 60) return "MD";
+    return "MC";
+  }
+
+  return canonical || "";
+}
+
 function positionsAreCompatible(playerPosition, targetPosition) {
   if (!targetPosition) return true;
   if (!playerPosition) return false;
 
-  const target = canonicalPosition(targetPosition);
-  const player = canonicalPosition(playerPosition);
+  const target = canonicalDialogPosition(targetPosition);
+  const player = canonicalDialogPosition(playerPosition);
 
-  // MED es el único filtro amplio: sirve para cualquier medio.
-  if (target === "MED") return ["MC"].includes(player);
+  // Filtros del diálogo: exactos. DC no arrastra extremos; EI/ED no arrastran DC.
+  if (["DC", "EI", "ED", "MCO", "MCD", "MC", "MI", "MD", "LI", "LD", "DFC", "POR", "GER", "ENT"].includes(target)) {
+    return player === target;
+  }
 
-  // DEL y DEF pueden seguir funcionando como categorías amplias.
-  if (target === "DEL") return ["DC", "SD", "EI", "ED", "DEL"].includes(player);
-  if (target === "DEF") return ["DFC", "LI", "LD", "CAI", "CAD", "DF", "DEF"].includes(player);
+  // Categorías internas usadas por draft/reglas antiguas.
+  if (target === "DEL") return ["DC", "EI", "ED"].includes(player);
+  if (target === "DEF") return ["DFC", "LI", "LD"].includes(player);
+  if (target === "MED") return ["MC", "MCD", "MCO", "MI", "MD"].includes(player);
+  if (target === "GERENTE") return player === "GER";
+  if (target === "ENTRENADOR") return player === "ENT";
 
-  // Filtro exacto para FIFA: MCD no enseña MC/MCO, MC no enseña MCD/MCO, etc.
   return player === target;
 }
 
@@ -711,11 +804,11 @@ function getPositionAliases(position) {
 }
 
 function defaultPositionForTarget(type, index) {
-  if (type === "manager") return "Gerente";
-  if (type === "coach") return "Entrenador";
+  if (type === "manager") return "GER";
+  if (type === "coach") return "ENT";
   if (type !== "field") return "";
   const slot = formaciones[currentFormation]?.[index];
-  return slot?.rol ?? "";
+  return filterForFieldSlot(slot);
 }
 
 function targetLabel(type, index) {
@@ -1831,7 +1924,10 @@ function bindLayoutTools() {
   quickCodigo?.addEventListener("click", () => btnCopiarCodigo?.click());
   quickExportar?.addEventListener("click", () => btnExportar?.click());
   quickImportar?.addEventListener("click", () => btnImportar?.click());
-  quickFullscreen?.addEventListener("click", () => document.body.classList.toggle("focus-field"));
+  quickFullscreen?.addEventListener("click", () => {
+    document.body.classList.toggle("focus-field");
+    quickFullscreen.textContent = document.body.classList.contains("focus-field") ? "↩ Volver" : "⛶ Solo campo";
+  });
   document.addEventListener("keydown", event => {
     if (event.target && ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)) return;
     if (event.key === "ArrowLeft") switchTemplateByOffset(-1);
@@ -2103,13 +2199,8 @@ window.addEventListener('load', () => playWelcomeAnimation());
    V5 - química avanzada, draft inteligente, partido, ST
 ===================================================== */
 
-// Ampliación de posiciones FIFA / rol: MED era el hueco que fallaba en draft.
-if (typeof POSITION_GROUPS !== "undefined") {
-  POSITION_GROUPS.MED = ["MED", "MC", "MCD", "MCO", "VOL", "MI", "MD", "MEDIOCENTRO", "CENTROCAMPISTA", "CM", "CDM", "CAM", "LM", "RM"];
-  POSITION_GROUPS.MC = [...new Set([...(POSITION_GROUPS.MC || []), "MED", "MEDIO", "CENTROCAMPISTA"])] ;
-  POSITION_GROUPS.MCD = [...new Set([...(POSITION_GROUPS.MCD || []), "MED", "VOL"])] ;
-  POSITION_GROUPS.MCO = [...new Set([...(POSITION_GROUPS.MCO || []), "MED"])] ;
-}
+// Los filtros del selector se mantienen exactos: DC no incluye extremos, LI/LD no incluyen DFC.
+// Las categorías amplias solo se resuelven dentro de positionsAreCompatible para draft/reglas antiguas.
 
 let historyStackV5 = [];
 let redoStackV5 = [];

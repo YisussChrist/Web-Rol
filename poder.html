@@ -185,6 +185,37 @@ body::after{
 .icon-btn:hover,.ghost:hover{box-shadow:0 0 0 3px var(--ring);color:var(--accent)}
 .ghost.small{font-size:.85rem;padding:8px 10px}
 
+.filter-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  border:1px solid rgba(124,255,107,.22);
+  background:rgba(0,0,0,.28);
+  color:var(--muted);
+  padding:9px 12px;
+  border-radius:999px;
+  cursor:pointer;
+  transition:.15s ease;
+  font-weight:900;
+  user-select:none;
+}
+.filter-toggle:hover{
+  color:var(--accent);
+  box-shadow:0 0 0 3px var(--ring);
+}
+.filter-toggle input{
+  width:16px;
+  height:16px;
+  accent-color:var(--accent);
+}
+.filter-toggle:has(input:checked){
+  background:linear-gradient(90deg, rgba(124,255,107,.22), rgba(0,245,255,.14));
+  color:#fff;
+  border-color:rgba(124,255,107,.72);
+  box-shadow:0 0 16px rgba(124,255,107,.25);
+}
+
+
 /* Chips */
 .chip-group{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .chip{
@@ -414,6 +445,10 @@ img{image-rendering:-webkit-optimize-contrast}
           <button class="chip" data-range="100plus" aria-pressed="false">100M+</button>
           <button class="chip" data-range="unknown" aria-pressed="false">???</button>
         </div>
+        <label class="filter-toggle" title="Oculta los personajes que tengan fuerza vacía o ???">
+          <input id="hide-unknown-power" type="checkbox">
+          Ocultar sin poder
+        </label>
         <label class="select-wrap">
           <span class="sr-only">Ordenar</span>
           <select id="sort-select" aria-label="Ordenar">
@@ -1406,7 +1441,51 @@ img{image-rendering:-webkit-optimize-contrast}
         strength: "60.000.000",
         photo: "fotos-poderes/SAGE.png",
       },
-      
+      {
+        name: "Hermes Kane",
+        strength: "",
+        photo: "Hijos/Ares y Tao/Hermes Kane.jpg",
+      },
+      {
+        name: "Kiriya Azkaban",
+        strength: "",
+        photo: "Hijos/Alma y Exusiai/Kiriya Azkaban.jpg",
+      },
+      {
+        name: "Kiawa Martínez",
+        strength: "",
+        photo: "Hijos/David y Kurumi/Kiawa Martinez.jpg",
+      },
+      {
+        name: "Kabane Tsukue",
+        strength: "",
+        photo: "Hijos/Lancelot y Tokishikko/Kabane Tsukue.jpg",
+      },
+      {
+        name: "Utena Vileborne",
+        strength: "",
+        photo: "Hijos/Add y Albedo/Utena Vileborne.jpg",
+      },
+      {
+        name: "Dax Aethereon",
+        strength: "",
+        photo: "Hijos/Hak y Yoruichi/Dax Aethereon.jpg",
+      },
+      {
+        name: "Luna Zaoldyeck",
+        strength: "",
+        photo: "Hijos/Plasma y Magilou/Luna Zaoldyeck.jpg",
+      },
+      {
+        name: "Fohl Tengen",
+        strength: "",
+        photo: "Hijos/Uzui y Feixiao/Fohl Tengen.jpg",
+      },
+      {
+        name: "Kiriya Azkaban",
+        strength: "",
+        photo: "Hijos/Alma y Exusiai/Kiriya Azkaban.jpg",
+      },
 ];
   
 
@@ -1509,6 +1588,7 @@ const searchInput = $("#global-search");
 const clearBtn = $("#clear-search");
 const chipsWrap = $("#range-chips");
 const sortSelect = $("#sort-select");
+const hideUnknownPower = $("#hide-unknown-power");
 const statsBar = $("#stats-bar");
 const topThreats = $("#top-threats");
 const toTop = $("#scroll-top");
@@ -1536,6 +1616,7 @@ themeBtn?.addEventListener("click", toggleTheme);
 
 // Search & filter state
 const activeRanges = new Set();
+let hideUnknownPowerEnabled = false;
 
 function inRange(val, rangeKey) {
   if (val === "???") return rangeKey==="unknown";
@@ -1558,6 +1639,10 @@ function runSearchAndFilter(){
     const hay = norm(baseText);
     const hit = !q || hay.includes(q);
 
+    // hide characters without established power
+    const hasKnownPower = typeof c.strength === "number" && c.strength > 0;
+    const knownPowerOk = !hideUnknownPowerEnabled || hasKnownPower;
+
     // range chips
     let rangeOk = true;
     if (activeRanges.size>0) {
@@ -1569,7 +1654,7 @@ function runSearchAndFilter(){
       }
       rangeOk = ok;
     }
-    return hit && rangeOk;
+    return hit && knownPowerOk && rangeOk;
   });
 
   // sort
@@ -1616,6 +1701,11 @@ chipsWrap?.addEventListener("click", (e)=>{
 
 sortSelect?.addEventListener("change", runSearchAndFilter);
 
+hideUnknownPower?.addEventListener("change", () => {
+  hideUnknownPowerEnabled = hideUnknownPower.checked;
+  runSearchAndFilter();
+});
+
 // Stats
 function avg(nums) {
   const arr = nums.filter(n => n!=="???");
@@ -1634,7 +1724,7 @@ function updateStats(){
     <div class="stat">Fuerza media: <strong>${formatNumber(avgPower)}</strong></div>
     <div class="badges">
       <span class="badge ok">SCOUTER OK</span>
-      <span class="badge warn">${activeRanges.size ? "FILTRO ACTIVO" : "SIN FILTRO"}</span>
+      <span class="badge warn">${(activeRanges.size || hideUnknownPowerEnabled) ? "FILTRO ACTIVO" : "SIN FILTRO"}</span>
       <span class="badge err">??? ${FILTERED.filter(c=>c.strength==="???").length}</span>
     </div>
   `;

@@ -2683,3 +2683,215 @@ body.theme-dark .slot-role {
   cursor: not-allowed;
   filter: grayscale(1);
 }
+
+
+/* ===== Ajuste de vistas tácticas: compacta / equilibrada / presentación =====
+   Sustituye el salto brusco entre vista pequeña y grande. También sincroniza
+   la altura del HUD lateral con el campo para que no se descuadre por detrás. */
+:root {
+  --view-frame-width: min(1280px, 100%);
+  --view-panel-width: 320px;
+  --view-staff-width: 160px;
+  --view-bench-width: 205px;
+  --view-board-min: 720px;
+  --view-gap: 12px;
+}
+
+body.view-compact {
+  --view-frame-width: min(1120px, 100%);
+  --view-panel-width: 300px;
+  --view-staff-width: 145px;
+  --view-bench-width: 190px;
+  --view-board-min: 640px;
+  --view-gap: 10px;
+}
+
+body.view-balanced {
+  --view-frame-width: min(1320px, 100%);
+  --view-panel-width: 320px;
+  --view-staff-width: 165px;
+  --view-bench-width: 215px;
+  --view-board-min: 735px;
+  --view-gap: 12px;
+}
+
+body.view-presentation {
+  --view-frame-width: min(1420px, 100%);
+  --view-panel-width: 340px;
+  --view-staff-width: 180px;
+  --view-bench-width: 235px;
+  --view-board-min: 790px;
+  --view-gap: 14px;
+}
+
+.app {
+  width: min(1680px, 98vw) !important;
+}
+
+.layout {
+  grid-template-columns: var(--view-panel-width) minmax(0, 1fr) !important;
+  gap: 18px !important;
+}
+
+.board-wrap,
+.v6-board-header,
+.ds-frame {
+  max-width: var(--view-frame-width) !important;
+}
+
+.ds-frame {
+  width: var(--view-frame-width) !important;
+  padding: 12px !important;
+}
+
+.ds-top-screen {
+  overflow: hidden !important;
+}
+
+.ds-bottom-screen {
+  min-height: unset !important;
+}
+
+.tactics-hud {
+  display: grid !important;
+  grid-template-columns: var(--view-staff-width) minmax(520px, 1fr) var(--view-bench-width) !important;
+  gap: var(--view-gap) !important;
+  align-items: stretch !important;
+}
+
+.tactics-hud .board {
+  min-height: var(--view-board-min) !important;
+  height: var(--view-board-min) !important;
+}
+
+.side-roster {
+  min-height: 0 !important;
+  height: var(--view-board-min) !important;
+  align-self: stretch !important;
+  overflow: hidden !important;
+}
+
+.side-card-list {
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: auto !important;
+}
+
+.roster-card {
+  min-height: 104px !important;
+  padding: 6px !important;
+}
+
+.coach-card {
+  min-height: 126px !important;
+}
+
+.bench-card-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+body.view-compact .roster-card {
+  min-height: 94px !important;
+}
+
+body.view-compact .coach-card {
+  min-height: 112px !important;
+}
+
+body.view-compact .roster-face,
+body.view-compact .roster-face .avatar {
+  width: 46px !important;
+  height: 46px !important;
+}
+
+body.view-compact .coach-card .roster-face,
+body.view-compact .coach-card .roster-face .avatar {
+  width: 56px !important;
+  height: 56px !important;
+}
+
+body.view-presentation .roster-card {
+  min-height: 112px !important;
+}
+
+body.view-presentation .coach-card {
+  min-height: 138px !important;
+}
+
+/* La vista de solo campo ya no agranda de forma salvaje; ocupa bien pantalla y mantiene HUD alineado. */
+body.focus-field .panel,
+body.focus-field .ds-bottom-screen,
+body.focus-field .topbar {
+  display: none !important;
+}
+
+body.focus-field .layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+body.focus-field .app {
+  width: min(1500px, 99vw) !important;
+  padding-top: 10px !important;
+}
+
+body.focus-field .board-wrap,
+body.focus-field .ds-frame,
+body.focus-field .v6-board-header {
+  max-width: min(1460px, 99vw) !important;
+  width: min(1460px, 99vw) !important;
+}
+
+body.focus-field .tactics-hud {
+  grid-template-columns: 175px minmax(560px, 1fr) 225px !important;
+}
+
+body.focus-field .tactics-hud .board,
+body.focus-field .side-roster {
+  height: min(820px, calc(100vh - 135px)) !important;
+  min-height: 650px !important;
+}
+
+@media (max-width: 1280px) {
+  .layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .board-wrap,
+  .v6-board-header,
+  .ds-frame {
+    max-width: min(100%, 98vw) !important;
+    width: min(100%, 98vw) !important;
+  }
+
+  .tactics-hud,
+  body.focus-field .tactics-hud {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tactics-hud .board,
+  .side-roster,
+  body.focus-field .tactics-hud .board,
+  body.focus-field .side-roster {
+    height: auto !important;
+    min-height: auto !important;
+  }
+
+  .staff-card-list,
+  .bench-card-list {
+    grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --view-board-min: 620px;
+  }
+
+  .ds-frame {
+    padding: 8px !important;
+  }
+
+  .tactics-hud .board {
+    min-height: 620px !important;
+  }
+}
