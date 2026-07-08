@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historial de Partidos</title>
+  <link rel="stylesheet" href="historial.css" />
+</head>
+<body>
+  <main class="page">
+    <div class="top-nav">
+      <a href="../index.html" class="hub-btn">← Volver al Hub</a>
+    </div>
+
+    <section id="historyScreen" class="screen active">
+      <header class="hero">
+        <span class="eyebrow">Raimon Chronicle</span>
+        <h1>Historial de Partidos</h1>
+        <p>Consulta resultados, eventos clave y la línea de tiempo completa de cada encuentro.</p>
+      </header>
+
+      <section class="filters">
+        <input id="searchInput" type="text" placeholder="Buscar equipo, competición o estadio..." />
+        <select id="teamFilter">
+          <option value="">Todos los equipos</option>
+        </select>
+      </section>
+
+      <section id="matchesGrid" class="matches-grid"></section>
+    </section>
+
+    <section id="detailScreen" class="screen">
+      <button id="backBtn" class="back-btn">← Volver al historial</button>
+
+      <article class="detail-panel">
+        <header class="detail-header">
+          <span id="detailCompetition" class="tag"></span>
+          <h2 id="detailTitle"></h2>
+          <p id="detailInfo"></p>
+        </header>
+
+        <section id="timeline" class="timeline"></section>
+      </article>
+    </section>
+
+  </main>
+
+  <script src="historial.js"></script>
+</body>
+</html>
