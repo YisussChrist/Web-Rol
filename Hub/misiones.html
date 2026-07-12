@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generador de misiones</title>
+  <link rel="stylesheet" href="hub.css" />
+  <style>
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .field-row input {
+      margin: 0;
+    }
+
+    .small-button,
+    .danger-button {
+      width: auto;
+      min-width: 44px;
+      margin: 0;
+      padding: 10px 14px;
+    }
+
+    .danger-button {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin: 10px 0 18px;
+    }
+
+    .checkbox-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .checkbox-option input {
+      width: auto;
+      margin: 0;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .section-actions {
+      margin-bottom: 18px;
+    }
+
+    .output-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .output-actions button {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    #output {
+      min-height: 420px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .form-card select {
+      width: 100%;
+      padding: 12px 42px 12px 14px;
+      margin: 6px 0 16px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      background-color: rgba(10, 15, 28, 0.88);
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, currentColor 50%),
+        linear-gradient(135deg, currentColor 50%, transparent 50%);
+      background-position:
+        calc(100% - 19px) 50%,
+        calc(100% - 13px) 50%;
+      background-size: 6px 6px;
+      background-repeat: no-repeat;
+      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .form-card select:hover {
+      border-color: rgba(255, 255, 255, 0.38);
+    }
+
+    .form-card select:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+    }
+
+    .form-card select option {
+      background: #111827;
+      color: #f8fafc;
+    }
+
+    @media (max-width: 700px) {
+      .two-columns {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<main class="hub">
+  <section class="hero">
+    <p class="eyebrow">ResonanceTM Tools</p>
+    <h1>Generador de misiones</h1>
+    <p>Rellena lo necesario y copia el mensaje listo para pegar en Discord.</p>
+  </section>
+
+  <div class="guide-card">
+    <h2>📖 Guía rápida</h2>
+    <ul>
+      <li>Los apartados vacíos no aparecerán en el resultado.</li>
+      <li>Puedes añadir tantos objetivos, datos y recompensas como necesites.</li>
+      <li>El resultado conserva el formato de Discord automáticamente.</li>
+      <li>Las notas del GM son opcionales.</li>
+    </ul>
+
+    <div class="guide-note">
+      💡 <strong>Consejo:</strong> No hace falta rellenarlo todo. Una misión sencilla puede generarse en menos de un minuto.
+    </div>
+  </div>
+
+  <section class="generator">
+    <div class="form-card">
+      <h2>Información general</h2>
+
+      <label for="title">Título</label>
+      <input id="title" placeholder="Ej: Las Llamas del Oasis" />
+
+      <label for="missionType">Tipo de misión</label>
+      <select id="missionType">
+        <option value="">Seleccionar...</option>
+        <option>Investigación</option>
+        <option>Combate</option>
+        <option>Investigación y Combate</option>
+        <option>Rescate</option>
+        <option>Exploración</option>
+        <option>Sigilo</option>
+        <option>Historia</option>
+        <option>Evento</option>
+        <option>Torneo</option>
+      </select>
+
+      <label for="difficulty">Dificultad</label>
+      <select id="difficulty">
+        <option value="">Sin especificar</option>
+        <option>⭐☆☆☆☆</option>
+        <option>⭐⭐☆☆☆</option>
+        <option>⭐⭐⭐☆☆</option>
+        <option>⭐⭐⭐⭐☆</option>
+        <option>⭐⭐⭐⭐⭐</option>
+      </select>
+
+      <hr />
+
+      <h2>Localización</h2>
+
+      <label for="planet">Planeta</label>
+      <input id="planet" list="planetOptions" placeholder="Ej: Tierra" />
+      <datalist id="planetOptions">
+        <option value="Tierra"></option>
+        <option value="Namek"></option>
+        <option value="Planeta Vegeta"></option>
+        <option value="Makai"></option>
+      </datalist>
+
+      <label for="zone">Zona concreta</label>
+      <input id="zone" placeholder="Ej: Oasis cercano a Lucifer City" />
+
+      <label for="conditions">Condiciones especiales</label>
+      <textarea id="conditions" placeholder="Ej: Temperaturas extremas y terreno hostil"></textarea>
+
+      <hr />
+
+      <h2>Sinopsis</h2>
+      <textarea id="synopsis" placeholder="Describe la misión sin revelar sus secretos"></textarea>
+
+      <hr />
+
+      <h2>Objetivos</h2>
+
+      <label for="mainObjective">Objetivo principal</label>
+      <textarea id="mainObjective" placeholder="Ej: Investigar las desapariciones del oasis"></textarea>
+
+      <label>Objetivos secundarios</label>
+      <div id="secondaryObjectives"></div>
+      <div class="section-actions">
+        <button class="small-button" type="button" onclick="addRepeatField('secondaryObjectives', 'Objetivo secundario')">+ Añadir objetivo</button>
+      </div>
+
+      <hr />
+
+      <h2>Información conocida</h2>
+      <div id="knownInfo"></div>
+      <div class="section-actions">
+        <button class="small-button" type="button" onclick="addRepeatField('knownInfo', 'Dato conocido')">+ Añadir información</button>
+      </div>
+
+      <hr />
+
+      <h2>Participantes <small>(opcional)</small></h2>
+      <div class="two-columns">
+        <div>
+          <label for="minParticipants">Mínimo</label>
+          <input id="minParticipants" type="number" min="1" placeholder="Sin mínimo" />
+        </div>
+        <div>
+          <label for="maxParticipants">Máximo</label>
+          <input id="maxParticipants" type="number" min="1" placeholder="Sin límite" />
+        </div>
+      </div>
+
+      <hr />
+
+      <h2>Requisitos y restricciones</h2>
+      <div class="checkbox-grid" id="alignmentOptions">
+        <label class="checkbox-option"><input type="checkbox" value="Personajes de alineación Benigna" /> Benigna</label>
+        <label class="checkbox-option"><input type="checkbox" value="Personajes de alineación Neutral/Benigna" /> Neutral/Benigna</label>
+        <label class="checkbox-option"><input type="checkbox" value="Personajes de alineación Neutral" /> Neutral</label>
+        <label class="checkbox-option"><input type="checkbox" value="Demonios permitidos" /> Demonios</label>
+        <label class="checkbox-option"><input type="checkbox" value="Villanos permitidos" /> Villanos</label>
+      </div>
+
+      <div id="requirements"></div>
+      <div class="section-actions">
+        <button class="small-button" type="button" onclick="addRepeatField('requirements', 'Otro requisito o restricción')">+ Añadir requisito</button>
+      </div>
+
+      <hr />
+
+      <h2>Amenazas</h2>
+
+      <label for="threatLevel">Nivel de amenaza</label>
+      <select id="threatLevel">
+        <option value="">Sin especificar</option>
+        <option>Desconocido</option>
+        <option>Bajo</option>
+        <option>Medio</option>
+        <option>Alto</option>
+        <option>Catastrófico</option>
+      </select>
+
+      <label for="threatDescription">Información disponible</label>
+      <textarea id="threatDescription" placeholder="Ej: Enemigos y NPCs relevantes no revelados"></textarea>
+
+      <hr />
+
+      <h2>Recompensas</h2>
+      <div id="rewards"></div>
+      <div class="section-actions">
+        <button class="small-button" type="button" onclick="addRepeatField('rewards', 'Recompensa')">+ Añadir recompensa</button>
+      </div>
+
+      <hr />
+
+      <h2>Notas del GM</h2>
+      <div id="gmNotes"></div>
+      <div class="section-actions">
+        <button class="small-button" type="button" onclick="addRepeatField('gmNotes', 'Nota del GM')">+ Añadir nota</button>
+      </div>
+
+      <button id="generateMissionButton" type="button">Generar mensaje</button>
+    </div>
+
+    <div class="output-card">
+      <h2>Mensaje generado</h2>
+      <pre id="output"></pre>
+      <div class="output-actions">
+        <button id="copyMissionButton" type="button">Copiar mensaje</button>
+        <button id="clearMissionButton" type="button">Limpiar formulario</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+function cleanValue(value) {
+  return String(value || "").trim();
+}
+
+function addRepeatField(containerId, placeholder, value = "") {
+  const container = document.getElementById(containerId);
+  const row = document.createElement("div");
+  row.className = "field-row";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = placeholder;
+  input.value = value;
+
+  const removeButton = document.createElement("button");
+  removeButton.type = "button";
+  removeButton.className = "danger-button";
+  removeButton.textContent = "✕";
+  removeButton.title = "Eliminar campo";
+  removeButton.addEventListener("click", () => row.remove());
+
+  row.append(input, removeButton);
+  container.appendChild(row);
+}
+
+function getRepeatValues(containerId) {
+  return [...document.querySelectorAll(`#${containerId} input`)]
+    .map(input => cleanValue(input.value))
+    .filter(Boolean);
+}
+
+function getCheckedValues(containerId) {
+  return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)]
+    .map(input => cleanValue(input.value))
+    .filter(Boolean);
+}
+
+function addSection(sections, title, content) {
+  if (!content || (Array.isArray(content) && content.length === 0)) return;
+
+  sections.push(`> ***\`${title}\`***`);
+
+  if (Array.isArray(content)) {
+    sections.push(content.map(item => `*• ${item}*`).join("\n"));
+  } else {
+    sections.push(`*${content}*`);
+  }
+}
+
+function generateMission() {
+  const title = cleanValue(document.getElementById("title").value);
+  const missionType = cleanValue(document.getElementById("missionType").value);
+  const difficulty = cleanValue(document.getElementById("difficulty").value);
+  const planet = cleanValue(document.getElementById("planet").value);
+  const zone = cleanValue(document.getElementById("zone").value);
+  const conditions = cleanValue(document.getElementById("conditions").value);
+  const synopsis = cleanValue(document.getElementById("synopsis").value);
+  const mainObjective = cleanValue(document.getElementById("mainObjective").value);
+  const secondaryObjectives = getRepeatValues("secondaryObjectives");
+  const knownInfo = getRepeatValues("knownInfo");
+  const minParticipants = cleanValue(document.getElementById("minParticipants").value);
+  const maxParticipants = cleanValue(document.getElementById("maxParticipants").value);
+  const requirements = [
+    ...getCheckedValues("alignmentOptions"),
+    ...getRepeatValues("requirements")
+  ];
+  const threatLevel = cleanValue(document.getElementById("threatLevel").value);
+  const threatDescription = cleanValue(document.getElementById("threatDescription").value);
+  const rewards = getRepeatValues("rewards");
+  const gmNotes = getRepeatValues("gmNotes");
+
+  const sections = [];
+
+  if (title) {
+    sections.push(`> ***\`Título\`***`);
+    sections.push(`**${title}**`);
+  }
+
+  const generalInfo = [];
+  if (missionType) generalInfo.push(`Tipo: ${missionType}`);
+  if (difficulty) generalInfo.push(`Dificultad: ${difficulty}`);
+  addSection(sections, "Información de la Misión", generalInfo);
+
+  const location = [];
+  if (planet) location.push(`Planeta: ${planet}`);
+  if (zone) location.push(`Zona concreta: ${zone}`);
+  if (conditions) location.push(`Condiciones especiales: ${conditions}`);
+  addSection(sections, "Localización", location);
+
+  addSection(sections, "Sinopsis", synopsis);
+
+  const objectives = [];
+  if (mainObjective) objectives.push(`Objetivo principal: ${mainObjective}`);
+  secondaryObjectives.forEach(objective => objectives.push(`Objetivo secundario: ${objective}`));
+  addSection(sections, "Objetivos de la Misión", objectives);
+
+  addSection(sections, "Información Conocida", knownInfo);
+
+  const participants = [];
+  if (minParticipants) participants.push(`Mínimo: ${minParticipants}`);
+  if (maxParticipants) participants.push(`Máximo: ${maxParticipants}`);
+  addSection(sections, "Participantes", participants);
+
+  addSection(sections, "Requisitos y Restricciones", requirements);
+
+  const threats = [];
+  if (threatLevel) threats.push(`Nivel de amenaza: ${threatLevel}`);
+  if (threatDescription) threats.push(threatDescription);
+  addSection(sections, "Amenazas Detectadas", threats);
+
+  addSection(sections, "Recompensas de la Misión", rewards);
+  addSection(sections, "Notas del GM", gmNotes);
+
+  const output = sections.join("\n\n");
+  document.getElementById("output").textContent = output || "Rellena al menos un campo para generar la misión.";
+}
+
+async function copyCode() {
+  const output = document.getElementById("output").textContent;
+
+  if (!output.trim() || output.startsWith("Rellena al menos")) {
+    alert("Primero genera una misión.");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(output);
+    alert("Mensaje copiado.");
+  } catch (error) {
+    alert("No se pudo copiar automáticamente. Selecciona el texto y cópialo manualmente.");
+  }
+}
+
+function clearForm() {
+  document.querySelectorAll("input, textarea, select").forEach(field => {
+    if (field.type === "checkbox") {
+      field.checked = false;
+    } else {
+      field.value = "";
+    }
+  });
+
+  ["secondaryObjectives", "knownInfo", "requirements", "rewards", "gmNotes"].forEach(id => {
+    document.getElementById(id).innerHTML = "";
+  });
+
+  addDefaultFields();
+  document.getElementById("output").textContent = "";
+}
+
+function addDefaultFields() {
+  addRepeatField("secondaryObjectives", "Objetivo secundario");
+  addRepeatField("knownInfo", "Dato conocido");
+  addRepeatField("requirements", "Otro requisito o restricción");
+  addRepeatField("rewards", "Recompensa");
+  addRepeatField("gmNotes", "Nota del GM");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  addDefaultFields();
+
+  const generateButton = document.getElementById("generateMissionButton");
+  const copyButton = document.getElementById("copyMissionButton");
+  const clearButton = document.getElementById("clearMissionButton");
+
+  generateButton.addEventListener("click", () => {
+    try {
+      generateMission();
+    } catch (error) {
+      console.error("Error al generar la misión:", error);
+      document.getElementById("output").textContent =
+        "Ha ocurrido un error al generar el mensaje. Revisa la consola del navegador.";
+    }
+  });
+
+  copyButton.addEventListener("click", copyCode);
+  clearButton.addEventListener("click", clearForm);
+});
+</script>
+
+</body>
+</html>
