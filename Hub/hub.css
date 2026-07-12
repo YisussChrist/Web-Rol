@@ -102,8 +102,10 @@ body {
 
 .generator {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(340px, 1fr) minmax(340px, 1fr);
   gap: 24px;
+  min-width: 0;
+  align-items: start;
 }
 
 .form-card,
@@ -113,6 +115,7 @@ body {
   background: rgba(255, 255, 255, 0.075);
   border: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(14px);
+  min-width: 0;
 }
 
 .form-card h2,
@@ -224,4 +227,22 @@ pre {
     background:#27344d;
     border-left:4px solid #4cc9ff;
     border-radius:8px;
+}
+
+.preview-note{
+    margin-top: 12px;
+    padding: 10px 14px;
+
+    background: rgba(124, 58, 237, .08);
+    border: 1px solid rgba(124, 58, 237, .25);
+    border-left: 4px solid #8b5cf6;
+    border-radius: 12px;
+
+    color: #d1d5db;
+    font-size: .9rem;
+    line-height: 1.5;
+}
+
+.preview-note strong{
+    color: #fff;
 }

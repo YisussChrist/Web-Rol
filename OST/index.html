@@ -1992,16 +1992,6 @@ button, select, input{ font-family:inherit; }
         </div>
     </div>
 
-    <div class="beta-modal" id="betaModal" role="dialog" aria-modal="true" aria-labelledby="betaTitle">
-        <div class="beta-box">
-            <div class="beta-kicker">Beta Notice</div>
-            <h2 id="betaTitle">Bienvenido a Resonance™</h2>
-            <p>Acabas de entrar en Resonance™, es una aplicación aún en fase beta por lo que se agradece la paciencia, y si se reporta algún error visual, bug o fallo en la app me lo hagáis saber. Espero que os mole :)</p>
-            <div class="beta-actions">
-                <button class="beta-accept-btn" id="betaAcceptBtn" type="button">Entrar a Resonance</button>
-            </div>
-        </div>
-    </div>
     <aside class="sidebar app-sidebar">
         <div class="brand-block">
             <img src="ResonanceLogo.png" alt="Resonance" class="brand-logo">
@@ -2010,6 +2000,7 @@ button, select, input{ font-family:inherit; }
 
         <nav class="side-nav">
             <button class="side-nav-item pill-btn active" id="showAllBtn">🎧 <span>Biblioteca</span></button>
+            <button class="side-nav-item pill-btn" id="showCalmBtn">🌙 <span>Momentos tranquilos</span></button>
             <button class="side-nav-item pill-btn" id="showFavBtn">☆ <span>Favoritos</span></button>
             <label class="side-nav-select">👥
                 <select class="select-input" id="characterSelect">
@@ -2026,6 +2017,7 @@ button, select, input{ font-family:inherit; }
             <select class="select-input" id="filterSelect">
                 <option value="all">Todas las canciones</option>
                 <option value="favorites">⭐ Favoritos</option>
+                <option value="calm">🌙 Momentos tranquilos</option>
                 <option value="rage">Rage Mode</option>
                 <option value="finalboss">Final Boss</option>
                 <option value="emotional">Emotional</option>
@@ -3172,7 +3164,9 @@ button, select, input{ font-family:inherit; }
 
             const subtitle = filterSelect.value === 'favorites'
                 ? 'Tus temas marcados como favoritos'
-                : 'Canciones agrupadas por personaje para que cada una tenga identidad propia';
+                : filterSelect.value === 'calm'
+                    ? 'Canciones para conversaciones, descansos y momentos tranquilos'
+                    : 'Canciones agrupadas por personaje para que cada una tenga identidad propia';
 
             const header = document.createElement('div');
             header.className = 'library-header';
@@ -3271,6 +3265,9 @@ button, select, input{ font-family:inherit; }
             shuffleTopBtn.classList.toggle('active', shuffle);
             battleTopBtn.classList.toggle('active', battleMode);
             document.getElementById('toggleBattleBtn').classList.toggle('active', battleMode);
+            document.getElementById('showAllBtn').classList.toggle('active', filterSelect.value === 'all');
+            document.getElementById('showCalmBtn').classList.toggle('active', filterSelect.value === 'calm');
+            document.getElementById('showFavBtn').classList.toggle('active', filterSelect.value === 'favorites');
             document.body.classList.toggle('battle-mode-active', battleMode);
             intensitySelect.value = intensity;
             toggleMiniBtn.classList.toggle('active', miniPlayer);
@@ -3331,6 +3328,7 @@ button, select, input{ font-family:inherit; }
         };
 
         document.getElementById('showFavBtn').onclick = () => { filterSelect.value = 'favorites'; renderAll(); };
+        document.getElementById('showCalmBtn').onclick = () => { filterSelect.value = 'calm'; searchInput.value = ''; renderAll(); };
         document.getElementById('showAllBtn').onclick = () => { filterSelect.value = 'all'; searchInput.value = ''; renderAll(); };
         toggleMiniBtn.onclick = () => { miniPlayer = !miniPlayer; renderAll(); };
         toggleAudioOnlyBtn.onclick = () => { toggleAudioOnly(); renderAll(); };
@@ -3377,23 +3375,14 @@ button, select, input{ font-family:inherit; }
         window.addEventListener('resize', initVisualizer);
 
 
-        // Intro inicial + aviso beta de Resonance
+        // Animación inicial de Resonance
         const introScreen = document.getElementById('introScreen');
-        const betaModal = document.getElementById('betaModal');
-        const betaAcceptBtn = document.getElementById('betaAcceptBtn');
 
         window.addEventListener('load', () => {
             setTimeout(() => {
                 if (introScreen) introScreen.classList.add('hide');
-                if (betaModal) betaModal.classList.add('show');
             }, 2550);
         });
-
-        if (betaAcceptBtn) {
-            betaAcceptBtn.addEventListener('click', () => {
-                betaModal.classList.remove('show');
-            });
-        }
 
         initVisualizer();
         populateCharacterSelect();
