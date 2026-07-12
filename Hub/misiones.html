@@ -3,9 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generador de misiones</title>
+  <title>Generador visual de misiones</title>
   <link rel="stylesheet" href="hub.css" />
   <style>
+    :root {
+      --mission-accent: #f59e0b;
+      --mission-accent-soft: rgba(245, 158, 11, .18);
+      --mission-panel: rgba(11, 16, 29, .92);
+      --mission-line: rgba(255, 255, 255, .13);
+    }
+
+    * { box-sizing: border-box; }
+
     .field-row {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -14,9 +23,7 @@
       margin-bottom: 10px;
     }
 
-    .field-row input {
-      margin: 0;
-    }
+    .field-row input { margin: 0; }
 
     .small-button,
     .danger-button {
@@ -28,7 +35,7 @@
 
     .danger-button {
       background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, .2);
     }
 
     .checkbox-grid {
@@ -57,34 +64,27 @@
       gap: 14px;
     }
 
-    .section-actions {
-      margin-bottom: 18px;
-    }
+    .section-actions { margin-bottom: 18px; }
 
     .output-actions {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      margin-top: 16px;
     }
 
     .output-actions button {
       flex: 1;
-      min-width: 150px;
-    }
-
-    #output {
-      min-height: 420px;
-      white-space: pre-wrap;
-      word-break: break-word;
+      min-width: 170px;
     }
 
     .form-card select {
       width: 100%;
       padding: 12px 42px 12px 14px;
       margin: 6px 0 16px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, .16);
       border-radius: 12px;
-      background-color: rgba(10, 15, 28, 0.88);
+      background-color: rgba(10, 15, 28, .88);
       color: inherit;
       font: inherit;
       cursor: pointer;
@@ -99,26 +99,230 @@
         calc(100% - 13px) 50%;
       background-size: 6px 6px;
       background-repeat: no-repeat;
-      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+      transition: border-color .2s ease, box-shadow .2s ease;
     }
 
-    .form-card select:hover {
-      border-color: rgba(255, 255, 255, 0.38);
-    }
-
+    .form-card select:hover { border-color: rgba(255, 255, 255, .38); }
     .form-card select:focus {
       border-color: #8b5cf6;
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, .18);
+    }
+    .form-card select option { background: #111827; color: #f8fafc; }
+
+    .file-help {
+      display: block;
+      margin: -8px 0 16px;
+      opacity: .72;
+      font-size: .88rem;
     }
 
-    .form-card select option {
-      background: #111827;
+    .mission-preview-shell {
+      overflow: auto;
+      padding: 8px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .mission-card {
+      position: relative;
+      width: 900px;
+      min-height: 1250px;
+      overflow: hidden;
+      border-radius: 28px;
       color: #f8fafc;
+      background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, .17), transparent 30%),
+        linear-gradient(145deg, #111827, #080b12 65%);
+      border: 1px solid rgba(255, 255, 255, .12);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, .45);
+      isolation: isolate;
+    }
+
+    .mission-background {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .28;
+      filter: saturate(.88) contrast(1.08);
+      z-index: -3;
+    }
+
+    .mission-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        linear-gradient(to bottom, rgba(5, 8, 15, .2), rgba(5, 8, 15, .88) 34%, rgba(5, 8, 15, .98)),
+        linear-gradient(135deg, rgba(245, 158, 11, .08), transparent 46%);
+    }
+
+    .mission-card::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+    .mission-header {
+      position: relative;
+      min-height: 330px;
+      padding: 54px 58px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .mission-kicker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #fde68a;
+    }
+
+    .mission-kicker::before {
+      content: "";
+      width: 48px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--mission-accent);
+      box-shadow: 0 0 18px var(--mission-accent);
+    }
+
+    .mission-title {
+      margin: 0;
+      max-width: 760px;
+      font-size: 58px;
+      line-height: .98;
+      text-wrap: balance;
+      text-shadow: 0 7px 30px rgba(0, 0, 0, .65);
+    }
+
+    .mission-location {
+      margin: 18px 0 0;
+      font-size: 21px;
+      color: #dbeafe;
+    }
+
+    .mission-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      padding: 0 58px 28px;
+    }
+
+    .meta-chip {
+      min-height: 84px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: rgba(8, 12, 22, .72);
+      border: 1px solid var(--mission-line);
+      backdrop-filter: blur(8px);
+    }
+
+    .meta-chip span {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      color: #a5b4fc;
+    }
+
+    .meta-chip strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .mission-body {
+      padding: 0 58px 58px;
+      display: grid;
+      gap: 17px;
+    }
+
+    .mission-section {
+      padding: 22px 24px;
+      border-radius: 18px;
+      background: var(--mission-panel);
+      border: 1px solid var(--mission-line);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, .16);
+    }
+
+    .mission-section[hidden], .meta-chip[hidden] { display: none !important; }
+
+    .mission-section h2 {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin: 0 0 13px;
+      font-size: 19px;
+      color: #fde68a;
+    }
+
+    .mission-section p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.58;
+      color: #e5e7eb;
+      white-space: pre-line;
+    }
+
+    .mission-section ul {
+      margin: 0;
+      padding-left: 23px;
+      display: grid;
+      gap: 8px;
+      font-size: 17px;
+      line-height: 1.45;
+      color: #e5e7eb;
+    }
+
+    .mission-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 17px;
+    }
+
+    .mission-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 0 58px 40px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, .62);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .mission-footer strong { color: #fde68a; }
+
+    .empty-preview {
+      opacity: .55;
+      font-style: italic;
+    }
+
+    @media (max-width: 1100px) {
+      .generator { grid-template-columns: 1fr !important; }
     }
 
     @media (max-width: 700px) {
-      .two-columns {
-        grid-template-columns: 1fr;
+      .two-columns { grid-template-columns: 1fr; }
+      .mission-preview-shell { padding: 0; }
+      .mission-card {
+        transform-origin: top left;
+        transform: scale(.62);
+        margin-bottom: -465px;
       }
     }
   </style>
@@ -128,21 +332,21 @@
 <main class="hub">
   <section class="hero">
     <p class="eyebrow">ResonanceTM Tools</p>
-    <h1>Generador de misiones</h1>
-    <p>Rellena lo necesario y copia el mensaje listo para pegar en Discord.</p>
+    <h1>Generador visual de misiones</h1>
+    <p>Rellena la ficha, comprueba la vista previa y genera una imagen lista para Discord.</p>
   </section>
 
   <div class="guide-card">
     <h2>📖 Guía rápida</h2>
     <ul>
-      <li>Los apartados vacíos no aparecerán en el resultado.</li>
-      <li>Puedes añadir tantos objetivos, datos y recompensas como necesites.</li>
-      <li>El resultado conserva el formato de Discord automáticamente.</li>
-      <li>Las notas del GM son opcionales.</li>
+      <li>Los apartados vacíos desaparecen automáticamente de la imagen.</li>
+      <li>La imagen de fondo es opcional.</li>
+      <li>El límite de participantes y el rango de poder también son opcionales.</li>
+      <li>La ficha se actualiza mientras escribes.</li>
     </ul>
 
     <div class="guide-note">
-      💡 <strong>Consejo:</strong> No hace falta rellenarlo todo. Una misión sencilla puede generarse en menos de un minuto.
+      💡 <strong>Consejo:</strong> Utiliza una imagen horizontal o vertical de buena calidad. La web la adaptará como fondo de la ficha.
     </div>
   </div>
 
@@ -176,6 +380,10 @@
         <option>⭐⭐⭐⭐☆</option>
         <option>⭐⭐⭐⭐⭐</option>
       </select>
+
+      <label for="missionImage">Imagen de fondo <small>(opcional)</small></label>
+      <input id="missionImage" type="file" accept="image/png,image/jpeg,image/webp" />
+      <small class="file-help">La imagen solo se utiliza en tu navegador para crear el PNG.</small>
 
       <hr />
 
@@ -211,7 +419,7 @@
       <label>Objetivos secundarios</label>
       <div id="secondaryObjectives"></div>
       <div class="section-actions">
-        <button class="small-button" type="button" onclick="addRepeatField('secondaryObjectives', 'Objetivo secundario')">+ Añadir objetivo</button>
+        <button class="small-button" type="button" data-add-field="secondaryObjectives" data-placeholder="Objetivo secundario">+ Añadir objetivo</button>
       </div>
 
       <hr />
@@ -219,7 +427,7 @@
       <h2>Información conocida</h2>
       <div id="knownInfo"></div>
       <div class="section-actions">
-        <button class="small-button" type="button" onclick="addRepeatField('knownInfo', 'Dato conocido')">+ Añadir información</button>
+        <button class="small-button" type="button" data-add-field="knownInfo" data-placeholder="Dato conocido">+ Añadir información</button>
       </div>
 
       <hr />
@@ -236,6 +444,19 @@
         </div>
       </div>
 
+      <h2>Rango de poder <small>(opcional)</small></h2>
+      <div class="two-columns">
+        <div>
+          <label for="minPower">Poder mínimo</label>
+          <input id="minPower" type="number" min="0" step="0.1" placeholder="Ej: 20" />
+        </div>
+        <div>
+          <label for="maxPower">Poder máximo</label>
+          <input id="maxPower" type="number" min="0" step="0.1" placeholder="Ej: 80" />
+        </div>
+      </div>
+      <small class="file-help">Las cifras se mostrarán en millones: 20M, 80M, etc.</small>
+
       <hr />
 
       <h2>Requisitos y restricciones</h2>
@@ -249,7 +470,7 @@
 
       <div id="requirements"></div>
       <div class="section-actions">
-        <button class="small-button" type="button" onclick="addRepeatField('requirements', 'Otro requisito o restricción')">+ Añadir requisito</button>
+        <button class="small-button" type="button" data-add-field="requirements" data-placeholder="Otro requisito o restricción">+ Añadir requisito</button>
       </div>
 
       <hr />
@@ -274,7 +495,7 @@
       <h2>Recompensas</h2>
       <div id="rewards"></div>
       <div class="section-actions">
-        <button class="small-button" type="button" onclick="addRepeatField('rewards', 'Recompensa')">+ Añadir recompensa</button>
+        <button class="small-button" type="button" data-add-field="rewards" data-placeholder="Recompensa">+ Añadir recompensa</button>
       </div>
 
       <hr />
@@ -282,203 +503,363 @@
       <h2>Notas del GM</h2>
       <div id="gmNotes"></div>
       <div class="section-actions">
-        <button class="small-button" type="button" onclick="addRepeatField('gmNotes', 'Nota del GM')">+ Añadir nota</button>
+        <button class="small-button" type="button" data-add-field="gmNotes" data-placeholder="Nota del GM">+ Añadir nota</button>
       </div>
-
-      <button id="generateMissionButton" type="button">Generar mensaje</button>
     </div>
 
     <div class="output-card">
-      <h2>Mensaje generado</h2>
-      <pre id="output"></pre>
+      <h2>Vista previa</h2>
+
+      <div class="mission-preview-shell">
+        <article id="missionCard" class="mission-card">
+          <img id="previewBackground" class="mission-background" alt="" hidden />
+
+          <header class="mission-header">
+            <div id="previewType" class="mission-kicker">Expediente de misión</div>
+            <h1 id="previewTitle" class="mission-title">Nueva misión</h1>
+            <p id="previewLocation" class="mission-location">Localización por determinar</p>
+          </header>
+
+          <section class="mission-meta">
+            <div id="difficultyChip" class="meta-chip" hidden>
+              <span>Dificultad</span>
+              <strong id="previewDifficulty"></strong>
+            </div>
+            <div id="participantsChip" class="meta-chip" hidden>
+              <span>Participantes</span>
+              <strong id="previewParticipants"></strong>
+            </div>
+            <div id="powerChip" class="meta-chip" hidden>
+              <span>Rango de poder</span>
+              <strong id="previewPower"></strong>
+            </div>
+            <div id="threatChip" class="meta-chip" hidden>
+              <span>Amenaza</span>
+              <strong id="previewThreat"></strong>
+            </div>
+          </section>
+
+          <main class="mission-body">
+            <section id="synopsisSection" class="mission-section" hidden>
+              <h2>📖 Sinopsis</h2>
+              <p id="previewSynopsis"></p>
+            </section>
+
+            <section id="conditionsSection" class="mission-section" hidden>
+              <h2>🌍 Condiciones del terreno</h2>
+              <p id="previewConditions"></p>
+            </section>
+
+            <section id="objectivesSection" class="mission-section" hidden>
+              <h2>🎯 Objetivos</h2>
+              <ul id="previewObjectives"></ul>
+            </section>
+
+            <section id="knownInfoSection" class="mission-section" hidden>
+              <h2>📑 Información conocida</h2>
+              <ul id="previewKnownInfo"></ul>
+            </section>
+
+            <div class="mission-columns">
+              <section id="requirementsSection" class="mission-section" hidden>
+                <h2>⚠️ Requisitos</h2>
+                <ul id="previewRequirements"></ul>
+              </section>
+
+              <section id="rewardsSection" class="mission-section" hidden>
+                <h2>🎁 Recompensas</h2>
+                <ul id="previewRewards"></ul>
+              </section>
+            </div>
+
+            <section id="threatDescriptionSection" class="mission-section" hidden>
+              <h2>☣️ Amenazas detectadas</h2>
+              <p id="previewThreatDescription"></p>
+            </section>
+
+            <section id="gmNotesSection" class="mission-section" hidden>
+              <h2>📝 Notas del GM</h2>
+              <ul id="previewGmNotes"></ul>
+            </section>
+          </main>
+
+          <footer class="mission-footer">
+            <span>ResonanceTM · Archivo de misión</span>
+            <strong id="previewFooterType">Misión</strong>
+          </footer>
+        </article>
+      </div>
+
       <div class="output-actions">
-        <button id="copyMissionButton" type="button">Copiar mensaje</button>
+        <button id="downloadMissionButton" type="button">Descargar imagen PNG</button>
         <button id="clearMissionButton" type="button">Limpiar formulario</button>
       </div>
     </div>
   </section>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
-function cleanValue(value) {
-  return String(value || "").trim();
-}
+  const repeatContainers = ["secondaryObjectives", "knownInfo", "requirements", "rewards", "gmNotes"];
 
-function addRepeatField(containerId, placeholder, value = "") {
-  const container = document.getElementById(containerId);
-  const row = document.createElement("div");
-  row.className = "field-row";
-
-  const input = document.createElement("input");
-  input.type = "text";
-  input.placeholder = placeholder;
-  input.value = value;
-
-  const removeButton = document.createElement("button");
-  removeButton.type = "button";
-  removeButton.className = "danger-button";
-  removeButton.textContent = "✕";
-  removeButton.title = "Eliminar campo";
-  removeButton.addEventListener("click", () => row.remove());
-
-  row.append(input, removeButton);
-  container.appendChild(row);
-}
-
-function getRepeatValues(containerId) {
-  return [...document.querySelectorAll(`#${containerId} input`)]
-    .map(input => cleanValue(input.value))
-    .filter(Boolean);
-}
-
-function getCheckedValues(containerId) {
-  return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)]
-    .map(input => cleanValue(input.value))
-    .filter(Boolean);
-}
-
-function addSection(sections, title, content) {
-  if (!content || (Array.isArray(content) && content.length === 0)) return;
-
-  sections.push(`> ***\`${title}\`***`);
-
-  if (Array.isArray(content)) {
-    sections.push(content.map(item => `*• ${item}*`).join("\n"));
-  } else {
-    sections.push(`*${content}*`);
-  }
-}
-
-function generateMission() {
-  const title = cleanValue(document.getElementById("title").value);
-  const missionType = cleanValue(document.getElementById("missionType").value);
-  const difficulty = cleanValue(document.getElementById("difficulty").value);
-  const planet = cleanValue(document.getElementById("planet").value);
-  const zone = cleanValue(document.getElementById("zone").value);
-  const conditions = cleanValue(document.getElementById("conditions").value);
-  const synopsis = cleanValue(document.getElementById("synopsis").value);
-  const mainObjective = cleanValue(document.getElementById("mainObjective").value);
-  const secondaryObjectives = getRepeatValues("secondaryObjectives");
-  const knownInfo = getRepeatValues("knownInfo");
-  const minParticipants = cleanValue(document.getElementById("minParticipants").value);
-  const maxParticipants = cleanValue(document.getElementById("maxParticipants").value);
-  const requirements = [
-    ...getCheckedValues("alignmentOptions"),
-    ...getRepeatValues("requirements")
-  ];
-  const threatLevel = cleanValue(document.getElementById("threatLevel").value);
-  const threatDescription = cleanValue(document.getElementById("threatDescription").value);
-  const rewards = getRepeatValues("rewards");
-  const gmNotes = getRepeatValues("gmNotes");
-
-  const sections = [];
-
-  if (title) {
-    sections.push(`> ***\`Título\`***`);
-    sections.push(`**${title}**`);
+  function cleanValue(value) {
+    return String(value || "").trim();
   }
 
-  const generalInfo = [];
-  if (missionType) generalInfo.push(`Tipo: ${missionType}`);
-  if (difficulty) generalInfo.push(`Dificultad: ${difficulty}`);
-  addSection(sections, "Información de la Misión", generalInfo);
+  function addRepeatField(containerId, placeholder, value = "") {
+    const container = document.getElementById(containerId);
+    const row = document.createElement("div");
+    row.className = "field-row";
 
-  const location = [];
-  if (planet) location.push(`Planeta: ${planet}`);
-  if (zone) location.push(`Zona concreta: ${zone}`);
-  if (conditions) location.push(`Condiciones especiales: ${conditions}`);
-  addSection(sections, "Localización", location);
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = placeholder;
+    input.value = value;
+    input.addEventListener("input", updatePreview);
 
-  addSection(sections, "Sinopsis", synopsis);
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "danger-button";
+    removeButton.textContent = "✕";
+    removeButton.title = "Eliminar campo";
+    removeButton.addEventListener("click", () => {
+      row.remove();
+      updatePreview();
+    });
 
-  const objectives = [];
-  if (mainObjective) objectives.push(`Objetivo principal: ${mainObjective}`);
-  secondaryObjectives.forEach(objective => objectives.push(`Objetivo secundario: ${objective}`));
-  addSection(sections, "Objetivos de la Misión", objectives);
-
-  addSection(sections, "Información Conocida", knownInfo);
-
-  const participants = [];
-  if (minParticipants) participants.push(`Mínimo: ${minParticipants}`);
-  if (maxParticipants) participants.push(`Máximo: ${maxParticipants}`);
-  addSection(sections, "Participantes", participants);
-
-  addSection(sections, "Requisitos y Restricciones", requirements);
-
-  const threats = [];
-  if (threatLevel) threats.push(`Nivel de amenaza: ${threatLevel}`);
-  if (threatDescription) threats.push(threatDescription);
-  addSection(sections, "Amenazas Detectadas", threats);
-
-  addSection(sections, "Recompensas de la Misión", rewards);
-  addSection(sections, "Notas del GM", gmNotes);
-
-  const output = sections.join("\n\n");
-  document.getElementById("output").textContent = output || "Rellena al menos un campo para generar la misión.";
-}
-
-async function copyCode() {
-  const output = document.getElementById("output").textContent;
-
-  if (!output.trim() || output.startsWith("Rellena al menos")) {
-    alert("Primero genera una misión.");
-    return;
+    row.append(input, removeButton);
+    container.appendChild(row);
   }
 
-  try {
-    await navigator.clipboard.writeText(output);
-    alert("Mensaje copiado.");
-  } catch (error) {
-    alert("No se pudo copiar automáticamente. Selecciona el texto y cópialo manualmente.");
+  function getRepeatValues(containerId) {
+    return [...document.querySelectorAll(`#${containerId} input`)]
+      .map(input => cleanValue(input.value))
+      .filter(Boolean);
   }
-}
 
-function clearForm() {
-  document.querySelectorAll("input, textarea, select").forEach(field => {
-    if (field.type === "checkbox") {
-      field.checked = false;
-    } else {
-      field.value = "";
+  function getCheckedValues(containerId) {
+    return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)]
+      .map(input => cleanValue(input.value))
+      .filter(Boolean);
+  }
+
+  function setText(id, value, fallback = "") {
+    document.getElementById(id).textContent = value || fallback;
+  }
+
+  function setSection(sectionId, contentId, value) {
+    const section = document.getElementById(sectionId);
+    const content = document.getElementById(contentId);
+    const visible = Boolean(cleanValue(value));
+    section.hidden = !visible;
+    content.textContent = visible ? value : "";
+  }
+
+  function setListSection(sectionId, listId, values) {
+    const section = document.getElementById(sectionId);
+    const list = document.getElementById(listId);
+    const cleanValues = values.filter(Boolean);
+
+    section.hidden = cleanValues.length === 0;
+    list.innerHTML = "";
+
+    cleanValues.forEach(value => {
+      const item = document.createElement("li");
+      item.textContent = value;
+      list.appendChild(item);
+    });
+  }
+
+  function formatParticipants(minimum, maximum) {
+    if (minimum && maximum) return `${minimum}–${maximum}`;
+    if (minimum) return `Mínimo ${minimum}`;
+    if (maximum) return `Máximo ${maximum}`;
+    return "";
+  }
+
+  function formatPower(minimum, maximum) {
+    if (minimum && maximum) return `${minimum}M – ${maximum}M`;
+    if (minimum) return `Desde ${minimum}M`;
+    if (maximum) return `Hasta ${maximum}M`;
+    return "";
+  }
+
+  function updateChip(chipId, valueId, value) {
+    const chip = document.getElementById(chipId);
+    chip.hidden = !value;
+    document.getElementById(valueId).textContent = value || "";
+  }
+
+  function updatePreview() {
+    const title = cleanValue(document.getElementById("title").value);
+    const missionType = cleanValue(document.getElementById("missionType").value);
+    const difficulty = cleanValue(document.getElementById("difficulty").value);
+    const planet = cleanValue(document.getElementById("planet").value);
+    const zone = cleanValue(document.getElementById("zone").value);
+    const conditions = cleanValue(document.getElementById("conditions").value);
+    const synopsis = cleanValue(document.getElementById("synopsis").value);
+    const mainObjective = cleanValue(document.getElementById("mainObjective").value);
+    const minParticipants = cleanValue(document.getElementById("minParticipants").value);
+    const maxParticipants = cleanValue(document.getElementById("maxParticipants").value);
+    const minPower = cleanValue(document.getElementById("minPower").value);
+    const maxPower = cleanValue(document.getElementById("maxPower").value);
+    const threatLevel = cleanValue(document.getElementById("threatLevel").value);
+    const threatDescription = cleanValue(document.getElementById("threatDescription").value);
+
+    const secondaryObjectives = getRepeatValues("secondaryObjectives");
+    const knownInfo = getRepeatValues("knownInfo");
+    const requirements = [
+      ...getCheckedValues("alignmentOptions"),
+      ...getRepeatValues("requirements")
+    ];
+    const rewards = getRepeatValues("rewards");
+    const gmNotes = getRepeatValues("gmNotes");
+
+    setText("previewTitle", title, "Nueva misión");
+    setText("previewType", missionType || "Expediente de misión");
+    setText("previewFooterType", missionType || "Misión");
+
+    const location = [planet, zone].filter(Boolean).join(" · ");
+    setText("previewLocation", location, "Localización por determinar");
+
+    updateChip("difficultyChip", "previewDifficulty", difficulty);
+    updateChip("participantsChip", "previewParticipants", formatParticipants(minParticipants, maxParticipants));
+    updateChip("powerChip", "previewPower", formatPower(minPower, maxPower));
+    updateChip("threatChip", "previewThreat", threatLevel);
+
+    setSection("synopsisSection", "previewSynopsis", synopsis);
+    setSection("conditionsSection", "previewConditions", conditions);
+    setSection("threatDescriptionSection", "previewThreatDescription", threatDescription);
+
+    const objectives = [];
+    if (mainObjective) objectives.push(`Principal: ${mainObjective}`);
+    secondaryObjectives.forEach(objective => objectives.push(objective));
+
+    setListSection("objectivesSection", "previewObjectives", objectives);
+    setListSection("knownInfoSection", "previewKnownInfo", knownInfo);
+    setListSection("requirementsSection", "previewRequirements", requirements);
+    setListSection("rewardsSection", "previewRewards", rewards);
+    setListSection("gmNotesSection", "previewGmNotes", gmNotes);
+  }
+
+  function sanitizeFilename(value) {
+    return cleanValue(value || "mision")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .toLowerCase() || "mision";
+  }
+
+  async function downloadMissionImage() {
+    if (typeof html2canvas !== "function") {
+      alert("No se ha podido cargar el generador de imágenes. Revisa tu conexión a internet.");
+      return;
     }
-  });
 
-  ["secondaryObjectives", "knownInfo", "requirements", "rewards", "gmNotes"].forEach(id => {
-    document.getElementById(id).innerHTML = "";
-  });
+    updatePreview();
 
-  addDefaultFields();
-  document.getElementById("output").textContent = "";
-}
+    const card = document.getElementById("missionCard");
+    const button = document.getElementById("downloadMissionButton");
+    const originalText = button.textContent;
 
-function addDefaultFields() {
-  addRepeatField("secondaryObjectives", "Objetivo secundario");
-  addRepeatField("knownInfo", "Dato conocido");
-  addRepeatField("requirements", "Otro requisito o restricción");
-  addRepeatField("rewards", "Recompensa");
-  addRepeatField("gmNotes", "Nota del GM");
-}
+    button.disabled = true;
+    button.textContent = "Generando imagen...";
 
-document.addEventListener("DOMContentLoaded", () => {
-  addDefaultFields();
-
-  const generateButton = document.getElementById("generateMissionButton");
-  const copyButton = document.getElementById("copyMissionButton");
-  const clearButton = document.getElementById("clearMissionButton");
-
-  generateButton.addEventListener("click", () => {
     try {
-      generateMission();
+      const canvas = await html2canvas(card, {
+        scale: 2,
+        backgroundColor: null,
+        useCORS: true,
+        allowTaint: false,
+        logging: false,
+        imageTimeout: 15000
+      });
+
+      const link = document.createElement("a");
+      link.download = `${sanitizeFilename(document.getElementById("title").value)}.png`;
+      link.href = canvas.toDataURL("image/png", 1);
+      link.click();
     } catch (error) {
-      console.error("Error al generar la misión:", error);
-      document.getElementById("output").textContent =
-        "Ha ocurrido un error al generar el mensaje. Revisa la consola del navegador.";
+      console.error("No se pudo generar la imagen:", error);
+      alert("No se pudo generar la imagen. Prueba con otra imagen de fondo o vuelve a intentarlo.");
+    } finally {
+      button.disabled = false;
+      button.textContent = originalText;
     }
+  }
+
+  function clearForm() {
+    document.querySelectorAll("input, textarea, select").forEach(field => {
+      if (field.type === "checkbox") {
+        field.checked = false;
+      } else if (field.type === "file") {
+        field.value = "";
+      } else {
+        field.value = "";
+      }
+    });
+
+    repeatContainers.forEach(id => {
+      document.getElementById(id).innerHTML = "";
+    });
+
+    const background = document.getElementById("previewBackground");
+    background.removeAttribute("src");
+    background.hidden = true;
+
+    addDefaultFields();
+    updatePreview();
+  }
+
+  function addDefaultFields() {
+    addRepeatField("secondaryObjectives", "Objetivo secundario");
+    addRepeatField("knownInfo", "Dato conocido");
+    addRepeatField("requirements", "Otro requisito o restricción");
+    addRepeatField("rewards", "Recompensa");
+    addRepeatField("gmNotes", "Nota del GM");
+  }
+
+  function handleImageUpload(event) {
+    const file = event.target.files?.[0];
+    const background = document.getElementById("previewBackground");
+
+    if (!file) {
+      background.removeAttribute("src");
+      background.hidden = true;
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      background.src = reader.result;
+      background.hidden = false;
+    });
+    reader.readAsDataURL(file);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    addDefaultFields();
+
+    document.querySelectorAll("input, textarea, select").forEach(field => {
+      if (field.type !== "file") {
+        field.addEventListener("input", updatePreview);
+        field.addEventListener("change", updatePreview);
+      }
+    });
+
+    document.querySelectorAll("[data-add-field]").forEach(button => {
+      button.addEventListener("click", () => {
+        addRepeatField(button.dataset.addField, button.dataset.placeholder);
+      });
+    });
+
+    document.getElementById("missionImage").addEventListener("change", handleImageUpload);
+    document.getElementById("downloadMissionButton").addEventListener("click", downloadMissionImage);
+    document.getElementById("clearMissionButton").addEventListener("click", clearForm);
+
+    updatePreview();
   });
-
-  copyButton.addEventListener("click", copyCode);
-  clearButton.addEventListener("click", clearForm);
-});
 </script>
-
 </body>
 </html>
