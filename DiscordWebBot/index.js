@@ -14,6 +14,14 @@ const client = new Client({
     ]
 });
 
+const {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle
+} = require("discord.js");
+
+const URL_BOLOS = "https://yisusschrist.github.io/Web-Rol/bolos.html";
+
 const CANAL_AVISOS_ID = "1514802130647515285";
 
 const WIKI_API = "https://dragon-ball-eternal-warriors.fandom.com/es/api.php";
@@ -624,7 +632,9 @@ if (!pagina) {
                        "Enfrenta dos supertécnicas. Un mayor grado aumenta las probabilidades de victoria.\n\n" +
 
                       "`-chatot`\n" +
-                       "`'La verdad que sí'`\n\n"
+                       "`'La verdad que sí'`\n\n" +
+                       "`-bolos`\n" +
+                        "Abre el calculador de partidas de bolos.\n\n" 
                 },
                 {
                     name: "📚 Personajes / Wiki",
@@ -1239,6 +1249,38 @@ if (contenido === "-tit") {
         content: 'La verdad que sí'
     });
 }
+
+if (contenido === "-bolos") {
+
+    const boton = new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+                .setLabel("🎳 Abrir calculador")
+                .setStyle(ButtonStyle.Link)
+                .setURL(URL_BOLOS)
+        );
+
+    const embed = new EmbedBuilder()
+        .setColor(0xF59E0B)
+        .setTitle("🎳 Calculador de Bolos")
+        .setDescription(
+            "Abre el marcador interactivo de bolos.\n\n" +
+            "• Hasta 8 jugadores\n" +
+            "• Puntuación automática\n" +
+            "• Clasificación\n" +
+            "• Guardado automático"
+        )
+        .setFooter({
+            text: "Web-Rol • Bowling Scoreboard"
+        })
+        .setTimestamp();
+
+    return message.channel.send({
+        embeds: [embed],
+        components: [boton]
+    });
+}
+
 
     if (contenido === "-reroll") {
         if (!ultimoComandoRepetible) {
