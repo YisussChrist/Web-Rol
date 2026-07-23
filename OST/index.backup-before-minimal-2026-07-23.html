@@ -1,0 +1,3598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg: #000000;
+            --bg-soft: #121212;
+            --panel: #181818;
+            --panel-strong: #242424;
+            --card: #181818;
+            --card-hover: #282828;
+            --line: rgba(255, 255, 255, 0.08);
+            --line-strong: rgba(255, 255, 255, 0.16);
+            --text: #ffffff;
+            --muted: #b3b3b3;
+            --muted-2: #7c7c7c;
+            --primary: #1ed760;
+            --accent: #1db954;
+            --gold: #f9d94a;
+            --danger: #ff4f64;
+            --success: #1ed760;
+            --radius-xl: 18px;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.32);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            color: var(--text);
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #000;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(180deg, rgba(30, 215, 96, .10), transparent 34%),
+                radial-gradient(circle at 80% -10%, rgba(30, 215, 96, .18), transparent 35%);
+            opacity: .8;
+        }
+
+        body.battle-mode-active::before {
+            background:
+                linear-gradient(180deg, rgba(30, 215, 96, .16), transparent 34%),
+                radial-gradient(circle at 86% 0%, rgba(255, 70, 100, .16), transparent 34%);
+        }
+
+        button, input, select { font: inherit; }
+        button { -webkit-tap-highlight-color: transparent; }
+
+        .sidebar {
+            width: 300px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            flex-shrink: 0;
+            overflow-y: auto;
+            padding: 14px 10px 16px;
+            background: #000;
+            border-right: 8px solid #000;
+        }
+
+        .sidebar::before {
+            content: "Soundtracks";
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 64px;
+            margin: 0 0 10px;
+            padding: 0 16px;
+            border-radius: 12px;
+            background: var(--bg-soft);
+            color: #fff;
+            font-size: 1.35rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+        }
+
+        .sidebar::after {
+            content: "●";
+            position: absolute;
+            top: 34px;
+            left: 24px;
+            color: var(--primary);
+            font-size: .72rem;
+            filter: drop-shadow(0 0 10px rgba(30,215,96,.7));
+        }
+
+        .sidebar h3 {
+            margin: 0;
+            padding: 18px 16px 10px;
+            color: var(--muted);
+            font-size: .72rem;
+            font-weight: 800;
+            letter-spacing: .11em;
+            text-transform: uppercase;
+            background: var(--bg-soft);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .sidebar-tools {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 0 12px 14px;
+            background: var(--bg-soft);
+            border-radius: 0 0 12px 12px;
+        }
+
+        .search-input, .select-input, .intensity-select {
+            width: 100%;
+            color: var(--text);
+            background: #242424;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            padding: 11px 14px;
+            outline: none;
+            transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+        }
+
+        .search-input::placeholder { color: var(--muted-2); }
+        .search-input:focus, .select-input:focus, .intensity-select:focus {
+            background: #2a2a2a;
+            border-color: #3d3d3d;
+            box-shadow: 0 0 0 2px #fff;
+        }
+        .select-input option, .intensity-select option { color: #fff; background: #282828; }
+
+        .tool-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+        .mini-btn, .pill-btn {
+            border: 0;
+            background: #242424;
+            color: #fff;
+            border-radius: 999px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: transform .18s ease, background .18s ease, color .18s ease;
+            font-weight: 800;
+        }
+
+        .mini-btn:hover, .mini-btn.active, .pill-btn:hover, .pill-btn.active {
+            transform: scale(1.03);
+            background: #333;
+            color: #fff;
+        }
+
+        .char-list {
+            display: grid;
+            gap: 2px;
+            padding: 8px;
+            background: var(--bg-soft);
+            border-radius: 12px;
+        }
+
+        .char-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 0;
+            transition: background .18s ease, color .18s ease;
+            color: var(--muted);
+        }
+
+        .char-item:hover, .char-item.active {
+            background: #242424;
+            color: #fff;
+        }
+
+        .char-item img {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 0;
+            box-shadow: 0 6px 18px rgba(0,0,0,.35);
+        }
+
+        .char-item span { font-weight: 800; font-size: .94rem; }
+        .char-item small { display: block; margin-top: 3px; color: var(--muted-2); font-size: .74rem; }
+
+        .main-content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 168px;
+            margin: 8px 8px 8px 0;
+            border-radius: 14px;
+            background:
+                linear-gradient(180deg, rgba(30,215,96,.16) 0%, rgba(18,18,18,.98) 235px),
+                #121212;
+        }
+
+        header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 52px 28px 18px;
+            text-align: left;
+        }
+
+        h1 {
+            max-width: 980px;
+            font-size: clamp(2.6rem, 7vw, 5.6rem);
+            line-height: .9;
+            letter-spacing: -0.075em;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 8px 30px rgba(0,0,0,.4);
+        }
+
+        .subtitle {
+            margin-top: 16px;
+            color: #fff;
+            font-size: clamp(.98rem, 2vw, 1.12rem);
+            font-weight: 600;
+            opacity: .86;
+        }
+
+        .top-actions {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 0 28px 24px;
+        }
+
+        .top-actions .select-input { width: auto; min-width: 230px; }
+        .top-actions .pill-btn:first-child,
+        #showFavBtn.active,
+        #toggleBattleBtn.active,
+        #toggleQueueBtn.active,
+        #toggleMiniBtn.active,
+        #toggleAudioOnlyBtn.active {
+            background: #fff;
+            color: #000;
+        }
+
+        .featured, .soundtrack-list, .battle-zone {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 28px;
+        }
+        .featured { margin-bottom: 22px; }
+        .soundtrack-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .soundtrack-card {
+            position: relative;
+            overflow: hidden;
+            background: var(--card);
+            border: 0;
+            border-radius: var(--radius-md);
+            box-shadow: none;
+            transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+        }
+
+        .soundtrack-card:hover {
+            transform: translateY(-3px);
+            background: var(--card-hover);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .soundtrack-card.playing { background: #223126; }
+        .soundtrack-card.playing::after,
+        .track-card.playing-row::after {
+            content: "NOW PLAYING";
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 5;
+            font-size: .56rem;
+            letter-spacing: .08em;
+            color: #000;
+            background: var(--primary);
+            padding: 6px 9px;
+            border-radius: 999px;
+            font-weight: 900;
+            box-shadow: 0 8px 18px rgba(0,0,0,.35);
+        }
+
+        /* When the featured card is the playing item, hide large decorative pseudo-elements
+           so they don't cover the UI; keep the small "NOW PLAYING" badge visible. */
+        .featured-card.playing::before,
+        .featured-card.playing::after {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* Ensure the small NOW PLAYING pill is on top of other decorations */
+        .soundtrack-card.playing::after { z-index: 999 !important; }
+
+        /* Visible inline badge inside the featured card to clearly indicate Now Playing */
+        .featured-card .now-playing-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: linear-gradient(90deg, #2f7bff, #ff3c9b);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: .78rem;
+            letter-spacing: .06em;
+            box-shadow: 0 12px 30px rgba(0,0,0,.35);
+            z-index: 120 !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 900px) {
+            .featured-card .now-playing-badge { top: 12px; left: 12px; font-size: .68rem; padding: 5px 8px; }
+        }
+
+        .card-content {
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            align-items: start;
+        }
+
+        .character-face, .character-group-left img, .track-row img, .track-card-cover, .track-card-avatar, .battle-fighter img, .player-top img {
+            object-fit: cover;
+            border: 0;
+            background: #242424;
+            box-shadow: 0 8px 24px rgba(0,0,0,.45);
+        }
+
+        .character-face {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            border-radius: 8px;
+        }
+
+        .track-meta {
+            color: var(--muted);
+            font-weight: 800;
+            font-size: .68rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .track-desc {
+            color: var(--muted);
+            line-height: 1.38;
+            margin: 7px 0 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .soundtrack-card h2, .soundtrack-card h3 { letter-spacing: -0.035em; }
+        .actions-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+        .play-btn, .icon-btn, .control-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            cursor: pointer;
+            transition: transform .18s ease, background .18s ease, opacity .18s ease;
+        }
+
+        .play-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            color: #000;
+            background: var(--primary);
+            font-size: 1.15rem;
+            font-weight: 900;
+            box-shadow: 0 8px 22px rgba(0,0,0,.38);
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: #fff;
+            background: #2a2a2a;
+            font-size: .95rem;
+        }
+
+        .play-btn:hover, .icon-btn:hover, .control-btn:hover { transform: scale(1.06); }
+        .icon-btn.fav.active { color: #000; background: var(--gold); }
+
+        .soundtrack-card.playing .character-face, .player-cover.playing { animation: softPulse 1.15s infinite alternate; }
+        @keyframes softPulse {
+            from { transform: scale(1); filter: brightness(1); }
+            to { transform: scale(1.018); filter: brightness(1.08); }
+        }
+
+        .featured-card {
+            padding: 20px;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.02)),
+                var(--card);
+        }
+
+        .featured-layout {
+            display: grid;
+            grid-template-columns: minmax(210px, 280px) 1fr;
+            gap: 26px;
+            align-items: center;
+        }
+
+        .featured-cover-wrap,
+        .track-cover-wrap {
+            position: relative;
+            isolation: isolate;
+        }
+
+        .featured-cover,
+        .track-card-cover {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            display: block;
+        }
+
+        .featured-avatar,
+        .track-card-avatar {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            border: 3px solid #121212;
+            z-index: 2;
+        }
+
+        .featured-card .track-desc {
+            -webkit-line-clamp: 3;
+            font-size: 1.02rem;
+            max-width: 680px;
+        }
+
+        .track-card {
+            position: relative;
+            min-height: 0;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .track-card-info { min-width: 0; }
+        .track-card h3 {
+            font-size: 1.02rem;
+            line-height: 1.15;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .track-card-character {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: .84rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-card .actions-row {
+            margin-top: auto;
+            padding-top: 2px;
+            justify-content: space-between;
+        }
+
+        .track-card .play-btn {
+            position: absolute;
+            right: 22px;
+            bottom: 106px;
+            opacity: 0;
+            transform: translateY(8px) scale(.95);
+        }
+
+        .track-card:hover .play-btn,
+        .track-card.playing-row .play-btn {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .track-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+        .tag {
+            font-size: .55rem;
+            color: #d7d7d7;
+            background: #2a2a2a;
+            border: 0;
+            padding: 4px 7px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            font-weight: 850;
+        }
+
+        .character-group,
+        .track-row { display: contents; }
+        .battle-zone { display: none; margin-top: 8px; margin-bottom: 22px; }
+        .battle-zone.show { display: block; }
+        .battle-card {
+            border-radius: 18px;
+            padding: 20px;
+            border: 0;
+            background: linear-gradient(135deg, rgba(30,215,96,.20), rgba(255,255,255,.06)), #181818;
+            box-shadow: var(--shadow-soft);
+        }
+        .battle-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; }
+        .battle-fighter { display: grid; grid-template-columns: 76px 1fr; gap: 14px; align-items: center; min-width: 0; }
+        .battle-fighter img { width: 76px; height: 76px; border-radius: 8px; }
+        .vs { font-size: 1.5rem; font-weight: 900; color: var(--primary); }
+
+        .lore-modal, .cover-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(12px);
+        }
+        .lore-modal.show, .cover-modal.show { display: flex; }
+        .lore-box, .cover-modal-box {
+            width: min(720px, 100%);
+            padding: 24px;
+            border-radius: 18px;
+            background: #181818;
+            border: 1px solid var(--line-strong);
+            box-shadow: var(--shadow);
+        }
+        .lore-box h2 { color: #fff; margin-bottom: 10px; letter-spacing: -0.04em; }
+        .lore-box p { color: var(--muted); line-height: 1.68; }
+
+        .cover-modal-box { width: min(520px, 94vw); padding: 16px; }
+        .cover-modal-box img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+            background: #242424;
+        }
+        .cover-modal-info { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-top: 14px; }
+        .cover-modal-info h3 { font-size: 1.05rem; letter-spacing: -0.025em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cover-modal-info p { color: var(--primary); font-size: .86rem; margin-top: 3px; }
+
+        .global-player {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: none;
+            grid-template-columns: minmax(230px, 1fr) minmax(330px, 1.4fr) minmax(230px, 1fr);
+            grid-template-rows: auto auto;
+            gap: 8px 18px;
+            align-items: center;
+            padding: 12px 16px;
+            background: #181818;
+            border-top: 1px solid #282828;
+            box-shadow: 0 -18px 60px rgba(0,0,0,.55);
+        }
+        .global-player.show { display: grid; }
+        .player-top { grid-column: 1; grid-row: 1 / 3; display: flex; align-items: center; justify-content: flex-start; gap: 12px; min-width: 0; }
+        .player-top img { width: 58px; height: 58px; border-radius: 6px; flex-shrink: 0; }
+        .player-info { min-width: 0; flex: 1; }
+        #playerTitle { font-weight: 850; font-size: .98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.02em; }
+        #playerCharacter { color: var(--muted); font-size: .84rem; margin-top: 2px; }
+        #playerMode { color: var(--primary); font-size: .7rem; font-weight: 900; margin-top: 2px; letter-spacing: .08em; }
+
+        .cover-action {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 0;
+            background: #2a2a2a;
+            color: #fff;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform .18s ease, background .18s ease;
+        }
+        .cover-action:hover { transform: scale(1.06); background: #3a3a3a; }
+
+        canvas#visualizer {
+            grid-column: 2;
+            grid-row: 2;
+            width: 100%;
+            height: 34px;
+            border-radius: 999px;
+            background: #101010;
+            border: 0;
+        }
+
+        .progress-container { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; gap: 5px; align-self: end; }
+        .progress-bar { width: 100%; height: 5px; background: #4d4d4d; border-radius: 999px; position: relative; cursor: pointer; overflow: hidden; }
+        .progress { height: 100%; background: #fff; border-radius: 999px; width: 0%; }
+        .progress-bar:hover .progress { background: var(--primary); }
+        .time { display: flex; justify-content: space-between; font-size: .72rem; color: var(--muted-2); margin-top: 2px; }
+
+        .player-bottom-row { grid-column: 3; grid-row: 1 / 3; display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .player-controls, .controls { display: flex; justify-content: center; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .player-volume, .volume-container { display: flex; align-items: center; gap: 8px; justify-content: flex-end; min-width: 180px; }
+        .control-btn { width: 34px; height: 34px; border-radius: 50%; background: transparent; color: var(--muted); border: 0; font-size: 1rem; }
+        .control-btn:hover, .control-btn.active { background: transparent; color: #fff; }
+        .control-btn.big { width: 46px; height: 46px; border-radius: 50%; font-size: 1.2rem; background: #fff; color: #000; border: 0; }
+        .control-btn.big:hover { transform: scale(1.08); }
+        .volume-slider { width: min(150px, 32vw); accent-color: #fff; }
+        .volume-slider:hover { accent-color: var(--primary); }
+        .intensity-select { max-width: 128px; padding: 8px 10px; font-size: .78rem; }
+
+        .queue-panel {
+            grid-column: 1 / -1;
+            grid-row: 3;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+        .queue-panel.open { display: flex; max-height: min(42vh, 360px); overflow-y: auto; padding-right: 4px; }
+        .queue-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #fff; font-weight: 900; font-size: .9rem; }
+        .queue-close-btn { width: 34px; height: 34px; border-radius: 50%; }
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #242424;
+            border: 0;
+        }
+        .queue-item span, .queue-item strong { color: #fff; font-size: .92rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .queue-item small, .queue-item p { color: var(--muted); font-size: .78rem; }
+
+        .global-player.minimized { grid-template-columns: 1fr auto; padding: 8px 12px; }
+        .global-player.minimized .player-top { grid-column: 1; }
+        .global-player.minimized .player-top img { width: 44px; height: 44px; }
+        .global-player.minimized canvas#visualizer,
+        .global-player.minimized .progress-container,
+        .global-player.minimized .player-volume,
+        .global-player.minimized .queue-panel { display: none; }
+        .global-player.minimized .player-bottom-row { grid-column: 2; }
+        .global-player.minimized .controls .control-btn:not(.big) { display: none; }
+        .global-player.audio-only canvas#visualizer,
+        .global-player.audio-only .player-top img,
+        .global-player.audio-only .queue-panel { display: none; }
+
+        @media (min-width: 901px) {
+            .sidebar { display: block; }
+            .global-player { left: 0; }
+        }
+
+        @media (max-width: 1050px) {
+            .global-player { grid-template-columns: 1fr; grid-template-rows: auto; }
+            .player-top, .progress-container, canvas#visualizer, .player-bottom-row, .queue-panel { grid-column: 1 !important; grid-row: auto !important; }
+            .player-bottom-row { justify-content: center; }
+            .player-volume, .volume-container { justify-content: center; }
+        }
+
+        @media (max-width: 900px) {
+            body { display: block; background: #000; }
+            .sidebar { display: none; }
+            .main-content { margin: 0; border-radius: 0; padding-bottom: 255px; }
+            header { padding-top: 38px; }
+            .top-actions .select-input { width: 100%; }
+            .soundtrack-list { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 12px; padding: 0 16px; }
+            .featured, .battle-zone { padding: 0 16px; }
+            .top-actions { padding-left: 16px; padding-right: 16px; }
+            header { padding-left: 16px; padding-right: 16px; }
+            .card-content { grid-template-columns: 1fr !important; gap: 12px !important; }
+            .character-face { width: 100% !important; height: auto !important; aspect-ratio: 1 / 1; border-radius: 8px; }
+            .character-group { padding: 12px; }
+            .character-group-left img { width: 56px; height: 56px; }
+            .track-row { grid-template-columns: 52px 1fr; }
+            .track-row img { width: 52px; height: 52px; }
+            .battle-grid { grid-template-columns: 1fr; text-align: center; }
+            .battle-fighter { grid-template-columns: 64px 1fr; text-align: left; }
+            .global-player { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+            .player-top img { width: 48px; height: 48px; }
+            canvas#visualizer { height: 28px; }
+            .control-btn { width: 34px; height: 34px; font-size: .95rem; }
+            .control-btn.big { width: 44px; height: 44px; font-size: 1.15rem; }
+        }
+
+
+        /* ==============================
+           RESONANCE REDESIGN
+           App multimedia propia: moderno, minimalista y con identidad azul/rosa
+        ============================== */
+        :root {
+            --bg: #050816;
+            --bg-soft: rgba(10, 16, 35, .78);
+            --panel: rgba(13, 20, 44, .72);
+            --panel-strong: rgba(19, 30, 65, .86);
+            --card: rgba(255,255,255,.055);
+            --card-hover: rgba(255,255,255,.095);
+            --line: rgba(255,255,255,.105);
+            --line-strong: rgba(255,255,255,.18);
+            --text: #f8fbff;
+            --muted: #a8b3cf;
+            --muted-2: #687393;
+            --primary: #2f7bff;
+            --accent: #ff3c9b;
+            --gold: #ffd166;
+            --danger: #ff4f72;
+            --success: #37f6b3;
+            --radius-xl: 28px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
+            --shadow: 0 30px 90px rgba(0,0,0,.55);
+            --shadow-soft: 0 18px 48px rgba(0,0,0,.36);
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 18% 12%, rgba(47,123,255,.24), transparent 31%),
+                radial-gradient(circle at 85% 18%, rgba(255,60,155,.20), transparent 33%),
+                radial-gradient(circle at 52% 92%, rgba(80,67,255,.12), transparent 35%),
+                #050816;
+        }
+
+        body::before {
+            background:
+                linear-gradient(115deg, rgba(255,255,255,.06), transparent 24%, rgba(255,255,255,.035) 54%, transparent 78%),
+                radial-gradient(circle at 50% -20%, rgba(47,123,255,.25), transparent 48%);
+            opacity: 1;
+        }
+
+        .sidebar {
+            width: 294px;
+            padding: 18px 12px;
+            border-right: 1px solid rgba(255,255,255,.08);
+            background: rgba(5,8,22,.70);
+            backdrop-filter: blur(28px);
+        }
+
+        .sidebar::before {
+            content: "◖ RESONANCE";
+            height: 72px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(255,255,255,.09);
+            background:
+                linear-gradient(135deg, rgba(47,123,255,.18), rgba(255,60,155,.12)),
+                rgba(255,255,255,.045);
+            font-size: 1.08rem;
+            letter-spacing: .08em;
+            border-radius: 22px;
+        }
+
+        .sidebar::after {
+            display: none;
+        }
+
+        .sidebar h3 {
+            background: transparent;
+            padding: 12px 14px 9px;
+            color: #dce5ff;
+        }
+
+        .sidebar-tools,
+        .char-list {
+            border: 1px solid rgba(255,255,255,.09);
+            background: rgba(255,255,255,.045);
+            backdrop-filter: blur(18px);
+            border-radius: 22px;
+        }
+
+        .search-input, .select-input, .intensity-select {
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.08);
+            color: #fff;
+        }
+
+        .search-input:focus, .select-input:focus, .intensity-select:focus {
+            background: rgba(255,255,255,.10);
+            border-color: rgba(255,60,155,.55);
+            box-shadow: 0 0 0 3px rgba(47,123,255,.18);
+        }
+
+        .mini-btn, .pill-btn {
+            background: rgba(255,255,255,.075);
+            border: 1px solid rgba(255,255,255,.08);
+            color: #eaf0ff;
+        }
+
+        .mini-btn:hover, .mini-btn.active, .pill-btn:hover, .pill-btn.active,
+        .top-actions .pill-btn:first-child,
+        #showFavBtn.active,
+        #toggleBattleBtn.active,
+        #toggleQueueBtn.active,
+        #toggleMiniBtn.active,
+        #toggleAudioOnlyBtn.active {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(47,123,255,.90), rgba(255,60,155,.82));
+            border-color: transparent;
+            transform: translateY(-1px);
+        }
+
+        .char-item {
+            border: 1px solid transparent;
+            border-radius: 16px;
+        }
+        .char-item:hover, .char-item.active {
+            background: rgba(255,255,255,.08);
+            border-color: rgba(255,255,255,.10);
+        }
+        .char-item.active { box-shadow: inset 3px 0 0 var(--accent); }
+
+        .main-content {
+            margin: 12px 12px 12px 0;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 30px;
+            background: rgba(7, 11, 28, .56);
+            backdrop-filter: blur(22px);
+            padding-bottom: 178px;
+        }
+
+        header {
+            padding: 42px 30px 18px;
+        }
+
+        h1 {
+            font-size: clamp(2.4rem, 7vw, 6.2rem);
+            letter-spacing: .03em;
+            line-height: .88;
+            background: linear-gradient(90deg, #ffffff 0%, #8bb4ff 46%, #ff5daf 82%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: none;
+        }
+
+        .subtitle {
+            max-width: 680px;
+            color: var(--muted);
+            opacity: 1;
+        }
+
+        .top-actions {
+            gap: 8px;
+            padding-bottom: 22px;
+        }
+
+        .featured, .soundtrack-list, .battle-zone {
+            max-width: 1240px;
+        }
+
+        .featured-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.11);
+            border-radius: 30px;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(47,123,255,.28), transparent 34%),
+                radial-gradient(circle at 78% 24%, rgba(255,60,155,.25), transparent 34%),
+                linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.035)),
+                rgba(8,13,30,.76);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .featured-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,.08), transparent);
+            transform: translateX(-70%);
+            pointer-events: none;
+        }
+
+        .featured-layout.resonance-layout {
+            position: relative;
+            grid-template-columns: minmax(260px, 370px) minmax(0, 1fr) minmax(250px, 320px);
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .featured-cover-wrap.resonance-cover {
+            border-radius: 26px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.055);
+            box-shadow: 0 28px 72px rgba(0,0,0,.42);
+        }
+
+        .featured-cover {
+            border-radius: 0;
+        }
+
+        .featured-avatar {
+            width: 62px;
+            height: 62px;
+            left: 16px;
+            bottom: 16px;
+            border: 3px solid rgba(7,11,28,.9);
+        }
+
+        .resonance-kicker {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 14px;
+            color: #dce5ff;
+            font-size: .72rem;
+            font-weight: 900;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+        .resonance-kicker::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 18px rgba(55,246,179,.8);
+        }
+        .resonance-title {
+            font-size: clamp(2rem, 5vw, 4.2rem);
+            line-height: .92;
+            letter-spacing: -.065em;
+            margin-bottom: 10px;
+        }
+        .resonance-character {
+            color: #9cc0ff;
+            font-weight: 850;
+            margin-bottom: 14px;
+        }
+        .resonance-desc {
+            color: var(--muted);
+            line-height: 1.6;
+            max-width: 620px;
+            margin-bottom: 18px;
+        }
+        .resonance-data {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .data-pill {
+            padding: 12px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.065);
+            border: 1px solid rgba(255,255,255,.08);
+        }
+        .data-pill small {
+            display: block;
+            color: var(--muted-2);
+            font-size: .62rem;
+            font-weight: 900;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .data-pill strong {
+            display: block;
+            color: #fff;
+            font-size: .88rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .resonance-side-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 18px;
+            border-radius: 24px;
+            background: rgba(255,255,255,.055);
+            border: 1px solid rgba(255,255,255,.08);
+        }
+        .resonance-lore-preview {
+            color: var(--muted);
+            line-height: 1.55;
+            display: -webkit-box;
+            -webkit-line-clamp: 9;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #2f7bff, #ff3c9b);
+            color: #fff;
+        }
+        .icon-btn, .control-btn, .cover-action {
+            background: rgba(255,255,255,.075);
+            border: 1px solid rgba(255,255,255,.08);
+            color: #dce5ff;
+        }
+        .icon-btn:hover, .cover-action:hover { background: rgba(255,255,255,.12); }
+        .icon-btn.fav.active { background: rgba(255,209,102,.95); color: #120c1c; }
+
+        .library-shell {
+            display: grid;
+            gap: 12px;
+            padding-bottom: 20px;
+        }
+        .library-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 16px;
+            margin-bottom: 4px;
+        }
+        .library-header h2 {
+            font-size: clamp(1.4rem, 3vw, 2.2rem);
+            letter-spacing: -.04em;
+        }
+        .library-header p {
+            color: var(--muted);
+            font-size: .92rem;
+        }
+        .character-section {
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 24px;
+            overflow: hidden;
+            background: rgba(255,255,255,.035);
+        }
+        .character-section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(255,255,255,.04);
+            border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+        .character-section-title img {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            object-fit: cover;
+        }
+        .character-section-title h3 {
+            letter-spacing: -.025em;
+        }
+        .character-section-title small {
+            color: var(--muted);
+            display: block;
+            margin-top: 2px;
+        }
+        .resonance-track-row {
+            position: relative;
+            display: grid;
+            grid-template-columns: 42px 68px minmax(0, 1.3fr) minmax(170px, .9fr) 158px;
+            align-items: center;
+            gap: 14px;
+            min-height: 88px;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255,255,255,.065);
+            transition: background .18s ease, transform .18s ease;
+        }
+        .resonance-track-row:last-child { border-bottom: 0; }
+        .resonance-track-row:hover {
+            background: rgba(255,255,255,.055);
+        }
+        .resonance-track-row.playing-row {
+            background: linear-gradient(90deg, rgba(47,123,255,.20), rgba(255,60,155,.12));
+            box-shadow: inset 4px 0 0 var(--accent);
+        }
+        .track-number {
+            color: var(--muted-2);
+            font-weight: 900;
+            font-size: .82rem;
+            text-align: center;
+        }
+        .track-mini-cover {
+            width: 68px;
+            height: 68px;
+            border-radius: 18px;
+            object-fit: cover;
+            box-shadow: 0 12px 28px rgba(0,0,0,.35);
+        }
+        .track-main-title h3 {
+            font-size: 1.02rem;
+            line-height: 1.2;
+            letter-spacing: -.025em;
+        }
+        .track-main-title p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: .86rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .track-tags { margin-top: 0; }
+        .tag {
+            color: #dce5ff;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.08);
+        }
+        .row-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        .empty-library {
+            padding: 28px;
+            color: var(--muted);
+            border: 1px solid rgba(255,255,255,.09);
+            border-radius: 24px;
+            background: rgba(255,255,255,.04);
+        }
+
+        .global-player {
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: 24px;
+            background: rgba(8, 13, 30, .88);
+            backdrop-filter: blur(22px);
+            box-shadow: 0 -24px 80px rgba(0,0,0,.48);
+        }
+        .progress-bar { background: rgba(255,255,255,.16); }
+        .progress { background: linear-gradient(90deg, #2f7bff, #ff3c9b); }
+        canvas#visualizer { background: rgba(255,255,255,.05); }
+        .control-btn.big { background: linear-gradient(135deg, #2f7bff, #ff3c9b); color: #fff; }
+
+        .battle-card, .lore-box, .cover-modal-box {
+            background: rgba(8,13,30,.92);
+            border: 1px solid rgba(255,255,255,.12);
+            backdrop-filter: blur(18px);
+        }
+
+        @media (max-width: 1120px) {
+            .featured-layout.resonance-layout {
+                grid-template-columns: minmax(220px, 330px) 1fr;
+            }
+            .resonance-side-info { grid-column: 1 / -1; }
+            .resonance-track-row {
+                grid-template-columns: 34px 58px minmax(0, 1fr) 130px;
+            }
+            .track-mini-cover { width: 58px; height: 58px; border-radius: 15px; }
+            .track-tag-cell { display: none; }
+        }
+
+        @media (max-width: 900px) {
+            .main-content { margin: 0; border-radius: 0; border: 0; padding-bottom: 270px; }
+            header { padding-top: 32px; }
+            .featured-layout.resonance-layout { grid-template-columns: 1fr; }
+            .resonance-data { grid-template-columns: 1fr; }
+            .resonance-track-row {
+                grid-template-columns: 48px minmax(0, 1fr) auto;
+                gap: 10px;
+                min-height: 76px;
+            }
+            .track-number, .track-tag-cell { display: none; }
+            .track-mini-cover { width: 48px; height: 48px; border-radius: 14px; }
+            .row-actions .icon-btn:not(.fav) { display: none; }
+            .row-actions { gap: 6px; }
+        }
+
+    
+
+        /* RESONANCE APP REBUILD */
+        body {
+            background:
+                radial-gradient(circle at 8% 12%, rgba(47,123,255,.28), transparent 34%),
+                radial-gradient(circle at 92% 8%, rgba(255,60,155,.24), transparent 38%),
+                radial-gradient(circle at 55% 88%, rgba(111,59,255,.13), transparent 42%),
+                linear-gradient(135deg, #030816 0%, #080b24 42%, #150821 100%) !important;
+        }
+        body::before {
+            background:
+                linear-gradient(120deg, rgba(255,255,255,.045), transparent 30%, rgba(255,60,155,.035) 62%, transparent),
+                radial-gradient(circle at 44% 0%, rgba(49,92,255,.16), transparent 42%) !important;
+            opacity: 1 !important;
+        }
+        .app-sidebar {
+            width: 320px !important;
+            padding: 26px 18px !important;
+            background: rgba(3,8,24,.72) !important;
+            border-right: 1px solid rgba(118,148,255,.18) !important;
+            backdrop-filter: blur(28px) !important;
+        }
+        .app-sidebar::before, .app-sidebar::after { display: none !important; }
+        .brand-block { text-align: center; padding: 10px 6px 28px; }
+        .brand-logo { width: 230px; max-width: 92%; display: block; margin: 0 auto 2px; filter: drop-shadow(0 0 22px rgba(255,60,155,.18)); }
+        .brand-subtitle { color: #9aa8d6; font-size: .72rem; letter-spacing: .34em; font-weight: 800; }
+        .side-nav { display: grid; gap: 12px; margin: 8px 0 22px; }
+        .side-nav-item, .side-nav-select {
+            min-height: 54px; display: flex; align-items: center; gap: 14px; justify-content: flex-start;
+            border-radius: 18px !important; padding: 0 18px !important; width: 100%; text-align: left;
+            background: transparent !important; border: 1px solid transparent !important; color: #cbd6ff !important;
+            font-weight: 750; cursor: pointer;
+        }
+        .side-nav-item:hover, .side-nav-item.active, .side-nav-select:hover,
+        #showFavBtn.active, #toggleBattleBtn.active, #toggleQueueBtn.active, #toggleMiniBtn.active, #toggleAudioOnlyBtn.active {
+            background: linear-gradient(135deg, rgba(31,129,255,.95), rgba(231,47,148,.92)) !important;
+            color: #fff !important; border-color: transparent !important; box-shadow: 0 12px 32px rgba(255,60,155,.18);
+        }
+        .side-nav-select select { background: transparent !important; border: 0 !important; padding: 0 !important; color: inherit !important; box-shadow: none !important; width: 100%; }
+        .resonance-sidebar-tools { display: none !important; }
+        .char-list { display: none !important; }
+        .system-card {
+            margin-top: auto; border: 1px solid rgba(93,126,255,.22); border-radius: 20px; padding: 18px;
+            background: rgba(23,34,80,.34); box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+        }
+        .system-kicker { color: #8fa1dc; font-size: .72rem; letter-spacing: .14em; font-weight: 900; margin-bottom: 12px; }
+        .system-online { display: flex; align-items: center; gap: 12px; color: #fff; }
+        .system-online > span { color: #29a8ff; font-size: 1.65rem; }
+        .system-online strong { display:block; color:#ff4fb0; }
+        .system-online small { display:block; color:#aeb9de; margin-top:3px; }
+
+        .main-content {
+            margin: 0 !important; border-radius: 0 !important; border: 0 !important; background: transparent !important;
+            backdrop-filter: none !important; padding: 28px 34px 184px !important;
+        }
+        .app-header { max-width: 1240px; margin: 0 auto; padding: 0 0 28px !important; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .search-shell { flex: 1; max-width: 600px; height: 64px; display: flex; align-items:center; gap: 14px; padding: 0 20px; border-radius: 22px;
+            background: rgba(255,255,255,.055); border: 1px solid rgba(136,156,255,.18); box-shadow: inset 0 0 0 1px rgba(255,255,255,.02); }
+        .search-shell span { color:#d8e0ff; font-size:1.6rem; }
+        .search-shell .search-input { border:0 !important; background:transparent !important; box-shadow:none !important; padding:0 !important; font-size: 1.02rem; }
+        .filter-floating { min-width: 138px; height: 62px; border-radius: 22px !important; }
+
+        .featured, .soundtrack-list, .battle-zone { max-width: 1240px !important; padding-left: 0 !important; padding-right: 0 !important; }
+        .featured-card { border-color: rgba(255,65,174,.35) !important; background:
+            radial-gradient(circle at 10% 16%, rgba(47,123,255,.20), transparent 34%),
+            radial-gradient(circle at 92% 16%, rgba(255,60,155,.25), transparent 36%),
+            linear-gradient(135deg, rgba(13,23,61,.88), rgba(26,11,45,.84)) !important;
+            box-shadow: 0 24px 78px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.035) !important;
+        }
+        .featured-layout.resonance-layout { grid-template-columns: 365px minmax(0,1fr) 330px !important; gap: 26px !important; }
+        .featured-cover-wrap.resonance-cover { border-color: rgba(47,156,255,.7) !important; border-radius: 24px !important; }
+        .featured-cover { height: 365px !important; object-fit: cover; }
+        .resonance-title { background: linear-gradient(180deg,#fff 10%, #ffc4ec 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow: 0 0 28px rgba(255,255,255,.12); }
+        .resonance-character { color: #ff4fb0 !important; }
+        .resonance-kicker::before { background: #ff4fb0 !important; box-shadow: 0 0 18px rgba(255,79,176,.9) !important; }
+        .resonance-side-info { border-color: rgba(255,65,174,.38) !important; background: linear-gradient(145deg, rgba(52,17,72,.72), rgba(17,19,55,.55)) !important; }
+        .resonance-side-info .pill-btn { height: 58px; background: linear-gradient(135deg, #156fff, #e72f94) !important; }
+
+        .soundtrack-list.library-shell { display: grid !important; grid-template-columns: repeat(4, minmax(230px, 1fr)) !important; gap: 18px !important; align-items: stretch !important; }
+        .library-header { grid-column: 1 / -1; margin: 2px 0 4px !important; }
+        .library-header h2, .library-header p { display:none; }
+        .library-header::before { content:'Biblioteca Resonance'; font-size: 1.65rem; font-weight: 900; letter-spacing:-.045em; }
+        .library-header::after { content:'Canciones agrupadas por personaje'; color: var(--muted); font-size:.95rem; }
+        .character-section { min-height: 255px; border-radius: 24px !important; background: linear-gradient(145deg, rgba(12,24,65,.68), rgba(20,10,38,.58)) !important; border-color: rgba(115,139,255,.18) !important; }
+        .character-section-title { min-height: 88px; padding: 17px 18px !important; }
+        .character-section-title img { width: 50px !important; height: 50px !important; border-radius: 50% !important; }
+        .character-section-title h3 { font-size: 1.22rem; }
+        .resonance-track-row { grid-template-columns: 32px 64px minmax(0,1fr) 30px !important; min-height: 94px !important; padding: 14px 14px !important; gap: 12px !important; }
+        .track-tag-cell { display: none !important; }
+        .track-main-title { min-width: 0; }
+        .track-main-title h3 { font-size: .95rem !important; line-height: 1.16 !important; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .track-main-title p { font-size: .78rem !important; color:#abb7df !important; display:block !important; white-space: nowrap !important; overflow:hidden !important; text-overflow:ellipsis !important; }
+        .track-mini-cover { width: 58px !important; height: 58px !important; border-radius: 14px !important; }
+        .row-actions { justify-content: center !important; }
+        .row-actions .icon-btn { display:none !important; }
+        .row-actions .icon-btn:first-child { display:inline-flex !important; width: 30px; height: 30px; font-size: .75rem; background: transparent !important; color:#ff4fb0; border:0 !important; }
+
+        .global-player { left: 18px !important; right: auto !important; bottom: 18px !important; width: 286px !important; grid-template-columns: 1fr !important; border-radius: 22px !important;
+            background: rgba(9,15,42,.82) !important; border: 1px solid rgba(102,132,255,.18) !important; backdrop-filter: blur(22px) !important; padding: 14px !important; }
+        .global-player .player-top { grid-column: 1 !important; grid-row:auto !important; }
+        .global-player .player-top img { width:58px; height:58px; border-radius:12px; }
+        .global-player canvas#visualizer { display:none !important; }
+        .global-player .progress-container { grid-column: 1 !important; grid-row:auto !important; }
+        .global-player .player-bottom-row { grid-column: 1 !important; grid-row:auto !important; justify-content:center !important; }
+        .global-player .player-volume { width:100%; min-width:0; justify-content:center; }
+        .global-player .intensity-select { display:none; }
+        .queue-panel.open { max-height: 280px; }
+
+        @media (max-width: 1250px) {
+            .featured-layout.resonance-layout { grid-template-columns: 320px 1fr !important; }
+            .resonance-side-info { grid-column: 1 / -1; }
+            .soundtrack-list.library-shell { grid-template-columns: repeat(2, minmax(240px,1fr)) !important; }
+        }
+        @media (max-width: 900px) {
+            body { display:block !important; }
+            .app-sidebar { position:relative !important; width:100% !important; height:auto !important; }
+            .brand-logo { width: 190px; }
+            .side-nav { grid-template-columns: repeat(2, minmax(0,1fr)); }
+            .main-content { padding: 18px 16px 280px !important; }
+            .app-header { flex-direction: column; align-items: stretch; }
+            .search-shell { max-width:none; }
+            .featured-layout.resonance-layout { grid-template-columns: 1fr !important; }
+            .featured-cover { height:auto !important; }
+            .soundtrack-list.library-shell { grid-template-columns: 1fr !important; }
+            .global-player { left: 12px !important; right: 12px !important; width:auto !important; }
+        }
+
+    
+
+/* ==========================================================
+   RESONANCE V2 - PARCHE FINAL DE INTERFAZ
+   Mantiene todo el JavaScript original, pero convierte la web
+   en una app multimedia azul oscuro / rosa estilo dashboard.
+========================================================== */
+:root{
+    --r-bg-0:#030716;
+    --r-bg-1:#07112d;
+    --r-bg-2:#150a28;
+    --r-blue:#2b7cff;
+    --r-blue-soft:#6ca6ff;
+    --r-pink:#ff4fb3;
+    --r-pink-soft:#ff89d1;
+    --r-purple:#7a5cff;
+    --r-glass:rgba(12,20,48,.62);
+    --r-glass-2:rgba(255,255,255,.065);
+    --r-border:rgba(166,185,255,.18);
+    --r-border-pink:rgba(255,79,179,.28);
+    --r-text:#f7faff;
+    --r-muted:#aab6df;
+    --r-muted-2:#6f7ba3;
+    --primary:var(--r-blue);
+    --accent:var(--r-pink);
+    --success:#49ffd0;
+    --gold:#ffd166;
+    --text:var(--r-text);
+    --muted:var(--r-muted);
+    --muted-2:var(--r-muted-2);
+    --card:rgba(255,255,255,.055);
+    --card-hover:rgba(255,255,255,.10);
+    --line:rgba(255,255,255,.10);
+    --line-strong:rgba(255,255,255,.18);
+}
+
+html, body{ min-height:100%; }
+body{
+    background:
+        radial-gradient(circle at 10% 12%, rgba(43,124,255,.28), transparent 30%),
+        radial-gradient(circle at 92% 8%, rgba(255,79,179,.24), transparent 34%),
+        radial-gradient(circle at 58% 96%, rgba(122,92,255,.16), transparent 40%),
+        linear-gradient(135deg, var(--r-bg-0) 0%, var(--r-bg-1) 52%, var(--r-bg-2) 100%) !important;
+    color:var(--r-text);
+}
+body::before{
+    background:
+        linear-gradient(125deg, rgba(255,255,255,.052), transparent 26%, rgba(255,79,179,.04) 56%, transparent 78%),
+        radial-gradient(circle at 42% -18%, rgba(43,124,255,.22), transparent 46%) !important;
+    opacity:1 !important;
+}
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:64px 64px;
+    mask-image:linear-gradient(to bottom, rgba(0,0,0,.65), transparent 70%);
+}
+
+button, select, input{ font-family:inherit; }
+
+/* Sidebar */
+.sidebar.app-sidebar,
+.sidebar{
+    width:310px !important;
+    height:100vh;
+    padding:24px 18px !important;
+    background:rgba(3,7,22,.72) !important;
+    border-right:1px solid rgba(166,185,255,.15) !important;
+    backdrop-filter:blur(30px);
+    box-shadow:18px 0 60px rgba(0,0,0,.22);
+}
+.sidebar::before,.sidebar::after{ display:none !important; }
+.brand-block{ padding:4px 4px 26px !important; text-align:center; }
+.brand-logo{
+    width:232px !important;
+    max-width:94% !important;
+    height:auto;
+    display:block;
+    margin:0 auto 4px !important;
+    filter:drop-shadow(0 0 20px rgba(43,124,255,.22)) drop-shadow(0 0 22px rgba(255,79,179,.13));
+}
+.brand-subtitle{
+    color:#98a8d8;
+    font-size:.70rem;
+    letter-spacing:.33em;
+    font-weight:900;
+    text-transform:uppercase;
+}
+.side-nav{ display:grid; gap:10px; margin:8px 0 22px; }
+.side-nav-item,.side-nav-select{
+    min-height:52px;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:13px;
+    padding:0 16px !important;
+    border-radius:18px !important;
+    color:#d9e2ff !important;
+    background:rgba(255,255,255,.035) !important;
+    border:1px solid rgba(255,255,255,.055) !important;
+    box-shadow:none !important;
+    font-weight:850;
+    text-align:left;
+    transform:none !important;
+}
+.side-nav-item:hover,.side-nav-select:hover,.side-nav-item.active,
+#showFavBtn.active,#toggleBattleBtn.active,#toggleQueueBtn.active,#toggleMiniBtn.active,#toggleAudioOnlyBtn.active{
+    background:linear-gradient(135deg, rgba(43,124,255,.95), rgba(255,79,179,.90)) !important;
+    color:#fff !important;
+    border-color:transparent !important;
+    box-shadow:0 16px 34px rgba(255,79,179,.15), 0 10px 26px rgba(43,124,255,.12) !important;
+}
+.side-nav-select select{
+    width:100%;
+    padding:0 !important;
+    border:0 !important;
+    background:transparent !important;
+    color:inherit !important;
+    box-shadow:none !important;
+}
+.side-nav-select select option{ background:#0a1028; color:#fff; }
+.system-card{
+    margin-top:18px;
+    padding:18px;
+    border-radius:22px;
+    border:1px solid var(--r-border);
+    background:
+        radial-gradient(circle at 22% 0%, rgba(43,124,255,.20), transparent 40%),
+        rgba(255,255,255,.045);
+}
+.system-kicker{ color:#8797cb; font-size:.68rem; letter-spacing:.16em; font-weight:900; margin-bottom:12px; }
+.system-online{ display:flex; gap:12px; align-items:center; }
+.system-online>span{ color:var(--r-blue-soft); font-size:1.6rem; }
+.system-online strong{ display:block; color:var(--r-pink-soft); }
+.system-online small{ display:block; color:var(--r-muted); margin-top:3px; }
+.resonance-sidebar-tools,.char-list{ display:none !important; }
+
+/* Main */
+.main-content{
+    flex:1;
+    margin:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    backdrop-filter:none !important;
+    padding:28px 34px 190px !important;
+    overflow-y:auto;
+}
+.app-header{
+    max-width:1280px !important;
+    padding:0 0 24px !important;
+    margin:0 auto !important;
+    display:flex !important;
+    gap:16px;
+    align-items:center;
+    justify-content:space-between;
+}
+.search-shell{
+    flex:1;
+    max-width:680px;
+    min-height:62px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:0 20px;
+    border-radius:24px;
+    border:1px solid var(--r-border);
+    background:rgba(255,255,255,.055);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 18px 40px rgba(0,0,0,.16);
+}
+.search-shell span{ color:#dce5ff; font-size:1.45rem; }
+.search-shell .search-input{
+    border:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    padding:0 !important;
+    font-size:1rem;
+}
+.filter-floating{ display:none !important; }
+.featured,.soundtrack-list,.battle-zone{
+    max-width:1280px !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+}
+
+/* Now playing */
+.featured{ margin-bottom:22px !important; }
+.featured-card{
+    position:relative;
+    overflow:hidden;
+    padding:22px !important;
+    border-radius:32px !important;
+    border:1px solid var(--r-border-pink) !important;
+    background:
+        radial-gradient(circle at 8% 18%, rgba(43,124,255,.25), transparent 36%),
+        radial-gradient(circle at 94% 10%, rgba(255,79,179,.26), transparent 35%),
+        linear-gradient(135deg, rgba(12,23,62,.86), rgba(28,11,48,.82)) !important;
+    box-shadow:0 30px 95px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+.featured-card::after{
+    content:"";
+    position:absolute;
+    inset:-40% 30% auto -10%;
+    height:260px;
+    transform:rotate(-8deg);
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+    pointer-events:none;
+}
+.featured-layout.resonance-layout{
+    position:relative;
+    z-index:1;
+    display:grid !important;
+    grid-template-columns:360px minmax(0,1fr) 330px !important;
+    gap:26px !important;
+    align-items:stretch !important;
+}
+.featured-cover-wrap.resonance-cover{
+    overflow:hidden;
+    border-radius:26px !important;
+    border:1px solid rgba(99,158,255,.56) !important;
+    background:rgba(255,255,255,.055);
+    box-shadow:0 22px 70px rgba(0,0,0,.42), 0 0 0 8px rgba(255,255,255,.025);
+}
+.featured-cover{
+    width:100% !important;
+    height:360px !important;
+    aspect-ratio:auto !important;
+    object-fit:cover !important;
+    border-radius:0 !important;
+    display:block;
+}
+.featured-avatar{
+    width:64px !important;
+    height:64px !important;
+    border-radius:50% !important;
+    left:16px !important;
+    bottom:16px !important;
+    border:3px solid rgba(5,8,22,.86) !important;
+}
+.resonance-kicker{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    margin:4px 0 14px;
+    color:#dfe7ff;
+    font-size:.70rem;
+    font-weight:950;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+}
+.resonance-kicker::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--r-pink) !important;
+    box-shadow:0 0 18px rgba(255,79,179,.95) !important;
+}
+.resonance-title{
+    font-size:clamp(2.3rem, 5vw, 4.8rem) !important;
+    line-height:.88 !important;
+    letter-spacing:-.075em !important;
+    margin-bottom:12px;
+    background:linear-gradient(180deg,#fff 0%, #cfe0ff 46%, #ffb4e0 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent !important;
+}
+.resonance-character{ color:var(--r-pink-soft) !important; font-weight:900; margin-bottom:14px; }
+.resonance-desc{ color:var(--r-muted); line-height:1.62; max-width:650px; margin-bottom:18px; }
+.resonance-data{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:18px; }
+.data-pill{
+    padding:12px;
+    border-radius:18px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.075);
+}
+.data-pill small{ display:block; color:var(--r-muted-2); font-size:.61rem; font-weight:950; letter-spacing:.13em; text-transform:uppercase; margin-bottom:6px; }
+.data-pill strong{ display:block; color:#fff; font-size:.86rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.resonance-side-info{
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:16px;
+    padding:18px;
+    border-radius:26px;
+    border:1px solid rgba(255,79,179,.30) !important;
+    background:linear-gradient(145deg, rgba(55,18,78,.66), rgba(13,20,55,.56)) !important;
+}
+.resonance-lore-preview{ color:var(--r-muted); line-height:1.56; display:-webkit-box; -webkit-line-clamp:9; -webkit-box-orient:vertical; overflow:hidden; }
+.resonance-side-info .pill-btn{ min-height:54px; background:linear-gradient(135deg,var(--r-blue),var(--r-pink)) !important; color:#fff !important; border:0 !important; }
+
+/* Library */
+.soundtrack-list.library-shell{
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(260px,1fr)) !important;
+    gap:18px !important;
+    align-items:start !important;
+}
+.library-header{
+    grid-column:1/-1;
+    display:flex !important;
+    align-items:end;
+    justify-content:space-between;
+    gap:16px;
+    margin:4px 0 2px !important;
+}
+.library-header h2{ font-size:clamp(1.6rem,3vw,2.35rem); letter-spacing:-.05em; }
+.library-header p{ color:var(--r-muted); }
+.character-section{
+    overflow:hidden;
+    min-height:unset !important;
+    border-radius:26px !important;
+    border:1px solid rgba(166,185,255,.16) !important;
+    background:
+        radial-gradient(circle at 14% 0%, rgba(43,124,255,.16), transparent 42%),
+        linear-gradient(145deg, rgba(12,24,65,.66), rgba(20,10,38,.52)) !important;
+    box-shadow:0 20px 60px rgba(0,0,0,.18);
+}
+.character-section-title{
+    min-height:84px;
+    display:flex;
+    align-items:center;
+    gap:13px;
+    padding:16px 17px !important;
+    border-bottom:1px solid rgba(255,255,255,.075) !important;
+    background:rgba(255,255,255,.045) !important;
+}
+.character-section-title img{ width:52px !important; height:52px !important; border-radius:50% !important; object-fit:cover; }
+.character-section-title h3{ font-size:1.18rem; letter-spacing:-.035em; }
+.character-section-title small{ display:block; color:var(--r-muted); margin-top:3px; }
+.resonance-track-row{
+    display:grid !important;
+    grid-template-columns:30px 58px minmax(0,1fr) auto !important;
+    gap:11px !important;
+    align-items:center !important;
+    min-height:88px !important;
+    padding:13px 14px !important;
+    border-bottom:1px solid rgba(255,255,255,.062) !important;
+    transition:background .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.resonance-track-row:last-child{ border-bottom:0 !important; }
+.resonance-track-row:hover{ background:rgba(255,255,255,.055) !important; }
+.resonance-track-row.playing-row{
+    background:linear-gradient(90deg, rgba(43,124,255,.22), rgba(255,79,179,.13)) !important;
+    box-shadow:inset 4px 0 0 var(--r-pink) !important;
+}
+.resonance-track-row.playing-row::after{ display:none !important; }
+.track-number{ color:var(--r-muted-2); font-size:.78rem; font-weight:950; text-align:center; }
+.track-mini-cover{ width:58px !important; height:58px !important; border-radius:15px !important; object-fit:cover; box-shadow:0 12px 28px rgba(0,0,0,.34); }
+.track-main-title{ min-width:0 !important; }
+.track-main-title h3{
+    font-size:.97rem !important;
+    line-height:1.16 !important;
+    letter-spacing:-.025em;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+.track-main-title p{ margin-top:5px; color:#abb7df !important; font-size:.78rem !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.track-tag-cell{ display:none !important; }
+.row-actions{ display:flex !important; justify-content:flex-end !important; gap:6px !important; min-width:78px; }
+.row-actions .icon-btn{
+    width:30px !important;
+    height:30px !important;
+    min-width:30px !important;
+    font-size:.75rem !important;
+    border-radius:50% !important;
+    background:rgba(255,255,255,.07) !important;
+    border:1px solid rgba(255,255,255,.08) !important;
+    color:#e7edff !important;
+}
+.row-actions .icon-btn:nth-child(n+3){ display:none !important; }
+.row-actions .icon-btn:hover{ background:linear-gradient(135deg,var(--r-blue),var(--r-pink)) !important; color:#fff !important; transform:scale(1.06); }
+.icon-btn.fav.active{ background:#ffd166 !important; color:#130c1a !important; }
+.empty-library{ grid-column:1/-1; padding:28px; border-radius:24px; border:1px solid var(--r-border); background:rgba(255,255,255,.05); color:var(--r-muted); }
+
+/* Buttons/player */
+.play-btn,.control-btn.big{ background:linear-gradient(135deg,var(--r-blue),var(--r-pink)) !important; color:#fff !important; }
+.icon-btn,.control-btn,.cover-action{ background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.08); color:#dce5ff; }
+.icon-btn:hover,.cover-action:hover,.control-btn:hover{ background:rgba(255,255,255,.12); color:#fff; }
+.global-player{
+    left:18px !important;
+    right:auto !important;
+    bottom:18px !important;
+    width:300px !important;
+    display:none;
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+    padding:14px !important;
+    border-radius:24px !important;
+    border:1px solid rgba(166,185,255,.18) !important;
+    background:rgba(7,13,38,.88) !important;
+    backdrop-filter:blur(24px);
+    box-shadow:0 22px 72px rgba(0,0,0,.44) !important;
+}
+.global-player.show{ display:grid !important; }
+.global-player .player-top,.global-player .progress-container,.global-player .player-bottom-row,.global-player .queue-panel{ grid-column:1 !important; grid-row:auto !important; }
+.global-player .player-top{ display:flex; gap:10px; align-items:center; }
+.global-player .player-top img{ width:58px !important; height:58px !important; border-radius:14px !important; }
+.global-player canvas#visualizer{ display:none !important; }
+#playerTitle{ font-size:.92rem !important; font-weight:900; }
+#playerCharacter{ font-size:.78rem !important; color:var(--r-muted); }
+#playerMode{ font-size:.62rem !important; color:var(--r-pink-soft) !important; }
+.progress-bar{ height:6px !important; background:rgba(255,255,255,.16) !important; }
+.progress{ background:linear-gradient(90deg,var(--r-blue),var(--r-pink)) !important; }
+.player-bottom-row{ justify-content:center !important; }
+.player-volume{ width:100%; justify-content:center !important; min-width:0 !important; }
+.intensity-select{ display:none !important; }
+.queue-panel.open{ max-height:260px; overflow:auto; }
+.queue-item{ background:rgba(255,255,255,.065) !important; border:1px solid rgba(255,255,255,.07); }
+
+/* Battle/modal */
+.battle-card,.lore-box,.cover-modal-box{
+    border:1px solid rgba(166,185,255,.18) !important;
+    background:rgba(8,13,38,.94) !important;
+    backdrop-filter:blur(20px);
+}
+.battle-card{ border-radius:28px !important; }
+.vs{ color:var(--r-pink) !important; }
+
+@media (max-width:1260px){
+    .featured-layout.resonance-layout{ grid-template-columns:320px 1fr !important; }
+    .resonance-side-info{ grid-column:1/-1; }
+    .featured-cover{ height:320px !important; }
+    .soundtrack-list.library-shell{ grid-template-columns:repeat(2,minmax(260px,1fr)) !important; }
+}
+@media (max-width:920px){
+    body{ display:block !important; }
+    .sidebar.app-sidebar,.sidebar{ position:relative !important; width:100% !important; height:auto !important; padding:20px 16px !important; border-right:0 !important; border-bottom:1px solid rgba(166,185,255,.15) !important; }
+    .brand-logo{ width:190px !important; }
+    .side-nav{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .side-nav-item,.side-nav-select{ min-height:48px; font-size:.88rem; }
+    .system-card{ display:none; }
+    .main-content{ padding:18px 16px 285px !important; }
+    .app-header{ flex-direction:column; align-items:stretch; }
+    .search-shell{ max-width:none; min-height:56px; }
+    .featured-layout.resonance-layout{ grid-template-columns:1fr !important; }
+    .featured-cover{ height:auto !important; aspect-ratio:1/1 !important; }
+    .resonance-data{ grid-template-columns:1fr !important; }
+    .soundtrack-list.library-shell{ grid-template-columns:1fr !important; }
+    .resonance-track-row{ grid-template-columns:50px minmax(0,1fr) auto !important; min-height:76px !important; }
+    .track-number{ display:none !important; }
+    .track-mini-cover{ width:50px !important; height:50px !important; }
+    .row-actions .icon-btn:nth-child(2){ display:none !important; }
+    .global-player{ left:12px !important; right:12px !important; width:auto !important; bottom:12px !important; }
+}
+@media (max-width:520px){
+    .side-nav{ grid-template-columns:1fr; }
+    .featured-card{ padding:16px !important; border-radius:24px !important; }
+    .resonance-title{ font-size:2.35rem !important; }
+    .library-header{ display:block !important; }
+    .library-header p:last-child{ margin-top:6px; }
+}
+
+
+/* ==============================
+   RESONANCE INTRO + BETA NOTICE
+============================== */
+.intro-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(47, 123, 255, .34), transparent 34%),
+        radial-gradient(circle at 82% 22%, rgba(255, 60, 155, .28), transparent 36%),
+        linear-gradient(135deg, #030816 0%, #09112d 48%, #1b0826 100%);
+    transition: opacity .75s ease, visibility .75s ease;
+}
+.intro-screen.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+.intro-screen::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background:
+        linear-gradient(115deg, transparent 0 38%, rgba(255,255,255,.12) 48%, transparent 58% 100%),
+        radial-gradient(circle at center, rgba(255,255,255,.06), transparent 42%);
+    animation: introSweep 2.6s ease forwards;
+}
+.intro-orb {
+    position: absolute;
+    width: min(52vw, 520px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: conic-gradient(from 120deg, rgba(47,123,255,.0), rgba(47,123,255,.42), rgba(255,60,155,.42), rgba(47,123,255,.0));
+    filter: blur(34px);
+    opacity: .72;
+    animation: introOrb 2.4s ease-in-out forwards;
+}
+.intro-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 26px;
+    animation: introContent 2.45s ease forwards;
+}
+.intro-logo {
+    width: min(68vw, 390px);
+    max-height: 180px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 32px rgba(47,123,255,.30)) drop-shadow(0 0 28px rgba(255,60,155,.20));
+}
+.intro-title {
+    margin-top: 18px;
+    color: #fff;
+    font-size: clamp(1.45rem, 4vw, 3rem);
+    font-weight: 900;
+    letter-spacing: -.055em;
+}
+.intro-title span {
+    background: linear-gradient(90deg, #8bb8ff, #ff66b7);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.intro-loader {
+    width: min(340px, 70vw);
+    height: 5px;
+    margin: 26px auto 0;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+}
+.intro-loader::before {
+    content: "";
+    display: block;
+    height: 100%;
+    width: 0%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #2f7bff, #ff3c9b);
+    animation: introLoad 2.25s ease forwards;
+}
+
+.beta-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    display: none;
+    place-items: center;
+    padding: 20px;
+    background: rgba(3, 8, 22, .58);
+    backdrop-filter: blur(18px);
+}
+.beta-modal.show { display: grid; }
+.beta-box {
+    width: min(560px, 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 28px;
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,.14);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(47,123,255,.24), transparent 38%),
+        radial-gradient(circle at 100% 0%, rgba(255,60,155,.22), transparent 36%),
+        rgba(8,13,30,.92);
+    box-shadow: 0 30px 90px rgba(0,0,0,.55);
+    animation: betaPop .42s ease both;
+}
+.beta-box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(135deg, rgba(255,255,255,.10), transparent 34%, rgba(255,255,255,.035));
+}
+.beta-box > * { position: relative; z-index: 1; }
+.beta-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    color: #ff70bd;
+    font-size: .74rem;
+    font-weight: 900;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+.beta-kicker::before {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #2f7bff;
+    box-shadow: 0 0 20px rgba(47,123,255,.85);
+}
+.beta-box h2 {
+    margin-bottom: 12px;
+    color: #fff;
+    font-size: clamp(1.55rem, 4vw, 2.45rem);
+    line-height: 1;
+    letter-spacing: -.055em;
+}
+.beta-box p {
+    color: #c6d1f5;
+    line-height: 1.65;
+    font-size: 1rem;
+}
+.beta-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+}
+.beta-accept-btn {
+    min-height: 48px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    color: #fff;
+    font-weight: 900;
+    background: linear-gradient(135deg, #2f7bff, #ff3c9b);
+    box-shadow: 0 14px 34px rgba(255,60,155,.20);
+    transition: transform .18s ease, filter .18s ease;
+}
+.beta-accept-btn:hover { transform: translateY(-1px) scale(1.02); filter: brightness(1.08); }
+
+@keyframes introLoad { to { width: 100%; } }
+@keyframes introSweep {
+    0% { transform: translateX(-18%) rotate(0deg); opacity: .35; }
+    55% { opacity: .85; }
+    100% { transform: translateX(18%) rotate(8deg); opacity: .12; }
+}
+@keyframes introOrb {
+    0% { transform: scale(.55) rotate(0deg); opacity: 0; }
+    25% { opacity: .75; }
+    100% { transform: scale(1.08) rotate(145deg); opacity: .55; }
+}
+@keyframes introContent {
+    0% { opacity: 0; transform: translateY(18px) scale(.96); filter: blur(8px); }
+    38% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    82% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 1; transform: translateY(-3px) scale(1.01); }
+}
+@keyframes betaPop {
+    from { opacity: 0; transform: translateY(16px) scale(.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (max-width: 640px) {
+    .beta-box { padding: 22px; border-radius: 24px; }
+    .intro-logo { width: min(78vw, 320px); }
+}
+
+/* Resonance 2.0: scenes, character dossiers and accessible mobile navigation */
+.scene-deck{display:grid;gap:8px;margin:14px 0 18px}.scene-deck-title{padding:0 10px;color:#8fa0cc;font-size:.68rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.scene-chip{width:100%;display:flex;align-items:center;gap:10px;min-height:44px;padding:10px 12px;border:1px solid transparent;border-radius:14px;color:#c9d3f2;background:transparent;cursor:pointer;text-align:left;font-weight:800}.scene-chip:hover,.scene-chip.active{color:#fff;border-color:rgba(139,184,255,.26);background:linear-gradient(90deg,rgba(47,123,255,.18),rgba(255,60,155,.10))}.scene-chip span{width:25px;text-align:center;font-size:1.05rem}
+.scene-stage{max-width:1280px;margin:0 auto 22px;padding:0}.scene-stage[hidden]{display:none}.scene-stage-card{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:25px 28px;border:1px solid rgba(139,184,255,.24);border-radius:28px;background:radial-gradient(circle at 90% 10%,rgba(255,60,155,.17),transparent 34%),linear-gradient(135deg,rgba(47,123,255,.16),rgba(10,16,40,.92))}.scene-stage-card small{color:#8bb8ff;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.scene-stage-card h2{margin:6px 0;font-size:clamp(1.55rem,3vw,2.5rem);letter-spacing:-.045em}.scene-stage-card p{max-width:720px;color:#bfc9e8;line-height:1.55}.scene-stage-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.character-modal{position:fixed;inset:0;z-index:2200;display:none;place-items:center;padding:18px;background:rgba(3,8,22,.78);backdrop-filter:blur(16px)}.character-modal.show{display:grid}.character-dossier{width:min(880px,100%);max-height:min(760px,90vh);overflow:auto;padding:26px;border:1px solid rgba(255,255,255,.14);border-radius:28px;background:radial-gradient(circle at 0 0,rgba(47,123,255,.22),transparent 34%),#090f25;box-shadow:0 30px 100px rgba(0,0,0,.62)}.dossier-head{display:grid;grid-template-columns:110px 1fr auto;gap:20px;align-items:center}.dossier-head img{width:110px;height:110px;object-fit:cover;border-radius:22px}.dossier-head small{color:#ff70bd;font-weight:900;letter-spacing:.13em}.dossier-head h2{margin:5px 0;font-size:clamp(1.7rem,4vw,3rem);letter-spacing:-.055em}.dossier-lore{margin:22px 0;color:#c6d1f5;line-height:1.7}.dossier-tracks{display:grid;gap:8px}.dossier-track{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;padding:10px;border-radius:14px;background:rgba(255,255,255,.055)}.dossier-track img{width:48px;height:48px;object-fit:cover;border-radius:9px}
+.char-item{position:relative}.char-item::after{content:"Ficha";margin-left:auto;opacity:0;color:#8bb8ff;font-size:.61rem;font-weight:900}.char-item:hover::after,.char-item:focus-visible::after{opacity:1}.mobile-nav{display:none}.intensity-rage .main-content{box-shadow:inset 0 0 90px rgba(255,44,91,.08)}.intensity-finalboss .main-content{box-shadow:inset 0 0 120px rgba(196,53,255,.12)}button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid #8bb8ff!important;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+@media(max-width:900px){.scene-stage-card{grid-template-columns:1fr;padding:20px;border-radius:22px}.scene-stage-actions{justify-content:flex-start}.dossier-head{grid-template-columns:76px 1fr auto;gap:12px}.dossier-head img{width:76px;height:76px;border-radius:16px}.mobile-nav{position:fixed;left:10px;right:10px;bottom:10px;z-index:1800;display:grid;grid-template-columns:repeat(4,1fr);padding:7px;border:1px solid rgba(255,255,255,.14);border-radius:22px;background:rgba(6,10,25,.92);backdrop-filter:blur(18px);box-shadow:0 18px 55px rgba(0,0,0,.52)}.mobile-nav button{min-height:50px;border:0;border-radius:16px;color:#aeb9d8;background:transparent;font-size:.66rem;font-weight:900}.mobile-nav button span{display:block;margin-bottom:2px;font-size:1.1rem}.mobile-nav button.active{color:#fff;background:linear-gradient(135deg,rgba(47,123,255,.32),rgba(255,60,155,.22))}body.player-visible .mobile-nav{bottom:116px}}
+@media(max-width:520px){.dossier-head{grid-template-columns:64px 1fr}.dossier-head img{width:64px;height:64px}.dossier-head .icon-btn{position:absolute;right:30px;top:30px}.dossier-track{grid-template-columns:42px 1fr auto}}
+</style>
+
+</head>
+<body>
+
+    <div class="intro-screen" id="introScreen" aria-hidden="true">
+        <div class="intro-orb"></div>
+        <div class="intro-content">
+            <img src="ResonanceLogo.png" alt="Resonance" class="intro-logo">
+            <div class="intro-title">Bienvenido a <span>Resonance™</span></div>
+            <div class="intro-loader"></div>
+        </div>
+    </div>
+
+    <aside class="sidebar app-sidebar">
+        <div class="brand-block">
+            <img src="ResonanceLogo.png" alt="Resonance" class="brand-logo">
+            <div class="brand-subtitle">ARCHIVE SYSTEM</div>
+        </div>
+
+        <nav class="side-nav">
+            <button class="side-nav-item pill-btn active" id="showAllBtn">🎧 <span>Biblioteca</span></button>
+            <button class="side-nav-item pill-btn" id="showCalmBtn">🌙 <span>Momentos tranquilos</span></button>
+            <button class="side-nav-item pill-btn" id="showFavBtn">☆ <span>Favoritos</span></button>
+            <label class="side-nav-select">👥
+                <select class="select-input" id="characterSelect">
+                    <option value="all">Todos los personajes</option>
+                </select>
+            </label>
+            <button class="side-nav-item pill-btn" id="toggleBattleBtn">⚔️ <span>Battle Mode</span></button>
+            <button class="side-nav-item pill-btn" id="toggleAudioOnlyBtn">🎧 <span>Solo audio</span></button>
+            <button class="side-nav-item pill-btn" id="toggleQueueBtn">☷ <span>Cola de reproducción</span></button>
+            <button class="side-nav-item pill-btn" id="toggleMiniBtn">▱ <span>Compacto</span></button>
+        </nav>
+
+        <div class="scene-deck" id="sceneDeck" aria-label="Escenas musicales">
+            <div class="scene-deck-title">Escenas</div>
+        </div>
+
+        <div class="sidebar-tools resonance-sidebar-tools">
+            <select class="select-input" id="filterSelect">
+                <option value="all">Todas las canciones</option>
+                <option value="favorites">⭐ Favoritos</option>
+                <option value="calm">🌙 Momentos tranquilos</option>
+                <option value="rage">Rage Mode</option>
+                <option value="finalboss">Final Boss</option>
+                <option value="emotional">Emotional</option>
+                <option value="normalbattle">Normal Battle</option>
+                <option value="dance">Dance</option>
+                <option value="SeriousBattle">Serious Battle</option>
+                <option value="DarkVictorian">Dark Victorian</option>
+            </select>
+            <div class="tool-row">
+                <button class="mini-btn" id="shuffleTopBtn">🔀 Shuffle</button>
+                <button class="mini-btn" id="battleTopBtn">⚔️ Battle</button>
+            </div>
+        </div>
+
+        <div class="system-card">
+            <div class="system-kicker">SISTEMA ACTIVO</div>
+            <div class="system-online"><span>⌁</span><div><strong>Resonance Online</strong><small>Sincronización realizada</small></div></div>
+        </div>
+
+        <div class="char-list" id="sidebarChars"></div>
+    </aside>
+
+    <div class="main-content">
+        <header class="app-header">
+            <div class="search-shell">
+                <span>⌕</span>
+                <input class="search-input" id="searchInput" placeholder="Buscar archivos de resonancia...">
+            </div>
+            <button class="pill-btn filter-floating">▽ Filtros</button>
+        </header>
+
+        <section class="battle-zone" id="battleZone"></section>
+        <section class="scene-stage" id="sceneStage" hidden></section>
+        <section class="featured" id="featured"></section>
+        <section class="soundtrack-list" id="soundtrackList"></section>
+    </div>
+
+    <div class="character-modal" id="characterModal" role="dialog" aria-modal="true" aria-labelledby="dossierTitle">
+        <article class="character-dossier" id="characterDossier"></article>
+    </div>
+
+    <nav class="mobile-nav" aria-label="Navegación principal">
+        <button id="mobileLibrary" class="active"><span>◫</span>Biblioteca</button>
+        <button id="mobileScenes"><span>✦</span>Escenas</button>
+        <button id="mobileCharacters"><span>◉</span>Personajes</button>
+        <button id="mobileFavorites"><span>☆</span>Favoritos</button>
+    </nav>
+
+    <div class="lore-modal" id="loreModal" role="dialog" aria-modal="true" aria-labelledby="loreTitle">
+        <div class="lore-box">
+            <h2 id="loreTitle"></h2>
+            <p id="loreText"></p>
+            <div style="display:flex; justify-content:flex-end; margin-top:18px;">
+                <button class="pill-btn" onclick="closeLore()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="cover-modal" id="coverModal" role="dialog" aria-modal="true" aria-labelledby="expandedCoverTitle" onclick="closeCoverModal(event)">
+        <div class="cover-modal-box">
+            <img id="expandedCover" src="" alt="Portada ampliada">
+            <div class="cover-modal-info">
+                <div style="min-width:0;">
+                    <h3 id="expandedCoverTitle"></h3>
+                    <p id="expandedCoverCharacter"></p>
+                </div>
+                <button class="icon-btn" onclick="closeCoverModal()" title="Cerrar portada">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="global-player" id="globalPlayer">
+        <div class="player-top">
+            <img id="playerCover" class="player-cover" src="" alt="">
+            <div class="player-info">
+                <div id="playerTitle"></div>
+                <div id="playerCharacter"></div>
+                <div id="playerMode"></div>
+            </div>
+            <button class="cover-action" id="expandCoverBtn" title="Ver portada grande">🖼️</button>
+        </div>
+
+        <canvas id="visualizer" width="800" height="76"></canvas>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar" role="slider" tabindex="0" aria-label="Posición de reproducción" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress" id="progress"></div></div>
+            <div class="time"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
+        </div>
+
+        <div class="queue-panel" id="queuePanel"></div>
+
+        <div class="player-bottom-row">
+            <div class="player-controls controls">
+                <button class="control-btn" id="shuffleBtn" title="Aleatorio">🔀</button>
+                <button class="control-btn" onclick="prevTrack()" title="Anterior">⏮</button>
+                <button class="control-btn big" id="playPauseBtn" onclick="togglePlay()">▶</button>
+                <button class="control-btn" onclick="nextTrack()" title="Siguiente">⏭</button>
+                <button class="control-btn" id="repeatBtn" title="Repetir">🔁</button>
+                <button class="control-btn" onclick="fadeOutAndNext()" title="Crossfade">🌊</button>
+            </div>
+            <div class="player-volume volume-container">
+                <span class="volume-icon">🔊</span>
+                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="1">
+                <select id="intensitySelect" class="intensity-select">
+                    <option value="normal">Normal</option>
+                    <option value="rage">Rage Mode</option>
+                    <option value="finalboss">Final Boss</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const characters = [
+            {
+                character: "Freyja Kane",
+                characterFace: "img/FreyjaKane.webp",
+                lore: "Freyja Kane representa una justicia física y directa: no como discurso bonito, sino como el martillazo que cae cuando alguien decide proteger a los demás aunque le tiemblen las manos.",
+                tracks: [
+                    {
+                        songTitle: "Hammer of Justice",
+                        songDescription: "La canción de una guerrera que ha aprendido la agilidad de la Tortuga Justiciera.",
+                        songCover: "img/FreyjaCover.jpg",
+                        audio: "audio/Hammer of Justice.mp3",
+                        tags: ["emotional", "normalbattle"],
+                        lore: "Hammer of Justice representa la justicia como una fuerza física: no como discurso bonito, sino como el martillazo que cae cuando alguien decide proteger a los demás aunque le tiemblen las manos."
+                    },
+                    { 
+                        songTitle: "Judgement of Justice",
+                        songDescription: "La verdadera justicia no necesita gritar. Solo dictar sentencia.",
+                        songCover: "img/FreyjaCover2.png", 
+                        audio: "audio/Judgement of Justice.mp3",
+                        tags: ["emotional", "bossbattle", "supersaiyan", "finalphase"], 
+                        lore: "Cuando la falsa justicia y la sentencia corrupta amenazaron aquello que Freyja juró proteger, el martillo dejó de ser suficiente. El poder que despertó aquella noche no nació de la ira, sino de la convicción absoluta. 'This is your Judgement of Justice.'"
+                    },
+                ]
+            },
+            {
+                character: "Shiva Kane",
+                characterFace: "img/Shiva.jpg",
+                lore: "La pequeña de los Kane, diminuta pero orgullosa como nadie, moriría antes de reconocer la derrota y mataría por proteger a su familia",
+                tracks: [
+                    {
+                        songTitle: "Psychic",
+                        songDescription: "La mente se vuelve omnisciente, el poder se transforma en ondas psíquicas, Shiva ha despertado",
+                        songCover: "img/ShivaCover.jpg",
+                        audio: "audio/Psychic.mp3",
+                        tags: ["Boss Battle"],
+                        lore: "Capaz de lanzar meteoritos con su nuevo poder luchará hasta la muerte con pasión y orgullo, si hace falta morirá de pie"
+                    },
+                    {
+                        songTitle: "Pride",
+                        songDescription: "La fuerza y la furia aumentan, la pequeña Shiva a alcanzado por fin a sus hermanos y arde en deseos de enfrentar a la amenaza",
+                        songCover: "img/ShivaCover2.png",
+                        audio: "audio/Pride.mp3",
+                        tags: ["Boss Battle"],
+                        lore: "El poder del legendario super Saiyan y la legendaria familia Kane, unidas ambas leyendas en esta diminuta pero orgullosa guerrera"
+                    }
+                ]
+            },
+            {
+                character: "Ares Kane",
+                characterFace: "img/AresKane.png",
+                lore: "Ares, mayor que sus hermanas, hará todo lo que esté en su mano para protegerlas, incluso dejando atrás levemente su humanidad",
+                tracks: [
+                    {
+                        songTitle: "Emerald Pride",
+                        songDescription: "El himno del conocido como Dios Esmeralda, el saiyan que hacer temer a todos sus enemigos con su presencia",
+                        songCover: "img/AresCover.png",
+                        audio: "audio/Emerald Pride.mp3",
+                        tags: ["Epic Battle", "Emotional"],
+                        lore: "Incluso el saiyan más humano tiene un orgullo que defender, el orgullo de su familia."
+                    },
+                    {
+                        songTitle: "God Of War",
+                        songDescription: "La canción que demuestra el poder de la furia del mayor de los Kane.",
+                        songCover: "img/Ares2Cover.png",
+                        audio: "audio/God Of War.mp3",
+                        tags: ["Epic Battle", "Emotional"],
+                        lore: "Ares, el Dios de la Guerra, en su máximo poder, moverá cielo y tierra para obtener venganza"
+                    }
+                ]
+            },
+            {
+                character: "Gerson Boom",
+                characterFace: "img/Gerson.png",
+                lore: "Un antiguo guerrero eclipse cuya época ya pasó, ahora es el maestro de la familia Kane, además de historiador",
+                tracks: [
+                    {
+                        songTitle: "The Elder Hammer Of Justice",
+                        songDescription: "La canción del legendario Martillo de la Justicia, un ancestral guerrero que sirvió al mundo hará 2000 años",
+                        songCover: "img/GersonCover.png",
+                        audio: "audio/The Elder Hammer Of Justice.mp3",
+                        tags: ["Serious Battle", "Epic", "Heroic"],
+                        lore: "Cuando los héroes de hoy en día no son suficiente, las viejas glorias tienen que empuñar una última vez su martillo"
+                    }
+                ]
+            },
+            {
+                character: "Tao Saotome",
+                characterFace: "img/TaoSaotome.jpg",
+                lore: "Tao se ha entrenado para ser la mejor cazademonios de la historia. Con su pistola y agilidad física no hay nada que se le resista.",
+                tracks: [
+                    {
+                        songTitle: "Demon's Last Mistake",
+                        songDescription: "Si Tao apunta, no es necesario que te preocupes por sobrevivir.",
+                        songCover: "img/TaoCover.png",
+                        audio: "audio/Demon's Last Mistake.mp3",
+                        tags: ["normalbattle"],
+                        lore: "Tao es el cazademonios más letal de la historia, con su pistola y agilidad física no hay nada que se le resista."
+                    }
+                ]
+            },
+            {
+                character: "Kael Kane",
+                characterFace: "img/KaelKane.jpg",
+                lore: "Kael es alguien marcado por el destierro, la rabia y la necesidad de demostrar que su existencia no fue un error.",
+                tracks: [
+                    {
+                        songTitle: "I Was Never Chosen",
+                        songDescription: "La canción de alguien que nunca se ha sentido elegido, siempre se ha sentido abandonado, teniendo que luchar por meritaje propio.",
+                        songCover: "img/Kael2Cover.png",
+                        audio: "audio/I Was Never Chosen.mp3",
+                        tags: ["bossbattle"],
+                        lore: "I Was Never Chosen es el grito de desesperación ante una vida que no eligió vivir, plasmando en ella todo tipo de venganza hacia aquellos que le causaron ese futuro."
+                    },
+                    {
+                        songTitle: "Born Wrong",
+                        songDescription: "La canción de alguien que fue desterrado de una familia y ahora busca venganza.",
+                        songCover: "img/KaelCover.png",
+                        audio: "audio/Born Wrong.mp3",
+                        tags: ["rage", "emotional"],
+                        lore: "Born Wrong suena como una herida que aprendió a caminar. No habla solo de rabia: habla de alguien convencido de que nació en el lado equivocado de una historia que jamás le pidió permiso."
+                    }
+                ]
+            },
+            {
+                character: "Nara Midori",
+                characterFace: "img/NaraMidori.png",
+                lore: "Nara Midori lucha contra su corrupción interna sin dejar que destruya aquello que ama. Su conflicto no es solo vencer: es seguir siendo ella.",
+                tracks: [
+                    {
+                        songTitle: "Determination of the World",
+                        songDescription: "Nadie conoce sus límites, pero todos conocen su determinación.",
+                        songCover: "img/GoodNaraCover.png",
+                        audio: "audio/Determination of the Earth.mp3",
+                        tags: ["normal battle"],
+                        lore: "Ella protegerá lo que ama, aunque aún no sepa hasta dónde puede llegar.."
+                    },
+                    {
+                        songTitle: "SAVE her Soul",
+                        songDescription: "Si no logramos alcanzarla ahora, la perderemos para siempre.",
+                        songCover: "img/NaraCorruptaCover1.png",
+                        audio: "audio/SAVE Her Soul.mp3",
+                        tags: ["final boss", "emotional"],
+                        lore: "SAVE her Soul es una batalla contra la corrupción, pero también contra la rendición. La canción no pide destruir a Nara: pide llegar hasta ella antes de que su cuerpo decida romper todo lo que ama."
+                    },
+                    {
+                        songTitle: "But She Refused",
+                        songDescription: "Por mucho que la oscuridad insistiera, ella se negó a caer.",
+                        songCover: "img/NaraCover.png",
+                        audio: "audio/But She Refused.mp3",
+                        tags: ["emotional", "final boss"],
+                        lore: "But She Refused es el momento en el que Nara deja de hundirse y empieza a pelear por sí misma. No es una victoria feliz: es una decisión firme. No va a dejar que su parte corrupta destruya aquello que ama."
+                    }
+                ]
+            },
+            {
+                character: "Billy Kid",
+                characterFace: "img/BillyKid.jpg",
+                lore: "Billy convierte el combate en espectáculo. Para él, cada disparo es parte de una función macabra.",
+                tracks: [
+                    {
+                        songTitle: "THE WORLD REVOLVING",
+                        songDescription: "Sientes como gira todo el mundo mientras se se suma en ¡CAOS, CAOS!.",
+                        songCover: "img/BillyCover.png",
+                        audio: "audio/THE WORLD REVOLVING.mp3",
+                        tags: ["rage", "final boss"],
+                        lore: "EL MUNDO ES CAOS CAOS, Y SU ÚNICO CAMINO ES LA PERDICIÓN."
+                    },
+                    {
+                        songTitle: "THE LAST REVOLVING",
+                        songDescription: "Bienvenidos a la última vuelta del carrusel, espero que hayáis disfrutado de la experiencia, porque ahora empieza el verdadero caos.",
+                        songCover: "img/BillyKidCover.png",
+                        audio: "audio/THE LAST REVOLVING.mp3",
+                        tags: ["finalboss"],
+                        lore: "Si escuchas esta canción, es porque ya no hay vuelta atrás."
+                    }
+                ]
+            },
+            {
+                character: "Mina Ashido",
+                characterFace: "img/MinaAshido.jpg",
+                lore: "Mina convierte el entrenamiento y el combate en movimiento, ritmo y estilo propio.",
+                tracks: [
+                    {
+                        songTitle: "Dancin' With Acid",
+                        songDescription: "¿Porque elegir entre pelear y bailar cuando puedes hacer ambas? ¡Vamos a entrenar y mover el esqueleto con Mina Ashido!",
+                        songCover: "img/MinaCover.png",
+                        audio: "audio/Dancin' With Acid.mp3",
+                        tags: ["dance", "normal battle"],
+                        lore: "En el intento de Mina por mejorar peleando, inventó su estilo basado en el baile urbano, que no es muy letal, pero es sumamente divertido."
+                    }
+                ]
+            },
+            {
+                character: "Kurumi Tokisaki",
+                characterFace: "img/KurumiTokisaki.jpg",
+                lore: "Kurumi hace que el tiempo pese como una sentencia. Cada tic tac es una amenaza.",
+                tracks: [
+                    {
+                        songTitle: "Lady Portrait",
+                        songDescription: "El final de tu último muy hermoso atardecer es la fina doncella de porcelana que oculta su mirada con un flequillo.",
+                        songCover: "img/KurumiCover2.png",
+                        audio: "audio/Lady Portrait.mp3",
+                        tags: ["calm", "Seductive"],
+                        lore: "La sutileza y las buenas palabras son un arma aún más peligrosa que las pistolas"
+                    },
+                    {
+                        songTitle: "Die O'Clock",
+                        songDescription: "El tiempo no perdona a nadie, tu hora ha llegado, tu hora de morir.",
+                        songCover: "img/KurumiCover.png",
+                        audio: "audio/Die O'Clock.mp3",
+                        tags: ["SeriousBattle", "DarkVictorian"],
+                        lore: "Zafkiel, el Ángel de Kurumi Tokisaki, aquel que le concede el poder de controlar el tiempo, solo su tictaqueo hace temblar a cualquiera."
+                    }
+                ]
+            },
+            {
+                character: "Magilou Mayvin",
+                characterFace: "img/Magilou.png",
+                lore: "Una encantadora bruja sin licencia. ¡Miss Magilou ha nacido con el objetivo de hacer a todo el mundo sonreir con su magia!",
+                tracks: [
+                    {
+                        songTitle: "Circus March",
+                        songDescription: "¡El circo ha llegado a la ciudad de la mano de Miss Magilou! ¡Bienvenidos al mayor espectáculo mágico nunca antes visto! ¡Tomad asiento y disfrutad!",
+                        songCover: "img/MagilouCover.png",
+                        audio: "audio/Circus March.mp3",
+                        tags: ["NormalBattle", "Circus"],
+                        lore: "¡Miss Magilou siempre se ha dedicado a su público encantador! ¡Y prácticamente sin sangre, sudor, ni lágrimas! (creo)"
+                    }
+                ]
+            },
+            {
+                character: "Exusiai",
+                characterFace: "img/Exusiai.png",
+                lore: "Exusiai, la hija del cielo, llegó como una débil y simple humana, se fue con el objetivo de ser el angel de la guarda de cada persona que la necesite",
+                tracks: [
+                    {
+                        songTitle: "Celestial Guardian",
+                        songDescription: "Los cantos celestiales que acompañan cada combate de Exusiai, que después de tanto tiempo en el otro mundo, se ganó el respeto de los dioses",
+                        songCover: "img/ExusiaiCover.png",
+                        audio: "audio/Celestial Guardian.mp3",
+                        tags: ["Epic Battle", "Celestial"],
+                        lore: "El canto de guerra de los arcángeles, la melodía que avecina la guerra entre el cielo y la tierra"
+                    }
+                ]
+            },
+            {
+                character: "Addvok Vileborne",
+                characterFace: "img/Add.png",
+                lore: "Add, el alumno predilecto de la más poderosa del inframundo, no llega a una fracción de todo su poder, y aún así, te hará sentir el infierno en La Tierra",
+                tracks: [
+                    {
+                        songTitle: "Doom Bringer",
+                        songDescription: "La locura y violencia que caracterizan a cierta parte del infierno, en una misma canción",
+                        songCover: "img/AddCover.png",
+                        audio: "audio/Doom Bringer.mp3",
+                        tags: ["Epic Battle", "Boss Battle"],
+                        lore: "El rugir del infierno en un único combate, por aquel que asegura que traerá la devastación al planeta"
+                    }
+                ]
+            },
+            {
+                character: "Simon Drayton",
+                characterFace: "img/SimonDrayton.jpg",
+                lore: "Simon Drayton, Drill Hero, sin ser perfecto, su inestimable esfuerzo y fuerza de voluntad perforarán a cada enemigo",
+                tracks: [
+                    {
+                        songTitle: "Pierce The Heavens",
+                        songDescription: "La canción de aquel que no cesará hasta ser inalcanzable... \"¡Mi taladro atravesará el cielo!\"",
+                        songCover: "img/SimonCover.png",
+                        audio: "audio/Pierce The Heavens.mp3",
+                        tags: ["normalbattle", "emotional"],
+                        lore: "No hay nada que supere a la voluntad, ni siquiera el Ki, con suficiente esfuerzo, un humano podrá desafiar a los grandes"
+                    }
+                ]
+            },
+            {
+               character: "YoRHa No.12 Type B-S (Hybrid Model)",
+                characterFace: "img/Danya12BS.png",
+                lore: "Un androide enviado de YoRHa para estudiar la vida humana, desde que perdió en contacto con el bunker, vaga sin rumbo",
+                tracks: [
+                    {
+                        songTitle: "Combat Routine",
+                        songDescription: "Un YoRHa con un sistema de combate algo anticuado, pero eficiente.",
+                        songCover: "img/DanyaCover.png",
+                        audio: "audio/Combat Routine.mp3",
+                        tags: ["Normal Battle"],
+                        lore: "Siendo un modelo de combate anticuado, pelea demasiado bien para ser de escaner."
+                    }
+                ]
+            },
+            {
+                character: "YoRHa No.9 Type S",
+                characterFace: "img/9S.png",
+                lore: "Un androide enviado de YoRHa para estudiar la vida humana, desde que perdió en contacto con el bunker, vaga sin rumbo",
+                tracks: [
+                    {
+                        songTitle: "Glory To Mankind",
+                        songDescription: "La OST predeterminada cuando un androide del tipo S entra en combate.",
+                        songCover: "img/9SCover.png",
+                        audio: "audio/Glory to Mankind.mp3",
+                        tags: ["Normal Battle"],
+                        lore: "Los modelos de escáner no están especializados en el combate, sin embargo, están completamente capacitados."
+                    }
+                ]
+            },
+            {
+                character: "Gilthunder Rainford",
+                characterFace: "img/Gilthunder.jpg",
+                lore: "Gilthunder, el Caballero del Trueno, un noble que se ha ganado su título a base de esfuerzo y dedicación, aunque a veces se le suba un poco la arrogancia a la cabeza.",
+                tracks: [
+                    {
+                        songTitle: "Perfect Time",
+                        songDescription: "Aunque los relámpagos siempre caen en zonas impredecibles, Gilthunder siempre sabe el momento perfecto para atacar.",
+                        songCover: "img/GilthunderCover.png",
+                        audio: "audio/Perfect Time.mp3",
+                        tags: ["Normal Battle", "Heroic", "Epic", "Emotional"],
+                        lore: "La canción de un noble caballero que dará todo para salvar a la humanidad, cueste lo que cueste."
+                    },
+                    {
+                        songTitle: "Skybreaker",
+                        songDescription: "Cuando el cielo se parte en dos, ya es demasiado tarde para escapar del Rey del Trueno.",
+                        songCover: "img/Gilthunder2Cover.jpg",
+                        audio: "audio/Skybreaker.mp3",
+                        tags: ["Epic Battle", "Thunder", "Heroic", "Epic", "Orchestral"],
+                        lore: "Cada relámpago anuncia su llegada. No lucha por la gloria, sino por proteger un futuro que solo puede forjarse a través de la tormenta."
+                    },
+                ]
+            },
+            {
+                character: "Undyne",
+                characterFace: "img/Undyne.png",
+                lore: "Una brusca mujer pez con un talento increible, inspirandose en su maestro, se hace llamar la Lanza de la Justicia",
+                tracks: [
+                    {
+                        songTitle: "Spear Of Justice",
+                        songDescription: "La canción de la Lanza de la Justicia, una poderosa guerrera que no le teme ni a la muerte",
+                        songCover: "img/UndyneCover.png",
+                        audio: "audio/Spear of Justice.mp3",
+                        tags: ["Serious Battle", "Heroic"],
+                        lore: "Ante la injusticia de este mundo, Undyne, la más fiera guerrera, eleva su lanza para combatir"
+                    },
+                    {
+                        songTitle: "Battle Against A True Hero",
+                        songDescription: "La canción de Undyne, la guerrera que venció a la muerte misma, con el poder de la DETERMINACIÓN",
+                        songCover: "img/UndyneCover2.png",
+                        audio: "audio/Battle Against A True Hero.mp3",
+                        tags: ["Serious Battle", "Heroic"],
+                        lore: "La determinación, el poder de cambiar el destino, para los monstruos puede ser letal por su poder abrumador"
+                    }
+                ]
+            },
+            {
+                character: "Baiken Tatakai",
+                characterFace: "img/Baiken.jpg",
+                lore: "Una samurái que luego de haber perdido a toda su familia, busca la forma de hacerse más fuerte para proteger a los que ama, y vengar a los que le arrebataron todo",
+                tracks: [
+                    {
+                        songTitle: "Petals of Steel",
+                        songDescription: "Una samurái que busca venganza al más puro estilo del Japón feudal, con honor y respeto, pero sin piedad para sus enemigos",
+                        songCover: "img/BaikenCover.png",
+                        audio: "audio/Petals of Steel.mp3",
+                        tags: ["Serious Battle", "Epic", "Heroic"],
+                        lore: "Baiken Tatakai, la samurái que busca venganza al más puro estilo del Japón feudal, con honor y respeto, pero sin piedad para sus enemigos"
+                    }
+                ]
+            },
+            {
+                character: "Hugo Vega",
+                characterFace: "img/Vega.png",
+                lore: "Un elegante asesino nacido al sur de España, severos traumas le hicieron pensar que solo las personas bellas merecen vivir",
+                tracks: [
+                    {
+                        songTitle: "Rosa de Sangre",
+                        songDescription: "La música que suena cuando Vega entra en escena, su distorsionada realidad le lleva a decisiones extremas",
+                        songCover: "img/VegaCover.png",
+                        audio: "audio/Rosa de Sangre.mp3",
+                        tags: ["Boss Battle"],
+                        lore: "El mundo es demasiado hermoso para gente tan horrible lo habite, yo haré justicia por mi amor"
+                    }
+                ]
+            },
+            {
+                character: "David Martínez",
+                characterFace: "img/David.jpg",
+                lore: "En una ciudad que devora sueños y personas por igual, un chico humilde decidió correr más rápido que su destino… hasta arder como una leyenda",
+                tracks: [
+                    {
+                        songTitle: "Sandevistman",
+                        songDescription: "La última sonrisa de un hombre que siguió avanzando incluso después de perderlo todo… porque algunas leyendas solo nacen cuando ya no queda nada que salvar",
+                        songCover: "img/CoverDavid.png",
+                        audio: "audio/Sandevistman.mp3",
+                        tags: ["Boss Battle"],
+                        lore: "Perdí mi humanidad hace mucho… lo único que me queda es demostrar que incluso un monstruo puede llegar a la cima entre montañas de acero y sangre"
+                    }
+                ]
+            },
+            {
+                character: "Ryomen Sukuna",
+                characterFace: "img/Sukuna.jpg",
+                lore: "Un hombre que desafía los límites de lo posible, cuyo poder es tan aterrador como su presencia, y cuya ambición no conoce fronteras",
+                tracks: [
+                    {
+                        songTitle: "Beneath His Smile",
+                        songDescription: "Un hombre que adora ver a la gente sufrir y que no dudará en destruir todo lo que se interponga en su camino",
+                        songCover: "img/SukunaCover.png",
+                        audio: "audio/Beneath His Smile.mp3",
+                        tags: ["Boss Battle"],
+                        lore: "Para que perdonar a los humanos cuando puedo verlos sufrir y destruirlos a todos sin que nadie pueda detenerme"
+                    }
+                ]
+            },
+            {
+                character: "Feixiao Hatsuse",
+                characterFace: "img/Feixiao.jpg",
+                lore: "Nacida para la guerra y moldeada por incontables batallas, avanzó hasta convertirse en la tormenta que hace temblar incluso a los cielos",
+                tracks: [
+                    {
+                        songTitle: "Fighter from Beyond",
+                        songDescription: "El rugido de una guerrera que convirtió cada cicatriz en el anuncio de una batalla imposible de detener",
+                        songCover: "img/FeixiaoCover.png",
+                        audio: "audio/Fighter from Beyond.mp3",
+                        tags: ["Boss Battle"],
+                        lore: "Si el destino insiste en desafiarme… entonces cortaré el propio cielo hasta que aprenda a temer mi nombre"
+                    }
+                ]
+            },
+            {
+                character: "Grillby Kamiji",
+                characterFace: "img/Grillby.png",
+                lore: "Un caballeroso bartender de personalidad cálida, a pesar de vivir una vida de paz, se encarga de entrenar a su hija",
+                tracks: [
+                    {
+                        songTitle: "Burnt Out",
+                        songDescription: "La canción que suena cuando el pacífico Grillby tiene que actuar, nadie dijo que sea un rival fácil",
+                        songCover: "img/GrillbyCover.png",
+                        audio: "audio/Burnt Out.mp3",
+                        tags: ["Serious Battle"],
+                        lore: "¿Que le has hecho? El bar está en llamas, todo esto es tu culpa... ¿Estás orgulloso?"
+                    }
+                ]
+            },
+            {
+                character: "Moe Kamiji",
+                characterFace: "img/Moe.jpg",
+                lore: "Una dulce niña con un gran talento para el combate y un sentido de la justicia admirable.",
+                tracks: [
+                    {
+                        songTitle: "FLASHPOINT",
+                        songDescription: "La música que suena cuando Moe se pone su traje de heroína y llena de fuego y energía el combate.",
+                        songCover: "img/MoeCover.png",
+                        audio: "audio/FLASHPOINT.mp3",
+                        tags: ["Serious Battle", "Heroic"],
+                        lore: "Cuando el bien necesita una heroína, Moe hará arder las esperanzas del mal."
+                    }
+                ]
+            },
+            {
+                character: "Solazar Kamiji",
+                characterFace: "img/Solazar.png",
+                lore: "Un serio oficinista de personalidad incandescente, compagina sus varios trabajos con la tutela de Agoti, su hijo adoptivo",
+                tracks: [
+                    {
+                        songTitle: "Godrays",
+                        songDescription: "La canción que suena cuando el violento Solazar tiene que actuar, su voz es temida incluso en el vacío",
+                        songCover: "img/SolazarCover.png",
+                        audio: "audio/Godrays.mp3",
+                        tags: ["Serious Battle"],
+                        lore: "¿Pensabas que venía a divertirse? Solazar cuando se propone algo, lo consigue."
+                    }
+                ]
+            },
+            {
+                character: "Aya Tademaru",
+                characterFace: "img/Aya.png",
+                lore: "La hija adoptiva de la hija de Dios, nacida con la capacidad de curar las heridas, después de todo lo sufrido en su infancia, no quiere ver a nadie más sufrir",
+                tracks: [
+                    {
+                        songTitle: "Safety Zone",
+                        songDescription: "La música que suena cuando Aya entra a ayudar en el campo de batalla",
+                        songCover: "img/AyaCover.png",
+                        audio: "audio/Safety Zone.mp3",
+                        tags: ["Emotional"],
+                        lore: "Aya quizás no sea la mas valiente, pero por proteger a sus seres queridos haría lo que fuese"
+                    }
+                ]
+            },
+            {
+                character: "Adalet (Justicia)",
+                characterFace: "img/Justicia.png",
+                lore: "Una de las abogadas del diablo, su estilo despreocupado y burlón hacen parecer que no es la gran cosa, pero poseé la capacidad de someter a cualquiera",
+                tracks: [
+                    {
+                        songTitle: "Unfair Decree",
+                        songDescription: "La música de batalla de Justicia, quien maneja el cotarro en los juzgados para que suceda lo que ella desea",
+                        songCover: "img/JusticiaCover.png",
+                        audio: "audio/Unfair Decree.mp3",
+                        tags: ["Cool", "Battle"],
+                        lore: "Aunque ciega, nadie se puede librar del largo brazo de la justicia"
+                    }
+                ]
+            },
+            {
+                character: "Beelzebub",
+                characterFace: "img/Beelze.png",
+                lore: "El principe del inframundo, a pesar de formar parte de la familia real, su vínculo con los humanos hace que no respete las decisiones de su padre, el solo quiere estar tranquilo",
+                tracks: [
+                    {
+                        songTitle: "Oh hell nah!",
+                        songDescription: "La canción de batalla de Beelzebub, el principe anti sistema que solo mira por si mismo, y no comete malas acciones",
+                        songCover: "img/BeelzeCover.png",
+                        audio: "audio/Oh hell nah!.mp3",
+                        tags: ["Cool", "Battle"],
+                        lore: "Incluso el principe de los demonios, puede volverse humano rodeado de las personas correctas"
+                    }
+                ]
+            },
+            {
+                character: "Grimmjow Jaegerjaquez",
+                characterFace: "img/Grimmjow.jpg",
+                lore: "En uno de los remotos confines del infierno yace dormido uno de los pilares más poderosos del antiguo infierno... Que hoy busca renacer como era en el pasado",
+                tracks: [
+                    {
+                        songTitle: "Destroy Everything",
+                        songDescription: "La locura y la sed de destrucción de alguien que tiene poco que perder y mucho que ganar",
+                        songCover: "img/GrimmjowCover.jpg",
+                        audio: "audio/Destroy Everything.mp3",
+                        tags: ["Boss Battle"],
+                        lore: "En un día como hoy sienta muy bien regar el suelo con tu sangre y toda la de tus seres queridos, no temas por morir, teme porque seré yo quien te mate"
+                    }
+                ]
+            },
+            {
+                character: "Shoto Todoroki",
+                characterFace: "img/Todoroki.jpg",
+                lore: "Esta es la historia como el hijo maldito del segundo mejor del mundo llegó a ser lo que el quiso ser, un amigo, un héroe y un gran novio",
+                tracks: [
+                    {
+                        songTitle: "Fire And Ice",
+                        songDescription: "El equilibrio perfecto, fuego y hielo, cuerpo y alma, entrenamiento y constancia, fuerza e inteligencia, todo hecho para un padre incomplacido",
+                        songCover: "img/TodorokiCover.jpg",
+                        audio: "audio/FireAndIce.mp3",
+                        tags: ["Boss Battle"],
+                        lore: "Cuando el equilibrio pierde su constancia todo se cae pero no significa derrota, significa renacer como alguien nuevo"
+                    }
+                ]
+            },
+            {
+                character: "Shionne Imeris",
+                characterFace: "img/Shionne.png",
+                lore: "La princesa maldita de un reino extinto, estar acostumbrada a los lujos de la alta vida no evita que sea toda una aventurera",
+                tracks: [
+                    {
+                        songTitle: "Fateful Thorns",
+                        songDescription: "La canción de batalla de Shionne, la princesa maldita por las espinas, una vida de soledad forjó el valor de una guerrera",
+                        songCover: "img/ShionneCover.png",
+                        audio: "audio/Fateful Thorns.mp3",
+                        tags: ["Emotional", "Battle"],
+                        lore: "Cuando tienes todos los lujos del mundo, no eres capaz de apreciar el valor de un abrazo, no es el caso de Shionne"
+                    }
+                ]
+            },
+            {
+                character: "Law Vireon",
+                characterFace: "img/Law.png",
+                lore: "Un fiero guerrero que fue liberado del cruel destino que le amparaba, desde entonces usa su fuerza para el bien del mundo",
+                tracks: [
+                    {
+                        songTitle: "Broken Chains",
+                        songDescription: "La canción de batalla de Law, el esclavo que se rebeló contra su nación, piensa cambiar el mundo a puñetazos",
+                        songCover: "img/LawCover.png",
+                        audio: "audio/Broken Chains.mp3",
+                        tags: ["Epic", "Battle"],
+                        lore: "La fuerza que un día fue usada en servidumbre en manos del mal, hoy en día lucha por liberar al mundo de la devastación"
+                    }
+                ]
+            },
+            {
+                character: "Wiš'adel Kal'zen",
+                characterFace: "img/W.png",
+                lore: "Un experimento fallido por hacer a la soldado perfecta, su cuerpo soportó el tratamiento, su mente explotó en mil pedazos",
+                tracks: [
+                    {
+                        songTitle: "Maniacal Explosion Drive",
+                        songDescription: "La canción de una psicópata con la mente fracturada que solo piensa en el placer de ver el mundo arder",
+                        songCover: "img/WCover.png",
+                        audio: "audio/Maniacal Explosion Drive.mp3",
+                        tags: ["Boss Battle", "Chaotic"],
+                        lore: "La Piromanía es un trastorno donde una persona provoca incendios por impulso, sintiendo tensión antes y alivio o placer después."
+                    }
+                ]
+            },
+            {
+                character: "Velvet Crowe",
+                characterFace: "img/Velvet.jpg",
+                lore: "Una chica normal que, tras la trágica muerte de su hermano menor, fue encerrada a su suerte. Posteriormente fue maldecida con una garra que le da un gran poder, pero si no se alimenta de seres vivos, le consumirá.",
+                tracks: [
+                    {
+                        songTitle: "Shout Your Soul",
+                        songDescription: "El tema de batalla de Velvet, quien a pesar de todo, sigue tratando luchar con honor y si dejarse llevar por sus instintos salvajes",
+                        songCover: "img/VelvelCover.jpg",
+                        audio: "audio/Shout your soul.mp3",
+                        tags: ["Battle", "Epic"],
+                        lore: "El valor nunca se puede poner en entredicho, menos a una guerrera que disputa sus peores batallas en su propia piel"
+                    }
+                ]
+            },
+            {
+                character: "Aqua Flower",
+                characterFace: "img/Aqua.jpg",
+                lore: "Aqua es una chica infantil, impulsiva y muy juguetona. Le encantan los cuchillos y pelear por diversión, aunque no es malvada.",
+                tracks: [
+                    {
+                        songTitle: "Playplayplayplayplay!",
+                        songDescription: "De verdad nadie va a jugar con la pequeña Aqua? Mira con que carita de lo pide...!",
+                        songCover: "img/AquaCover.png",
+                        audio: "audio/Playplayplayplayplay!.mp3",
+                        tags: ["Playful", "calm", "Japanese"],
+                        lore: "Cuando la juguetona Aqua hace de las suyas, es un caos, un caos muy adorable, pero un caos"
+                    },
+                    {
+                        songTitle: "Petal Dance",
+                        songDescription: "No! Aqua mala! No se juega con cuchillos! Ni mucho menos se baila y corretea con ellos en las manos!",
+                        songCover: "img/AquaCover2.png",
+                        audio: "audio/Petal Dance.mp3",
+                        tags: ["Playful", "Battle", "Japanese"],
+                        lore: "Aqua no es capaz de diferenciar entre un juego y una pelea, lo cual la hace extremadamente peligrosa si no se sabe controlar."
+                    }
+                ]            
+            },
+            {
+                character: "Pink Flower",
+                characterFace: "img/Pink.jpg",
+                lore: "¡Una chica que canta y baila al ritmo de las bombas! Aunque con un carácter un tanto bipolar.",
+                tracks: [
+                    {
+                        songTitle: "Pink",
+                        songDescription: "¡Mira mamá! ¡Es Pink! ¡Es la cantante Pink!",
+                        songCover: "img/Pink2Cover.png",
+                        audio: "audio/Pink.mp3",
+                        tags: ["calm", "moment"],
+                        lore: "¿Qué es esa melodía tan agradable que suena al hablar con Pink?"
+                    },
+                    {
+                        songTitle: "Cutie Mew Mew Magic",
+                        songDescription: "¡Bailad todos al ritmo de la canción! ¡La talentosa chica adorable mew mew os va a dar un show que será la bomba!",
+                        songCover: "img/PinkCover.png",
+                        audio: "audio/Cutie Mew Mew Magic.mp3",
+                        tags: ["Battle", "Epic", "Dance"],
+                        lore: "Es la canción más famosa de la exitosa cantante Pink. No te confíes mucho que las bombas explotan cerca."
+                    }
+                ]
+            },
+        ];
+
+        const soundtracks = characters.flatMap((char, characterIndex) =>
+            char.tracks.map((track, trackIndex) => ({
+                ...track,
+                character: char.character,
+                characterFace: char.characterFace,
+                characterLore: char.lore,
+                characterIndex,
+                trackIndex
+            }))
+        );
+
+        let currentIndex = Number(localStorage.getItem('track')) || 0;
+        if (!soundtracks[currentIndex]) currentIndex = 0;
+        let isPlaying = false;
+        let shuffle = JSON.parse(localStorage.getItem('shuffle') || 'false');
+        let repeat = JSON.parse(localStorage.getItem('repeat') || 'false');
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let battleMode = false;
+        let battlePair = [0, 1];
+        let intensity = localStorage.getItem('intensity') || 'normal';
+        let activeScene = localStorage.getItem('activeScene') || 'all';
+        let lastFocusedElement = null;
+        let audioContext, analyser, source, dataArray, animationId;
+
+        const scenes = [
+            { id:'calm', icon:'☾', name:'Calma', description:'Conversaciones, descansos y momentos de intimidad.', tags:['calm','emotional'] },
+            { id:'mystery', icon:'⌕', name:'Investigación', description:'Pistas, secretos y tensión contenida.', tags:['darkvictorian','emotional'] },
+            { id:'battle', icon:'⚔', name:'Combate', description:'Ritmo para encuentros y enfrentamientos directos.', tags:['normalbattle','seriousbattle','rage'] },
+            { id:'finale', icon:'✹', name:'Jefe final', description:'Los temas más intensos para el punto de no retorno.', tags:['finalboss','rage'] },
+            { id:'epilogue', icon:'◇', name:'Epílogo', description:'Victoria, pérdida y cierre de una historia.', tags:['emotional','calm'] }
+        ];
+
+        const audioPlayer = document.createElement('audio');
+        audioPlayer.crossOrigin = "anonymous";
+        audioPlayer.preload = "metadata";
+        document.body.appendChild(audioPlayer);
+
+        const globalPlayer = document.getElementById('globalPlayer');
+        const playerCover = document.getElementById('playerCover');
+        const playerTitle = document.getElementById('playerTitle');
+        const playerCharacter = document.getElementById('playerCharacter');
+        const playerMode = document.getElementById('playerMode');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const canvasEl = document.getElementById('visualizer');
+        const expandCoverBtn = document.getElementById('expandCoverBtn');
+        const coverModal = document.getElementById('coverModal');
+        const expandedCover = document.getElementById('expandedCover');
+        const expandedCoverTitle = document.getElementById('expandedCoverTitle');
+        const expandedCoverCharacter = document.getElementById('expandedCoverCharacter');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const sidebar = document.getElementById('sidebarChars');
+        const list = document.getElementById('soundtrackList');
+        const featured = document.getElementById('featured');
+        const searchInput = document.getElementById('searchInput');
+        const filterSelect = document.getElementById('filterSelect');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const repeatBtn = document.getElementById('repeatBtn');
+        const shuffleTopBtn = document.getElementById('shuffleTopBtn');
+        const battleTopBtn = document.getElementById('battleTopBtn');
+        const toggleMiniBtn = document.getElementById('toggleMiniBtn');
+        const toggleAudioOnlyBtn = document.getElementById('toggleAudioOnlyBtn');
+        const toggleQueueBtn = document.getElementById('toggleQueueBtn');
+        const characterSelect = document.getElementById('characterSelect');
+        const battleZone = document.getElementById('battleZone');
+        const queuePanel = document.getElementById('queuePanel');
+        const intensitySelect = document.getElementById('intensitySelect');
+        const sceneDeck = document.getElementById('sceneDeck');
+        const sceneStage = document.getElementById('sceneStage');
+        const characterModal = document.getElementById('characterModal');
+        const characterDossier = document.getElementById('characterDossier');
+        let miniPlayer = JSON.parse(localStorage.getItem('miniPlayer') || 'false');
+        let audioOnly = JSON.parse(localStorage.getItem('audioOnly') || 'false');
+        let queueOpen = JSON.parse(localStorage.getItem('queueOpen') || 'false');
+
+        function initVisualizer() {
+            const rect = canvasEl.getBoundingClientRect();
+            canvasEl.width = Math.max(800, Math.floor(rect.width || 800));
+            canvasEl.height = 76;
+        }
+
+        function drawVisualizer() {
+            if (!analyser) return;
+            animationId = requestAnimationFrame(drawVisualizer);
+            analyser.getByteFrequencyData(dataArray);
+            const ctx = canvasEl.getContext('2d');
+            ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+
+            const multiplier = intensity === 'finalboss' ? 1.25 : intensity === 'rage' ? 1.05 : 0.85;
+            const barWidth = (canvasEl.width / dataArray.length) * (intensity === 'finalboss' ? 2.2 : 1.8);
+
+            for (let i = 0; i < dataArray.length; i++) {
+                const value = dataArray[i] * multiplier;
+                const barHeight = Math.min((value / 255) * canvasEl.height * 0.9, canvasEl.height);
+                const hueBase = intensity === 'finalboss' ? 315 : intensity === 'rage' ? 350 : 180;
+                const hue = hueBase + (i / dataArray.length) * 85;
+                ctx.fillStyle = `hsla(${hue}, 100%, 65%, .86)`;
+                ctx.fillRect(i * barWidth, canvasEl.height - barHeight, barWidth - 3, barHeight);
+            }
+        }
+
+        function setupAudioContext() {
+            if (audioContext) {
+                if (audioContext.state === 'suspended') audioContext.resume();
+                return;
+            }
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 128;
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+            source = audioContext.createMediaElementSource(audioPlayer);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            drawVisualizer();
+        }
+
+        function formatTime(seconds) {
+            if (!Number.isFinite(seconds)) return '0:00';
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        function updateProgress() {
+            if (!audioPlayer.duration) return;
+            const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progress.style.width = percent + '%';
+            progressBar.setAttribute('aria-valuenow', String(Math.round(percent)));
+            currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+            localStorage.setItem('time', audioPlayer.currentTime);
+            localStorage.setItem('track', currentIndex);
+        }
+
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            if (audioPlayer.duration) audioPlayer.currentTime = pos * audioPlayer.duration;
+        });
+        progressBar.addEventListener('keydown', event => {
+            if (!audioPlayer.duration || !['ArrowLeft','ArrowRight'].includes(event.key)) return;
+            event.preventDefault();
+            audioPlayer.currentTime = Math.max(0, Math.min(audioPlayer.duration, audioPlayer.currentTime + (event.key === 'ArrowRight' ? 5 : -5)));
+        });
+
+        function dynamicBackground(track) {
+            document.body.style.background = '#000';
+            const main = document.querySelector('.main-content');
+            if (main) {
+                main.style.background = `
+                    linear-gradient(180deg, rgba(30,215,96,.22) 0%, rgba(18,18,18,.98) 265px),
+                    linear-gradient(rgba(18,18,18,.70), rgba(18,18,18,.96)),
+                    url('${track.songCover}') top center / cover fixed,
+                    #121212`;
+            }
+        }
+
+        function loadTrack(index, keepTime = false) {
+            const track = soundtracks[index];
+            currentIndex = index;
+            playerCover.src = track.songCover;
+            expandedCover.src = track.songCover;
+            expandedCoverTitle.textContent = track.songTitle;
+            expandedCoverCharacter.textContent = track.character;
+            playerTitle.textContent = track.songTitle;
+            playerCharacter.textContent = track.character;
+            playerMode.textContent = battleMode ? 'BATTLE MODE ACTIVO' : `INTENSIDAD: ${intensity.toUpperCase()}`;
+            audioPlayer.src = track.audio;
+            audioPlayer.volume = Number(volumeSlider.value);
+            globalPlayer.classList.add('show');
+            document.body.classList.add('player-visible');
+            dynamicBackground(track);
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: track.songTitle,
+                    artist: track.character,
+                    album: 'Resonance Archive',
+                    artwork: [{ src: track.songCover, sizes: '512x512' }]
+                });
+            }
+            renderAll();
+            localStorage.setItem('track', currentIndex);
+
+            if (keepTime) {
+                audioPlayer.addEventListener('loadedmetadata', function restore() {
+                    audioPlayer.currentTime = Number(localStorage.getItem('time')) || 0;
+                    audioPlayer.removeEventListener('loadedmetadata', restore);
+                });
+            }
+        }
+
+        async function togglePlay() {
+            if (!audioPlayer.src) loadTrack(currentIndex);
+
+            if (isPlaying) {
+                audioPlayer.pause();
+                playPauseBtn.textContent = '▶';
+                playerCover.classList.remove('playing');
+                isPlaying = false;
+            } else {
+                setupAudioContext();
+                try {
+                    await audioPlayer.play();
+                    playPauseBtn.textContent = '❚❚';
+                    playerCover.classList.add('playing');
+                    isPlaying = true;
+                } catch (err) {
+                    alert('No se pudo reproducir el audio. Revisa que el archivo exista en la ruta indicada.');
+                }
+            }
+            renderAll();
+        }
+
+        function getNextIndex() {
+            if (battleMode) return currentIndex === battlePair[0] ? battlePair[1] : battlePair[0];
+            if (activeScene !== 'all') {
+                const sceneTracks = soundtracks.map((track,index)=>({track,index})).filter(item=>matchesFilters(item.track,item.index)).map(item=>item.index);
+                if (sceneTracks.length) {
+                    if (shuffle) return sceneTracks[Math.floor(Math.random()*sceneTracks.length)];
+                    const position = sceneTracks.indexOf(currentIndex);
+                    return sceneTracks[(position + 1 + sceneTracks.length) % sceneTracks.length];
+                }
+            }
+            if (shuffle) {
+                let next;
+                do { next = Math.floor(Math.random() * soundtracks.length); } while (next === currentIndex && soundtracks.length > 1);
+                return next;
+            }
+            return (currentIndex + 1) % soundtracks.length;
+        }
+
+        function nextTrack() {
+            if (repeat && !battleMode) {
+                audioPlayer.currentTime = 0;
+                if (isPlaying) audioPlayer.play();
+                return;
+            }
+            currentIndex = getNextIndex();
+            loadTrack(currentIndex);
+            if (isPlaying) audioPlayer.play();
+        }
+
+        function prevTrack() {
+            currentIndex = battleMode
+                ? (currentIndex === battlePair[0] ? battlePair[1] : battlePair[0])
+                : (currentIndex - 1 + soundtracks.length) % soundtracks.length;
+            loadTrack(currentIndex);
+            if (isPlaying) audioPlayer.play();
+        }
+
+        function fadeOutAndNext() {
+            const originalVolume = Number(volumeSlider.value);
+            const step = Math.max(originalVolume / 20, 0.02);
+            const fade = setInterval(() => {
+                if (audioPlayer.volume > step) audioPlayer.volume = Math.max(0, audioPlayer.volume - step);
+                else {
+                    clearInterval(fade);
+                    nextTrack();
+                    audioPlayer.volume = originalVolume;
+                }
+            }, 70);
+        }
+
+        window.playSpecific = async function(index) {
+            const playableIndex = getPlayableIndex(index);
+            loadTrack(playableIndex);
+            setupAudioContext();
+            try {
+                await audioPlayer.play();
+                isPlaying = true;
+                playPauseBtn.textContent = '❚❚';
+                playerCover.classList.add('playing');
+                renderAll();
+            } catch (err) {
+                alert('No se pudo reproducir el audio. Revisa que el archivo exista en la ruta indicada.');
+            }
+        };
+
+        function toggleFavorite(index) {
+            if (favorites.includes(index)) favorites = favorites.filter(i => i !== index);
+            else favorites.push(index);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            renderAll();
+        }
+
+        function showLore(index) {
+            document.getElementById('loreTitle').textContent = soundtracks[index].songTitle;
+            document.getElementById('loreText').textContent = soundtracks[index].lore || soundtracks[index].characterLore;
+            document.getElementById('loreModal').classList.add('show');
+        }
+
+        function closeLore() { document.getElementById('loreModal').classList.remove('show'); }
+        window.closeLore = closeLore;
+
+        function openCoverModal() {
+            const track = soundtracks[currentIndex] || soundtracks[0];
+            expandedCover.src = track.songCover;
+            expandedCoverTitle.textContent = track.songTitle;
+            expandedCoverCharacter.textContent = track.character;
+            coverModal.classList.add('show');
+        }
+
+        function closeCoverModal(event) {
+            if (event && !event.target.classList.contains('cover-modal')) return;
+            coverModal.classList.remove('show');
+        }
+
+        window.closeCoverModal = closeCoverModal;
+
+        function matchesFilters(track, index) {
+            const q = searchInput.value.trim().toLowerCase();
+            const filter = filterSelect.value;
+            const selectedCharacter = characterSelect?.value || 'all';
+            const normalizedTags = (track.tags || []).map(tag => String(tag).toLowerCase().replace(/\s+/g, ''));
+            const normalizedFilter = String(filter).toLowerCase().replace(/\s+/g, '');
+            const text = `${track.character} ${track.songTitle} ${track.songDescription} ${(track.tags || []).join(' ')}`.toLowerCase();
+            const qOk = !q || text.includes(q);
+            const characterOk = selectedCharacter === 'all' || track.character === selectedCharacter;
+            const scene = scenes.find(item => item.id === activeScene);
+            const sceneOk = !scene || normalizedTags.some(tag => scene.tags.includes(tag));
+            const filterOk = filter === 'all'
+                || (filter === 'favorites' && favorites.includes(index))
+                || normalizedTags.includes(normalizedFilter);
+            return qOk && filterOk && characterOk && sceneOk;
+        }
+
+        function characterHasVisibleTrack(characterIndex) {
+            return soundtracks.some((track, index) => track.characterIndex === characterIndex && matchesFilters(track, index));
+        }
+
+        function renderSidebar() {
+            sidebar.innerHTML = '';
+            characters.forEach((char, charIndex) => {
+                if (!characterHasVisibleTrack(charIndex)) return;
+                const firstVisibleTrackIndex = soundtracks.findIndex((track, index) =>
+                    track.characterIndex === charIndex && matchesFilters(track, index)
+                );
+                const totalTracks = char.tracks.length;
+                const div = document.createElement('div');
+                div.className = `char-item ${soundtracks[currentIndex]?.characterIndex === charIndex ? 'active' : ''}`;
+                div.tabIndex = 0;
+                div.setAttribute('role', 'button');
+                div.setAttribute('aria-label', `Abrir ficha de ${char.character}`);
+                div.innerHTML = `<img src="${char.characterFace}" alt="Retrato de ${char.character}" loading="lazy"> <div><span>${char.character}</span><small>${totalTracks} canción${totalTracks !== 1 ? 'es' : ''}</small></div>`;
+                div.onclick = () => openCharacterDossier(charIndex);
+                div.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openCharacterDossier(charIndex); } };
+                sidebar.appendChild(div);
+            });
+        }
+
+        function renderScenes() {
+            sceneDeck.querySelectorAll('.scene-chip').forEach(item => item.remove());
+            scenes.forEach(scene => {
+                const button = document.createElement('button');
+                button.className = `scene-chip ${activeScene === scene.id ? 'active' : ''}`;
+                button.setAttribute('aria-pressed', String(activeScene === scene.id));
+                button.innerHTML = `<span>${scene.icon}</span>${scene.name}`;
+                button.onclick = () => selectScene(activeScene === scene.id ? 'all' : scene.id);
+                sceneDeck.appendChild(button);
+            });
+            const scene = scenes.find(item => item.id === activeScene);
+            sceneStage.hidden = !scene;
+            if (!scene) { sceneStage.innerHTML = ''; return; }
+            const count = soundtracks.filter((track,index) => matchesFilters(track,index)).length;
+            sceneStage.innerHTML = `<div class="scene-stage-card"><div><small>Escena activa · ${count} pistas</small><h2>${scene.icon} ${scene.name}</h2><p>${scene.description}</p></div><div class="scene-stage-actions"><button class="pill-btn" onclick="playScene()">▶ Reproducir escena</button><button class="pill-btn" onclick="selectScene('all')">Cerrar</button></div></div>`;
+        }
+
+        function selectScene(id) {
+            activeScene = id;
+            localStorage.setItem('activeScene', id);
+            searchInput.value = '';
+            filterSelect.value = 'all';
+            renderAll();
+            if (id !== 'all') sceneStage.scrollIntoView({behavior:'smooth',block:'center'});
+        }
+        window.selectScene = selectScene;
+
+        function playScene() {
+            const matches = soundtracks.map((track,index)=>({track,index})).filter(item=>matchesFilters(item.track,item.index));
+            if (!matches.length) return;
+            shuffle = true;
+            playSpecific(matches[Math.floor(Math.random()*matches.length)].index);
+        }
+        window.playScene = playScene;
+
+        function openCharacterDossier(characterIndex) {
+            const char = characters[characterIndex];
+            if (!char) return;
+            lastFocusedElement = document.activeElement;
+            const tracks = soundtracks.map((track,index)=>({track,index})).filter(item=>item.track.characterIndex===characterIndex);
+            characterDossier.innerHTML = `<div class="dossier-head"><img src="${char.characterFace}" alt="Retrato de ${char.character}"><div><small>EXPEDIENTE DE RESONANCIA</small><h2 id="dossierTitle">${char.character}</h2><p>${tracks.length} ${tracks.length===1?'tema registrado':'temas registrados'}</p></div><button class="icon-btn" onclick="closeCharacterDossier()" aria-label="Cerrar ficha">✕</button></div><p class="dossier-lore">${char.lore || 'No hay información registrada todavía.'}</p><div class="dossier-tracks">${tracks.map(({track,index})=>`<div class="dossier-track"><img src="${track.songCover}" alt="" loading="lazy"><div><strong>${track.songTitle}</strong><p class="track-card-character">${(track.tags||[]).join(' · ')}</p></div><button class="play-btn" onclick="playSpecific(${index})" aria-label="Reproducir ${track.songTitle}">▶</button></div>`).join('')}</div>`;
+            characterModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            characterDossier.querySelector('button').focus();
+        }
+
+        function closeCharacterDossier() {
+            characterModal.classList.remove('show');
+            document.body.style.overflow = '';
+            lastFocusedElement?.focus();
+        }
+        window.closeCharacterDossier = closeCharacterDossier;
+
+        function renderFeatured() {
+            const track = soundtracks[currentIndex] || soundtracks[0];
+            const archiveNumber = String(currentIndex + 1).padStart(3, '0');
+            const tags = (track.tags || []).slice(0, 3).join(' · ') || 'Sin clasificación';
+            featured.innerHTML = `
+                <div class="soundtrack-card featured-card ${isPlaying ? 'playing' : ''}">
+                    ${isPlaying ? `<div class="now-playing-badge">SONANDO</div>` : ''}
+                    <div class="featured-layout resonance-layout">
+                        <div class="featured-cover-wrap resonance-cover">
+                            <img class="featured-cover" src="${track.songCover}" alt="${track.songTitle}">
+                            <img class="featured-avatar" src="${track.characterFace}" alt="${track.character}">
+                        </div>
+                        <div class="resonance-main-info">
+                            <div class="resonance-kicker">Archive #${archiveNumber} · Now Playing</div>
+                            <h2 class="resonance-title">${track.songTitle}</h2>
+                            <div class="resonance-character">${track.character}</div>
+                            <p class="resonance-desc">${track.songDescription}</p>
+                            <div class="actions-row">
+                                <button class="play-btn" onclick="playSpecific(${currentIndex})" title="Reproducir">${isPlaying ? '❚❚' : '▶'}</button>
+                                <button class="icon-btn fav ${favorites.includes(currentIndex) ? 'active' : ''}" onclick="toggleFavorite(${currentIndex})" title="Favorito">⭐</button>
+                                <button class="icon-btn" onclick="showLore(${currentIndex})" title="Ver lore">📖</button>
+                                <button class="icon-btn" onclick="setBattleFighter(${currentIndex})" title="Battle mode">⚔️</button>
+                            </div>
+                            <div class="resonance-data">
+                                <div class="data-pill"><small>Subject</small><strong>${track.character}</strong></div>
+                                <div class="data-pill"><small>Class</small><strong>${tags}</strong></div>
+                                <div class="data-pill"><small>Status</small><strong>${isPlaying ? 'Active' : 'Ready'}</strong></div>
+                            </div>
+                        </div>
+                        <aside class="resonance-side-info">
+                            <div>
+                                <div class="track-meta">LORE SIGNAL</div>
+                                <p class="resonance-lore-preview">${track.lore || track.characterLore || 'Sin lore registrado todavía.'}</p>
+                            </div>
+                            <button class="pill-btn" onclick="showLore(${currentIndex})">Abrir archivo completo</button>
+                        </aside>
+                    </div>
+                </div>
+            `;
+        }
+
+        function tagHTML(tags) {
+            return (tags || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+        }
+
+        function populateCharacterSelect() {
+            const uniqueCharacters = [...new Set(soundtracks.map(track => track.character))];
+            characterSelect.innerHTML = '<option value="all">Todos los personajes</option>' +
+                uniqueCharacters.map(name => `<option value="${name}">${name}</option>`).join('');
+        }
+
+        function getQueueTracks() {
+            return soundtracks.slice(currentIndex + 1).concat(soundtracks.slice(0, currentIndex + 1));
+        }
+
+        function renderQueue() {
+            const queueTracks = getQueueTracks();
+            const currentTrack = soundtracks[currentIndex];
+            const itemsHTML = queueTracks.map((track) => {
+                const realIndex = soundtracks.findIndex(item =>
+                    item.characterIndex === track.characterIndex && item.trackIndex === track.trackIndex
+                );
+                const isCurrent = currentTrack && realIndex === currentIndex;
+                return `
+                    <div class="queue-item ${isCurrent ? 'playing-row' : ''}">
+                        <div>
+                            <strong>${isCurrent ? '▶ ' : ''}${track.songTitle}</strong>
+                            <p>${track.character}</p>
+                        </div>
+                        <button class="icon-btn" onclick="playSpecific(${realIndex})">▶</button>
+                    </div>
+                `;
+            }).join('');
+
+            queuePanel.innerHTML = `
+                <div class="queue-header">
+                    <span>Cola de reproducción · ${queueTracks.length} pista${queueTracks.length !== 1 ? 's' : ''}</span>
+                    <button class="icon-btn queue-close-btn" onclick="closeQueuePanel()" title="Cerrar cola">✕</button>
+                </div>
+                ${itemsHTML || '<div class="queue-item">No hay pistas en la cola</div>'}
+            `;
+
+            queuePanel.classList.toggle('open', queueOpen);
+        }
+
+        function closeQueuePanel() {
+            queueOpen = false;
+            localStorage.setItem('queueOpen', JSON.stringify(queueOpen));
+            renderAll();
+        }
+        window.closeQueuePanel = closeQueuePanel;
+
+        function toggleAudioOnly() {
+            audioOnly = !audioOnly;
+            localStorage.setItem('audioOnly', JSON.stringify(audioOnly));
+            if (audioOnly) {
+                globalPlayer.classList.add('audio-only');
+                toggleAudioOnlyBtn.textContent = '🎧 Visualizador off';
+            } else {
+                globalPlayer.classList.remove('audio-only');
+                toggleAudioOnlyBtn.textContent = '🎧 Solo audio';
+            }
+        }
+
+        function toggleQueuePanel() {
+            queueOpen = !queueOpen;
+            localStorage.setItem('queueOpen', JSON.stringify(queueOpen));
+            queuePanel.classList.toggle('open', queueOpen);
+            toggleQueueBtn.textContent = queueOpen ? '📜 Ocultar cola' : '📜 Cola';
+        }
+
+        function normalizeQueueIndex(value) {
+            const characterIndex = Math.floor(value / 1000);
+            const trackIndex = value % 1000;
+            return soundtracks.findIndex(track => track.characterIndex === characterIndex && track.trackIndex === trackIndex);
+        }
+
+        function resolveQueuePlay(value) {
+            const index = Number(value);
+            if (index >= 1000) return normalizeQueueIndex(index);
+            return index;
+        }
+
+        function getPlayableIndex(value) {
+            return resolveQueuePlay(value);
+        }
+
+        function renderList() {
+            list.innerHTML = '';
+            list.classList.add('library-shell');
+
+            const visible = soundtracks
+                .map((track, index) => ({ track, index }))
+                .filter(item => matchesFilters(item.track, item.index));
+
+            const subtitle = filterSelect.value === 'favorites'
+                ? 'Tus temas marcados como favoritos'
+                : filterSelect.value === 'calm'
+                    ? 'Canciones para conversaciones, descansos y momentos tranquilos'
+                    : 'Canciones agrupadas por personaje para que cada una tenga identidad propia';
+
+            const header = document.createElement('div');
+            header.className = 'library-header';
+            header.innerHTML = `
+                <div>
+                    <h2>Biblioteca Resonance</h2>
+                    <p>${subtitle}</p>
+                </div>
+                <p>${visible.length} archivo${visible.length !== 1 ? 's' : ''}</p>
+            `;
+            list.appendChild(header);
+
+            if (!visible.length) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-library';
+                empty.textContent = 'No hay canciones que coincidan con esos filtros.';
+                list.appendChild(empty);
+                return;
+            }
+
+            characters.forEach((char, charIndex) => {
+                const tracksForCharacter = visible.filter(item => item.track.characterIndex === charIndex);
+                if (!tracksForCharacter.length) return;
+
+                const section = document.createElement('section');
+                section.className = 'character-section';
+                section.innerHTML = `
+                    <div class="character-section-title">
+                        <img src="${char.characterFace}" alt="${char.character}">
+                        <div>
+                            <h3>${char.character}</h3>
+                            <small>${tracksForCharacter.length} archivo${tracksForCharacter.length !== 1 ? 's' : ''} de resonancia</small>
+                        </div>
+                    </div>
+                `;
+
+                tracksForCharacter.forEach(({ track, index }) => {
+                    const row = document.createElement('article');
+                    row.className = `resonance-track-row ${index === currentIndex ? 'playing-row' : ''}`;
+                    row.innerHTML = `
+                        <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
+                        <img class="track-mini-cover" src="${track.songCover}" alt="${track.songTitle}">
+                        <div class="track-main-title">
+                            <h3>${index === currentIndex && isPlaying ? '▶ ' : ''}${track.songTitle}</h3>
+                            <p>${track.songDescription}</p>
+                        </div>
+                        <div class="track-tag-cell"><div class="track-tags">${tagHTML(track.tags)}</div></div>
+                        <div class="row-actions">
+                            <button class="icon-btn" onclick="playSpecific(${index})" title="Reproducir">▶</button>
+                            <button class="icon-btn fav ${favorites.includes(index) ? 'active' : ''}" onclick="toggleFavorite(${index})" title="Favorito">⭐</button>
+                            <button class="icon-btn" onclick="showLore(${index})" title="Lore">📖</button>
+                            <button class="icon-btn" onclick="setBattleFighter(${index})" title="Battle">⚔️</button>
+                        </div>
+                    `;
+                    row.addEventListener('dblclick', () => playSpecific(index));
+                    section.appendChild(row);
+                });
+
+                list.appendChild(section);
+            });
+        }
+
+        function renderBattleZone() {
+            if (!battleMode) {
+                battleZone.classList.remove('show');
+                return;
+            }
+            const a = soundtracks[battlePair[0]];
+            const b = soundtracks[battlePair[1]];
+            battleZone.classList.add('show');
+            battleZone.innerHTML = `
+                <div class="battle-card">
+                    <div class="battle-grid">
+                        <div class="battle-fighter">
+                            <img src="${a.characterFace}">
+                            <div><div class="track-meta">${a.character}</div><h2>${a.songTitle}</h2></div>
+                        </div>
+                        <div class="vs">VS</div>
+                        <div class="battle-fighter">
+                            <img src="${b.characterFace}">
+                            <div><div class="track-meta">${b.character}</div><h2>${b.songTitle}</h2></div>
+                        </div>
+                    </div>
+                    <div class="top-actions" style="padding:18px 0 0;">
+                        <button class="pill-btn" onclick="playSpecific(${battlePair[0]})">Reproducir A</button>
+                        <button class="pill-btn" onclick="playSpecific(${battlePair[1]})">Reproducir B</button>
+                        <button class="pill-btn" onclick="randomBattlePair()">Cambiar combate</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderButtons() {
+            shuffleBtn.classList.toggle('active', shuffle);
+            shuffleBtn.setAttribute('aria-pressed', String(shuffle));
+            repeatBtn.classList.toggle('active', repeat);
+            repeatBtn.setAttribute('aria-pressed', String(repeat));
+            shuffleTopBtn.classList.toggle('active', shuffle);
+            battleTopBtn.classList.toggle('active', battleMode);
+            document.getElementById('toggleBattleBtn').classList.toggle('active', battleMode);
+            document.getElementById('showAllBtn').classList.toggle('active', filterSelect.value === 'all');
+            document.getElementById('showCalmBtn').classList.toggle('active', filterSelect.value === 'calm');
+            document.getElementById('showFavBtn').classList.toggle('active', filterSelect.value === 'favorites');
+            document.body.classList.toggle('battle-mode-active', battleMode);
+            document.body.classList.toggle('intensity-rage', intensity === 'rage');
+            document.body.classList.toggle('intensity-finalboss', intensity === 'finalboss');
+            intensitySelect.value = intensity;
+            toggleMiniBtn.classList.toggle('active', miniPlayer);
+            toggleMiniBtn.textContent = miniPlayer ? '⬆️ Expandir' : '📉 Compacto';
+            toggleAudioOnlyBtn.classList.toggle('active', audioOnly);
+            toggleAudioOnlyBtn.textContent = audioOnly ? '🎧 Visualizador off' : '🎧 Solo audio';
+            toggleQueueBtn.classList.toggle('active', queueOpen);
+            toggleQueueBtn.textContent = queueOpen ? '📜 Ocultar cola' : '📜 Cola';
+            globalPlayer.classList.toggle('minimized', miniPlayer);
+            globalPlayer.classList.toggle('audio-only', audioOnly);
+            queuePanel.classList.toggle('open', queueOpen);
+            const mobileLibrary = document.getElementById('mobileLibrary');
+            const mobileScenes = document.getElementById('mobileScenes');
+            const mobileFavorites = document.getElementById('mobileFavorites');
+            mobileLibrary.classList.toggle('active', activeScene === 'all' && filterSelect.value !== 'favorites');
+            mobileScenes.classList.toggle('active', activeScene !== 'all');
+            mobileFavorites.classList.toggle('active', filterSelect.value === 'favorites');
+            localStorage.setItem('shuffle', JSON.stringify(shuffle));
+            localStorage.setItem('repeat', JSON.stringify(repeat));
+            localStorage.setItem('intensity', intensity);
+            localStorage.setItem('miniPlayer', JSON.stringify(miniPlayer));
+            localStorage.setItem('audioOnly', JSON.stringify(audioOnly));
+            localStorage.setItem('queueOpen', JSON.stringify(queueOpen));
+        }
+
+        function renderAll() {
+            renderButtons();
+            renderScenes();
+            renderSidebar();
+            renderFeatured();
+            renderList();
+            renderQueue();
+            renderBattleZone();
+        }
+
+        window.toggleFavorite = toggleFavorite;
+        window.showLore = showLore;
+
+        function setBattleFighter(index) {
+            battlePair = [currentIndex, index === currentIndex ? (index + 1) % soundtracks.length : index];
+            battleMode = true;
+            renderAll();
+            battleZone.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        window.setBattleFighter = setBattleFighter;
+
+        function randomBattlePair() {
+            const a = Math.floor(Math.random() * soundtracks.length);
+            let b;
+            do { b = Math.floor(Math.random() * soundtracks.length); } while (b === a);
+            battlePair = [a, b];
+            renderAll();
+        }
+        window.randomBattlePair = randomBattlePair;
+
+        shuffleBtn.onclick = shuffleTopBtn.onclick = () => { shuffle = !shuffle; renderAll(); };
+        repeatBtn.onclick = () => { repeat = !repeat; renderAll(); };
+        battleTopBtn.onclick = document.getElementById('toggleBattleBtn').onclick = () => {
+            battleMode = !battleMode;
+            if (battleMode) {
+                battlePair = [currentIndex, (currentIndex + 1) % soundtracks.length];
+                battleZone.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            renderAll();
+        };
+
+        document.getElementById('showFavBtn').onclick = () => { filterSelect.value = 'favorites'; renderAll(); };
+        document.getElementById('showCalmBtn').onclick = () => { selectScene('calm'); };
+        document.getElementById('showAllBtn').onclick = () => { activeScene = 'all'; filterSelect.value = 'all'; searchInput.value = ''; renderAll(); };
+        toggleMiniBtn.onclick = () => { miniPlayer = !miniPlayer; renderAll(); };
+        toggleAudioOnlyBtn.onclick = () => { toggleAudioOnly(); renderAll(); };
+        toggleQueueBtn.onclick = () => { toggleQueuePanel(); renderAll(); };
+        expandCoverBtn.onclick = openCoverModal;
+        playerCover.onclick = openCoverModal;
+        playerCover.style.cursor = 'zoom-in';
+        characterSelect.addEventListener('change', renderAll);
+
+        searchInput.addEventListener('input', renderAll);
+        filterSelect.addEventListener('change', renderAll);
+        characterModal.addEventListener('click', event => { if (event.target === characterModal) closeCharacterDossier(); });
+
+        document.getElementById('mobileLibrary').onclick = () => { selectScene('all'); document.querySelector('.soundtrack-list').scrollIntoView({behavior:'smooth'}); };
+        document.getElementById('mobileScenes').onclick = () => { selectScene(activeScene === 'all' ? 'calm' : activeScene); sceneStage.scrollIntoView({behavior:'smooth'}); };
+        document.getElementById('mobileCharacters').onclick = () => { document.querySelector('.sidebar').scrollIntoView({behavior:'smooth'}); characterSelect.focus({preventScroll:true}); };
+        document.getElementById('mobileFavorites').onclick = () => { activeScene='all'; filterSelect.value='favorites'; renderAll(); document.querySelector('.soundtrack-list').scrollIntoView({behavior:'smooth'}); };
+
+        intensitySelect.addEventListener('change', () => {
+            intensity = intensitySelect.value;
+            playerMode.textContent = `INTENSIDAD: ${intensity.toUpperCase()}`;
+            renderButtons();
+        });
+
+        audioPlayer.addEventListener('timeupdate', updateProgress);
+        audioPlayer.addEventListener('loadedmetadata', () => { durationEl.textContent = formatTime(audioPlayer.duration); });
+        audioPlayer.addEventListener('ended', nextTrack);
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('play', togglePlay);
+            navigator.mediaSession.setActionHandler('pause', togglePlay);
+            navigator.mediaSession.setActionHandler('previoustrack', prevTrack);
+            navigator.mediaSession.setActionHandler('nexttrack', nextTrack);
+        }
+
+        volumeSlider.addEventListener('input', () => {
+            audioPlayer.volume = Number(volumeSlider.value);
+            const icon = document.querySelector('.volume-icon');
+            if (volumeSlider.value == 0) icon.textContent = '🔇';
+            else if (volumeSlider.value < 0.4) icon.textContent = '🔈';
+            else if (volumeSlider.value < 0.7) icon.textContent = '🔉';
+            else icon.textContent = '🔊';
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+            if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+            if (e.code === 'ArrowRight') nextTrack();
+            if (e.code === 'ArrowLeft') prevTrack();
+            if (e.key.toLowerCase() === 'f') toggleFavorite(currentIndex);
+            if (e.key === 'Escape') {
+                closeLore();
+                closeCoverModal();
+                closeCharacterDossier();
+                queueOpen = false;
+                renderAll();
+            }
+        });
+
+        window.addEventListener('resize', initVisualizer);
+
+
+        // Animación inicial de Resonance
+        const introScreen = document.getElementById('introScreen');
+
+        window.addEventListener('load', () => {
+            const hasSeenIntro = sessionStorage.getItem('resonanceIntroSeen');
+            const delay = hasSeenIntro || matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900;
+            if (hasSeenIntro && introScreen) introScreen.classList.add('hide');
+            setTimeout(() => {
+                if (introScreen) introScreen.classList.add('hide');
+                sessionStorage.setItem('resonanceIntroSeen','true');
+            }, delay);
+        });
+
+        initVisualizer();
+        populateCharacterSelect();
+        loadTrack(currentIndex, true);
+        renderAll();
+    </script>
+</body>
+</html>

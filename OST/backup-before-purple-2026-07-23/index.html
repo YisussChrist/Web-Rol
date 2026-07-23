@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Resonance — archivo musical de personajes, escenas e historias.">
+  <title>Resonance — Soundtrack Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Resonance, inicio">
+      <img src="ResonanceLogo.png" alt="">
+      <span>Resonance</span>
+    </a>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <button class="nav-link active" data-view="library">Biblioteca</button>
+      <button class="nav-link" data-view="scenes">Escenas</button>
+      <button class="nav-link" data-view="characters">Personajes</button>
+    </nav>
+    <div class="header-actions">
+      <label class="search-field">
+        <span aria-hidden="true">⌕</span>
+        <span class="sr-only">Buscar</span>
+        <input id="searchInput" type="search" placeholder="Buscar">
+      </label>
+      <button class="icon-button" id="favoritesButton" aria-label="Mostrar favoritos" aria-pressed="false">♡</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" id="hero" aria-label="Selección destacada"></section>
+
+    <section class="content-section" aria-labelledby="sectionTitle">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow" id="sectionEyebrow">Archivo musical</p>
+          <h1 id="sectionTitle">Todas las resonancias</h1>
+        </div>
+        <p class="result-count" id="resultCount"></p>
+      </div>
+
+      <div class="filter-row" id="filterRow" aria-label="Filtros musicales"></div>
+      <div class="catalog" id="catalog" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <aside class="queue-drawer" id="queueDrawer" aria-label="Cola de reproducción" aria-hidden="true">
+    <div class="drawer-heading"><div><p class="eyebrow">A continuación</p><h2>Cola</h2></div><button class="icon-button" id="closeQueue" aria-label="Cerrar cola">×</button></div>
+    <div id="queueList"></div>
+  </aside>
+
+  <div class="modal" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+    <article class="modal-card" id="modalContent"></article>
+  </div>
+
+  <footer class="player" id="player" aria-label="Reproductor" hidden>
+    <div class="player-track">
+      <img id="playerCover" alt="">
+      <div><strong id="playerTitle"></strong><span id="playerArtist"></span></div>
+      <button class="small-favorite" id="playerFavorite" aria-label="Añadir a favoritos">♡</button>
+    </div>
+    <div class="player-center">
+      <div class="player-controls">
+        <button class="control" id="shuffleButton" aria-label="Reproducción aleatoria" aria-pressed="false">⌘</button>
+        <button class="control" id="previousButton" aria-label="Anterior">←</button>
+        <button class="play-control" id="playButton" aria-label="Reproducir">▶</button>
+        <button class="control" id="nextButton" aria-label="Siguiente">→</button>
+        <button class="control" id="queueButton" aria-label="Abrir cola">☷</button>
+      </div>
+      <div class="timeline"><span id="currentTime">0:00</span><input id="progressInput" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posición de reproducción"><span id="duration">0:00</span></div>
+    </div>
+    <div class="volume"><span aria-hidden="true">◖</span><input id="volumeInput" type="range" min="0" max="1" value="0.85" step="0.01" aria-label="Volumen"></div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
