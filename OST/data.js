@@ -651,6 +651,21 @@ const characters = [
             }
         ]
     },
+    {
+        character: "Zelda Hellsdothir",
+        characterFace: "img/Zelda.jpg",
+        lore: "Una demonio que convivía con los humanos, traicionada, se ha propuesto acabar con todos y cada uno de ellos.",
+        tracks: [
+            {
+                songTitle: "GUARDIAN",
+                songDescription: "Intenta pasar por el bastión más temible del Infierno.",
+                songCover: "img/ZeldaCover.png",
+                audio: "audio/GUARDIAN.mp3",
+                tags: ["BossBattle", "Epic"],
+                lore: "Así suena cuando te atreves a enfrentar el bastión más poderoso del Inframundo."
+            }
+        ]
+    },
 ];
 
 const soundtracks = characters.flatMap((char, characterIndex) =>

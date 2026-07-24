@@ -4,7 +4,7 @@ const { execSync } = require("child_process");
 
 require("dotenv").config();
 
-const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
+const { Client, GatewayIntentBits, EmbedBuilder: DiscordEmbedBuilder } = require("discord.js");
 
 const client = new Client({
     intents: [
@@ -31,15 +31,162 @@ const RUTA_CALENDARIO = path.join(__dirname, "..", "calendario.html");
 const RUTA_EMBARAZOS = path.join(__dirname, "..", "embarazos.html");
 const RUTA_PERSONAJES = path.join(__dirname, "..", "personajes.json");
 const RUTA_PODER = path.join(__dirname, "..", "poder.html");
+const RUTA_ESTADO_BOT = path.join(__dirname, ".bot-state.json");
+
+const CONFIG_AVISOS = {
+    canalId: CANAL_AVISOS_ID,
+    hora: 9,
+    zonaHoraria: "Europe/Madrid"
+};
+
+const COMANDOS = new Map([
+    ["help", { nombre: "help", aliases: ["ayuda"] }],
+    ["cumples", { nombre: "cumples", aliases: [] }],
+    ["proximoscumples", { nombre: "proximoscumples", aliases: [] }],
+    ["wiki", { nombre: "wiki", aliases: [] }],
+    ["helpst", { nombre: "helpst", aliases: [] }],
+    ["st", { nombre: "st", aliases: [] }],
+    ["roadmap", { nombre: "roadmap", aliases: [] }],
+    ["duelo", { nombre: "duelo", aliases: [] }],
+    ["explicacionduelo", { nombre: "explicacionduelo", aliases: [] }],
+    ["torneo", { nombre: "torneo", aliases: [] }],
+    ["brackets", { nombre: "brackets", aliases: [] }],
+    ["dado", { nombre: "dado", aliases: ["d6", "d20", "d100"] }],
+    ["multi", { nombre: "multi", aliases: [] }],
+    ["calc", { nombre: "calc", aliases: [] }],
+    ["podercalc", { nombre: "podercalc", aliases: [] }],
+    ["poder", { nombre: "poder", aliases: [] }],
+    ["tit", { nombre: "tit", aliases: [] }],
+    ["equipos", { nombre: "equipos", aliases: [] }],
+    ["bolos", { nombre: "bolos", aliases: [] }],
+    ["reroll", { nombre: "reroll", aliases: [] }],
+    ["nacimientos", { nombre: "nacimientos", aliases: [] }],
+    ["embarazos", { nombre: "embarazos", aliases: [] }],
+    ["personaje", { nombre: "personaje", aliases: [] }],
+    ["ultimocambio", { nombre: "ultimocambio", aliases: [] }]
+]);
+
+const ALIAS_COMANDOS = new Map();
+for (const [clave, comando] of COMANDOS) {
+    ALIAS_COMANDOS.set(clave, comando.nombre);
+    comando.aliases.forEach(alias => ALIAS_COMANDOS.set(alias, comando.nombre));
+}
 
 let ultimoComandoRepetible = null;
 
-function crearEmbedError(titulo, descripcion) {
-    return new EmbedBuilder()
-        .setColor(0xE74C3C)
-        .setTitle(titulo)
-        .setDescription(descripcion)
+const ESTILO_EMBEDS = {
+    nombre: "Web Updates Bot",
+    colores: {
+        principal: 0x5865F2,
+        exito: 0x57F287,
+        aviso: 0xFEE75C,
+        error: 0xED4245,
+        neutro: 0x95A5A6,
+        calendario: 0xFF73A8
+    }
+};
+
+class EmbedBuilder extends DiscordEmbedBuilder {
+    constructor(data) {
+        super(data);
+        this.setAuthor({ name: ESTILO_EMBEDS.nombre })
+            .setFooter({ text: ESTILO_EMBEDS.nombre })
+            .setTimestamp();
+    }
+}
+
+function crearEmbedBase({ color = ESTILO_EMBEDS.colores.principal, titulo, descripcion, pie } = {}) {
+    const embed = new EmbedBuilder()
+        .setColor(color)
+        .setAuthor({ name: ESTILO_EMBEDS.nombre })
+        .setFooter({ text: pie || ESTILO_EMBEDS.nombre })
         .setTimestamp();
+
+    if (titulo) embed.setTitle(titulo);
+    if (descripcion) embed.setDescription(descripcion);
+
+    return embed;
+}
+
+function crearEmbedError(titulo, descripcion) {
+    return crearEmbedBase({
+        color: ESTILO_EMBEDS.colores.error,
+        titulo,
+        descripcion,
+        pie: "Algo no ha salido bien"
+    });
+}
+
+function crearEmbedVacio(titulo, descripcion) {
+    return crearEmbedBase({
+        color: ESTILO_EMBEDS.colores.neutro,
+        titulo,
+        descripcion,
+        pie: "Sin resultados"
+    });
+}
+
+function normalizarBusqueda(texto) {
+    return String(texto)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+}
+
+function interpretarComando(contenido) {
+    const match = contenido.match(/^-([^\s]+)(?:\s+([\s\S]*))?$/);
+    if (!match) return null;
+
+    const invocadoComo = normalizarBusqueda(match[1]);
+    const nombre = ALIAS_COMANDOS.get(invocadoComo);
+    if (!nombre) return null;
+
+    return {
+        nombre,
+        invocadoComo,
+        argumentos: (match[2] || "").trim()
+    };
+}
+
+function distanciaLevenshtein(a, b) {
+    const origen = normalizarBusqueda(a);
+    const destino = normalizarBusqueda(b);
+    const fila = Array.from({ length: destino.length + 1 }, (_, i) => i);
+
+    for (let i = 1; i <= origen.length; i++) {
+        let diagonal = fila[0];
+        fila[0] = i;
+
+        for (let j = 1; j <= destino.length; j++) {
+            const anterior = fila[j];
+            fila[j] = Math.min(
+                fila[j] + 1,
+                fila[j - 1] + 1,
+                diagonal + (origen[i - 1] === destino[j - 1] ? 0 : 1)
+            );
+            diagonal = anterior;
+        }
+    }
+
+    return fila[destino.length];
+}
+
+function sugerirNombres(consulta, nombres, limite = 3) {
+    const termino = normalizarBusqueda(consulta);
+    if (!termino) return [];
+
+    return [...new Set(nombres)]
+        .map(nombre => {
+            const normalizado = normalizarBusqueda(nombre);
+            const distancia = distanciaLevenshtein(termino, normalizado);
+            const contiene = normalizado.includes(termino) || termino.includes(normalizado);
+            return { nombre, distancia, contiene };
+        })
+        .filter(item => item.contiene || item.distancia <= Math.max(2, Math.floor(termino.length * 0.4)))
+        .sort((a, b) => Number(b.contiene) - Number(a.contiene) || a.distancia - b.distancia)
+        .slice(0, limite)
+        .map(item => item.nombre);
 }
 
 function mezclarLista(lista) {
@@ -485,6 +632,246 @@ async function comandoEquipos(message, texto, guardar = true) {
     return message.channel.send({ embeds: [embed] });
 }
 
+function crearBotonAyuda(id, etiqueta, emoji, estilo = ButtonStyle.Secondary) {
+    return new ButtonBuilder()
+        .setCustomId(id)
+        .setLabel(etiqueta)
+        .setEmoji(emoji)
+        .setStyle(estilo);
+}
+
+function crearPaginaAyuda(indice) {
+    const paginas = [
+        {
+            titulo: "🎲 Rol y competiciones",
+            descripcion: "Comandos para resolver enfrentamientos, formar equipos y organizar torneos.",
+            campos: [
+                ["Duelo", "`-duelo Alma, Tao, Freyja`\nElige un ganador al azar."],
+                ["Supertécnicas", "`-st Ren 4, Mavuika eg`\nConsulta `-helpst` para ver grados y modificadores."],
+                ["Torneos", "`-torneo 2 Raimon, Zeus, Royal, Alius`\n`-brackets Raimon, Zeus, Royal, Alius`"],
+                ["Equipos y azar", "`-equipos Ren, Jeanne | Alma, Tao, Freyja, Goku`\n`-dado`, `-d6`, `-d20`, `-d100` · `-reroll`"]
+            ]
+        },
+        {
+            titulo: "🎂 Calendario y familias",
+            descripcion: "Consulta fechas concretas, personajes o un periodo próximo.",
+            campos: [
+                ["Cumpleaños", "`-cumples` · `-cumples hoy` · `-cumples mañana`\n`-cumples 24/12` · `-cumples Freyja Kane`"],
+                ["Próximos", "`-cumples proximos 30`\nMuestra los cumpleaños de los próximos 30 días (entre 1 y 365).\n`-proximoscumples` conserva la lista rápida de 10 eventos."],
+                ["Familias", "`-embarazos` · `-nacimientos`"]
+            ]
+        },
+        {
+            titulo: "📚 Personajes y utilidades",
+            descripcion: "Información, cálculos y enlaces relacionados con Web-Rol.",
+            campos: [
+                ["Personajes", "`-personaje Freyja` · `-poder Freyja Kane`\n`-podercalc Freyja Kane * 100` · `-wiki Nara Midori`"],
+                ["Cálculos", "`-calc 1500 * 2 + 300`\n`-multi 51000000 50`"],
+                ["Web y proyecto", "`-bolos` · `-roadmap` · `-ultimocambio`"]
+            ]
+        }
+    ];
+
+    const pagina = paginas[indice];
+    const embed = crearEmbedBase({
+        titulo: pagina.titulo,
+        descripcion: pagina.descripcion,
+        pie: `Ayuda · Página ${indice + 1} de ${paginas.length}`
+    });
+
+    embed.addFields(pagina.campos.map(([name, value]) => ({ name, value })));
+    return { embed, total: paginas.length };
+}
+
+async function enviarAyudaPaginada(message) {
+    let paginaActual = 0;
+    const crearFila = (desactivados = false) => new ActionRowBuilder().addComponents(
+        crearBotonAyuda("ayuda_anterior", "Anterior", "◀️").setDisabled(desactivados || paginaActual === 0),
+        crearBotonAyuda("ayuda_siguiente", "Siguiente", "▶️", ButtonStyle.Primary)
+            .setDisabled(desactivados || paginaActual === 2)
+    );
+
+    const { embed } = crearPaginaAyuda(paginaActual);
+    const respuesta = await message.channel.send({ embeds: [embed], components: [crearFila()] });
+    const collector = respuesta.createMessageComponentCollector({
+        filter: interaction => interaction.user.id === message.author.id,
+        time: 120000
+    });
+
+    collector.on("collect", async interaction => {
+        paginaActual += interaction.customId === "ayuda_siguiente" ? 1 : -1;
+        paginaActual = Math.max(0, Math.min(2, paginaActual));
+        const nuevaPagina = crearPaginaAyuda(paginaActual);
+        await interaction.update({ embeds: [nuevaPagina.embed], components: [crearFila()] });
+    });
+
+    collector.on("end", () => {
+        respuesta.edit({ components: [crearFila(true)] }).catch(() => {});
+    });
+}
+
+function formatearFechaEvento(evento) {
+    return `${String(evento.dia).padStart(2, "0")}/${String(evento.mes).padStart(2, "0")}`;
+}
+
+async function comandoCumples(message, argumentos, soloProximos = false) {
+    const eventos = extraerEventosCalendario();
+    if (!eventos) {
+        return message.reply({ embeds: [crearEmbedError(
+            "❌ No encuentro calendario.html",
+            "Comprueba que `calendario.html` esté en la carpeta correcta."
+        )] });
+    }
+
+    const consulta = argumentos.trim();
+    const normalizada = normalizarBusqueda(consulta);
+    const matchProximos = normalizada.match(/^proximos(?:\s+(\d+))?$/);
+
+    if (soloProximos || matchProximos) {
+        const dias = soloProximos ? 365 : Number(matchProximos[1] || 30);
+        if (!soloProximos && (dias < 1 || dias > 365)) {
+            return message.reply({ embeds: [crearEmbedError(
+                "❌ Rango no válido",
+                "Elige entre 1 y 365 días. Ejemplo: `-cumples proximos 30`."
+            )] });
+        }
+
+        const limite = soloProximos ? 10 : 25;
+        const proximos = eventos
+            .filter(evento => soloProximos || evento.tipo === "birthday")
+            .map(evento => ({ ...evento, dias: diasHastaEvento(evento.dia, evento.mes) }))
+            .filter(evento => soloProximos || evento.dias <= dias)
+            .sort((a, b) => a.dias - b.dias || a.nombre.localeCompare(b.nombre, "es"))
+            .slice(0, limite);
+
+        const descripcion = proximos.map(evento => {
+            const icono = evento.tipo === "birthday" ? "🎂" : "💍";
+            const espera = evento.dias === 0 ? "hoy" : evento.dias === 1 ? "mañana" : `en ${evento.dias} días`;
+            return `${icono} **${formatearFechaEvento(evento)}** · ${evento.nombre} _(${espera})_`;
+        }).join("\n");
+
+        const titulo = soloProximos ? "🎂 Próximos eventos" : `🎂 Cumpleaños de los próximos ${dias} días`;
+        const embed = proximos.length
+            ? crearEmbedBase({ color: ESTILO_EMBEDS.colores.calendario, titulo, descripcion, pie: `Calendario Web-Rol · ${proximos.length} resultado${proximos.length === 1 ? "" : "s"}` })
+            : crearEmbedVacio(titulo, "No hay cumpleaños registrados dentro de ese periodo.");
+        return message.channel.send({ embeds: [embed] });
+    }
+
+    let fecha = new Date();
+    let buscarNombre = false;
+
+    if (normalizada === "manana") {
+        fecha.setDate(fecha.getDate() + 1);
+    } else if (normalizada && normalizada !== "hoy") {
+        const matchFecha = normalizada.match(/^(\d{1,2})[\/-](\d{1,2})$/);
+        if (!matchFecha) {
+            buscarNombre = true;
+        } else {
+            const dia = Number(matchFecha[1]);
+            const mes = Number(matchFecha[2]);
+            const candidata = new Date(fecha.getFullYear(), mes - 1, dia);
+            if (candidata.getDate() !== dia || candidata.getMonth() !== mes - 1) {
+                return message.reply({ embeds: [crearEmbedError("❌ Fecha no válida", "Usa una fecha real en formato `DD/MM`.")] });
+            }
+            fecha = candidata;
+        }
+    }
+
+    if (buscarNombre) {
+        const cumpleanos = eventos.filter(evento => evento.tipo === "birthday");
+        const coincidencias = cumpleanos.filter(evento => normalizarBusqueda(evento.nombre).includes(normalizada));
+
+        if (!coincidencias.length) {
+            const sugerencias = sugerirNombres(consulta, cumpleanos.map(evento => evento.nombre));
+            const textoSugerencias = sugerencias.length
+                ? `\n\n¿Quizá querías decir ${sugerencias.map(nombre => `**${nombre}**`).join(", ")}?`
+                : "\n\nPrueba con el nombre completo o con una parte del nombre.";
+            return message.channel.send({ embeds: [crearEmbedVacio(
+                "🔎 Cumpleaños no encontrado",
+                `No hay cumpleaños que coincidan con **${consulta}**.${textoSugerencias}`
+            )] });
+        }
+
+        const descripcion = coincidencias
+            .sort((a, b) => a.mes - b.mes || a.dia - b.dia)
+            .map(evento => `🎂 **${evento.nombre}** · ${formatearFechaEvento(evento)}`)
+            .join("\n");
+        return message.channel.send({ embeds: [crearEmbedBase({
+            color: ESTILO_EMBEDS.colores.calendario,
+            titulo: `🔎 Cumpleaños: ${consulta}`,
+            descripcion,
+            pie: `${coincidencias.length} coincidencia${coincidencias.length === 1 ? "" : "s"} · Calendario Web-Rol`
+        })] });
+    }
+
+    const dia = fecha.getDate();
+    const mes = fecha.getMonth() + 1;
+    const encontrados = eventos.filter(evento => evento.dia === dia && evento.mes === mes);
+    if (!encontrados.length) {
+        return message.channel.send({ embeds: [crearEmbedVacio(`📅 Eventos del ${dia}/${mes}`, "No hay eventos registrados para esta fecha.")] });
+    }
+
+    const embed = crearEmbedBase({ color: ESTILO_EMBEDS.colores.calendario, titulo: `📅 Eventos del ${dia}/${mes}`, pie: "Calendario Web-Rol" });
+    const cumpleanos = encontrados.filter(evento => evento.tipo === "birthday");
+    const aniversarios = encontrados.filter(evento => evento.tipo === "anniversary");
+    if (cumpleanos.length) embed.addFields({ name: "🎂 Cumpleaños", value: cumpleanos.map(evento => `🎉 ${evento.nombre}`).join("\n") });
+    if (aniversarios.length) embed.addFields({ name: "💍 Aniversarios", value: aniversarios.map(evento => `❤️ ${evento.nombre}`).join("\n") });
+    return message.channel.send({ embeds: [embed] });
+}
+
+function obtenerFechaEnZonaHoraria() {
+    const partes = new Intl.DateTimeFormat("es-ES", {
+        timeZone: CONFIG_AVISOS.zonaHoraria,
+        year: "numeric", month: "numeric", day: "numeric", hour: "numeric", hourCycle: "h23"
+    }).formatToParts(new Date());
+    return Object.fromEntries(partes.filter(parte => parte.type !== "literal").map(parte => [parte.type, Number(parte.value)]));
+}
+
+function leerUltimoAvisoDiario() {
+    try {
+        if (!fs.existsSync(RUTA_ESTADO_BOT)) return null;
+        return JSON.parse(fs.readFileSync(RUTA_ESTADO_BOT, "utf8")).ultimoAvisoDiario || null;
+    } catch (error) {
+        console.error("No he podido leer el estado de avisos:", error.message);
+        return null;
+    }
+}
+
+function guardarUltimoAvisoDiario(clave) {
+    try {
+        fs.writeFileSync(RUTA_ESTADO_BOT, JSON.stringify({ ultimoAvisoDiario: clave }, null, 2));
+    } catch (error) {
+        console.error("No he podido guardar el estado de avisos:", error.message);
+    }
+}
+
+let ultimoAvisoDiario = leerUltimoAvisoDiario();
+async function comprobarAvisosDiarios() {
+    const ahora = obtenerFechaEnZonaHoraria();
+    const clave = `${ahora.year}-${ahora.month}-${ahora.day}`;
+    if (ahora.hour < CONFIG_AVISOS.hora || ultimoAvisoDiario === clave) return;
+
+    const eventos = extraerEventosCalendario();
+    if (!eventos) return;
+    const eventosHoy = eventos.filter(evento => evento.dia === ahora.day && evento.mes === ahora.month);
+    if (!eventosHoy.length) {
+        ultimoAvisoDiario = clave;
+        guardarUltimoAvisoDiario(clave);
+        return;
+    }
+
+    const canal = await client.channels.fetch(CONFIG_AVISOS.canalId);
+    const descripcion = eventosHoy.map(evento => `${evento.tipo === "birthday" ? "🎂" : "💍"} **${evento.nombre}**`).join("\n");
+    await canal.send({ embeds: [crearEmbedBase({
+        color: ESTILO_EMBEDS.colores.calendario,
+        titulo: "🎉 Eventos de hoy",
+        descripcion,
+        pie: "Aviso diario · Calendario Web-Rol"
+    })] });
+    ultimoAvisoDiario = clave;
+    guardarUltimoAvisoDiario(clave);
+}
+
 client.once("ready", async () => {
     console.log(`✅ Bot conectado como ${client.user.tag}`);
 
@@ -502,14 +889,32 @@ client.once("ready", async () => {
     } catch (error) {
         console.log("⚠️ No he podido enviar el aviso de conexión:", error.message);
     }
+
+    comprobarAvisosDiarios().catch(error => console.error("Error en el aviso diario:", error));
+    setInterval(() => {
+        comprobarAvisosDiarios().catch(error => console.error("Error en el aviso diario:", error));
+    }, 60 * 1000);
 });
 
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
     const contenido = message.content.trim();
+    const solicitud = interpretarComando(contenido);
 
-    if (contenido.startsWith("-wiki")) {
+    if (solicitud?.nombre === "help") {
+        return enviarAyudaPaginada(message);
+    }
+
+    if (solicitud?.nombre === "cumples") {
+        return comandoCumples(message, solicitud.argumentos);
+    }
+
+    if (solicitud?.nombre === "proximoscumples") {
+        return comandoCumples(message, "", true);
+    }
+
+    if (solicitud?.nombre === "wiki") {
     const busqueda = contenido.replace("-wiki", "").trim();
 
     if (!busqueda) {
@@ -568,12 +973,12 @@ if (!pagina) {
     }
 }
 
-    if (contenido === "-help") {
-        const embed = new EmbedBuilder()
-            .setColor(0x3498DB)
-            .setTitle("🤖 Web Updates Bot - Ayuda")
-            .setDescription("Lista de comandos disponibles.")
-            .addFields(
+    if (solicitud?.nombre === "help") {
+        const embed = crearEmbedBase({
+            titulo: "🤖 Web Updates Bot · Ayuda",
+            descripcion: "Todo lo que puedes hacer con el bot, organizado por categorías.",
+            pie: "Usa los comandos tal como aparecen en esta guía"
+        }).addFields(
                 {
                     name: "🎲 Rol y azar",
                     value:
@@ -604,7 +1009,9 @@ if (!pagina) {
                         "`-cumples`\n" +
                         "`-cumples hoy`\n" +
                         "`-cumples mañana`\n" +
-                        "`-cumples 24/12`\n\n" +
+                        "`-cumples 24/12`\n" +
+                        "`-cumples Freyja Kane`\n" +
+                        "Busca eventos de hoy, de una fecha o el cumpleaños de un personaje.\n\n" +
                         "`-proximoscumples`\n" +
                         "Muestra los próximos eventos."
                 },
@@ -654,9 +1061,7 @@ if (!pagina) {
                         "`-ultimocambio`\n" +
                         "Muestra el último commit del repositorio."
                 }
-            )
-            .setFooter({ text: "Web Updates Bot" })
-            .setTimestamp();
+            );
 
         return message.channel.send({ embeds: [embed] });
     }
@@ -667,7 +1072,7 @@ const chatotWebhook = new WebhookClient({
     url: process.env.CHATOT_WEBHOOK
 });
 
-if (contenido.toLowerCase() === "-helpst") {
+if (solicitud?.nombre === "helpst") {
     const embed = new EmbedBuilder()
         .setColor(0xFFD700)
         .setTitle("⚡ Sistema de Supertécnicas")
@@ -714,7 +1119,7 @@ if (contenido.toLowerCase() === "-helpst") {
     return message.channel.send({ embeds: [embed] });
 }
 
-if (contenido.toLowerCase().startsWith("-st ")) {
+if (solicitud?.nombre === "st" && solicitud.argumentos) {
     const texto = contenido.slice(4).trim();
     const partes = texto.split(",").map(x => x.trim()).filter(Boolean);
 
@@ -838,7 +1243,7 @@ if (contenido.toLowerCase().startsWith("-st ")) {
     return message.channel.send({ embeds: [embed] });
 }
 
-    if (message.content === "-roadmap") {
+    if (solicitud?.nombre === "roadmap") {
 
     const roadmap = [
         {
@@ -890,12 +1295,12 @@ if (contenido.toLowerCase().startsWith("-st ")) {
 
 
 
-    if (contenido.startsWith("-duelo")) {
+    if (solicitud?.nombre === "duelo") {
         const texto = contenido.replace("-duelo", "").trim();
         return comandoDuelo(message, texto);
     }
 
-    if (contenido === "-explicacionduelo") {
+    if (solicitud?.nombre === "explicacionduelo") {
 
     const embed = new EmbedBuilder()
         .setColor(0x3498DB)
@@ -934,17 +1339,17 @@ if (contenido.toLowerCase().startsWith("-st ")) {
     return message.channel.send({ embeds: [embed] });
     }
 
-    if (contenido.startsWith("-torneo")) {
+    if (solicitud?.nombre === "torneo") {
         const texto = contenido.replace("-torneo", "").trim();
         return comandoTorneo(message, texto);
     }
 
-    if (contenido.startsWith("-brackets")) {
+    if (solicitud?.nombre === "brackets") {
         const texto = contenido.replace("-brackets", "").trim();
         return comandoBrackets(message, texto);
     }
 
-    if (contenido === "-dado" || contenido === "-d20" || contenido === "-d100" || contenido === "-d6") {
+    if (solicitud?.nombre === "dado") {
         let caras = 20;
 
         if (contenido === "-d6") caras = 6;
@@ -963,7 +1368,7 @@ if (contenido.toLowerCase().startsWith("-st ")) {
         return message.channel.send({ embeds: [embed] });
     }
 
-    if (contenido.startsWith("-multi")) {
+    if (solicitud?.nombre === "multi") {
     const args = contenido.replace("-multi", "").trim().split(/\s+/);
 
     if (args.length < 2) {
@@ -1014,7 +1419,7 @@ if (contenido.toLowerCase().startsWith("-st ")) {
     return message.channel.send({ embeds: [embed] });
 }
 
-    if (contenido.startsWith("-calc")) {
+    if (solicitud?.nombre === "calc") {
     const expresion = contenido.replace("-calc", "").trim();
 
     if (!expresion) {
@@ -1079,7 +1484,7 @@ if (contenido.toLowerCase().startsWith("-st ")) {
 
     
 }
-    if (contenido.startsWith("-podercalc")) {
+    if (solicitud?.nombre === "podercalc") {
 
     const texto = contenido.replace("-podercalc", "").trim();
 
@@ -1114,9 +1519,13 @@ if (contenido.toLowerCase().startsWith("-st ")) {
     );
 
     if (!personaje) {
+        const sugerencias = sugerirNombres(nombrePersonaje, personajes.map(p => p.name));
+        const ayuda = sugerencias.length
+            ? `\n\n¿Quizá querías decir ${sugerencias.map(nombre => `**${nombre}**`).join(", ")}?`
+            : "";
         const embed = crearEmbedError(
             "❌ Personaje no encontrado",
-            `No he encontrado a **${nombrePersonaje}** en poder.html`
+            `No he encontrado a **${nombrePersonaje}** en poder.html.${ayuda}`
         );
 
         return message.reply({ embeds: [embed] });
@@ -1170,7 +1579,7 @@ if (contenido.toLowerCase().startsWith("-st ")) {
     return message.channel.send({ embeds: [embed] });
 }
 
-if (contenido.startsWith("-poder")) {
+if (solicitud?.nombre === "poder") {
 
     const nombreBuscado = contenido.replace("-poder", "").trim();
 
@@ -1199,9 +1608,13 @@ if (contenido.startsWith("-poder")) {
     );
 
     if (!personaje) {
+        const sugerencias = sugerirNombres(nombreBuscado, personajes.map(p => p.name));
+        const ayuda = sugerencias.length
+            ? `\n\n¿Quizá querías decir ${sugerencias.map(nombre => `**${nombre}**`).join(", ")}?`
+            : "";
         const embed = crearEmbedError(
             "❌ Personaje no encontrado",
-            `No he encontrado a **${nombreBuscado}** en poder.html`
+            `No he encontrado a **${nombreBuscado}** en poder.html.${ayuda}`
         );
 
         return message.reply({ embeds: [embed] });
@@ -1233,13 +1646,13 @@ if (contenido.startsWith("-poder")) {
     return message.channel.send({ embeds: [embed] });
 }
 
-if (contenido === "-tit") {
+if (solicitud?.nombre === "tit") {
     return message.channel.send(
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQttWT0cD9kg6S83c4_qsZvTdPaoZDd-Emoqw&s"
     );
 }
 
-    if (contenido.startsWith("-equipos")) {
+    if (solicitud?.nombre === "equipos") {
         const texto = contenido.replace("-equipos", "").trim();
         return comandoEquipos(message, texto);
     }
@@ -1250,7 +1663,7 @@ if (contenido === "-tit") {
     });
 }
 
-if (contenido === "-bolos") {
+if (solicitud?.nombre === "bolos") {
 
     const boton = new ActionRowBuilder()
         .addComponents(
@@ -1282,7 +1695,7 @@ if (contenido === "-bolos") {
 }
 
 
-    if (contenido === "-reroll") {
+    if (solicitud?.nombre === "reroll") {
         if (!ultimoComandoRepetible) {
             const embed = crearEmbedError(
                 "❌ No hay nada que repetir",
@@ -1309,7 +1722,7 @@ if (contenido === "-bolos") {
         }
     }
 
-    if (contenido.startsWith("-cumples")) {
+    if (/^-cumples(?:\s|$)/i.test(contenido)) {
         const eventos = extraerEventosCalendario();
 
         if (!eventos) {
@@ -1321,27 +1734,73 @@ if (contenido === "-bolos") {
             return message.reply({ embeds: [embed] });
         }
 
-        const args = contenido.replace("-cumples", "").trim().toLowerCase();
+        const consulta = contenido.replace(/^-cumples/i, "").trim();
+        const args = normalizarBusqueda(consulta);
 
         let fecha = new Date();
+        let busquedaPorNombre = false;
 
-        if (args === "mañana" || args === "manana") {
+        if (args === "manana") {
             fecha.setDate(fecha.getDate() + 1);
         } else if (args && args !== "hoy") {
             const matchFecha = args.match(/^(\d{1,2})[\/-](\d{1,2})$/);
 
             if (!matchFecha) {
-                const embed = crearEmbedError(
-                    "❌ Fecha no válida",
-                    "Usa uno de estos formatos:\n\n`-cumples`\n`-cumples mañana`\n`-cumples 24/12`"
+                busquedaPorNombre = true;
+            } else {
+                const diaConsultado = Number(matchFecha[1]);
+                const mesConsultado = Number(matchFecha[2]);
+
+                const fechaConsultada = new Date(fecha.getFullYear(), mesConsultado - 1, diaConsultado);
+                const fechaEsValida =
+                    fechaConsultada.getDate() === diaConsultado &&
+                    fechaConsultada.getMonth() === mesConsultado - 1;
+
+                if (!fechaEsValida) {
+                    const embed = crearEmbedError(
+                        "❌ Fecha no válida",
+                        "Usa una fecha real en formato `DD/MM`, por ejemplo `-cumples 24/12`."
+                    );
+
+                    return message.reply({ embeds: [embed] });
+                }
+
+                fecha = fechaConsultada;
+            }
+        }
+
+        if (busquedaPorNombre) {
+            const coincidencias = eventos.filter(evento =>
+                evento.tipo === "birthday" &&
+                normalizarBusqueda(evento.nombre).includes(args)
+            );
+
+            if (coincidencias.length === 0) {
+                const embed = crearEmbedVacio(
+                    "🔎 Cumpleaños no encontrado",
+                    `No hay cumpleaños que coincidan con **${consulta}**.\n\nPrueba con el nombre completo o con una parte del nombre.`
                 );
 
-                return message.reply({ embeds: [embed] });
+                return message.channel.send({ embeds: [embed] });
             }
 
-            fecha = new Date();
-            fecha.setDate(Number(matchFecha[1]));
-            fecha.setMonth(Number(matchFecha[2]) - 1);
+            const descripcion = coincidencias
+                .sort((a, b) => a.mes - b.mes || a.dia - b.dia || a.nombre.localeCompare(b.nombre, "es"))
+                .map(evento => {
+                    const dia = String(evento.dia).padStart(2, "0");
+                    const mes = String(evento.mes).padStart(2, "0");
+                    return `🎂 **${evento.nombre}** · ${dia}/${mes}`;
+                })
+                .join("\n");
+
+            const embed = crearEmbedBase({
+                color: ESTILO_EMBEDS.colores.calendario,
+                titulo: `🔎 Cumpleaños: ${consulta}`,
+                descripcion: limitarTexto(descripcion),
+                pie: `${coincidencias.length} coincidencia${coincidencias.length === 1 ? "" : "s"} · Calendario Web-Rol`
+            });
+
+            return message.channel.send({ embeds: [embed] });
         }
 
         const dia = fecha.getDate();
@@ -1352,19 +1811,20 @@ if (contenido === "-bolos") {
         const anniversaries = eventosDelDia.filter(e => e.tipo === "anniversary").map(e => e.nombre);
 
         if (birthdays.length === 0 && anniversaries.length === 0) {
-            const embed = new EmbedBuilder()
-                .setColor(0x95A5A6)
-                .setTitle(`📅 Eventos del ${dia}/${mes}`)
-                .setDescription("No hay eventos registrados para esta fecha.")
-                .setTimestamp();
+            const embed = crearEmbedVacio(
+                `📅 Eventos del ${dia}/${mes}`,
+                "No hay eventos registrados para esta fecha."
+            );
 
             return message.channel.send({ embeds: [embed] });
         }
 
-        const embed = new EmbedBuilder()
-            .setColor(0x2ECC71)
-            .setTitle(`📅 Eventos del ${dia}/${mes}`)
-            .setTimestamp();
+        const embed = crearEmbedBase({
+            color: ESTILO_EMBEDS.colores.calendario,
+            titulo: `📅 Eventos del ${dia}/${mes}`,
+            descripcion: "Estos son los eventos registrados para la fecha seleccionada.",
+            pie: "Calendario Web-Rol"
+        });
 
         if (birthdays.length > 0) {
             embed.addFields({
@@ -1383,7 +1843,7 @@ if (contenido === "-bolos") {
         return message.channel.send({ embeds: [embed] });
     }
 
-    if (contenido === "-proximoscumples") {
+    if (solicitud?.nombre === "proximoscumples") {
         const eventos = extraerEventosCalendario();
 
         if (!eventos) {
@@ -1411,17 +1871,17 @@ if (contenido === "-bolos") {
             return `${icono} **${dia}/${mes}** - ${e.nombre}`;
         }).join("\n");
 
-        const embed = new EmbedBuilder()
-            .setColor(0xFFB6C1)
-            .setTitle("🎂 Próximos eventos")
-            .setDescription(descripcion || "No hay eventos registrados.")
-            .setFooter({ text: "Calendario Web-Rol" })
-            .setTimestamp();
+        const embed = crearEmbedBase({
+            color: ESTILO_EMBEDS.colores.calendario,
+            titulo: "🎂 Próximos eventos",
+            descripcion: descripcion || "No hay eventos registrados.",
+            pie: "Los 10 eventos más cercanos · Calendario Web-Rol"
+        });
 
         return message.channel.send({ embeds: [embed] });
     }
 
-    if (contenido === "-nacimientos") {
+    if (solicitud?.nombre === "nacimientos") {
         const embed = new EmbedBuilder()
             .setColor(0x87CEEB)
             .setTitle("👶 Nacimientos registrados")
@@ -1435,7 +1895,7 @@ if (contenido === "-bolos") {
         return message.channel.send({ embeds: [embed] });
     }
 
-    if (contenido === "-embarazos") {
+    if (solicitud?.nombre === "embarazos") {
         const embarazos = extraerEmbarazos();
 
         if (embarazos === null) {
@@ -1484,7 +1944,7 @@ const descripcion = embarazosOrdenados
         return message.channel.send({ embeds: [embed] });
     }
 
-    if (contenido.startsWith("-personaje")) {
+    if (solicitud?.nombre === "personaje") {
         const nombre = contenido.replace("-personaje", "").trim();
 
         if (!nombre) {
@@ -1512,9 +1972,15 @@ const descripcion = embarazosOrdenados
         const personaje = buscarPersonaje(nombre);
 
         if (!personaje) {
+            const datosPersonajes = JSON.parse(fs.readFileSync(RUTA_PERSONAJES, "utf8"));
+            const listaPersonajes = Array.isArray(datosPersonajes) ? datosPersonajes : Object.values(datosPersonajes);
+            const sugerencias = sugerirNombres(nombre, listaPersonajes.map(p => p.nombre || p.name || ""));
+            const ayuda = sugerencias.length
+                ? `\n\n¿Quizá querías decir ${sugerencias.map(sugerencia => `**${sugerencia}**`).join(", ")}?`
+                : "";
             const embed = crearEmbedError(
                 "❌ Personaje no encontrado",
-                "No lo he encontrado en `personajes.json`."
+                `No lo he encontrado en \`personajes.json\`.${ayuda}`
             );
 
             return message.reply({ embeds: [embed] });
@@ -1577,7 +2043,7 @@ const descripcion = embarazosOrdenados
         return message.channel.send({ embeds: [embed] });
     }
 
-    if (contenido === "-ultimocambio") {
+    if (solicitud?.nombre === "ultimocambio") {
         try {
             const repoPath = path.join(__dirname, "..");
 
