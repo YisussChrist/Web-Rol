@@ -984,109 +984,6 @@ footer{opacity:.82}
   .brand h1{font-size:2rem}
 }
 
-/* === REDISEÑO COMPACTO: archivo legible y centrado en el contenido === */
-:root{--header-h:164px}
-html{font-size:17px}
-body{background:linear-gradient(145deg,#080611 0%,#110916 48%,#07050d 100%)}
-body::before{opacity:.48;animation:none}
-body::after{opacity:.3}
-header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);box-shadow:0 12px 32px rgba(0,0,0,.3)}
-.header-inner{grid-template-columns:minmax(250px,.72fr) minmax(620px,1.5fr);gap:14px;padding:12px 16px;align-items:center}
-.brand{padding:12px 14px;border:0;border-left:3px solid var(--accent);border-radius:0 16px 16px 0;background:linear-gradient(90deg,rgba(255,176,0,.1),transparent);box-shadow:none}
-.brand h1{font-size:clamp(1.8rem,2.7vw,2.8rem)}
-.brand .sub{font-size:.92rem}
-.brand .tagline{padding:3px 8px;font-size:.7rem}
-.hero-metrics{margin-top:8px}
-.hero-metrics span{padding:4px 8px;font-size:.82rem}
-.mobile-filter-toggle{display:none}
-.controls{grid-template-columns:minmax(240px,1fr) auto auto auto;gap:8px;padding:10px;border-radius:18px;box-shadow:none}
-.control-title{display:none}
-.search input{height:42px}
-.group{padding:4px;border-width:1px}
-.group .label{font-size:.65rem}
-.btn{padding:8px 10px;border-width:1px;box-shadow:none}
-.tabs-shell{margin:16px 0 14px;padding:10px 12px 0;border-radius:18px 18px 0 0;box-shadow:none}
-.tabs-kicker{margin-bottom:7px}
-.tab-btn{min-width:195px;padding:9px 13px;border-radius:15px 15px 0 0}
-.tab-btn[disabled]{opacity:.52;cursor:not-allowed;filter:grayscale(.35)}
-.tab-btn[disabled]:hover{transform:none;border-color:var(--border);background:var(--panel-2)}
-.tab-icon{width:32px;height:32px;border-radius:10px}
-.layout{grid-template-columns:270px minmax(0,1fr);gap:18px}
-.layout > main{grid-column:2;grid-row:1;min-width:0}
-.layout > .sidebar{grid-column:1;grid-row:1}
-.sidebar{top:calc(var(--header-h) + 14px);padding:14px;border-radius:18px}
-.sidebar::after{content:"NAVEGACIÓN"}
-.legend{padding-top:12px;gap:6px}
-.chip{padding:5px 8px;font-size:.78rem}
-.index{gap:5px}
-.index a{padding:8px 10px;font-size:.9rem}
-.families{gap:16px}
-.family{border-radius:18px}
-.family-header{padding:12px 15px}
-.family-title{font-size:clamp(1.35rem,2vw,1.9rem)}
-.avatar{width:46px;height:46px;border-radius:13px}
-.children{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:12px}
-.card{grid-template-columns:68px minmax(0,1fr);gap:11px;padding:10px;border-width:1px;border-radius:14px;box-shadow:none}
-.card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.28)}
-.card-media{width:68px;height:68px;min-height:68px;border-radius:12px}
-.card-main{gap:4px;padding-right:0}
-.card h3{font-size:1.05rem}
-.card p{font-size:.86rem;line-height:1.2}
-.card-status{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:3px}
-.status-pill,.tag-pill{display:inline-flex;align-items:center;min-height:23px;padding:3px 7px;border-radius:999px;border:1px solid var(--border-strong);font-size:.68rem;font-weight:900;letter-spacing:.03em}
-.status-pill.born{color:#74f59d;background:rgba(56,224,123,.1);border-color:rgba(56,224,123,.35)}
-.status-pill.unborn{color:#c8c8c8;background:rgba(180,180,180,.08)}
-.status-pill.unknown{color:#ffd37a;background:rgba(255,176,0,.09)}
-.tag-pill.S{color:#7cf3a9;background:rgba(56,224,123,.12);border-color:rgba(56,224,123,.42)}
-.tag-pill.L{color:#85ceff;background:rgba(62,183,255,.12);border-color:rgba(62,183,255,.42)}
-.tag-pill.Y{color:#ffd071;background:rgba(255,176,32,.13);border-color:rgba(255,176,32,.45)}
-.tag-pill.Q{color:#d0c8ba;background:rgba(194,184,164,.1);border-color:rgba(194,184,164,.34)}
-[data-filter-tag="S"]{border-color:rgba(56,224,123,.34);color:#89f2af}
-[data-filter-tag="L"]{border-color:rgba(62,183,255,.34);color:#8dd2ff}
-[data-filter-tag="Y"]{border-color:rgba(255,176,32,.38);color:#ffd071}
-[data-filter-tag="?"]{border-color:rgba(194,184,164,.3);color:#d0c8ba}
-[data-filter-tag="S"][aria-pressed="true"]{background:linear-gradient(180deg,#78f2a5,#28b866);color:#071c10;border-color:#a5ffc4}
-[data-filter-tag="L"][aria-pressed="true"]{background:linear-gradient(180deg,#8bd6ff,#329bd8);color:#061923;border-color:#b9e8ff}
-[data-filter-tag="Y"][aria-pressed="true"]{background:linear-gradient(180deg,#ffe080,#f0a51f);color:#271500;border-color:#ffeba9}
-[data-filter-tag="?"][aria-pressed="true"]{background:linear-gradient(180deg,#ded8cc,#9e9689);color:#17130e;border-color:#eee9df}
-.card-side{grid-column:1/-1;justify-content:space-between;border-top:1px solid var(--border);padding-top:7px}
-.kid-num{min-width:25px;height:25px;font-size:.7rem}
-.badge{display:none}
-.card-cta{color:var(--accent);font-size:.78rem;font-weight:900}
-.card.born,.card.unborn{border-color:var(--border)}
-.card.born::before,.card.unborn::before,.card.unknown-born::before{display:none}
-.locked-panel{min-height:260px;border-radius:0 0 18px 18px}
-.locked-panel .lock{font-size:3rem}
-.lock-card{padding:24px;width:min(500px,92%)}
-@media (max-width:1120px){
-  .header-inner{grid-template-columns:1fr}
-  .controls{grid-template-columns:minmax(240px,1fr) auto auto auto}
-  .children{grid-template-columns:1fr}
-}
-@media (max-width:780px){
-  :root{--header-h:174px}
-  html{font-size:16px}
-  .header-inner{padding:9px 10px;gap:8px}
-  .brand{padding:8px 10px}
-  .brand .sub{display:none}
-  .hero-metrics{margin-top:5px}
-  .mobile-filter-toggle{display:flex;width:100%;justify-content:space-between;align-items:center}
-  .controls{display:none;grid-template-columns:1fr;padding:9px}
-  .controls.open{display:grid}
-  .controls .group{width:100%;justify-content:flex-start}
-  .tabs-shell{margin-top:10px}
-  .layout{grid-template-columns:1fr}
-  .layout > main,.layout > .sidebar{grid-column:1;grid-row:auto}
-  .layout > .sidebar{order:-1}
-  .children{grid-template-columns:1fr}
-}
-@media (max-width:480px){
-  :root{--header-h:170px}
-  .brand h1{font-size:1.7rem}
-  .hero-metrics span{font-size:.74rem}
-  .tab-btn{min-width:160px}
-  .family-header{align-items:center}
-}
 </style>
 </head>
 <body>
@@ -1101,12 +998,9 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
           <span><b id="metricChildren">—</b> personajes</span>
           <span><b id="metricBorn">—</b> nacidos</span>
         </div>
-        <button id="filtersToggle" class="btn mobile-filter-toggle" type="button" aria-expanded="false" aria-controls="controls">
-          <span>Buscar y filtrar</span><span aria-hidden="true">▾</span>
-        </button>
       </div>
 
-      <div class="controls" id="controls" aria-label="Panel de control">
+      <div class="controls" aria-label="Panel de control">
         <div class="control-title">Centro de control</div>
         <div class="search" role="search">
           <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1118,11 +1012,11 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
         </div>
 
         <div class="group" role="group" aria-label="Filtrar por etiqueta">
-          <span class="label">CLASE</span>
-          <button class="btn" type="button" data-filter-tag="S" aria-pressed="false" title="Mostrar clase S">Clase S</button>
-          <button class="btn" type="button" data-filter-tag="L" aria-pressed="false" title="Mostrar clase L">Clase L</button>
-          <button class="btn" type="button" data-filter-tag="Y" aria-pressed="false" title="Mostrar clase Y">Clase Y</button>
-          <button class="btn" type="button" data-filter-tag="?" aria-pressed="false" title="Mostrar clase desconocida">Sin clase</button>
+          <span class="label">TAG</span>
+          <button class="btn" type="button" data-filter-tag="S" aria-pressed="false">S</button>
+          <button class="btn" type="button" data-filter-tag="L" aria-pressed="false">L</button>
+          <button class="btn" type="button" data-filter-tag="Y" aria-pressed="false">Y</button>
+          <button class="btn" type="button" data-filter-tag="?" aria-pressed="false">?</button>
         </div>
 
         <div class="group" role="group" aria-label="Filtrar por género">
@@ -1154,9 +1048,9 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
         <span class="tab-icon">⚔️</span>
         <span class="tab-text"><strong>Guerreros Eternal</strong><small>Archivo principal</small></span>
       </button>
-      <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-gen1" aria-disabled="true" data-tab="gen1" disabled>
+      <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-gen1" data-tab="gen1">
         <span class="tab-icon">Ⅰ</span>
-        <span class="tab-text"><strong>Gen 1</strong><small>Próximamente</small></span>
+        <span class="tab-text"><strong>Gen 1</strong><small>Próxima sección</small></span>
       </button>
     </div>
   </nav>
@@ -1187,10 +1081,10 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
 
         <div class="sidebar-content" id="sidebarContent">
           <div class="legend" aria-label="Leyenda de etiquetas">
-            <span class="chip"><span class="c-dot S"></span>Clase S</span>
-            <span class="chip"><span class="c-dot L"></span>Clase L</span>
-            <span class="chip"><span class="c-dot Y"></span>Clase Y</span>
-            <span class="chip"><span class="c-dot Q"></span>Sin clasificar</span>
+            <span class="chip"><span class="c-dot S"></span><b>S</b>&nbsp;Etiqueta S</span>
+            <span class="chip"><span class="c-dot L"></span><b>L</b>&nbsp;Etiqueta L</span>
+            <span class="chip"><span class="c-dot Y"></span><b>Y</b>&nbsp;Etiqueta Y</span>
+            <span class="chip"><span class="c-dot Q"></span><b>?</b>&nbsp;Desconocido</span>
           </div>
 
           <div class="index-wrap">
@@ -1202,6 +1096,7 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
     </div>
   </div>
 
+  </div>
   <div id="tab-gen1" class="tab-panel hidden" role="tabpanel">
     <section class="panel locked-panel">
       <div class="lock-card">
@@ -1212,7 +1107,6 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
         <small>Cuando la desbloquees, los personajes irán en <b>GEN1_DATA</b>, usando la misma estructura que DATA.</small>
       </div>
     </section>
-  </div>
   </div>
 
   <footer>
@@ -1454,7 +1348,7 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
         { name: 'Yuno Grinberryal', img: 'fotos-poderes/Yuno Grinberryal.jpg' },
         { name: 'Eula Lawrence', img: 'fotos-poderes/Eula.jpg' }
       ], children: [
-        { name: 'Adelaide Grinberryall', img: "Hijos/Yuno y Eula/Adelaide Grinberryall.png", gender: 'F', tag: 'Y', series: 'Conquering the Academy with Just a Sashimi Knife', meta: 'Abel von Nibelung — Conquering the Academy with Just a Sashimi Knife', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Toga, Toru y Hitoshi', parents: [
         { name: 'Himiko Toga', img: 'fotos-poderes/Himiko Toga.png' },
@@ -1502,15 +1396,6 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
 
     const familySidebar = document.getElementById('familySidebar');
     const sidebarToggle = document.getElementById('sidebarToggle');
-    const controls = document.getElementById('controls');
-    const filtersToggle = document.getElementById('filtersToggle');
-
-    filtersToggle.addEventListener('click', () => {
-      const open = controls.classList.toggle('open');
-      filtersToggle.setAttribute('aria-expanded', String(open));
-      filtersToggle.lastElementChild.textContent = open ? '▴' : '▾';
-      updateHeaderHeight();
-    });
 
     function setMobileSidebarState(open){
       const isMobile = window.innerWidth <= 980;
@@ -1661,18 +1546,11 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
                 <div class="card-main">
                   <h3>${escapeHTML(genderMark(kid.gender) + ' ' + kid.name)}</h3>
                   <p>${escapeHTML(kid.meta)}</p>
-                  <div class="card-status">
-                    <span class="status-pill ${kid.born === true ? 'born' : kid.born === false ? 'unborn' : 'unknown'}">
-                      ${escapeHTML(kid.born === true ? 'Nacido/a' : kid.born === false ? 'No nacido/a' : 'Estado desconocido')}
-                    </span>
-                    <span class="tag-pill ${tagClass(kid.tag)}">Clase ${escapeHTML(kid.tag)}</span>
-                  </div>
                 </div>
 
                 <div class="card-side">
-                  <span class="kid-num" title="Posición en la familia">${idx + 1}</span>
+                  <span class="kid-num">${idx + 1}</span>
                   <span class="badge ${tagClass(kid.tag)}" title="Etiqueta: ${escapeHTML(kid.tag)}">${escapeHTML(kid.tag)}</span>
-                  <span class="card-cta">Ver ficha →</span>
                 </div>
               </article>
             `).join('')}
@@ -1845,10 +1723,7 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
     sortBtns.forEach(btn => btn.addEventListener('click', () => {
       state.sort = btn.dataset.sort || 'alpha';
       sortBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
-      renderFamilies();
-    }));
-
-    function updateDashboardMetrics(){
+      function updateDashboardMetrics(){
       const families = DATA.length;
       const children = DATA.reduce((total, fam) => total + fam.children.length, 0);
       const born = DATA.reduce((total, fam) => total + fam.children.filter(kid => kid.born === true).length, 0);
@@ -1861,6 +1736,10 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
       if(metricChildren) metricChildren.textContent = children;
       if(metricBorn) metricBorn.textContent = born;
     }
+
+    updateDashboardMetrics();
+    renderFamilies();
+    }));
 
     document.getElementById('reset').addEventListener('click', () => {
       state.term = '';
@@ -1982,12 +1861,6 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
     window.addEventListener('resize', () => {
       updateHeaderHeight();
 
-      if(window.innerWidth > 780){
-        controls.classList.remove('open');
-        filtersToggle.setAttribute('aria-expanded', 'false');
-        filtersToggle.lastElementChild.textContent = '▾';
-      }
-
       if(window.innerWidth <= 980){
         setMobileSidebarState(false);
       } else {
@@ -2005,12 +1878,10 @@ header{background:rgba(8,6,15,.92);border-bottom:1px solid rgba(255,190,64,.24);
       }
     });
 
-    updateDashboardMetrics();
     renderFamilies();
   
 document.querySelectorAll('.tab-btn').forEach(btn=>{
  btn.addEventListener('click',()=>{
-   if(btn.disabled) return;
    document.querySelectorAll('.tab-btn').forEach(b=>{
      const active = b === btn;
      b.classList.toggle('active', active);
