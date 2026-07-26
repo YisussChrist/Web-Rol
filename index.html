@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RP HUB — Ultimate Edition</title>
+  <title>RP HUB 2.0 — Centro de control</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fredoka:wght@500;600;700&display=swap');
 
@@ -158,8 +158,8 @@
     .quick-panel { padding: 16px; margin: 8px 0 18px; }
     .quick-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 12px; }
     .quick-head h2 { margin:0; font-size:1.05rem; }
-    .quick-grid { display:flex; gap:10px; overflow:auto; padding-bottom: 4px; }
-    .quick-link { flex: 0 0 auto; text-decoration:none; border:1px solid var(--line); background: rgba(255,255,255,.07); padding: 12px 14px; border-radius: 16px; font-weight: 900; transition:.2s ease; }
+    .quick-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; }
+    .quick-link { min-width:0; text-align:center; text-decoration:none; border:1px solid var(--line); background: rgba(255,255,255,.07); padding: 12px 14px; border-radius: 16px; font-weight: 900; line-height:1.25; transition:.2s ease; }
     .quick-link:hover { transform: translateY(-2px); background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#1a1200; }
 
     .control-panel { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; padding: 14px; margin: 8px 0 22px; }
@@ -176,6 +176,69 @@
     .mini-list { display:grid; gap: 9px; }
     .mini-row { display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid var(--line); background:rgba(255,255,255,.05); border-radius:14px; padding:10px 12px; font-weight:800; text-decoration:none; }
     .mini-row span:last-child { color: var(--muted); font-size:.88rem; }
+
+    .command-center { margin: 8px 0 22px; padding: clamp(18px, 3vw, 28px); border: 1px solid var(--line); border-radius: var(--radius-xl); background: linear-gradient(145deg, rgba(var(--accent-rgb),.12), var(--card)); box-shadow: var(--shadow); backdrop-filter: blur(20px); }
+    .command-head { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; margin-bottom:18px; }
+    .command-head h2 { margin:4px 0 0; font-size:clamp(1.65rem,4vw,2.45rem); letter-spacing:-.055em; }
+    .command-head p { margin:7px 0 0; color:var(--muted); font-weight:650; line-height:1.55; }
+    .live-status { display:inline-flex; align-items:center; gap:8px; color:var(--accent); font-size:.78rem; font-weight:950; letter-spacing:.12em; text-transform:uppercase; }
+    .live-status::before { content:""; width:9px; height:9px; border-radius:50%; background:#64e896; box-shadow:0 0 15px #64e896; }
+    .command-actions { display:flex; gap:9px; flex-wrap:wrap; justify-content:flex-end; }
+    .command-grid { display:grid; grid-template-columns:minmax(0,1.25fr) repeat(3,minmax(0,1fr)); gap:14px; }
+    .live-card { min-width:0; border:1px solid var(--line); border-radius:22px; padding:17px; background:rgba(5,12,27,.34); }
+    body.light .live-card { background:rgba(255,255,255,.45); }
+    .live-card h3 { margin:0 0 12px; font-size:1rem; }
+    .next-event-card { position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; min-height:238px; background:linear-gradient(145deg,rgba(var(--accent-rgb),.2),rgba(8,17,31,.58)); }
+    body.light .next-event-card { background:linear-gradient(145deg,rgba(var(--accent-rgb),.2),rgba(255,255,255,.7)); }
+    .next-event-card::after { content:""; position:absolute; width:180px; height:180px; border-radius:50%; right:-60px; bottom:-70px; background:radial-gradient(circle,rgba(var(--accent-rgb),.34),transparent 70%); }
+    .next-date { display:flex; gap:14px; align-items:center; position:relative; z-index:1; }
+    .date-tile { width:64px; min-width:64px; height:72px; display:grid; place-items:center; align-content:center; border-radius:18px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#151006; box-shadow:0 12px 28px rgba(0,0,0,.25); }
+    .date-tile strong { font-size:1.9rem; line-height:1; }
+    .date-tile span { font-size:.72rem; font-weight:950; text-transform:uppercase; }
+    .next-copy { position:relative; z-index:1; }
+    .next-copy small { color:var(--accent); font-weight:900; }
+    .next-copy h3 { margin:5px 0 4px; font-size:1.25rem; line-height:1.2; }
+    .next-copy p { margin:0; color:var(--muted); font-size:.88rem; line-height:1.45; }
+    .countdown { position:relative; z-index:1; margin-top:18px; font-family:Fredoka,Inter,sans-serif; font-size:clamp(2rem,4vw,3.1rem); font-weight:700; letter-spacing:-.05em; }
+    .countdown span { display:block; font-family:Inter,sans-serif; font-size:.75rem; letter-spacing:.1em; color:var(--muted); text-transform:uppercase; }
+    .feed-list { display:grid; gap:8px; }
+    .feed-row { display:grid; grid-template-columns:auto 1fr auto; gap:9px; align-items:center; padding:9px; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.045); text-decoration:none; min-width:0; }
+    .feed-icon { width:32px; height:32px; display:grid; place-items:center; border-radius:11px; background:rgba(var(--accent-rgb),.13); }
+    .feed-row>span:nth-child(2) { min-width:0; }
+    .feed-row strong { display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.86rem; }
+    .feed-row small { display:block; margin-top:2px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:650; }
+    .feed-row time,.feed-row>span:last-child { color:var(--muted); font-size:.72rem; font-weight:850; white-space:nowrap; }
+    .draft-alert { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:14px; padding:13px 15px; border:1px solid rgba(255,176,115,.5); border-radius:17px; background:rgba(255,139,75,.13); }
+    .draft-alert[hidden] { display:none; }
+    .draft-alert strong { display:block; }
+    .draft-alert span { color:var(--muted); font-size:.87rem; }
+    .draft-links { display:flex; flex-wrap:wrap; gap:7px; justify-content:flex-end; }
+    .draft-links a { padding:7px 10px; border:1px solid var(--line); border-radius:999px; text-decoration:none; font-size:.8rem; font-weight:900; }
+    .server-overview { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:14px; }
+    .server-summary { position:relative; overflow:hidden; min-height:148px; padding:17px; border:1px solid var(--line); border-radius:20px; text-decoration:none; background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035)); }
+    .server-summary::after { content:""; position:absolute; width:110px; height:110px; border-radius:50%; right:-42px; top:-42px; background:var(--server-color); opacity:.19; }
+    .server-summary[data-server="inazuma"] { --server-color:#51b8ff; }
+    .server-summary[data-server="dragonball"] { --server-color:#ff8b3d; }
+    .server-summary[data-server="pokemon"] { --server-color:#57d58b; }
+    .server-top { display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .server-top strong { font-size:1rem; }
+    .server-top span { font-size:1.45rem; }
+    .server-numbers { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:18px; }
+    .server-number { padding:8px; border-radius:12px; background:rgba(255,255,255,.055); }
+    .server-number strong { display:block; font-size:1.05rem; }
+    .server-number small { color:var(--muted); font-size:.67rem; font-weight:800; }
+    .global-results { margin:-10px 0 22px; padding:18px; border:1px solid var(--line); border-radius:var(--radius-xl); background:linear-gradient(180deg,var(--card-strong),var(--card)); box-shadow:var(--shadow); }
+    .global-results[hidden] { display:none; }
+    .result-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .result-head h2 { margin:0; font-size:1.08rem; }
+    .result-head span { color:var(--muted); font-size:.85rem; font-weight:800; }
+    .result-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(235px,1fr)); gap:9px; }
+    .result-item { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; min-width:0; padding:12px; border:1px solid var(--line); border-radius:15px; background:rgba(255,255,255,.05); text-decoration:none; }
+    .result-item:hover,.feed-row:hover,.server-summary:hover { border-color:rgba(var(--accent-rgb),.48); background:rgba(var(--accent-rgb),.1); }
+    .result-item>span:first-child { font-size:1.2rem; }
+    .result-item strong,.result-item small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .result-item small { color:var(--muted); margin-top:2px; }
+    .result-kind { color:var(--accent); font-size:.7rem; font-weight:900; text-transform:uppercase; }
 
     .section-group { margin-top: 28px; }
     .section-title { display:flex; align-items:center; justify-content:space-between; gap: 12px; margin-bottom: 14px; }
@@ -218,7 +281,9 @@
     .empty { border: 1px dashed var(--line); border-radius: var(--radius-xl); padding: 34px; color: var(--muted); text-align:center; font-weight: 800; background: rgba(255,255,255,.05); }
     footer { margin-top: 54px; color: var(--muted); text-align:center; font-weight: 800; }
     @keyframes fadeIn { from { opacity:0; transform: translateY(-6px); } to { opacity:1; transform:none; } }
-    @media (max-width: 820px) { .topbar, .hero, .control-panel, .music-grid { grid-template-columns: 1fr; } .topbar { border-radius: 24px; align-items: stretch; } .top-actions, .tabs { justify-content: flex-start; } .hero { padding-top: 28px; } .stats { grid-template-columns: 1fr; } .volume { width: 100%; } }
+    @media (max-width: 1240px) { .command-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .next-event-card { grid-row:span 2; } }
+    @media (max-width: 820px) { .topbar, .hero, .control-panel, .music-grid { grid-template-columns: 1fr; } .topbar { border-radius: 24px; align-items: stretch; } .top-actions, .tabs { justify-content: flex-start; } .hero { padding-top: 28px; } .stats { grid-template-columns: repeat(3,1fr); } .volume { width: 100%; } .command-head { align-items:flex-start; flex-direction:column; } .command-actions { justify-content:flex-start; } .server-overview { grid-template-columns:1fr; } }
+    @media (max-width: 600px) { .command-grid { grid-template-columns:1fr; } .next-event-card { grid-row:auto; min-height:210px; } .stats { grid-template-columns:1fr; } .draft-alert { align-items:flex-start; flex-direction:column; } .draft-links { justify-content:flex-start; } }
     .watermark { position: fixed; bottom: 15px; right: 20px; width: 90px; opacity: 0.12; filter: brightness(0.8) contrast(1.2); pointer-events: none; z-index:1; }
     body.light .watermark { filter: invert(1); opacity: 0.07; }
   </style>
@@ -229,6 +294,7 @@
     <nav class="topbar" aria-label="Navegación superior">
       <div class="brand"><span class="brand-badge">🐉</span><span>RP HUB</span></div>
       <div class="top-actions">
+        <button class="pill-button" id="activityBtn">📡 Actividad</button>
         <button class="pill-button" id="musicBtn">🎵 Música</button>
         <button class="pill-button" id="achievementsBtn">🏆 Logros</button>
         <button class="pill-button" id="randomBtn">🎲 Sorpréndeme</button>
@@ -239,13 +305,13 @@
 
     <section class="hero">
       <div class="hero-card">
-        <div class="eyebrow">✨ Ultimate Edition</div>
-        <h1>Tu universo, pero ordenado.</h1>
-        <p>Un HUB más vivo: favoritos, accesos rápidos, fondos por universo, colores dinámicos, contador de uso, logros, música elegida desde el código y botón de página aleatoria.</p>
+        <div class="eyebrow">✨ HUB 2.0 · Datos conectados</div>
+        <h1>Todo tu rol.<br>En un vistazo.</h1>
+        <p>La portada reúne lo que está ocurriendo en los tres servidores: próximas fechas, actividad narrativa, relaciones y accesos para continuar exactamente donde lo dejaste.</p>
         <div class="stats">
           <div class="stat"><strong id="totalPages">0</strong><span>Páginas</span></div>
-          <div class="stat"><strong id="totalCategories">0</strong><span>Categorías</span></div>
-          <div class="stat"><strong id="wipPages">0</strong><span>En progreso</span></div>
+          <div class="stat"><strong id="totalEvents">0</strong><span>Fechas conectadas</span></div>
+          <div class="stat"><strong id="totalCharacters">0</strong><span>Personajes enlazados</span></div>
         </div>
       </div>
 
@@ -257,6 +323,21 @@
           <div class="quote-meaning" id="quoteMeaning"></div>
         </div>
       </aside>
+    </section>
+
+    <section class="command-center" id="activityCenter" aria-labelledby="activityTitle">
+      <div class="command-head">
+        <div><div class="live-status">Información del código</div><h2 id="activityTitle">Centro de control</h2><p>Calendario, Crónicas y Relaciones reunidos sin repetir información.</p></div>
+        <div class="command-actions"><a class="pill-button" href="calendario.html" data-open-page="calendario-conectado">Abrir agenda</a><a class="pill-button" href="cronica.html" data-open-page="cronicas-del-rol">Nueva crónica</a></div>
+      </div>
+      <div class="command-grid">
+        <article class="live-card next-event-card" id="nextEventCard"></article>
+        <article class="live-card"><h3>🗓️ Próximos 7 días</h3><div class="feed-list" id="upcomingFeed"></div></article>
+        <article class="live-card"><h3>⌛ Últimas crónicas</h3><div class="feed-list" id="chronicleFeed"></div></article>
+        <article class="live-card"><h3>💖 Últimos vínculos</h3><div class="feed-list" id="relationshipFeed"></div></article>
+      </div>
+      <div class="draft-alert" id="draftAlert" hidden></div>
+      <div class="server-overview" id="serverOverview"></div>
     </section>
 
     <section class="quick-panel">
@@ -289,10 +370,12 @@
     <section class="control-panel">
       <label class="search">
         <span>🔎</span>
-        <input id="searchInput" type="search" placeholder="Buscar página, categoría, descripción..." autocomplete="off" />
+        <input id="searchInput" type="search" placeholder="Buscar páginas, fechas, crónicas, personajes o relaciones..." autocomplete="off" />
       </label>
       <div class="tabs" id="tabs"></div>
     </section>
+
+    <section class="global-results" id="globalResults" hidden></section>
 
     <section class="dashboard" id="dashboard"></section>
     <section id="content"></section>
@@ -303,23 +386,28 @@
 
   <audio id="hubAudio" preload="none"></audio>
 
+  <script src="cronica-datos.js"></script>
+  <script src="relaciones-datos.js"></script>
+  <script src="calendario-datos.js"></script>
   <script>
     const PAGES = [
       { title: "Árbol Familiar", category: "Inazuma Eleven", emoji: "🌳", url: "Hijos Inazuma/index.html", description: "Linajes, hijos, familias y relaciones del universo Inazuma." },
       { title: "Posiciones", category: "Inazuma Eleven", emoji: "📍", url: "posiciones.html", description: "Organiza jugadores, roles, puestos y estructura de equipos.", status: "" },
-      { title: "Team Builder", category: "Inazuma Eleven", emoji: "⚽", url: "plantillas_inazuma/plantillas-inazuma.html", description: "Un team builder hecho únicamente para el rol!", status: ""},
+      { title: "Team Builder", category: "Inazuma Eleven", emoji: "⚽", url: "plantillas_inazuma/plantillas-inazuma.html?v=7", description: "Centro táctico para crear alineaciones, analizar química, preparar partidos y exportar equipos.", status: "Renovado"},
+      { title: "Inazuma Central", category: "Inazuma Eleven", emoji: "🏟️", url: "centro-inazuma.html?v=5", description: "Centro deportivo de jugadores, equipos, técnicas, estadísticas y temporada.", status: "Nuevo" },
       { title: "Raimon.com", category: "Inazuma Eleven", emoji: "📋", url: "estadísticas Inazuma/estadisticas.html", description: "La página donde se verán las stats de cada jugador.", status: "" },
       { title: "Inventario", category: "Inazuma Eleven", emoji: "📦", url: "sts/sts.html", description: "Aquí podrás ver toda la info en cuanto a STs, EGs y Mimiximax de todos los personajes.", status: ""},
       { title: "Calculadora de Precios", category: "Inazuma Eleven", emoji: "💶", url: "calculadora-precios.html", description: "Calculadora para determinar los precios de los artículos en el universo Inazuma.", status: ""},
       { title: "Historial de Partidos", category: "Inazuma Eleven", emoji: "📜", url: "historial/historialpartidos.html", description: "Registro de partidos, resultados y estadísticas de los equipos.", status: "" },
 
       { title: "Héroes", category: "Dragon Ball", emoji: "🦸", url: "heroes.html", description: "Registro de héroes, personajes y fichas del servidor Dragon Ball.", status: "" },
+      { title: "Dragon Dex", category: "Dragon Ball", emoji: "🐲", url: "dragon-dex.html", description: "Centro unificado de guerreros, poder, transformaciones, linajes y sellos.", status: "Nuevo" },
       { title: "Poder", category: "Dragon Ball", emoji: "⚡", url: "poder.html", description: "Escalas, niveles de poder y referencias de fuerza.", status: "" },
       { title: "Árbol Familiar DB", category: "Dragon Ball", emoji: "🌳", url: "parejasdragonball.html", description: "Familias, parejas y descendencia del universo Dragon Ball.", status: "" },
-      { title: "Transformaciones", category: "Dragon Ball", emoji: "🔺", url: "transformacionesdragonball.html", description: "Catálogo de transformaciones, apariencias y multiplicadores.", status: "Sin terminar" },
+      { title: "Transformaciones", category: "Dragon Ball", emoji: "🔺", url: "transformacionesdragonball.html?v=2", description: "Archivo de formas, rutas evolutivas, multiplicadores, poder y condiciones.", status: "Renovado" },
       { title: "Torneos", category: "Dragon Ball", emoji: "🏆", url: "torneos.html", description: "Generador de torneos simple. V16 combatientes.", status: "Sin terminar" },
       { title: "Fusiones", category: "Dragon Ball", emoji: "🔀", url: "fusiones.html", description: "Generador de nombres para fusiones con combinaciones aleatorias y personalizadas.", status: "" },
-      { title: "Sellos de Tao", category: "Dragon Ball", emoji: "🌀", url: "sellos tao.html", description: "Registro de sellos de Tao, técnicas y habilidades especiales.", status: "" },
+      { title: "Sellos de Tao", category: "Dragon Ball", emoji: "🌀", url: "sellos tao.html?v=2", description: "Expediente de los quince sellos, sus capacidades, riesgos y combinaciones.", status: "Renovado" },
       
       { title: "Equipos", category: "Pokémon", "emoji": "⚔️", url: "Pokemon/index.html", description: "Registro de equipos, entrenadores y criaturas del universo Pokémon.", status: "Sin terminar" },
       { title: "Mapa", category: "Pokémon", emoji: "🗺️", url: "Pokemon/mapa etruria.html", description: "Mapa interactivo de la región de Etruria.", status: "" },
@@ -327,6 +415,7 @@
       { title: "Evolink", category: "Pokémon", emoji: "📱", url: "compromised/index.html", description: "Sistema Operativo desarrollado por el Instituto Infinte Y para los entrenadores de la Profesora Romaine.", status: "", disabled:true }, 
       { title: "PokéDamage Calculator", category: "Pokémon", emoji: "🧮", url: "Pokemon/dsadsa/index.html", description: "Una calculadora en construcción para calcular los daños de los Pokémon en competitivo", status: ""},
       
+      { title: "Crónicas del Rol", category: "General", emoji: "⌛", url: "cronica.html", description: "Tres archivos narrativos con estilos propios para Inazuma, Dragon Ball y Pokémon.", status: "Restaurado" },
       { title: "Personajes", category: "General", emoji: "👤", url: "personajes.html", description: "Entrada general para fichas de personajes y datos de rol.", status: "" },
       { title: "Embarazos", category: "General", emoji: "🤰", url: "embarazos.html", description: "Seguimiento de embarazos, fechas y relaciones familiares.", status: "" },
       { title: "Códigos", category: "General", emoji: "💻", url: "Hub/index.html", description: "Hub para códigos..", status: "" },
@@ -334,8 +423,8 @@
       { title: "Bolos", category: "General", emoji: "🎳", url: "bolos.html", description: "Calculadora de una partida de bolos.", status: "Nuevo" },
       { title: "Clima", category: "General", emoji: "🌤️", url: "clima.html", description: "Página de clima y ambiente para escenas de rol.", status: "" },
       { title: "Resonance\u2122", category: "General", emoji: "🎵", url: "OST/index.html", description: "Soundtracks de batalla, temas de personajes y música de escena.", status: "" },
-      { title: "Calendario", category: "General", emoji: "📆", url: "calendario.html", description: "Cumpleaños, aniversarios, eventos y fechas importantes.", status: "" },
-      { title: "Relaciones", category: "General", emoji: "💖", url: "relaciones.html", description: "Mapa de relaciones entre personajes y vínculos importantes.", status: "Sin terminar" },
+      { title: "Calendario Conectado", category: "General", emoji: "📆", url: "calendario.html", description: "Agenda de cumpleaños, aniversarios, sesiones y acontecimientos de los servidores.", status: "Nuevo" },
+      { title: "Relaciones 2.0", category: "General", emoji: "💖", url: "relaciones.html", description: "Mapa narrativo de personajes, vínculos, estados y evolución de relaciones.", status: "Nuevo" },
       { title: "Series", category: "General", emoji: "🎥", url: "Series/series.html", description: "Cantidad de series que hemos visto y/o tenemos a medias.", status: "" },
 ];
 
@@ -382,7 +471,7 @@
       { title: "Tema 3", src: "music/Chill PKM 1h.mp3" }
     ];
 
-    const QUICK_LINK_TITLES = ["Poder", "Calendario", "Team Builder", "Inventario", "Personajes", "Árbol Familiar"];
+    const QUICK_LINK_TITLES = ["Dragon Dex", "Inazuma Central", "Calendario Conectado", "Inventario", "Personajes", "Árbol Familiar"];
 
     const quotes = [
         { text: "El fútbol no se juega solo con los pies. También se juega con lo que eres.", author: "RP Inazuma" },
@@ -651,11 +740,20 @@
     const quickLinks = document.getElementById("quickLinks");
     const dashboard = document.getElementById("dashboard");
     const resetBgBtn = document.getElementById("resetBgBtn");
+    const activityBtn = document.getElementById("activityBtn");
+    const nextEventCard = document.getElementById("nextEventCard");
+    const upcomingFeed = document.getElementById("upcomingFeed");
+    const chronicleFeed = document.getElementById("chronicleFeed");
+    const relationshipFeed = document.getElementById("relationshipFeed");
+    const draftAlert = document.getElementById("draftAlert");
+    const serverOverview = document.getElementById("serverOverview");
+    const globalResults = document.getElementById("globalResults");
 
     const LS = {
       theme: "rp-hub-theme",
       favorites: "rp-hub-favorites",
       visits: "rp-hub-visits",
+      history: "rp-hub-history-v2",
       volume: "rp-hub-volume",
       achievements: "rp-hub-achievements"
     };
@@ -695,10 +793,13 @@
     }
 
     function getVisits() { return readJSON(LS.visits, {}); }
+    function getHistory() { return readJSON(LS.history, []); }
     function registerVisit(pageId) {
       const visits = getVisits();
       visits[pageId] = (visits[pageId] || 0) + 1;
       writeJSON(LS.visits, visits);
+      const history = getHistory().filter(item => item.id !== pageId);
+      writeJSON(LS.history, [{ id: pageId, at: Date.now() }, ...history].slice(0, 10));
       updateAchievements();
     }
 
@@ -778,10 +879,131 @@
       setCurrentTrack(currentTrackIndex - 1, keepPlaying);
     }
 
+    const SERVER_META = [
+      { key:"inazuma", name:"Inazuma Eleven", icon:"⚽", chronicle:"Inazuma Eleven", hash:"inazuma" },
+      { key:"dragonball", name:"Dragon Ball", icon:"🐉", chronicle:"Dragon Ball", hash:"dragonball" },
+      { key:"pokemon", name:"Pokémon · Etruria", icon:"🧭", chronicle:"Pokémon", hash:"pokemon" }
+    ];
+    const CALENDAR_TYPE_META = {
+      birthday:["🎂","Cumpleaños"], anniversary:["💞","Aniversario"], match:["⚽","Partido"], session:["🎲","Sesión"], birth:["🍼","Nacimiento"], tournament:["🏆","Torneo"], story:["✨","Acontecimiento"], reminder:["🔔","Recordatorio"]
+    };
+    const RELATION_TYPE_META = { love:"💖", friendship:"🤝", family:"🌳", rivalry:"⚔️", hate:"💢", alliance:"🛡️", mentor:"📚", broken:"💔", secret:"🔒" };
+
+    function chroniclesData() { return Array.isArray(window.CRONICA_EVENTS) ? window.CRONICA_EVENTS : []; }
+    function calendarData() { return Array.isArray(window.CALENDAR_EVENTS) ? window.CALENDAR_EVENTS : []; }
+    function relationshipsData() {
+      const source = window.RELATIONSHIP_DATA || {};
+      return { characters:Array.isArray(source.characters) ? source.characters : [], relationships:Array.isArray(source.relationships) ? source.relationships : [] };
+    }
+    function isSameDay(a,b) { return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+    function nextOccurrence(item, now = new Date()) {
+      let year = item.year == null ? now.getFullYear() : Number(item.year);
+      const parts = String(item.time || "12:00").split(":").map(Number);
+      let date = new Date(year, Number(item.month)-1, Number(item.day), parts[0] || 0, parts[1] || 0);
+      if (item.year == null && date < now && !isSameDay(date,now)) date = new Date(year+1, Number(item.month)-1, Number(item.day), parts[0] || 0, parts[1] || 0);
+      if (item.year != null && date < now && !isSameDay(date,now)) return null;
+      return date;
+    }
+    function upcomingCalendar() {
+      const now = new Date();
+      return calendarData().map(item => ({ item, date:nextOccurrence(item,now) })).filter(entry => entry.date).sort((a,b) => a.date-b.date);
+    }
+    function daysUntil(date) {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const target = new Date(date); target.setHours(0,0,0,0);
+      return Math.round((target-today)/86400000);
+    }
+    function formatHubDate(date, options={day:"numeric",month:"short"}) { return new Intl.DateTimeFormat("es-ES",options).format(date); }
+    function calendarMeta(item) { return CALENDAR_TYPE_META[item.type] || ["📌", String(item.type || "Fecha")]; }
+    function chronicleHref(universe) {
+      const server = SERVER_META.find(item => item.chronicle === universe);
+      return `cronica.html${server ? `#${server.hash}` : "#multiverse"}`;
+    }
+
+    function renderNextEvent(entries) {
+      const next = entries[0];
+      if (!next) {
+        nextEventCard.innerHTML = `<div class="next-copy"><small>Próximo acontecimiento</small><h3>No hay fechas futuras</h3><p>Añade una fecha desde el Calendario Conectado.</p></div><a class="pill-button" href="calendario.html" data-open-page="calendario-conectado">Abrir calendario</a>`;
+        return;
+      }
+      const [icon,type] = calendarMeta(next.item);
+      const days = daysUntil(next.date);
+      const month = formatHubDate(next.date,{month:"short"}).replace(".","");
+      const countdown = days===0 ? "Hoy" : days===1 ? "Mañana" : `${days} días`;
+      nextEventCard.innerHTML = `<div class="next-date"><div class="date-tile"><strong>${next.date.getDate()}</strong><span>${escapeHTML(month)}</span></div><div class="next-copy"><small>${icon} ${escapeHTML(type)}</small><h3>${escapeHTML(next.item.title)}</h3><p>${escapeHTML(next.item.note || "Próxima fecha del rol")}${next.item.time ? ` · ${escapeHTML(next.item.time)}` : ""}</p></div></div><div class="countdown">${escapeHTML(countdown)}<span>${formatHubDate(next.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</span></div>`;
+    }
+
+    function renderUpcoming(entries) {
+      const soon = entries.filter(entry => daysUntil(entry.date) <= 7).slice(0,4);
+      upcomingFeed.innerHTML = soon.length ? soon.map(({item,date}) => { const [icon,type]=calendarMeta(item); return `<a class="feed-row" href="${escapeHTML(item.link || "calendario.html")}" data-open-page="calendario-conectado"><span class="feed-icon">${icon}</span><span><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(type)}</small></span><time>${daysUntil(date)===0 ? "Hoy" : formatHubDate(date)}</time></a>`; }).join("") : `<div class="mini-row"><span>Semana tranquila</span><span>Sin fechas</span></div>`;
+    }
+
+    function renderChronicles() {
+      const entries = [...chroniclesData()].sort((a,b) => String(b.date || "").localeCompare(String(a.date || "")) || Number(b.createdAt || 0)-Number(a.createdAt || 0)).slice(0,4);
+      chronicleFeed.innerHTML = entries.length ? entries.map(item => `<a class="feed-row" href="${escapeHTML(chronicleHref(item.universe))}" data-open-page="cronicas-del-rol"><span class="feed-icon">${item.universe==="Inazuma Eleven"?"⚽":item.universe==="Dragon Ball"?"🐉":item.universe==="Pokémon"?"🧭":"⌛"}</span><span><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.arc || item.type || "Crónica")}</small></span><time>${item.date ? escapeHTML(item.date.slice(5).split("-").reverse().join("/")) : "—"}</time></a>`).join("") : `<div class="mini-row"><span>Aún no hay crónicas</span><span>Vacío</span></div>`;
+    }
+
+    function renderRelationships() {
+      const data = relationshipsData();
+      const names = Object.fromEntries(data.characters.map(item => [item.id,item.name]));
+      const entries = [...data.relationships].slice(-4).reverse();
+      relationshipFeed.innerHTML = entries.length ? entries.map(item => `<a class="feed-row" href="relaciones.html" data-open-page="relaciones-2-0"><span class="feed-icon">${RELATION_TYPE_META[item.type] || "🔗"}</span><span><strong>${escapeHTML(item.title || "Vínculo")}</strong><small>${escapeHTML(names[item.from] || item.from)} · ${escapeHTML(names[item.to] || item.to)}</small></span><span>${Number(item.intensity || 0)}/5</span></a>`).join("") : `<div class="mini-row"><span>Aún no hay relaciones</span><span>Vacío</span></div>`;
+    }
+
+    function renderDraftAlert() {
+      const drafts = [
+        { keys:["rpChronicleDraftV2","rpChronicleEventsV1"], label:"Crónicas", href:"cronica.html", page:"cronicas-del-rol" },
+        { keys:["rpRelationshipsDraftV2"], label:"Relaciones", href:"relaciones.html", page:"relaciones-2-0" },
+        { keys:["rpCalendarDraftV2"], label:"Calendario", href:"calendario.html", page:"calendario-conectado" }
+      ].filter(group => group.keys.some(key => { try { return Boolean(localStorage.getItem(key)); } catch { return false; } }));
+      if (!drafts.length) { draftAlert.hidden=true; draftAlert.innerHTML=""; return; }
+      draftAlert.hidden=false;
+      draftAlert.innerHTML=`<div><strong>⚠️ ${drafts.length===1 ? "Hay cambios pendientes de guardar" : "Hay cambios pendientes en varias páginas"}</strong><span>Los borradores están a salvo en este navegador, pero todavía no están escritos en el código.</span></div><div class="draft-links">${drafts.map(item => `<a href="${item.href}" data-open-page="${item.page}">${escapeHTML(item.label)} →</a>`).join("")}</div>`;
+    }
+
+    function renderServers() {
+      const chronicles = chroniclesData(), calendar = calendarData(), relations = relationshipsData();
+      serverOverview.innerHTML = SERVER_META.map(server => {
+        const chronicleCount = chronicles.filter(item => item.universe===server.chronicle).length;
+        const dateCount = calendar.filter(item => normalize(item.universe)===server.key).length;
+        const characterCount = relations.characters.filter(item => normalize(item.universe)===server.key).length;
+        return `<a class="server-summary" data-server="${server.key}" href="cronica.html#${server.hash}" data-open-page="cronicas-del-rol"><div class="server-top"><strong>${escapeHTML(server.name)}</strong><span>${server.icon}</span></div><div class="server-numbers"><div class="server-number"><strong>${chronicleCount}</strong><small>Crónicas</small></div><div class="server-number"><strong>${dateCount}</strong><small>Fechas</small></div><div class="server-number"><strong>${characterCount}</strong><small>Personajes</small></div></div></a>`;
+      }).join("");
+    }
+
+    function renderLiveHub() {
+      const upcoming = upcomingCalendar();
+      renderNextEvent(upcoming);
+      renderUpcoming(upcoming);
+      renderChronicles();
+      renderRelationships();
+      renderDraftAlert();
+      renderServers();
+    }
+
+    function globalSearchItems(query) {
+      const q=normalize(query), items=[];
+      if(!q)return items;
+      ENRICHED_PAGES.forEach(page => items.push({icon:page.emoji,title:page.title,meta:page.category,kind:"Página",href:page.url,pageId:page.id,search:`${page.title} ${page.category} ${page.description} ${page.status || ""}`}));
+      chroniclesData().forEach(item => items.push({icon:"⌛",title:item.title,meta:`${item.universe} · ${item.arc || item.type}`,kind:"Crónica",href:chronicleHref(item.universe),pageId:"cronicas-del-rol",search:`${item.title} ${item.universe} ${item.type} ${item.arc} ${(item.characters||[]).join(" ")} ${item.location} ${item.summary}`}));
+      calendarData().forEach(item => { const meta=calendarMeta(item); items.push({icon:meta[0],title:item.title,meta:`${meta[1]} · ${String(item.day).padStart(2,"0")}/${String(item.month).padStart(2,"0")}`,kind:"Fecha",href:item.link||"calendario.html",pageId:"calendario-conectado",search:`${item.title} ${item.note} ${item.type} ${item.universe}`}); });
+      const rel=relationshipsData(), names=Object.fromEntries(rel.characters.map(item=>[item.id,item.name]));
+      rel.relationships.forEach(item => items.push({icon:RELATION_TYPE_META[item.type]||"🔗",title:item.title||"Relación",meta:`${names[item.from]||item.from} · ${names[item.to]||item.to}`,kind:"Relación",href:"relaciones.html",pageId:"relaciones-2-0",search:`${item.title} ${item.description} ${item.type} ${names[item.from]} ${names[item.to]}`}));
+      return items.filter(item => normalize(item.search).includes(q)).slice(0,15);
+    }
+
+    function renderGlobalSearch() {
+      const query=state.query.trim();
+      if(query.length<2){globalResults.hidden=true;globalResults.innerHTML="";return;}
+      const results=globalSearchItems(query);
+      globalResults.hidden=false;
+      globalResults.innerHTML=`<div class="result-head"><h2>Resultados en toda la web</h2><span>${results.length}${results.length===15?"+":""} coincidencias</span></div>${results.length?`<div class="result-grid">${results.map(item=>`<a class="result-item" href="${escapeHTML(item.href)}" data-open-page="${escapeHTML(item.pageId)}"><span>${item.icon}</span><span><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.meta)}</small></span><span class="result-kind">${escapeHTML(item.kind)}</span></a>`).join("")}</div>`:`<div class="empty">No aparece nada con “${escapeHTML(query)}”.</div>`}`;
+    }
+
     function renderStats() {
       document.getElementById("totalPages").textContent = ENRICHED_PAGES.length;
-      document.getElementById("totalCategories").textContent = new Set(ENRICHED_PAGES.map(page => page.category)).size;
-      document.getElementById("wipPages").textContent = ENRICHED_PAGES.filter(page => normalize(page.status).includes("constru") || normalize(page.status).includes("terminar") || normalize(page.status).includes("progreso")).length;
+      document.getElementById("totalEvents").textContent = calendarData().length;
+      document.getElementById("totalCharacters").textContent = relationshipsData().characters.length;
     }
 
     function renderTabs() {
@@ -803,7 +1025,12 @@
         .slice(0, 5);
       const favs = getFavorites();
       const favoritePages = ENRICHED_PAGES.filter(page => favs.includes(page.id)).slice(0, 5);
+      const recentPages = getHistory().map(entry => ({ ...entry, page:ENRICHED_PAGES.find(page => page.id===entry.id) })).filter(entry => entry.page).slice(0,5);
       dashboard.innerHTML = `
+        <article class="dashboard-card">
+          <h2>↩️ Continuar donde lo dejaste</h2>
+          <div class="mini-list">${recentPages.length ? recentPages.map(entry => `<a class="mini-row" href="${escapeHTML(entry.page.url)}" data-open-page="${entry.page.id}"><span>${escapeHTML(entry.page.emoji)} ${escapeHTML(entry.page.title)}</span><span>${formatHubDate(new Date(entry.at),{day:"2-digit",month:"short"})}</span></a>`).join("") : `<div class="mini-row"><span>Abre una página para iniciar el historial</span><span>Nuevo</span></div>`}</div>
+        </article>
         <article class="dashboard-card">
           <h2>🔥 Más utilizadas</h2>
           <div class="mini-list">${mostUsed.length ? mostUsed.map(page => `<a class="mini-row" href="${escapeHTML(page.url)}" data-open-page="${page.id}"><span>${escapeHTML(page.emoji)} ${escapeHTML(page.title)}</span><span>${page.visits} visitas</span></a>`).join("") : `<div class="mini-row"><span>Aún no hay visitas guardadas</span><span>0</span></div>`}</div>
@@ -887,7 +1114,7 @@
       `).join("");
     }
 
-    function render() { renderStats(); renderTabs(); renderQuickLinks(); renderDashboard(); renderPages(); renderAchievements(); }
+    function render() { renderStats(); renderTabs(); renderQuickLinks(); renderLiveHub(); renderDashboard(); renderPages(); renderGlobalSearch(); renderAchievements(); }
 
     function showRandomQuote() {
       const random = quotes[Math.floor(Math.random() * quotes.length)];
@@ -913,7 +1140,8 @@
       applyVisualTheme(config);
     });
 
-    searchInput.addEventListener("input", event => { state.query = event.target.value; renderPages(); });
+    searchInput.addEventListener("input", event => { state.query = event.target.value; renderPages(); renderGlobalSearch(); });
+    activityBtn.addEventListener("click", () => document.getElementById("activityCenter").scrollIntoView({behavior:"smooth",block:"start"}));
     themeBtn.addEventListener("click", () => { const isLight = document.body.classList.contains("light"); localStorage.setItem(LS.theme, isLight ? "dark" : "light"); applyTheme(); });
     musicBtn.addEventListener("click", () => musicPanel.classList.toggle("open"));
     achievementsBtn.addEventListener("click", () => achievementsPanel.classList.toggle("open"));
@@ -972,6 +1200,7 @@
     setCurrentTrack(0, false);
     showRandomQuote();
     setInterval(showRandomQuote, 25000);
+    setInterval(renderLiveHub, 60000);
   </script>
 </body>
 </html>

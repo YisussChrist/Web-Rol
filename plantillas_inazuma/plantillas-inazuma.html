@@ -1,346 +1,167 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Creador de Plantillas Inazuma V6</title>
-  <link rel="stylesheet" href="plantillas-inazuma.css?v=quimica-presencia-1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071d38">
+  <title>Centro Táctico · Inazuma Central</title>
+  <link rel="stylesheet" href="plantillas-inazuma.css?v=7">
 </head>
 <body>
-  <div class="bg-orbs"></div>
-
-  <!-- Welcome / loading overlay -->
-  <div id="welcomeOverlay" class="welcome-overlay" aria-hidden="false">
-    <div class="welcome-inner">
-      <div class="welcome-logo">⚽</div>
-      <h2 class="welcome-title">Inazuma Eleven</h2>
-
-      <div class="welcome-stage">
-        <div class="bolt"></div>
-        <div class="ball" aria-hidden="true"></div>
-      </div>
-
-      <div id="welcomeSub" class="welcome-sub">Cargando plantilla…</div>
-      <div id="welcomeMsg" class="welcome-msg" aria-hidden="true">¡Bienvenido, entrenador!</div>
-      <button id="skipIntro" class="skip-intro" aria-label="Saltar intro">Saltar</button>
+  <div class="stadium-glow" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="../centro-inazuma.html" aria-label="Volver a Inazuma Central">
+      <span class="brand-mark">XI</span>
+      <span><small>INAZUMA CENTRAL</small><strong>Centro Táctico</strong></span>
+    </a>
+    <div class="top-actions">
+      <span id="saveState" class="save-state"><i></i> Guardado local</span>
+      <a class="button quiet" href="../index.html">← HUB</a>
+      <button class="button quiet" id="focusButton" type="button">⛶ Solo campo</button>
+      <button class="button accent" id="copyButton" type="button">Copiar para Discord</button>
     </div>
-  </div>
+  </header>
 
-  <main class="app">
-    <section class="topbar">
-      <div class="brand">
-        <div class="logo-ball">⚽</div>
-        <div>
-          <h1>Creador de Plantillas Inazuma</h1>
-          <p>V6 · Interfaz táctica limpia · Filtros FIFA precisos</p>
+  <main class="app-shell">
+    <section class="command-bar" aria-label="Controles de plantilla">
+      <div class="squad-switcher control-group">
+        <button class="icon-button" id="previousSquad" type="button" title="Plantilla anterior">‹</button>
+        <label><span>Plantilla activa</span><select id="squadSelect"></select></label>
+        <button class="icon-button" id="nextSquad" type="button" title="Plantilla siguiente">›</button>
+      </div>
+      <div class="control-group compact-actions">
+        <button class="mini-button" id="newSquad" type="button">＋ Nueva</button>
+        <button class="mini-button" id="duplicateSquad" type="button">Duplicar</button>
+        <button class="mini-button danger-text" id="deleteSquad" type="button">Borrar</button>
+      </div>
+      <label class="formation-control"><span>Formación</span><select id="formationSelect"></select></label>
+      <div class="command-spacer"></div>
+      <button class="icon-button" id="undoButton" type="button" title="Deshacer" disabled>↶</button>
+      <button class="icon-button" id="redoButton" type="button" title="Rehacer" disabled>↷</button>
+      <button class="mini-button active" id="chemistryButton" type="button">✦ Química</button>
+      <details class="more-menu">
+        <summary class="mini-button">••• Más</summary>
+        <div class="more-panel">
+          <button id="draftButton" type="button">🎲 Crear por draft</button>
+          <button id="techniqueButton" type="button">⚡ Crear supertécnica</button>
+          <button id="clearButton" type="button">⌫ Vaciar plantilla</button>
+          <button id="exportButton" type="button">⇩ Exportar equipo</button>
+          <button id="importButton" type="button">⇧ Importar equipo</button>
+          <button id="copyCodeButton" type="button">⌘ Copiar código</button>
         </div>
-      </div>
-      <div class="actions">
-        <details class="external-builder-menu">
-          <summary>Builders externos</summary>
-          <div class="external-builder-panel">
-            <a class="external-builder-link" href="https://inazuma-eleven.fr/team-builder/" target="_blank" rel="noopener noreferrer">
-              Abrir Team Builder Francés
-            </a>
-            <a class="external-builder-link secondary" href="https://inazuma-eleven.fr/archive/team-builder/" target="_blank" rel="noopener noreferrer">
-              Versión clásica
-            </a>
-            <p>Úsalo para equipos rivales puntuales sin meter personajes temporales en la web.</p>
-          </div>
-        </details>
-        <button id="btnCopiar">Copiar Discord</button>
-        <button id="btnCopiarCodigo">Copiar código</button>
-        <button id="btnImportarPaste">Importar paste</button>
-        <button id="btnToggleChemistry">Sinergia ON</button>
-        <button id="btnChemistryDetails">Ver ajustes</button>
-        <button id="btnVista">Vista: equilibrada</button>
-        <button id="btnExportar">Exportar JSON</button>
-        <button id="btnImportar">Importar JSON</button>
-        <input id="importFile" class="hidden-file" type="file" accept="application/json,.json" />
-        <button id="btnLimpiar">Limpiar</button>
-      </div>
+      </details>
+      <input id="importFile" type="file" accept="application/json,.json" hidden>
     </section>
 
-    <nav class="quick-actions" aria-label="Acciones rápidas">
-      <button id="quickCopiar" type="button">📋 Copiar</button>
-      <button id="quickCodigo" type="button">🔗 Código</button>
-      <button id="quickExportar" type="button">💾 Exportar</button>
-      <button id="quickImportar" type="button">📂 Importar</button>
-      <button id="quickFullscreen" type="button">⛶ Solo campo</button>
-      <button id="btnDraftV5" type="button">🎲 Draft</button>
-      <button id="btnMatchDataV5" type="button">📊 Datos partido</button>
-      <button id="btnUndoV5" type="button">↩ Deshacer</button>
-      <button id="btnRedoV5" type="button">↪ Rehacer</button>
-      <button id="btnToggleChemLinesV5" type="button">👁 Química</button>
-      <button id="btnSimMatchV5" type="button">📺 Simular</button>
-      <button id="btnStBuilderV5" type="button">⚡ Crear ST</button>
-    </nav>
-
-    <section class="layout">
-      <aside class="panel">
-        <div class="panel-header">CENTRO TÁCTICO</div>
-
-        <div class="v6-panel-tabs" aria-label="Secciones">
-          <button type="button" class="active">👥 Plantilla</button>
-          <button type="button">⚙ Equipo</button>
-          <button type="button">🎨 Diseño</button>
-          <button type="button">🧬 Química</button>
+    <section class="workspace">
+      <aside class="library panel" aria-label="Catálogo de jugadores">
+        <div class="panel-heading">
+          <div><span class="kicker">Convocatoria</span><h2>Jugadores</h2></div>
+          <span id="playerCount" class="count-badge">0</span>
         </div>
-
-        <label>Nombre del evento</label>
-        <input id="eventoInput" type="text" placeholder="Ej: Japón vs Francia" />
-
-        <label>Equipo</label>
-        <input id="equipoInput" type="text" placeholder="Ej: Japón" />
-
-        <div class="template-tools">
-          <label>Plantilla activa</label>
-          <div class="template-switcher">
-            <button id="btnPlantillaAnterior" class="template-arrow" type="button" title="Plantilla anterior">◀</button>
-            <select id="templateSelect"></select>
-            <button id="btnPlantillaSiguiente" class="template-arrow" type="button" title="Plantilla siguiente">▶</button>
-          </div>
-          <div class="template-buttons">
-            <button id="btnNuevaPlantilla" type="button">+ Nueva</button>
-            <button id="btnDuplicarPlantilla" type="button">Duplicar</button>
-            <button id="btnBorrarPlantilla" type="button">Borrar</button>
-          </div>
-        </div>
-
-        <label>Tipo de plantilla</label>
-        <select id="templateMode">
-          <option value="normal">Plantilla normal</option>
-          <option value="free">Plantilla libre por URL</option>
-        </select>
-
-        <label>Campo</label>
-        <select id="fieldStyleSelect">
-          <option value="classic">Campo clásico</option>
-          <option value="raimon">Estadio Raimon</option>
-          <option value="alpine">Alpino</option>
-          <option value="zeus">Zeus</option>
-          <option value="galaxy">Galaxia</option>
-          <option value="night">Nocturno</option>
-          <option value="rain">Lluvia</option>
-          <option value="desert">Desierto</option>
-        </select>
-
-        <label>Tema visual</label>
-        <select id="themeSelect">
-          <option value="ds">Nintendo DS</option>
-          <option value="go">GO Chrono Stones</option>
-          <option value="victory">Victory Road</option>
-          <option value="dark">Oscuro</option>
-          <option value="aero">Frutiger Aero</option>
-        </select>
-
-        <label>Zoom del campo</label>
-        <input id="zoomRange" type="range" min="80" max="160" value="100" step="10" />
-
-        <label>Formación</label>
-        <select id="formationSelect"></select>
-
-        <label>Buscar personaje</label>
-        <input id="searchInput" type="text" placeholder="Nombre, equipo o posición..." />
-
-        <div class="filters">
-          <select id="teamFilter">
-            <option value="">Todos los equipos</option>
-          </select>
-          <select id="positionFilter">
-            <option value="">Todas las posiciones</option>
-          </select>
-        </div>
-
-        <div id="playersList" class="players-list"></div>
+        <div class="search-wrap"><span>⌕</span><input id="playerSearch" type="search" placeholder="Buscar jugador o equipo…" autocomplete="off"></div>
+        <select id="teamFilter" aria-label="Filtrar por equipo"><option value="">Todos los equipos</option></select>
+        <div id="positionFilters" class="position-filters" aria-label="Filtrar por posición"></div>
+        <p class="library-hint">Arrastra un jugador al campo o pulsa su tarjeta para colocarlo.</p>
+        <div id="playerLibrary" class="player-library"></div>
       </aside>
 
-      <section class="board-wrap">
-        <div class="v6-board-header">
-          <span>⚽ Campo táctico</span>
-          <small>Click en una posición para filtrar exacto: MCD / MC / MCO / MI / MD</small>
-        </div>
-        <div class="ds-frame">
-          <div class="ds-top-screen">
-            <div class="screen-gloss"></div>
-            <div class="tactics-hud">
-              <aside class="side-roster staff-side">
-                <div class="side-title">CUERPO TÉCNICO</div>
-                <div id="managersPanel" class="side-card-list staff-card-list"></div>
-              </aside>
-
-              <div id="board" class="board">
-                <div class="board-title">
-                  <strong id="boardEventName">Evento sin nombre</strong>
-                  <span id="boardTeamName">Equipo sin definir</span>
-                </div>
-
-                <div class="field-lines">
-                  <div class="midline"></div>
-                  <div class="center-circle"></div>
-                  <div class="box top-box"></div>
-                  <div class="box bottom-box"></div>
-                </div>
-
-                <div id="slots"></div>
-              </div>
-
-              <aside class="side-roster bench-side">
-                <div class="side-title">BANQUILLO</div>
-                <div id="benchPanel" class="side-card-list bench-card-list"></div>
-              </aside>
-            </div>
+      <section class="tactical-stage" aria-label="Campo táctico">
+        <header class="match-header">
+          <div class="editable-title">
+            <input id="teamName" type="text" value="Nuevo equipo" aria-label="Nombre del equipo">
+            <input id="eventName" type="text" placeholder="Partido, torneo o evento" aria-label="Nombre del evento">
           </div>
+          <div class="formation-display"><small>SISTEMA</small><strong id="formationDisplay">4-3-3</strong></div>
+        </header>
 
-          <div class="ds-hinge"></div>
-
-          <div class="ds-bottom-screen">
-            <div class="bottom-title">HUD DE EQUIPO</div>
-            <div id="teamHud" class="team-hud"></div>
-            <textarea id="output" placeholder="Aquí aparecerá la plantilla para Discord. También puedes pegar aquí un código INAZUMA-CODE y pulsar Importar paste."></textarea>
+        <div class="field-frame">
+          <div id="field" class="field">
+            <div class="field-pattern" aria-hidden="true"></div>
+            <div class="touchline" aria-hidden="true"><i class="halfway"></i><i class="circle"></i><i class="area top"></i><i class="area bottom"></i></div>
+            <div id="chemistryLayer" class="chemistry-layer" aria-hidden="true"></div>
+            <div id="fieldSlots" class="field-slots"></div>
+            <div class="field-brand" aria-hidden="true">INAZUMA CENTRAL</div>
           </div>
         </div>
+
+        <section class="bench-strip">
+          <div class="strip-title"><span><b>Banquillo</b> · 7 plazas</span><small>También puedes intercambiar jugadores arrastrándolos</small></div>
+          <div id="benchSlots" class="bench-slots"></div>
+        </section>
       </section>
+
+      <aside class="inspector panel" aria-label="Análisis del equipo">
+        <div class="inspector-tabs" role="tablist">
+          <button class="active" data-tab="analysis" type="button">Análisis</button>
+          <button data-tab="lineup" type="button">Once</button>
+          <button data-tab="staff" type="button">Cuerpo técnico</button>
+        </div>
+        <section id="analysisTab" class="tab-panel active">
+          <div class="score-card">
+            <div><span id="chemistryScore">0</span><small>QUÍMICA</small></div>
+            <div class="score-ring" id="scoreRing"><i></i></div>
+            <p id="chemistryLabel">Plantilla por construir</p>
+          </div>
+          <div class="metric-grid">
+            <article><strong id="filledMetric">0/11</strong><span>Titulares</span></article>
+            <article><strong id="fitMetric">0%</strong><span>Encaje</span></article>
+            <article><strong id="linksMetric">0</strong><span>Vínculos</span></article>
+            <article><strong id="teamsMetric">0</strong><span>Equipos</span></article>
+          </div>
+          <section class="analysis-section"><h3>Lectura táctica</h3><div id="recommendations" class="recommendations"></div></section>
+          <section class="analysis-section"><h3>Vínculos activos</h3><div id="relationshipList" class="relationship-list"></div></section>
+        </section>
+        <section id="lineupTab" class="tab-panel"><div id="lineupList" class="lineup-list"></div></section>
+        <section id="staffTab" class="tab-panel">
+          <p class="tab-intro">Entrenador y gerentes que acompañan al equipo.</p>
+          <div id="staffSlots" class="staff-slots"></div>
+        </section>
+      </aside>
     </section>
   </main>
 
-  <dialog id="playerDialog" class="big-dialog">
-    <h2>Elegir integrante</h2>
-    <p id="selectedSlotInfo"></p>
-    <input id="dialogSearch" type="text" placeholder="Buscar jugador, gerente o entrenador..." />
+  <dialog id="pickerDialog" class="modal picker-modal">
+    <form method="dialog" class="modal-head"><div><span class="kicker">Selección</span><h2 id="pickerTitle">Elegir jugador</h2></div><button class="close-button" value="cancel" aria-label="Cerrar">×</button></form>
+    <div class="modal-body"><div class="search-wrap"><span>⌕</span><input id="pickerSearch" type="search" placeholder="Buscar…"></div><div id="pickerFilters" class="position-filters"></div><div id="pickerPlayers" class="picker-grid"></div></div>
+  </dialog>
 
-    <div class="dialog-filter-box">
-      <div>
-        <label class="dialog-filter-label">Equipo</label>
-        <select id="dialogTeamFilter">
-          <option value="">Todos los equipos</option>
-        </select>
+  <dialog id="playerDialog" class="modal player-modal">
+    <form method="dialog" class="modal-head"><div><span class="kicker">Expediente deportivo</span><h2 id="playerDialogTitle">Jugador</h2></div><button class="close-button" value="cancel" aria-label="Cerrar">×</button></form>
+    <div id="playerDialogBody" class="player-dialog-body"></div>
+  </dialog>
+
+  <dialog id="draftDialog" class="modal draft-modal">
+    <form method="dialog" class="modal-head"><div><span class="kicker">Asistente</span><h2>Crear plantilla por draft</h2></div><button class="close-button" value="cancel" aria-label="Cerrar">×</button></form>
+    <div class="modal-body">
+      <p class="modal-copy">El asistente rellenará el once respetando las posiciones de la formación.</p>
+      <div class="draft-options">
+        <button data-draft="balanced" type="button"><b>⚖ Equilibrado</b><span>Prioriza encaje y variedad.</span></button>
+        <button data-draft="chemistry" type="button"><b>✦ Mejor química</b><span>Busca compañeros y vínculos.</span></button>
+        <button data-draft="chaos" type="button"><b>⚡ Caótico</b><span>Una convocatoria totalmente inesperada.</span></button>
       </div>
-      <div>
-        <label class="dialog-filter-label">Posición</label>
-        <div id="dialogPositionChips" class="position-chips"></div>
-      </div>
-    </div>
-
-    <div id="dialogPlayers" class="dialog-list card-grid"></div>
-    <button id="dialogClose">Cerrar</button>
-  </dialog>
-
-
-  <dialog id="statsDialog" class="stats-dialog">
-    <h2 id="statsDialogTitle">Editar jugador</h2>
-    <p id="statsDialogMeta"></p>
-
-    <div class="single-stats-box">
-      <label>⚽ Goles
-        <select id="statsGoals">
-          <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-        </select>
-      </label>
-      <label>🅰️ Asistencias
-        <select id="statsAssists">
-          <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-        </select>
-      </label>
-      <button id="statsYellow" class="card-toggle" type="button">🟨 Amarilla</button>
-      <button id="statsRed" class="card-toggle" type="button">🟥 Roja</button>
-    </div>
-
-    <div class="stats-dialog-actions">
-      <button id="statsChangePlayer" type="button">Cambiar jugador</button>
-      <button id="statsClearPlayer" type="button">Quitar jugador</button>
-      <button id="statsDialogClose" type="button">Cerrar</button>
     </div>
   </dialog>
 
-  <dialog id="freePlayerDialog" class="free-player-dialog">
-    <h2>Añadir jugador por URL</h2>
-    <p id="freeSlotInfo">Rellena los datos del jugador temporal.</p>
+  <dialog id="codeDialog" class="modal code-modal">
+    <form method="dialog" class="modal-head"><div><span class="kicker">Portapapeles</span><h2>Código de plantilla</h2></div><button class="close-button" value="cancel" aria-label="Cerrar">×</button></form>
+    <div class="modal-body"><p class="modal-copy">Pega aquí un código exportado desde este Centro Táctico.</p><textarea id="codeArea" rows="10" placeholder="INAZUMA-V7:…"></textarea><div class="dialog-actions"><button class="button quiet" id="copyCodeFromDialog" type="button">Copiar</button><button class="button accent" id="loadCodeButton" type="button">Cargar código</button></div></div>
+  </dialog>
 
-    <label>Nombre</label>
-    <input id="freeName" type="text" placeholder="Ej: Rival misterioso" />
-
-    <label>Posición</label>
-    <input id="freePosition" type="text" placeholder="Ej: Delantero, MC, Portero..." />
-
-    <label>Dorsal</label>
-    <input id="freeNumber" type="number" min="1" max="99" placeholder="10" />
-
-    <label>URL de imagen</label>
-    <input id="freeImage" type="url" placeholder="https://..." />
-
-    <label>Equipo / nota</label>
-    <input id="freeTeam" type="text" placeholder="Ej: Rival temporal" />
-
-    <div class="free-preview" id="freePreview">Vista previa</div>
-
-    <div class="stats-dialog-actions">
-      <button id="freeSave" type="button">Guardar</button>
-      <button id="freeRemove" type="button">Vaciar hueco</button>
-      <button id="freeClose" type="button">Cerrar</button>
+  <dialog id="techniqueDialog" class="modal technique-modal">
+    <form method="dialog" class="modal-head"><div><span class="kicker">Jugada preparada</span><h2>Constructor de supertécnicas</h2></div><button class="close-button" value="cancel" aria-label="Cerrar">×</button></form>
+    <div class="modal-body technique-form">
+      <label><span>Nombre</span><input id="techniqueName" type="text" placeholder="Ej: Fuego Cruzado Cósmico"></label>
+      <div class="form-columns"><label><span>Participante A</span><select id="techniquePlayerA"></select></label><label><span>Participante B</span><select id="techniquePlayerB"></select></label></div>
+      <div class="form-columns"><label><span>Tipo</span><select id="techniqueType"><option>Tiro</option><option>Regate</option><option>Bloqueo</option><option>Parada</option></select></label><label><span>Grado</span><select id="techniqueGrade"><option>G1</option><option>G2</option><option>G3</option><option>G4</option><option>G5</option><option>EG</option><option>Armadura</option><option>ST + EG</option></select></label></div>
+      <label><span>Descripción</span><textarea id="techniqueDescription" rows="4" placeholder="Describe la técnica y su efecto…"></textarea></label>
+      <textarea id="techniqueOutput" rows="6" readonly placeholder="Aquí aparecerá el bloque listo para Discord."></textarea>
+      <div class="dialog-actions"><button class="button quiet" id="generateTechnique" type="button">Generar</button><button class="button accent" id="copyTechnique" type="button">Copiar técnica</button></div>
     </div>
   </dialog>
 
-
-  <dialog id="draftStrategyDialog" class="v5-dialog">
-    <h2>🎲 Elegir modo de draft</h2>
-    <p>Elige cómo quieres que la web rellene la plantilla.</p>
-    <div class="v5-choice-grid">
-      <button id="draftRandomV5" type="button">🎲 Aleatorio</button>
-      <button id="draftBestV5" type="button">❤️ Mejor sinergia</button>
-      <button id="draftWorstV5" type="button">💀 Peor sinergia</button>
-    </div>
-    <button id="draftCloseV5" type="button">Cerrar</button>
-  </dialog>
-
-  <dialog id="matchDataDialogV5" class="v5-dialog v5-wide-dialog">
-    <h2>📊 Datos del partido</h2>
-    <p>Marca goles, asistencias, tarjetas y capitán sin llenar siempre la HUD.</p>
-    <div id="matchDataListV5" class="v5-match-list"></div>
-    <button id="matchDataCloseV5" type="button">Cerrar</button>
-  </dialog>
-
-  <dialog id="simMatchDialogV5" class="v5-dialog v5-wide-dialog">
-    <h2>📺 Modo retransmisión</h2>
-    <p id="simMatchScoreV5">Pulsa siguiente jugada para empezar.</p>
-    <div id="simMatchFeedV5" class="v5-feed"></div>
-    <div class="v5-choice-grid">
-      <button id="simNextV5" type="button">Siguiente jugada</button>
-      <button id="simCopyV5" type="button">Copiar resumen</button>
-      <button id="simCloseV5" type="button">Cerrar</button>
-    </div>
-  </dialog>
-
-  <dialog id="stBuilderDialogV5" class="v5-dialog v5-wide-dialog">
-    <h2>⚡ Constructor de Supertécnicas</h2>
-    <label>Nombre de la ST</label>
-    <input id="stNameV5" type="text" placeholder="Ej: Fuego Cruzado Cósmico" />
-    <label>Participantes</label>
-    <select id="stPlayerAV5"></select>
-    <select id="stPlayerBV5"></select>
-    <label>Tipo</label>
-    <select id="stTypeV5"><option>Tiro</option><option>Regate</option><option>Bloqueo</option><option>Parada</option></select>
-    <label>Grado / estado</label>
-    <select id="stGradeV5"><option>G1</option><option>G2</option><option>G3</option><option>G4</option><option>G5</option><option>EG</option><option>Armadura</option><option>ST + EG</option><option>ST + Armadura</option></select>
-    <label>Descripción</label>
-    <textarea id="stDescriptionV5" placeholder="Describe la técnica..."></textarea>
-    <textarea id="stOutputV5" readonly placeholder="Aquí saldrá el bloque listo para Discord."></textarea>
-    <div class="v5-choice-grid">
-      <button id="stGenerateV5" type="button">Generar</button>
-      <button id="stCopyV5" type="button">Copiar</button>
-      <button id="stCloseV5" type="button">Cerrar</button>
-    </div>
-  </dialog>
-
-  <div id="chemistryTooltip" class="chemistry-tooltip" aria-hidden="true"></div>
-
-  <dialog id="chemistryDialog" class="chemistry-dialog">
-    <h2>Detalles de sinergia</h2>
-    <p id="chemistryDialogSummary"></p>
-    <div id="chemistryDialogContent" class="chemistry-dialog-content"></div>
-    <button id="chemistryDialogClose" type="button">Cerrar</button>
-  </dialog>
-
-  <script src="plantillas-inazuma.js?v=quimica-presencia-1"></script>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="team-builder-datos.js"></script>
+  <script src="plantillas-inazuma.js?v=7"></script>
 </body>
 </html>

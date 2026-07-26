@@ -1,2676 +1,730 @@
-const formationSelect = document.getElementById("formationSelect");
-const slotsContainer = document.getElementById("slots");
-const playersList = document.getElementById("playersList");
-const searchInput = document.getElementById("searchInput");
-const teamFilter = document.getElementById("teamFilter");
-const positionFilter = document.getElementById("positionFilter");
-const eventoInput = document.getElementById("eventoInput");
-const equipoInput = document.getElementById("equipoInput");
-const boardEventName = document.getElementById("boardEventName");
-const boardTeamName = document.getElementById("boardTeamName");
-const output = document.getElementById("output");
-const btnCopiar = document.getElementById("btnCopiar");
-const btnCopiarCodigo = document.getElementById("btnCopiarCodigo");
-const btnImportarPaste = document.getElementById("btnImportarPaste");
-const btnToggleChemistry = document.getElementById("btnToggleChemistry");
-const btnChemistryDetails = document.getElementById("btnChemistryDetails");
-const btnLimpiar = document.getElementById("btnLimpiar");
-const btnVista = document.getElementById("btnVista");
-const btnExportar = document.getElementById("btnExportar");
-const btnImportar = document.getElementById("btnImportar");
-const importFile = document.getElementById("importFile");
-const teamHud = document.getElementById("teamHud");
-const benchPanel = document.getElementById("benchPanel");
-const managersPanel = document.getElementById("managersPanel");
-const templateSelect = document.getElementById("templateSelect");
-const btnNuevaPlantilla = document.getElementById("btnNuevaPlantilla");
-const btnDuplicarPlantilla = document.getElementById("btnDuplicarPlantilla");
-const btnBorrarPlantilla = document.getElementById("btnBorrarPlantilla");
-const btnPlantillaAnterior = document.getElementById("btnPlantillaAnterior");
-const btnPlantillaSiguiente = document.getElementById("btnPlantillaSiguiente");
-const templateMode = document.getElementById("templateMode");
-const fieldStyleSelect = document.getElementById("fieldStyleSelect");
-const themeSelect = document.getElementById("themeSelect");
-const zoomRange = document.getElementById("zoomRange");
-const quickCopiar = document.getElementById("quickCopiar");
-const quickCodigo = document.getElementById("quickCodigo");
-const quickExportar = document.getElementById("quickExportar");
-const quickImportar = document.getElementById("quickImportar");
-const quickFullscreen = document.getElementById("quickFullscreen");
-
-const playerDialog = document.getElementById("playerDialog");
-const selectedSlotInfo = document.getElementById("selectedSlotInfo");
-const dialogSearch = document.getElementById("dialogSearch");
-const dialogPlayers = document.getElementById("dialogPlayers");
-const dialogClose = document.getElementById("dialogClose");
-const dialogTeamFilter = document.getElementById("dialogTeamFilter");
-const dialogPositionChips = document.getElementById("dialogPositionChips");
-const statsDialog = document.getElementById("statsDialog");
-const statsDialogTitle = document.getElementById("statsDialogTitle");
-const statsDialogMeta = document.getElementById("statsDialogMeta");
-const statsGoals = document.getElementById("statsGoals");
-const statsAssists = document.getElementById("statsAssists");
-const statsYellow = document.getElementById("statsYellow");
-const statsRed = document.getElementById("statsRed");
-const statsChangePlayer = document.getElementById("statsChangePlayer");
-const statsClearPlayer = document.getElementById("statsClearPlayer");
-const statsDialogClose = document.getElementById("statsDialogClose");
-const chemistryDialog = document.getElementById("chemistryDialog");
-const chemistryDialogSummary = document.getElementById("chemistryDialogSummary");
-const chemistryDialogContent = document.getElementById("chemistryDialogContent");
-const chemistryDialogClose = document.getElementById("chemistryDialogClose");
-const chemistryTooltip = document.getElementById("chemistryTooltip");
-const freePlayerDialog = document.getElementById("freePlayerDialog");
-const freeSlotInfo = document.getElementById("freeSlotInfo");
-const freeName = document.getElementById("freeName");
-const freePosition = document.getElementById("freePosition");
-const freeNumber = document.getElementById("freeNumber");
-const freeImage = document.getElementById("freeImage");
-const freeTeam = document.getElementById("freeTeam");
-const freePreview = document.getElementById("freePreview");
-const freeSave = document.getElementById("freeSave");
-const freeRemove = document.getElementById("freeRemove");
-const freeClose = document.getElementById("freeClose");
-
-const BENCH_SIZE = 10;
-const MANAGER_SIZE = 3;
-
-let formaciones = {};
-let personajes = [];
-let currentFormation = "";
-let placedPlayers = {};
-let benchPlayers = Array(BENCH_SIZE).fill(null);
-let managers = Array(MANAGER_SIZE).fill(null);
-let coach = null;
-let matchStats = {};
-let selectedTarget = null;
-let draggedItem = null;
-let dialogSelectedTeam = "";
-let dialogSelectedPosition = "";
-let statsSelectedTarget = null;
-let chemistryRules = { relaciones: [], ajustes: [], efectos: [] };
-let chemistryEnabled = true;
-let templateModeValue = "normal";
-let fieldStyleValue = "classic";
-let themeValue = "ds";
-let zoomValue = 100;
-let templates = [];
-let activeTemplateId = null;
-let isLoadingTemplate = false;
-let freeSelectedTarget = null;
-
-init();
-
-async function init() {
-  const [formacionesRes, personajesRes, quimicaData] = await Promise.all([
-    fetch("formaciones.json"),
-    fetch("personajes.json"),
-    loadChemistryRules()
-  ]);
-
-  formaciones = await formacionesRes.json();
-  personajes = await personajesRes.json();
-  chemistryRules = normalizeChemistryRules(quimicaData);
-
-  fillFormationSelect();
-  fillFilters();
-  fillDialogFilters();
-  renderPlayers();
-  changeFormation(Object.keys(formaciones)[0]);
-
-  formationSelect.addEventListener("change", () => changeFormation(formationSelect.value));
-  searchInput.addEventListener("input", renderPlayers);
-  teamFilter.addEventListener("change", renderPlayers);
-  positionFilter.addEventListener("change", renderPlayers);
-  eventoInput.addEventListener("input", updateBoardTitle);
-  equipoInput.addEventListener("input", updateBoardTitle);
-  btnCopiar.addEventListener("click", copyTemplate);
-  btnCopiarCodigo?.addEventListener("click", copyTemplateCode);
-  btnImportarPaste?.addEventListener("click", importTemplateFromPaste);
-  btnToggleChemistry?.addEventListener("click", toggleChemistry);
-  btnChemistryDetails?.addEventListener("click", openChemistryDetailsDialog);
-  chemistryDialogClose?.addEventListener("click", () => chemistryDialog?.close());
-  btnLimpiar.addEventListener("click", clearBoard);
-  const BOARD_VIEW_KEY = "inazuma_board_view";
-const BOARD_VIEWS = ["compact", "balanced", "presentation"];
-let boardViewMode = localStorage.getItem(BOARD_VIEW_KEY) || "balanced";
-
-function applyBoardViewMode() {
-  if (!BOARD_VIEWS.includes(boardViewMode)) boardViewMode = "balanced";
-  document.body.classList.remove("wide-view", "view-compact", "view-balanced", "view-presentation");
-  document.body.classList.add(`view-${boardViewMode}`);
-  if (btnVista) {
-    const labels = {
-      compact: "Vista: compacta",
-      balanced: "Vista: equilibrada",
-      presentation: "Vista: presentación"
-    };
-    btnVista.textContent = labels[boardViewMode] || "Vista";
-    btnVista.title = "Cambia entre compacta, equilibrada y presentación";
-  }
-  try { localStorage.setItem(BOARD_VIEW_KEY, boardViewMode); } catch (error) {}
-}
-
-function cycleBoardViewMode() {
-  const currentIndex = BOARD_VIEWS.indexOf(boardViewMode);
-  boardViewMode = BOARD_VIEWS[(currentIndex + 1) % BOARD_VIEWS.length] || "balanced";
-  applyBoardViewMode();
-}
-
-btnVista?.addEventListener("click", cycleBoardViewMode);
-applyBoardViewMode();
-  btnExportar?.addEventListener("click", exportTemplateJson);
-  btnImportar?.addEventListener("click", () => importFile?.click());
-  importFile?.addEventListener("change", importTemplateJson);
-  dialogSearch.addEventListener("input", renderDialogPlayers);
-  dialogTeamFilter?.addEventListener("change", () => {
-    dialogSelectedTeam = dialogTeamFilter.value;
-    renderDialogPlayers();
-  });
-  dialogClose.addEventListener("click", () => playerDialog.close());
-  statsGoals?.addEventListener("change", () => updateStatsDialogValue({ goals: Number(statsGoals.value) }));
-  statsAssists?.addEventListener("change", () => updateStatsDialogValue({ assists: Number(statsAssists.value) }));
-  statsYellow?.addEventListener("click", () => toggleStatsDialogCard("yellow"));
-  statsRed?.addEventListener("click", () => toggleStatsDialogCard("red"));
-  statsChangePlayer?.addEventListener("click", () => {
-    if (!statsSelectedTarget) return;
-    const target = { ...statsSelectedTarget };
-    statsDialog?.close();
-    openPicker(target.type, target.index);
-  });
-  statsClearPlayer?.addEventListener("click", () => {
-    if (!statsSelectedTarget) return;
-    setTargetPlayer(statsSelectedTarget.type, statsSelectedTarget.index, null);
-    statsDialog?.close();
-    renderAll();
-  });
-  statsDialogClose?.addEventListener("click", () => statsDialog?.close());
-
-  initTemplateSystem();
-  bindLayoutTools();
-  updateChemistryToggleButton();
-}
-
-
-async function loadChemistryRules() {
-  try {
-    const response = await fetch("quimica.json", { cache: "no-store" });
-    if (!response.ok) return null;
-    return await response.json();
-  } catch (error) {
-    console.warn("No se ha podido cargar quimica.json. Se usará la química automática.", error);
-    return null;
-  }
-}
-
-function normalizeChemistryRules(data) {
-  const empty = { relaciones: [], ajustes: [], efectos: [] };
-  if (!data || typeof data !== "object") return empty;
-
-  const relaciones = [];
-  const ajustes = [];
-  const efectos = [];
-
-  const sourceRelaciones = Array.isArray(data.relaciones) ? data.relaciones : [];
-  sourceRelaciones.forEach(item => {
-    const jugadores = item.jugadores || item.players || item.personajes;
-    if (!Array.isArray(jugadores) || jugadores.length < 2) return;
-    relaciones.push({
-      jugadores: jugadores.slice(0, 2).map(name => normalizePersonName(name)),
-      puntos: Number(item.puntos ?? item.points ?? item.valor ?? 0),
-      nivel: item.nivel || item.level || "",
-      motivo: item.motivo || item.reason || item.tipo || "quimica.json"
-    });
-  });
-
-  const sourceAjustes = Array.isArray(data.ajustes) ? data.ajustes : [];
-  sourceAjustes.forEach(item => {
-    const jugador = item.jugador || item.player || item.personaje;
-    if (!jugador) return;
-    ajustes.push({
-      jugador: normalizePersonName(jugador),
-      puntos: Number(item.puntos ?? item.points ?? item.valor ?? 0),
-      motivo: item.motivo || item.reason || "ajuste manual"
-    });
-  });
-
-  const sourceEfectos = [
-    ...(Array.isArray(data.efectos) ? data.efectos : []),
-    ...(Array.isArray(data.presencias) ? data.presencias : []),
-    ...(Array.isArray(data.bonusPorPresencia) ? data.bonusPorPresencia : [])
-  ];
-
-  sourceEfectos.forEach(item => {
-    const fuente = item.fuente || item.jugador || item.player || item.personaje;
-    if (!fuente) return;
-
-    const rawZonas = item.zonas || item.ubicaciones || item.where || item.en || item.zona;
-    const zonas = (Array.isArray(rawZonas) ? rawZonas : [rawZonas || "field"]).map(normalizeZone).filter(Boolean);
-
-    const rawObjetivos = item.objetivos || item.targets || item.receptores || item.a || item.para || item.jugadoresObjetivo || item.objetivo || "*";
-    const objetivos = (Array.isArray(rawObjetivos) ? rawObjetivos : [rawObjetivos]).map(target => String(target).trim() === "*" ? "*" : normalizePersonName(target));
-
-    efectos.push({
-      fuente: normalizePersonName(fuente),
-      fuenteOriginal: String(fuente),
-      zonas: zonas.length ? zonas : ["field"],
-      objetivos: objetivos.length ? objetivos : ["*"],
-      puntos: Number(item.puntos ?? item.points ?? item.valor ?? item.bonus ?? 0),
-      motivo: item.motivo || item.reason || "efecto por presencia",
-      nombre: item.nombre || item.name || "efecto de presencia"
-    });
-  });
-
-  return { relaciones, ajustes, efectos };
-}
-
-function normalizeZone(zone) {
-  const z = normalize(String(zone || ""));
-  if (["titular", "titulares", "campo", "field", "starter", "starters", "once"].includes(z)) return "field";
-  if (["banquillo", "suplente", "suplentes", "bench", "sub", "subs"].includes(z)) return "bench";
-  if (["gerente", "gerentes", "manager", "managers", "staff"].includes(z)) return "manager";
-  if (["entrenador", "coach", "dt"].includes(z)) return "coach";
-  return z || "field";
-}
-
-function toggleChemistry() {
-  chemistryEnabled = !chemistryEnabled;
-  updateChemistryToggleButton();
-  renderAll();
-}
-
-function updateChemistryToggleButton() {
-  if (!btnToggleChemistry) return;
-  btnToggleChemistry.textContent = chemistryEnabled ? "Sinergia ON" : "Sinergia OFF";
-  btnToggleChemistry.classList.toggle("active", chemistryEnabled);
-  btnToggleChemistry.classList.toggle("inactive", !chemistryEnabled);
-}
-
-function normalizePersonName(name) {
-  return normalize(String(name || "").replace(/[’']/g, " ").replace(/\s+/g, " ").trim());
-}
-
-function fillFormationSelect() {
-  formationSelect.innerHTML = Object.keys(formaciones)
-    .map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`)
-    .join("");
-}
-
-function fillFilters() {
-  const teams = [...new Set(personajes.map(p => p.equipo).filter(Boolean))].sort();
-  const positions = [...new Set(personajes.map(p => p.posicion).filter(Boolean))].sort();
-
-  teamFilter.innerHTML += teams.map(team => `<option value="${escapeHtml(team)}">${escapeHtml(team)}</option>`).join("");
-  positionFilter.innerHTML += positions.map(pos => `<option value="${escapeHtml(pos)}">${escapeHtml(pos)}</option>`).join("");
-}
-
-function fillDialogFilters() {
-  const teams = [...new Set(personajes.map(p => p.equipo).filter(Boolean))].sort();
-
-  if (dialogTeamFilter) {
-    dialogTeamFilter.innerHTML = `<option value="">Todos los equipos</option>` +
-      teams.map(team => `<option value="${escapeHtml(team)}">${escapeHtml(team)}</option>`).join("");
-  }
-
-  renderDialogPositionChips();
-}
-
-const DIALOG_POSITION_FILTERS = [
-  { value: "", label: "Todas" },
-  { value: "DC", label: "DC" },
-  { value: "DFC", label: "DFC" },
-  { value: "ED", label: "ED" },
-  { value: "EI", label: "EI" },
-  { value: "ENT", label: "ENT" },
-  { value: "GER", label: "GER" },
-  { value: "LD", label: "LD" },
-  { value: "LI", label: "LI" },
-  { value: "MC", label: "MC" },
-  { value: "MCD", label: "MCD" },
-  { value: "MCO", label: "MCO" },
-  { value: "MD", label: "MD" },
-  { value: "MI", label: "MI" },
-  { value: "POR", label: "POR" }
-];
-
-function renderDialogPositionChips() {
-  if (!dialogPositionChips) return;
-
-  const selected = canonicalDialogPosition(dialogSelectedPosition);
-  if (dialogSelectedPosition !== selected) dialogSelectedPosition = selected;
-
-  dialogPositionChips.innerHTML = DIALOG_POSITION_FILTERS.map(pos => `
-    <button class="position-chip ${selected === pos.value ? "active" : ""}" data-pos="${escapeAttribute(pos.value)}" type="button">
-      ${escapeHtml(pos.label)}
-    </button>
-  `).join("");
-
-  dialogPositionChips.querySelectorAll(".position-chip").forEach(chip => {
-    chip.addEventListener("click", () => {
-      dialogSelectedPosition = canonicalDialogPosition(chip.dataset.pos || "");
-      renderDialogPositionChips();
-      renderDialogPlayers();
-    });
-  });
-}
-
-function changeFormation(name) {
-  saveActiveTemplateState();
-  currentFormation = name;
-  formationSelect.value = name;
-  placedPlayers = {};
-  matchStats = {};
-  renderAll();
-}
-
-function renderAll() {
-  renderSlots();
-  renderHud();
-  generateOutput();
-  bindChemistryTooltipEvents();
-  saveActiveTemplateState();
-}
-
-function renderSlots() {
-  const formation = formaciones[currentFormation] || [];
-  slotsContainer.innerHTML = renderSynergySvg();
-
-  formation.forEach((slot, index) => {
-    const player = placedPlayers[index];
-    const slotEl = document.createElement("div");
-    slotEl.className = "slot";
-    slotEl.style.left = `${slot.x}%`;
-    slotEl.style.top = `${slot.y}%`;
-
-    slotEl.innerHTML = `
-      <div class="magnet ${player ? "filled draggable-card" : "empty"}" data-index="${index}" ${player ? 'draggable="true"' : ""}>
-        ${player ? renderAvatar(player) : `<span class="slot-role">${escapeHtml(slot.rol)}</span>`}
-        ${player ? renderPlayerMatchBadges("field", index) : ""}
-        ${player ? `<span class="slot-number">${escapeHtml(getJerseyForTarget("field", index) ?? "?")}</span>` : ""}
-      </div>
-      <div class="slot-role">${escapeHtml(slot.rol)}</div>
-      <div class="slot-name">${player ? escapeHtml(player.nombre) : "Vacío"}</div>
-    `;
-
-    const magnet = slotEl.querySelector(".magnet");
-    magnet.addEventListener("click", () => player ? openStatsDialog("field", index) : openPicker("field", index));
-    magnet.dataset.type = "field";
-    magnet.dataset.index = index;
-    if (player) {
-      magnet.addEventListener("dragstart", event => startDragFromSlot(event, "field", index));
-      magnet.addEventListener("dragend", endDrag);
-    }
-    enableDrop(magnet);
-    slotsContainer.appendChild(slotEl);
-  });
-}
-
-function renderHud() {
-  const starters = Object.values(placedPlayers).filter(Boolean).length;
-  const benchCount = benchPlayers.filter(Boolean).length;
-  const managerCount = managers.filter(Boolean).length;
-
-  if (teamHud) {
-    const chemistry = calculateChemistry();
-    teamHud.innerHTML = `
-      <div class="hud-summary compact-summary">
-        <div><strong>${starters}</strong><span>Titulares</span></div>
-        <div><strong>${benchCount}/${BENCH_SIZE}</strong><span>Banquillo</span></div>
-        <div><strong>${managerCount}/${MANAGER_SIZE}</strong><span>Gerentes</span></div>
-        <div><strong>${coach ? "1" : "0"}/1</strong><span>Entrenador</span></div>
-      </div>
-      ${renderChemistryPanel(chemistry)}
-      ${renderStatsEditor()}
-      <p class="hud-tip">Puedes clicar una tarjeta o arrastrar jugadores desde el menú hacia campo, banquillo, gerentes o entrenador. En el editor puedes marcar goles, asistencias y tarjetas.</p>
-    `;
-    bindStatsEditorEvents();
-  }
-
-  if (managersPanel) {
-    managersPanel.innerHTML = `
-      ${managers.map((player, index) => renderRosterCard("manager", index, `Gerente ${index + 1}`, player)).join("")}
-      ${renderRosterCard("coach", 0, "Entrenador", coach, true)}
-    `;
-  }
-
-  if (benchPanel) {
-    benchPanel.innerHTML = benchPlayers
-      .map((player, index) => renderRosterCard("bench", index, `B${index + 1}`, player))
-      .join("");
-  }
-
-  document.querySelectorAll(".roster-card, .mini-slot").forEach(card => {
-    const type = card.dataset.type;
-    const index = Number(card.dataset.index);
-    card.addEventListener("click", () => getTargetPlayer(type, index) ? openStatsDialog(type, index) : openPicker(type, index));
-    if (card.classList.contains("filled")) {
-      card.addEventListener("dragstart", event => startDragFromSlot(event, type, index));
-      card.addEventListener("dragend", endDrag);
-    }
-    enableDrop(card);
-  });
-}
-
-function renderMiniSlot(type, index, label, player) {
-  return `
-    <button class="mini-slot ${player ? "filled" : ""}" data-type="${type}" data-index="${index}" type="button">
-      <span class="mini-label">${label}</span>
-      <span class="mini-face">${player ? renderAvatar(player) : "+"}</span>
-      <span class="mini-name">${player ? escapeHtml(player.nombre) : "Añadir"}</span>
-    </button>
-  `;
-}
-
-function renderRosterCard(type, index, label, player, isCoach = false) {
-  return `
-    <button class="roster-card ${player ? "filled draggable-card" : "empty"} ${isCoach ? "coach-card" : ""}" data-type="${type}" data-index="${index}" type="button" ${player ? 'draggable="true"' : ""}>
-      <span class="roster-label">${escapeHtml(label)}</span>
-      <span class="roster-face">${player ? renderAvatar(player) : "+"}</span>
-      <span class="roster-name">${player ? escapeHtml(player.nombre) : "Vacío"}</span>
-      <span class="roster-meta">${player ? `${type === "bench" ? `#${escapeHtml(getJerseyForTarget(type, index) ?? "?")} · ` : ""}${escapeHtml(player.posicion ?? "?")}` : "Arrastra o clica"}</span>
-    </button>
-  `;
-}
-
-function renderPlayers() {
-  if (templateModeValue === "free") {
-    playersList.innerHTML = "";
-    return;
-  }
-  const filtered = getFilteredPlayers(searchInput.value, teamFilter.value, positionFilter.value);
-  playersList.innerHTML = filtered.map(player => renderChoiceCard(player)).join("");
-
-  playersList.querySelectorAll(".player-card").forEach(card => {
-    const player = personajes.find(p => p.nombre === card.dataset.name);
-    card.addEventListener("click", () => addToNextFreePlace(player));
-    card.addEventListener("dragstart", event => startDragFromLibrary(event, player));
-    card.addEventListener("dragend", endDrag);
-  });
-}
-
-function addToNextFreePlace(player) {
-  const firstEmptyStarter = (formaciones[currentFormation] || []).findIndex((_, i) => !placedPlayers[i]);
-  if (firstEmptyStarter !== -1) placedPlayers[firstEmptyStarter] = player;
-  else {
-    const firstEmptyBench = benchPlayers.findIndex(p => !p);
-    if (firstEmptyBench !== -1) benchPlayers[firstEmptyBench] = player;
-    else return;
-  }
-  renderAll();
-}
-
-function openPicker(type, index) {
-  if (templateModeValue === "free") {
-    openFreePlayerDialog(type, index);
-    return;
-  }
-  selectedTarget = { type, index };
-  const label = targetLabel(type, index);
-  selectedSlotInfo.innerHTML = `<strong>Espacio seleccionado:</strong> ${escapeHtml(label)}<br><small>Elige una tarjeta. Si el espacio ya estaba ocupado, se sustituye.</small>`;
-  dialogSearch.value = "";
-  dialogSelectedTeam = "";
-  dialogSelectedPosition = defaultPositionForTarget(type, index);
-  if (dialogTeamFilter) dialogTeamFilter.value = "";
-  renderDialogPositionChips();
-  renderDialogPlayers();
-  playerDialog.showModal();
-}
-
-function renderDialogPlayers() {
-  const query = dialogSearch.value;
-  const filtered = getFilteredPlayers(query, dialogSelectedTeam, dialogSelectedPosition).sort(sortForTarget);
-
-  const clearButton = selectedTarget ? `
-    <button class="player-card clear-card" type="button" data-clear="true">
-      <div class="avatar avatar-fallback">×</div>
-      <div>
-        <div class="player-name">Vaciar este espacio</div>
-        <div class="player-meta">Quita al integrante seleccionado</div>
-      </div>
-    </button>
-  ` : "";
-
-  dialogPlayers.innerHTML = clearButton + filtered.map(player => renderChoiceCard(player, true)).join("");
-
-  dialogPlayers.querySelector("[data-clear='true']")?.addEventListener("click", () => {
-    assignTarget(null);
-    playerDialog.close();
-  });
-
-  dialogPlayers.querySelectorAll(".player-card[data-name]").forEach(card => {
-    const player = personajes.find(p => p.nombre === card.dataset.name);
-    card.addEventListener("click", () => {
-      assignTarget(player);
-      playerDialog.close();
-    });
-    card.addEventListener("dragstart", event => startDragFromLibrary(event, player));
-    card.addEventListener("dragend", endDrag);
-  });
-}
-
-function sortForTarget(a, b) {
-  if (!selectedTarget || selectedTarget.type !== "field") return a.nombre.localeCompare(b.nombre);
-  const slot = formaciones[currentFormation]?.[selectedTarget.index];
-  const aMatch = positionsAreCompatible(a.posicion, slot?.rol) ? -1 : 0;
-  const bMatch = positionsAreCompatible(b.posicion, slot?.rol) ? -1 : 0;
-  return aMatch - bMatch || a.nombre.localeCompare(b.nombre);
-}
-
-function assignTarget(player) {
-  if (!selectedTarget) return;
-  setTargetPlayer(selectedTarget.type, selectedTarget.index, player);
-  renderAll();
-}
-
-function getTargetPlayer(type, index) {
-  if (type === "field") return placedPlayers[index] || null;
-  if (type === "bench") return benchPlayers[index] || null;
-  if (type === "manager") return managers[index] || null;
-  if (type === "coach") return coach || null;
-  return null;
-}
-
-function setTargetPlayer(type, index, player) {
-  const key = getTargetKey(type, index);
-  if (type === "field") {
-    if (player) placedPlayers[index] = player;
-    else {
-      delete placedPlayers[index];
-      delete matchStats[key];
-    }
-  }
-  if (type === "bench") {
-    benchPlayers[index] = player || null;
-    if (!player) delete matchStats[key];
-  }
-  if (type === "manager") managers[index] = player || null;
-  if (type === "coach") coach = player || null;
-}
-
-function sameTarget(a, b) {
-  return a && b && a.type === b.type && Number(a.index) === Number(b.index);
-}
-
-function startDragFromLibrary(event, player) {
-  draggedItem = { player, source: null };
-  event.dataTransfer.effectAllowed = "copy";
-  event.dataTransfer.setData("text/plain", player.nombre);
-  document.body.classList.add("dragging-player");
-}
-
-function startDragFromSlot(event, type, index) {
-  const player = getTargetPlayer(type, index);
-  if (!player) return;
-
-  draggedItem = { player, source: { type, index } };
-  event.dataTransfer.effectAllowed = "move";
-  event.dataTransfer.setData("text/plain", player.nombre);
-  document.body.classList.add("dragging-player");
-  event.currentTarget.classList.add("drag-source");
-}
-
-function endDrag() {
-  draggedItem = null;
-  document.body.classList.remove("dragging-player");
-  document.querySelectorAll(".drop-hover, .drag-source").forEach(el => el.classList.remove("drop-hover", "drag-source"));
-}
-
-function moveDraggedItemTo(type, index) {
-  if (!draggedItem) return;
-
-  const target = { type, index };
-  const source = draggedItem.source;
-  const movedPlayer = draggedItem.player;
-  const targetPlayer = getTargetPlayer(type, index);
-
-  if (source && sameTarget(source, target)) {
-    endDrag();
+(() => {
+  'use strict';
+
+  const DATA = window.INAZUMA_TEAM_BUILDER_DATA;
+  if (!DATA?.players?.length || !Object.keys(DATA.formations || {}).length) {
+    document.body.innerHTML = '<main style="max-width:760px;margin:80px auto;padding:30px;color:white;font-family:system-ui"><h1>No se han podido leer los datos</h1><p>Comprueba que <b>team-builder-datos.js</b> está junto a esta página.</p><a href="../index.html" style="color:#60e5ff">Volver al HUB</a></main>';
     return;
   }
 
-  if (source) {
-    // Si arrastras entre dos espacios ocupados, intercambia también sus estadísticas de partido.
-    const sourceKey = getTargetKey(source.type, source.index);
-    const targetKey = getTargetKey(type, index);
-    const sourceStats = getStatsForTarget(source.type, source.index);
-    const targetStats = getStatsForTarget(type, index);
+  const $ = id => document.getElementById(id);
+  const dom = {
+    saveState: $('saveState'), squadSelect: $('squadSelect'), previousSquad: $('previousSquad'), nextSquad: $('nextSquad'),
+    newSquad: $('newSquad'), duplicateSquad: $('duplicateSquad'), deleteSquad: $('deleteSquad'), formationSelect: $('formationSelect'),
+    formationDisplay: $('formationDisplay'), undoButton: $('undoButton'), redoButton: $('redoButton'), chemistryButton: $('chemistryButton'),
+    focusButton: $('focusButton'), copyButton: $('copyButton'), copyCodeButton: $('copyCodeButton'), draftButton: $('draftButton'),
+    techniqueButton: $('techniqueButton'), clearButton: $('clearButton'), exportButton: $('exportButton'), importButton: $('importButton'), importFile: $('importFile'),
+    teamName: $('teamName'), eventName: $('eventName'), playerSearch: $('playerSearch'), teamFilter: $('teamFilter'),
+    positionFilters: $('positionFilters'), playerCount: $('playerCount'), playerLibrary: $('playerLibrary'),
+    field: $('field'), fieldSlots: $('fieldSlots'), chemistryLayer: $('chemistryLayer'), benchSlots: $('benchSlots'), staffSlots: $('staffSlots'),
+    chemistryScore: $('chemistryScore'), scoreRing: $('scoreRing'), chemistryLabel: $('chemistryLabel'), filledMetric: $('filledMetric'),
+    fitMetric: $('fitMetric'), linksMetric: $('linksMetric'), teamsMetric: $('teamsMetric'), recommendations: $('recommendations'),
+    relationshipList: $('relationshipList'), lineupList: $('lineupList'), pickerDialog: $('pickerDialog'), pickerTitle: $('pickerTitle'),
+    pickerSearch: $('pickerSearch'), pickerFilters: $('pickerFilters'), pickerPlayers: $('pickerPlayers'), playerDialog: $('playerDialog'),
+    playerDialogTitle: $('playerDialogTitle'), playerDialogBody: $('playerDialogBody'), draftDialog: $('draftDialog'), codeDialog: $('codeDialog'),
+    codeArea: $('codeArea'), copyCodeFromDialog: $('copyCodeFromDialog'), loadCodeButton: $('loadCodeButton'), toast: $('toast'),
+    techniqueDialog: $('techniqueDialog'), techniqueName: $('techniqueName'), techniquePlayerA: $('techniquePlayerA'),
+    techniquePlayerB: $('techniquePlayerB'), techniqueType: $('techniqueType'), techniqueGrade: $('techniqueGrade'),
+    techniqueDescription: $('techniqueDescription'), techniqueOutput: $('techniqueOutput'), generateTechnique: $('generateTechnique'), copyTechnique: $('copyTechnique')
+  };
 
-    setTargetPlayer(source.type, source.index, targetPlayer || null);
-    setTargetPlayer(type, index, movedPlayer);
-
-    if (targetPlayer) matchStats[sourceKey] = targetStats;
-    else delete matchStats[sourceKey];
-    matchStats[targetKey] = sourceStats;
-  } else {
-    // Desde el menú de personajes se copia, no se borra de la biblioteca.
-    setTargetPlayer(type, index, movedPlayer);
-  }
-
-  renderAll();
-  endDrag();
-}
-
-function enableDrop(element) {
-  element.addEventListener("dragover", event => {
-    if (!draggedItem) return;
-    event.preventDefault();
-    event.dataTransfer.dropEffect = draggedItem.source ? "move" : "copy";
-    element.classList.add("drop-hover");
-  });
-
-  element.addEventListener("dragleave", () => element.classList.remove("drop-hover"));
-
-  element.addEventListener("drop", event => {
-    if (!draggedItem) return;
-    event.preventDefault();
-    moveDraggedItemTo(element.dataset.type, Number(element.dataset.index));
-  });
-}
-
-
-
-/* ===== V6: filtro de posiciones exacto y limpio =====
-   Antes los medios se agrupaban demasiado: MC encontraba MCD/MCO/MI/MD.
-   Ahora cada posición FIFA filtra su carril real. Solo MED es amplio. */
-const POSITION_GROUPS = {
-  POR: ["POR", "PT", "PORTERO", "GK"],
-
-  DFC: ["DFC", "DF", "DEF", "DEFENSA", "DEFENSA CENTRAL", "CENTRAL", "CB"],
-  LI: ["LI", "LTI", "LATERAL IZQUIERDO", "LATERAL IZQ", "LB"],
-  LD: ["LD", "LTD", "LATERAL DERECHO", "LATERAL DER", "RB"],
-
-  MCD: ["MCD", "CDM", "PIVOTE", "MEDIOCENTRO DEFENSIVO"],
-  MC: ["MC", "CM", "MEDIOCENTRO", "CENTROCAMPISTA", "MEDIO CENTRO", "MEDIO"],
-  MCO: ["MCO", "MP", "CAM", "MEDIAPUNTA", "ENGANCHE"],
-  MI: ["MI", "LM", "VOLANTE IZQUIERDO", "INTERIOR IZQUIERDO", "MEDIO IZQUIERDO"],
-  MD: ["MD", "RM", "VOLANTE DERECHO", "INTERIOR DERECHO", "MEDIO DERECHO"],
-
-  EI: ["EI", "LW", "EXTREMO IZQUIERDO"],
-  ED: ["ED", "RW", "EXTREMO DERECHO"],
-  DC: ["DC", "DELANTERO CENTRO", "DELANTERO", "DELANTERA", "ST", "AR", "PUNTA", "9"],
-
-  GER: ["GER", "GERENTE", "GE", "MANAGER"],
-  ENT: ["ENT", "ENTRENADOR", "DT", "COACH"],
-
-  // Categorías internas para compatibilidad con reglas antiguas. No aparecen como chips del diálogo.
-  MED: ["MED"],
-  DEL: ["DEL"],
-  DEF: ["DEF"],
-  GERENTE: ["GERENTE", "GER", "GE", "MANAGER"],
-  ENTRENADOR: ["ENTRENADOR", "ENT", "DT", "COACH"]
-};
-
-function cleanPositionToken(value) {
-  return normalize(String(value || ""))
-    .toUpperCase()
-    .replace(/[^A-Z0-9Ñ]+/g, " ")
-    .trim();
-}
-
-function compactPosition(value) {
-  return cleanPositionToken(value).replace(/\s+/g, "");
-}
-
-function positionTokens(value) {
-  const raw = cleanPositionToken(value);
-  if (!raw) return [];
-  const tokens = [raw, raw.replace(/\s+/g, "")];
-  raw.split(/\s+/).filter(Boolean).forEach(part => tokens.push(part));
-  return [...new Set(tokens)];
-}
-
-function canonicalPosition(value) {
-  const compact = compactPosition(value);
-  if (!compact) return "";
-  for (const [key, aliases] of Object.entries(POSITION_GROUPS)) {
-    if (key === compact) return key;
-    if (aliases.some(alias => compactPosition(alias) === compact)) return key;
-  }
-  return compact;
-}
-
-function canonicalDialogPosition(value) {
-  const canonical = canonicalPosition(value);
-  if (canonical === "GERENTE") return "GER";
-  if (canonical === "ENTRENADOR") return "ENT";
-  if (canonical === "DF" || canonical === "DEF") return "DFC";
-  if (canonical === "DEL") return "DC";
-  if (canonical === "MED") return "MC";
-  return canonical;
-}
-
-function filterForFieldSlot(slot) {
-  if (!slot) return "";
-
-  const role = String(slot.rol || slot.role || "");
-  const compact = compactPosition(role);
-  const canonical = canonicalDialogPosition(role);
-  const x = Number(slot.x);
-
-  if (["POR", "DFC", "LI", "LD", "DC", "EI", "ED", "MC", "MCD", "MCO", "MI", "MD"].includes(canonical)) return canonical;
-
-  if (/PORTERO|POR|GK|PT/.test(compact)) return "POR";
-
-  if (/EXTREMO|DELANTERO|DELANTERA|PUNTA|AR|DC|EI|ED|LW|RW|ST/.test(compact)) {
-    if (/IZQUIER|EI|LW/.test(role.toUpperCase()) || x < 42) return "EI";
-    if (/DERECH|ED|RW/.test(role.toUpperCase()) || x > 58) return "ED";
-    return "DC";
-  }
-
-  if (/LATERAL|DEFENSA|CENTRAL|DF|DFC|LI|LD|LB|RB/.test(compact)) {
-    if (/IZQUIER|LI|LB/.test(role.toUpperCase()) || x < 42) return "LI";
-    if (/DERECH|LD|RB/.test(role.toUpperCase()) || x > 58) return "LD";
-    return "DFC";
-  }
-
-  if (/MCD|PIVOTE|DEFENSIVO|CDM/.test(compact)) return "MCD";
-  if (/MCO|MEDIAPUNTA|ENGANCHE|MP|CAM/.test(compact)) return "MCO";
-  if (/VOLANTE|INTERIOR|MEDIO|MEDIOCENTRO|MC|MI|MD|CM|LM|RM/.test(compact)) {
-    if (/IZQUIER|MI|LM/.test(role.toUpperCase()) || x < 40) return "MI";
-    if (/DERECH|MD|RM/.test(role.toUpperCase()) || x > 60) return "MD";
-    return "MC";
-  }
-
-  return canonical || "";
-}
-
-function positionsAreCompatible(playerPosition, targetPosition) {
-  if (!targetPosition) return true;
-  if (!playerPosition) return false;
-
-  const target = canonicalDialogPosition(targetPosition);
-  const player = canonicalDialogPosition(playerPosition);
-
-  // Filtros del diálogo: exactos. DC no arrastra extremos; EI/ED no arrastran DC.
-  if (["DC", "EI", "ED", "MCO", "MCD", "MC", "MI", "MD", "LI", "LD", "DFC", "POR", "GER", "ENT"].includes(target)) {
-    return player === target;
-  }
-
-  // Categorías internas usadas por draft/reglas antiguas.
-  if (target === "DEL") return ["DC", "EI", "ED"].includes(player);
-  if (target === "DEF") return ["DFC", "LI", "LD"].includes(player);
-  if (target === "MED") return ["MC", "MCD", "MCO", "MI", "MD"].includes(player);
-  if (target === "GERENTE") return player === "GER";
-  if (target === "ENTRENADOR") return player === "ENT";
-
-  return player === target;
-}
-
-function getPositionAliases(position) {
-  const canonical = canonicalPosition(position);
-  const aliases = new Set([canonical, ...positionTokens(position)]);
-  (POSITION_GROUPS[canonical] || []).forEach(value => positionTokens(value).forEach(alias => aliases.add(alias)));
-  return aliases;
-}
-
-function defaultPositionForTarget(type, index) {
-  if (type === "manager") return "GER";
-  if (type === "coach") return "ENT";
-  if (type !== "field") return "";
-  const slot = formaciones[currentFormation]?.[index];
-  return filterForFieldSlot(slot);
-}
-
-function targetLabel(type, index) {
-  if (type === "field") {
-    const slot = formaciones[currentFormation]?.[index];
-    return `Titular ${index + 1} · ${slot?.rol ?? "Posición"}`;
-  }
-  if (type === "bench") return `Banquillo ${index + 1}`;
-  if (type === "manager") return `Gerente ${index + 1}`;
-  return "Entrenador";
-}
-
-function renderChoiceCard(player) {
-  return `
-    <button class="player-card player-choice" data-name="${escapeHtml(player.nombre)}" draggable="true" type="button">
-      ${renderAvatar(player)}
-      <div>
-        <div class="player-name">${escapeHtml(player.nombre)}</div>
-        <div class="player-meta">#${escapeHtml(player.dorsal ?? "?")} · ${escapeHtml(player.posicion ?? "?")} · ${escapeHtml(player.equipo ?? "Sin equipo")}</div>
-      </div>
-    </button>
-  `;
-}
-
-function getFilteredPlayers(query, team, position) {
-  const q = normalize(query);
-  const target = canonicalPosition(position || "");
-
-  return personajes.filter(player => {
-    const haystack = normalize(`${player.nombre} ${player.equipo} ${player.posicion} ${player.raza ?? ""} ${player.estado ?? ""}`);
-    const matchesQuery = !q || haystack.includes(q);
-    const matchesTeam = !team || player.equipo === team;
-    const matchesPosition = !position || positionsAreCompatible(player.posicion, position);
-    return matchesQuery && matchesTeam && matchesPosition;
-  }).sort((a, b) => {
-    if (!target) return a.nombre.localeCompare(b.nombre);
-    const aExact = canonicalPosition(a.posicion) === target ? -1 : 0;
-    const bExact = canonicalPosition(b.posicion) === target ? -1 : 0;
-    return aExact - bExact || a.nombre.localeCompare(b.nombre);
-  });
-}
-
-function renderAvatar(player) {
-  const imageUrl = player?.foto || player?.imagen || player?.imageUrl || player?.url || "";
-  if (imageUrl) {
-    return `<img class="avatar" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(player.nombre)}" onerror="this.replaceWith(fallbackAvatar('${escapeAttribute(player.nombre)}'))">`;
-  }
-  return `<div class="avatar avatar-fallback">${initials(player?.nombre ?? "?")}</div>`;
-}
-
-function fallbackAvatar(name) {
-  const div = document.createElement("div");
-  div.className = "avatar avatar-fallback";
-  div.textContent = initials(name);
-  return div;
-}
-
-function initials(name) {
-  return String(name || "?").split(" ").filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
-}
-
-function updateBoardTitle() {
-  boardEventName.textContent = eventoInput.value.trim() || "Evento sin nombre";
-  boardTeamName.textContent = equipoInput.value.trim() || "Equipo sin definir";
-  generateOutput();
-  saveActiveTemplateState();
-}
-
-
-
-function openStatsDialog(type, index) {
-  const player = getTargetPlayer(type, index);
-  if (!player || !statsDialog) return;
-
-  statsSelectedTarget = { type, index };
-  const stats = getStatsForTarget(type, index);
-  const jersey = getJerseyForTarget(type, index) ?? player.dorsal ?? "?";
-  const role = type === "field" ? (formaciones[currentFormation]?.[index]?.rol ?? "Titular") : targetLabel(type, index);
-
-  statsDialogTitle.textContent = `#${jersey} ${player.nombre}`;
-  statsDialogMeta.textContent = `${role} · ${player.posicion ?? "?"} · ${player.equipo || "Sin equipo"}`;
-  statsGoals.value = String(stats.goals ?? 0);
-  statsAssists.value = String(stats.assists ?? 0);
-  statsYellow.classList.toggle("active", !!stats.yellow);
-  statsRed.classList.toggle("active", !!stats.red);
-  statsDialog.showModal();
-}
-
-function updateStatsDialogValue(partial) {
-  if (!statsSelectedTarget) return;
-  setStatsForTarget(statsSelectedTarget.type, statsSelectedTarget.index, partial);
-  renderAll();
-}
-
-function toggleStatsDialogCard(card) {
-  if (!statsSelectedTarget) return;
-  const stats = getStatsForTarget(statsSelectedTarget.type, statsSelectedTarget.index);
-  const partial = card === "yellow" ? { yellow: !stats.yellow } : { red: !stats.red };
-  setStatsForTarget(statsSelectedTarget.type, statsSelectedTarget.index, partial);
-  const updated = getStatsForTarget(statsSelectedTarget.type, statsSelectedTarget.index);
-  statsYellow.classList.toggle("active", !!updated.yellow);
-  statsRed.classList.toggle("active", !!updated.red);
-  renderAll();
-}
-
-function getStarterEntries() {
-  const starters = [];
-  formaciones[currentFormation]?.forEach((slot, index) => {
-    const player = placedPlayers[index];
-    if (player) starters.push({ type: "field", index, slot, player });
-  });
-  return starters;
-}
-
-
-function getChemistryPresenceEntries() {
-  const entries = [];
-  formaciones[currentFormation]?.forEach((slot, index) => {
-    const player = placedPlayers[index];
-    if (player) entries.push({ type: "field", index, slot, player });
-  });
-  benchPlayers.forEach((player, index) => {
-    if (player) entries.push({ type: "bench", index, player });
-  });
-  managers.forEach((player, index) => {
-    if (player) entries.push({ type: "manager", index, player });
-  });
-  if (coach) entries.push({ type: "coach", index: 0, player: coach });
-  return entries;
-}
-
-function getActivePresenceEffects() {
-  if (!chemistryEnabled) return [];
-  const entries = getChemistryPresenceEntries();
-  const active = [];
-
-  chemistryRules.efectos.forEach(effect => {
-    const sourceEntry = entries.find(entry =>
-      normalizePersonName(entry.player?.nombre || "") === effect.fuente &&
-      effect.zonas.includes(entry.type)
-    );
-
-    if (!sourceEntry) return;
-
-    active.push({
-      ...effect,
-      source: sourceEntry.player.nombre,
-      sourceType: sourceEntry.type,
-      sourceIndex: sourceEntry.index,
-      sourceLabel: zoneLabel(sourceEntry.type)
-    });
-  });
-
-  return active;
-}
-
-function zoneLabel(zone) {
-  if (zone === "field") return "campo";
-  if (zone === "bench") return "banquillo";
-  if (zone === "manager") return "gerente";
-  if (zone === "coach") return "entrenador";
-  return zone;
-}
-
-function getPresenceEffectsForPlayer(player) {
-  const name = normalizePersonName(player?.nombre || "");
-  if (!name) return [];
-  return getActivePresenceEffects().filter(effect =>
-    effect.objetivos.includes("*") || effect.objetivos.includes(name)
+  const STORAGE_KEY = 'inazuma_centro_tactico_v7';
+  const BENCH_SIZE = 7;
+  const STAFF_SIZE = 3;
+  const playerById = new Map(DATA.players.map(player => [player.id, player]));
+  const playerByName = new Map(DATA.players.map(player => [normalize(player.name), player]));
+  const formationNames = Object.keys(DATA.formations);
+  const fieldPlayers = DATA.players.filter(player => !['ENT', 'GER'].includes(player.position));
+  const staffPlayers = DATA.players.filter(player => ['ENT', 'GER'].includes(player.position));
+  const relationMeta = DATA.chemistry.tiposRelaciones || {};
+  const relationGroups = {
+    parejas: 'pareja', exparejas: 'expareja', padres: 'familia', hermanos: 'familia', primos: 'familia',
+    mejoresAmigos: 'amistad', rivales: 'rivalidad', relaciones: 'amistad'
+  };
+  const relationships = Object.entries(relationGroups).flatMap(([group, fallbackType]) =>
+    (DATA.chemistry[group] || []).filter(item => item?.jugadores?.length >= 2).map(item => ({
+      a: normalize(item.jugadores[0]), b: normalize(item.jugadores[1]), points: Number(item.puntos) || 0,
+      type: item.tipo || fallbackType, reason: item.motivo || relationMeta[item.tipo || fallbackType]?.descripcion || group
+    }))
   );
-}
 
-function getSurname(player) {
-  const clean = normalize(player?.nombre || "").replace(/[’']/g, " ");
-  const parts = clean.split(/\s+/).filter(Boolean);
-  return parts.length > 1 ? parts[parts.length - 1] : "";
-}
+  let state = loadState();
+  let history = [];
+  let future = [];
+  let libraryPosition = 'all';
+  let pickerTarget = null;
+  let pickerPosition = 'recommended';
+  let toastTimer = null;
+  let dragPayload = null;
 
-function getPlayerNationality(player) {
-  return player?.nacionalidad ?? player?.pais ?? player?.seleccion ?? player?.origen ?? "";
-}
-
-function getManualRelationship(a, b) {
-  const nameA = normalizePersonName(a?.nombre || "");
-  const nameB = normalizePersonName(b?.nombre || "");
-  if (!nameA || !nameB) return null;
-
-  return chemistryRules.relaciones.find(rel => {
-    const [ra, rb] = rel.jugadores;
-    return (ra === nameA && rb === nameB) || (ra === nameB && rb === nameA);
-  }) || null;
-}
-
-function getManualPlayerAdjustment(player) {
-  const name = normalizePersonName(player?.nombre || "");
-  if (!name) return 0;
-  return chemistryRules.ajustes
-    .filter(item => item.jugador === name)
-    .reduce((total, item) => total + item.puntos, 0);
-}
-
-
-function getManualPlayerAdjustments(player) {
-  const name = normalizePersonName(player?.nombre || "");
-  if (!name) return [];
-  return chemistryRules.ajustes.filter(item => item.jugador === name);
-}
-
-function formatSignedPoints(points) {
-  const n = Number(points || 0);
-  return `${n >= 0 ? "+" : ""}${n}`;
-}
-
-function getSpecialRelationshipScore(a, b) {
-  const manual = getManualRelationship(a, b);
-  if (manual) return manual.puntos;
-
-  const nameA = normalizePersonName(a?.nombre || "");
-  const nameB = normalizePersonName(b?.nombre || "");
-  const pair = [nameA, nameB].sort().join("|");
-  const hardcoded = new Set([
-    ["renzu ito", "jeanne d arc"].sort().join("|"),
-    ["renzu ito", "wang qing"].sort().join("|"),
-    ["jeanne d arc", "wang qing"].sort().join("|"),
-    ["dan karman", "serena kitagawa"].sort().join("|"),
-    ["akari foster", "jiro yakuin"].sort().join("|"),
-  ]);
-  if (hardcoded.has(pair)) return 4;
-
-  const rawA = JSON.stringify(a ?? {}).toLowerCase();
-  const rawB = JSON.stringify(b ?? {}).toLowerCase();
-  if (rawA.includes(nameB) || rawB.includes(nameA)) return 4;
-  return 0;
-}
-function evaluateChemistryLink(a, b) {
-  let points = 0;
-  const reasons = [];
-  if (a.player.equipo && b.player.equipo && a.player.equipo === b.player.equipo) {
-    points += 2;
-    reasons.push("mismo equipo");
-  }
-  const surnameA = getSurname(a.player);
-  const surnameB = getSurname(b.player);
-  if (surnameA && surnameA === surnameB) {
-    points += 3;
-    reasons.push("familia/apellido");
-  }
-  const natA = getPlayerNationality(a.player);
-  const natB = getPlayerNationality(b.player);
-  if (natA && natB && normalize(natA) === normalize(natB)) {
-    points += 2;
-    reasons.push("misma nacionalidad");
-  }
-  const manualRelation = getManualRelationship(a.player, b.player);
-  const relation = getSpecialRelationshipScore(a.player, b.player);
-  if (relation) {
-    points += relation;
-    reasons.push(manualRelation?.motivo || "relación especial");
+  function normalize(value = '') {
+    return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
   }
 
-  const manualAdjustment = getManualPlayerAdjustment(a.player) + getManualPlayerAdjustment(b.player);
-  if (manualAdjustment) {
-    points += manualAdjustment;
-    reasons.push(`ajuste manual ${formatSignedPoints(manualAdjustment)}`);
+  function escapeHTML(value = '') {
+    return String(value).replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
   }
 
-  const presenceEffects = [
-    ...getPresenceEffectsForPlayer(a.player).map(effect => ({ ...effect, target: a.player.nombre })),
-    ...getPresenceEffectsForPlayer(b.player).map(effect => ({ ...effect, target: b.player.nombre }))
-  ];
-
-  presenceEffects.forEach(effect => {
-    points += effect.puntos;
-    reasons.push(`${effect.source} en ${effect.sourceLabel}: ${effect.target} ${formatSignedPoints(effect.puntos)} · ${effect.motivo}`);
-  });
-
-  let level = "dead";
-  if (points >= 6) level = "perfect";
-  else if (points >= 4) level = "strong";
-  else if (points >= 2) level = "medium";
-  else if (points >= 1) level = "weak";
-
-  return { points, level, reasons };
-}
-
-function getChemistryLinks() {
-  if (!chemistryEnabled) return [];
-  const starters = getStarterEntries();
-  const links = [];
-  for (let i = 0; i < starters.length; i++) {
-    for (let j = i + 1; j < starters.length; j++) {
-      const a = starters[i];
-      const b = starters[j];
-      const dx = a.slot.x - b.slot.x;
-      const dy = a.slot.y - b.slot.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      if (distance > 31) continue;
-      const evaluation = evaluateChemistryLink(a, b);
-      links.push({ a, b, distance, ...evaluation });
-    }
-  }
-  return links;
-}
-
-function renderSynergySvg() {
-  const links = getChemistryLinks();
-  if (!links.length) return `<svg class="synergy-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>`;
-  return `
-    <svg class="synergy-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Líneas de sinergia">
-      ${links.map((link, index) => {
-        const tooltip = buildChemistryTooltipText(link);
-        return `
-          <line class="synergy-line synergy-hitbox" x1="${link.a.slot.x}" y1="${link.a.slot.y}" x2="${link.b.slot.x}" y2="${link.b.slot.y}" data-tooltip="${escapeAttribute(tooltip)}"></line>
-          <line class="synergy-line synergy-${escapeAttribute(link.level)}" x1="${link.a.slot.x}" y1="${link.a.slot.y}" x2="${link.b.slot.x}" y2="${link.b.slot.y}" data-tooltip="${escapeAttribute(tooltip)}"></line>
-        `;
-      }).join("")}
-    </svg>
-  `;
-}
-
-function buildChemistryTooltipText(link) {
-  const reasons = link.reasons?.length ? link.reasons.map(reason => `• ${reason}`).join("\n") : "• sin conexión especial";
-  return `${link.a.player.nombre} ↔ ${link.b.player.nombre}\nQuímica: ${formatSignedPoints(link.points)}\n${reasons}`;
-}
-
-function bindChemistryTooltipEvents() {
-  if (!chemistryTooltip) return;
-  document.querySelectorAll(".synergy-line[data-tooltip]").forEach(line => {
-    line.addEventListener("pointerenter", event => showChemistryTooltip(event, line.dataset.tooltip || ""));
-    line.addEventListener("pointermove", moveChemistryTooltip);
-    line.addEventListener("pointerleave", hideChemistryTooltip);
-  });
-}
-
-function showChemistryTooltip(event, text) {
-  if (!chemistryTooltip) return;
-  chemistryTooltip.innerHTML = escapeHtml(text).replaceAll("\n", "<br>");
-  chemistryTooltip.classList.add("visible");
-  chemistryTooltip.setAttribute("aria-hidden", "false");
-  moveChemistryTooltip(event);
-}
-
-function moveChemistryTooltip(event) {
-  if (!chemistryTooltip) return;
-  chemistryTooltip.style.left = `${event.clientX + 14}px`;
-  chemistryTooltip.style.top = `${event.clientY + 14}px`;
-}
-
-function hideChemistryTooltip() {
-  if (!chemistryTooltip) return;
-  chemistryTooltip.classList.remove("visible");
-  chemistryTooltip.setAttribute("aria-hidden", "true");
-}
-
-function getDefaultStats() {
-  return { yellow: false, red: false, goals: 0, assists: 0 };
-}
-
-function getStatsForTarget(type, index) {
-  return { ...getDefaultStats(), ...(matchStats[getTargetKey(type, index)] || {}) };
-}
-
-function renderPlayerMatchBadges(type, index) {
-  const stats = getStatsForTarget(type, index);
-  const goals = Math.max(0, Math.min(4, Number(stats.goals || 0)));
-  const assists = Math.max(0, Math.min(4, Number(stats.assists || 0)));
-  const cards = [];
-
-  if (stats.yellow) cards.push(`<span class="card-square yellow-card" title="Tarjeta amarilla"></span>`);
-  if (stats.red) cards.push(`<span class="card-square red-card" title="Tarjeta roja"></span>`);
-
-  const cardBadge = cards.length
-    ? `<span class="player-marker cards-marker" title="Tarjetas">${cards.join("")}</span>`
-    : "";
-
-  const goalBadge = goals > 0
-    ? `<span class="player-marker goals-marker" title="${goals} gol${goals === 1 ? "" : "es"}"><span class="marker-icon">⚽</span>${goals > 1 ? `<span class="marker-count">${goals}</span>` : ""}</span>`
-    : "";
-
-  const assistBadge = assists > 0
-    ? `<span class="player-marker assists-marker" title="${assists} asistencia${assists === 1 ? "" : "s"}"><span class="marker-icon">🦶</span>${assists > 1 ? `<span class="marker-count">${assists}</span>` : ""}</span>`
-    : "";
-
-  return cardBadge + goalBadge + assistBadge;
-}
-
-function setStatsForTarget(type, index, partial) {
-  const key = getTargetKey(type, index);
-  const current = getStatsForTarget(type, index);
-  matchStats[key] = { ...current, ...partial };
-  generateOutput();
-}
-
-function getMatchLineupEntries() {
-  const entries = [];
-  formaciones[currentFormation]?.forEach((slot, index) => {
-    const player = placedPlayers[index];
-    if (player) entries.push({ type: "field", index, player, role: slot.rol, isStarter: true });
-  });
-  benchPlayers.forEach((player, index) => {
-    if (player) entries.push({ type: "bench", index, player, role: `B${index + 1}`, isStarter: false });
-  });
-  return entries;
-}
-
-function renderStatsEditor() {
-  const entries = getMatchLineupEntries();
-  if (!entries.length) {
-    return `
-      <section class="stats-editor empty-stats">
-        <h3>🎯 Estadísticas del partido</h3>
-        <p>Añade jugadores para poder poner goles, asistencias, amarilla o roja.</p>
-      </section>
-    `;
+  function uid(prefix = 'squad') {
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  return `
-    <section class="stats-editor">
-      <h3>🎯 Goles, asistencias y tarjetas</h3>
-      <div class="stats-grid">
-        ${entries.map(entry => renderStatsRow(entry)).join("")}
-      </div>
-    </section>
-  `;
-}
-
-function renderStatsRow(entry) {
-  const stats = getStatsForTarget(entry.type, entry.index);
-  const jersey = getJerseyForTarget(entry.type, entry.index) ?? "?";
-  return `
-    <div class="stats-row" data-type="${escapeAttribute(entry.type)}" data-index="${escapeAttribute(entry.index)}">
-      <div class="stats-player">
-        <strong>#${escapeHtml(jersey)} ${escapeHtml(entry.player.nombre)}</strong>
-        <span>${escapeHtml(entry.role)} · ${escapeHtml(entry.player.equipo || "Sin equipo")}</span>
-      </div>
-      <label>⚽
-        <select class="stat-goals">
-          ${[0,1,2,3,4].map(n => `<option value="${n}" ${stats.goals === n ? "selected" : ""}>${n}</option>`).join("")}
-        </select>
-      </label>
-      <label>🅰️
-        <select class="stat-assists">
-          ${[0,1,2,3,4].map(n => `<option value="${n}" ${stats.assists === n ? "selected" : ""}>${n}</option>`).join("")}
-        </select>
-      </label>
-      <button class="card-toggle ${stats.yellow ? "active" : ""}" data-card="yellow" type="button">🟨</button>
-      <button class="card-toggle ${stats.red ? "active" : ""}" data-card="red" type="button">🟥</button>
-    </div>
-  `;
-}
-
-function bindStatsEditorEvents() {
-  teamHud.querySelectorAll(".stats-row").forEach(row => {
-    const type = row.dataset.type;
-    const index = Number(row.dataset.index);
-
-    row.querySelector(".stat-goals")?.addEventListener("change", event => {
-      setStatsForTarget(type, index, { goals: Number(event.target.value) });
-    });
-
-    row.querySelector(".stat-assists")?.addEventListener("change", event => {
-      setStatsForTarget(type, index, { assists: Number(event.target.value) });
-    });
-
-    row.querySelectorAll(".card-toggle").forEach(button => {
-      button.addEventListener("click", () => {
-        const card = button.dataset.card;
-        const stats = getStatsForTarget(type, index);
-        if (card === "yellow") setStatsForTarget(type, index, { yellow: !stats.yellow });
-        if (card === "red") setStatsForTarget(type, index, { red: !stats.red });
-        renderHud();
-      });
-    });
-  });
-}
-
-function calculateChemistry() {
-  const starters = getStarterEntries();
-  if (!chemistryEnabled) {
-    return { score: 0, label: "Desactivada", links: 0, perfectLinks: 0, strongLinks: 0, mediumLinks: 0, weakLinks: 0, deadLinks: 0, teams: {} };
-  }
-  const links = getChemistryLinks();
-  const teamCounts = {};
-  starters.forEach(entry => {
-    const team = entry.player.equipo || "Sin equipo";
-    teamCounts[team] = (teamCounts[team] || 0) + 1;
-  });
-
-  const totalPoints = links.reduce((total, link) => total + link.points, 0);
-  const perfectLinks = links.filter(link => link.level === "perfect").length;
-  const strongLinks = links.filter(link => link.level === "strong").length;
-  const mediumLinks = links.filter(link => link.level === "medium").length;
-  const weakLinks = links.filter(link => link.level === "weak").length;
-  const deadLinks = links.filter(link => link.level === "dead").length;
-  const starterRatio = starters.length ? starters.length / 11 : 0;
-  const maxPoints = Math.max(1, links.length * 8);
-  const rawScore = Math.round((totalPoints / maxPoints) * 100);
-  const completionPenalty = Math.round(rawScore * starterRatio);
-  const score = Math.min(100, Math.max(0, completionPenalty));
-
-  let label = "Baja";
-  if (score >= 90) label = "Perfecta";
-  else if (score >= 75) label = "Alta";
-  else if (score >= 50) label = "Media";
-
-  return { score, label, links: links.length, perfectLinks, strongLinks, mediumLinks, weakLinks, deadLinks, teams: teamCounts };
-}
-
-function renderChemistryPanel(chemistry) {
-  if (!chemistryEnabled) {
-    return `
-      <section class="chemistry-panel disabled-chemistry">
-        <div class="chemistry-topline">
-          <div>
-            <h3>🧪 Sinergia de equipo</h3>
-            <p>Desactivada para esta plantilla.</p>
-          </div>
-          <strong>OFF</strong>
-        </div>
-        <p class="chemistry-help">Usa el botón "Sinergia ON/OFF" para mostrar u ocultar química y líneas.</p>
-      </section>
-    `;
+  function defaultFormation() {
+    return DATA.formations['4-3-3'] ? '4-3-3' : formationNames[0];
   }
 
-  const activeEffects = getActivePresenceEffects();
+  function createSquad(name = 'Nuevo equipo') {
+    return {
+      id: uid(), name, event: '', formation: defaultFormation(), starters: Array(11).fill(null),
+      bench: Array(BENCH_SIZE).fill(null), staff: Array(STAFF_SIZE).fill(null), captain: null, stats: {}, techniques: []
+    };
+  }
 
-  return `
-    <section class="chemistry-panel">
-      <div class="chemistry-topline">
-        <div>
-          <h3>🧪 Sinergia de equipo</h3>
-          <p>${escapeHtml(chemistry.label)} · 🟢 ${chemistry.perfectLinks + chemistry.strongLinks} · 🟡 ${chemistry.mediumLinks + chemistry.weakLinks} · 🔴 ${chemistry.deadLinks}</p>
-        </div>
-        <strong>${chemistry.score}</strong>
-      </div>
-      <div class="chemistry-bar"><span style="width:${chemistry.score}%"></span></div>
-      ${activeEffects.length ? `
-        <div class="active-adjustments-mini">
-          <b>Efectos activos:</b>
-          ${activeEffects.slice(0, 3).map(effect => `<span>${escapeHtml(effect.source)} en ${escapeHtml(effect.sourceLabel)}: ${formatSignedPoints(effect.puntos)} · ${escapeHtml(effect.motivo)}</span>`).join("")}
-          ${activeEffects.length > 3 ? `<span>+${activeEffects.length - 3} más…</span>` : ""}
-        </div>
-      ` : `<p class="chemistry-help">No hay efectos por presencia activos ahora mismo.</p>`}
-      <p class="chemistry-help">Pasa el ratón por una línea para ver el motivo. Pulsa "Ver ajustes" para ver efectos de campo, banquillo y gerentes.</p>
-    </section>
-  `;
-}
+  function cleanSquad(squad) {
+    const formation = DATA.formations[squad?.formation] ? squad.formation : defaultFormation();
+    const valid = value => playerById.has(value) ? value : resolvePlayerKey(value);
+    const startersSource = Array.isArray(squad?.starters) ? squad.starters : Object.keys(squad?.starters || {}).sort((a, b) => Number(a) - Number(b)).map(key => squad.starters[key]);
+    const staffSource = [...(squad?.staff || squad?.managers || []), squad?.coach].filter(Boolean);
+    return {
+      id: squad?.id || uid(), name: squad?.name || squad?.teamName || 'Plantilla recuperada', event: squad?.event || squad?.eventName || '',
+      formation, starters: Array.from({ length: 11 }, (_, index) => valid(startersSource[index]) || null),
+      bench: Array.from({ length: BENCH_SIZE }, (_, index) => valid(squad?.bench?.[index]) || null),
+      staff: Array.from({ length: STAFF_SIZE }, (_, index) => valid(staffSource[index]) || null),
+      captain: valid(squad?.captain) || null, stats: squad?.stats && typeof squad.stats === 'object' ? squad.stats : {},
+      techniques: Array.isArray(squad?.techniques) ? squad.techniques : []
+    };
+  }
 
-function getActiveManualRelationships() {
-  const starters = getStarterEntries();
-  const active = [];
-  for (let i = 0; i < starters.length; i++) {
-    for (let j = i + 1; j < starters.length; j++) {
-      const rel = getManualRelationship(starters[i].player, starters[j].player);
-      if (rel) {
-        active.push({
-          playerA: starters[i].player.nombre,
-          playerB: starters[j].player.nombre,
-          puntos: rel.puntos,
-          nivel: rel.nivel,
-          motivo: rel.motivo
-        });
+  function loadState() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (stored?.squads?.length) {
+        const squads = stored.squads.map(cleanSquad);
+        return { version: 7, activeSquadId: squads.some(s => s.id === stored.activeSquadId) ? stored.activeSquadId : squads[0].id, chemistryVisible: stored.chemistryVisible !== false, squads };
       }
+    } catch (error) {}
+    const first = createSquad();
+    return { version: 7, activeSquadId: first.id, chemistryVisible: true, squads: [first] };
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      dom.saveState.innerHTML = '<i></i> Guardado local';
+    } catch (error) {
+      dom.saveState.textContent = 'No se pudo guardar';
     }
   }
-  return active;
-}
 
-function getActiveIndividualAdjustments() {
-  const starters = getStarterEntries();
-  const active = [];
-  starters.forEach(entry => {
-    getManualPlayerAdjustments(entry.player).forEach(item => {
-      active.push({ player: entry.player.nombre, puntos: item.puntos, motivo: item.motivo });
-    });
-  });
-  return active;
-}
-
-function openChemistryDetailsDialog() {
-  if (!chemistryDialog || !chemistryDialogContent) return;
-  const chemistry = calculateChemistry();
-  const links = getChemistryLinks();
-  const manualRelations = getActiveManualRelationships();
-  const individualAdjustments = getActiveIndividualAdjustments();
-  const presenceEffects = getActivePresenceEffects();
-
-  chemistryDialogSummary.textContent = chemistryEnabled
-    ? `Sinergia actual: ${chemistry.score}/100 · ${chemistry.label}. Enlaces visibles: ${links.length}.`
-    : "La sinergia está desactivada para esta plantilla.";
-
-  chemistryDialogContent.innerHTML = `
-    <section class="chemistry-detail-section">
-      <h3>📍 Efectos por presencia activos</h3>
-      ${presenceEffects.length ? presenceEffects.map(effect => `
-        <div class="chemistry-detail-card ${Number(effect.puntos) >= 0 ? "positive" : "negative"}">
-          <strong>${escapeHtml(effect.source)} en ${escapeHtml(effect.sourceLabel)} ${formatSignedPoints(effect.puntos)}</strong>
-          <span>Objetivo: ${escapeHtml(effect.objetivos.includes("*") ? "todos" : effect.objetivos.join(", "))}</span>
-          <span>${escapeHtml(effect.motivo || "Sin motivo escrito")}</span>
-        </div>
-      `).join("") : `<p>No hay efectos por presencia activos. Añade entradas en <code>quimica.json</code> dentro de <code>efectos</code>.</p>`}
-    </section>
-
-    <section class="chemistry-detail-section">
-      <h3>⚙️ Ajustes individuales activos</h3>
-      ${individualAdjustments.length ? individualAdjustments.map(item => `
-        <div class="chemistry-detail-card ${Number(item.puntos) >= 0 ? "positive" : "negative"}">
-          <strong>${escapeHtml(item.player)} ${formatSignedPoints(item.puntos)}</strong>
-          <span>${escapeHtml(item.motivo || "Sin motivo escrito")}</span>
-        </div>
-      `).join("") : `<p>No hay ajustes individuales activos entre titulares.</p>`}
-    </section>
-
-    <section class="chemistry-detail-section">
-      <h3>🤝 Relaciones manuales activas</h3>
-      ${manualRelations.length ? manualRelations.map(item => `
-        <div class="chemistry-detail-card ${Number(item.puntos) >= 0 ? "positive" : "negative"}">
-          <strong>${escapeHtml(item.playerA)} ↔ ${escapeHtml(item.playerB)} ${formatSignedPoints(item.puntos)}</strong>
-          <span>${escapeHtml(item.motivo || "Sin motivo escrito")}</span>
-        </div>
-      `).join("") : `<p>No hay relaciones manuales activas entre titulares actuales.</p>`}
-    </section>
-
-    <section class="chemistry-detail-section">
-      <h3>🧪 Líneas visibles</h3>
-      ${links.length ? links.map(link => `
-        <div class="chemistry-detail-card level-${escapeAttribute(link.level)}">
-          <strong>${escapeHtml(link.a.player.nombre)} ↔ ${escapeHtml(link.b.player.nombre)} ${formatSignedPoints(link.points)}</strong>
-          ${link.reasons?.length ? link.reasons.map(reason => `<span>${escapeHtml(reason)}</span>`).join("") : `<span>sin conexión especial</span>`}
-        </div>
-      `).join("") : `<p>No hay líneas visibles. Puede que falten jugadores o estén demasiado lejos.</p>`}
-    </section>
-  `;
-
-  chemistryDialog.showModal();
-}
-
-function formatStatsForPaste(type, index) {
-  const stats = getStatsForTarget(type, index);
-  const parts = [];
-  if (stats.goals > 0) parts.push(`⚽ x${stats.goals}`);
-  if (stats.assists > 0) parts.push(`🅰️ x${stats.assists}`);
-  if (stats.yellow) parts.push("🟨");
-  if (stats.red) parts.push("🟥");
-  return parts.length ? ` — ${parts.join(" ")}` : "";
-}
-
-function generateOutput() {
-  output.value = buildDiscordPaste();
-}
-
-function buildDiscordPaste() {
-  const eventName = eventoInput.value.trim() || "Evento sin nombre";
-  const teamName = equipoInput.value.trim() || "Equipo sin definir";
-  const lines = [
-    `# ⚽ ${eventName}`,
-    `**Equipo:** ${teamName}`,
-    `**Formación:** ${currentFormation}`,
-    chemistryEnabled ? `**Sinergia:** ${calculateChemistry().score}/100 · ${calculateChemistry().label}` : `**Sinergia:** Desactivada`,
-    chemistryEnabled ? `**Enlaces:** 🟢 ${calculateChemistry().perfectLinks + calculateChemistry().strongLinks} · 🟡 ${calculateChemistry().mediumLinks + calculateChemistry().weakLinks} · 🔴 ${calculateChemistry().deadLinks}` : `**Enlaces:** Ocultos`,
-    "",
-    "## 🟦 TITULARES"
-  ];
-
-  formaciones[currentFormation]?.forEach((slot, index) => {
-    const player = placedPlayers[index];
-    lines.push(player
-      ? `${roleIcon(slot.rol)} **${slot.rol}** — ${formatPlayerForPaste(player, getJerseyForTarget("field", index))}${formatStatsForPaste("field", index)}`
-      : `${roleIcon(slot.rol)} **${slot.rol}** — *Vacío*`);
-  });
-
-  const filledBench = benchPlayers.map((player, index) => ({ player, index })).filter(item => item.player);
-  lines.push("", "## 🟨 BANQUILLO");
-  if (filledBench.length) {
-    filledBench.forEach(({ player, index }) => {
-      lines.push(`• ${formatPlayerForPaste(player, getJerseyForTarget("bench", index))}${formatStatsForPaste("bench", index)}`);
-    });
-  } else {
-    lines.push("• *Sin suplentes*");
+  function activeSquad() {
+    return state.squads.find(squad => squad.id === state.activeSquadId) || state.squads[0];
   }
 
-  const filledManagers = managers.map((player, index) => ({ player, index })).filter(item => item.player);
-  lines.push("", "## 🧠 CUERPO TÉCNICO");
-  lines.push(`👔 **Entrenador:** ${coach ? coach.nombre : "*Vacío*"}`);
-  if (filledManagers.length) {
-    filledManagers.forEach(({ player, index }) => {
-      lines.push(`📋 **Gerente ${index + 1}:** ${player.nombre}`);
-    });
-  } else {
-    lines.push("📋 **Gerentes:** *Vacío*");
-  }
-
-  lines.push("", `> Dorsales generados automáticamente para que no se repitan en el paste.`);
-  return lines.join("\n");
-}
-
-function formatPlayerForPaste(player, dorsal) {
-  const number = dorsal ?? "?";
-  const team = player.equipo ? ` · ${player.equipo}` : "";
-  return `#${number} **${player.nombre}**${team}`;
-}
-
-function roleIcon(role) {
-  const pos = normalize(role);
-  if (["por", "pt", "gk", "portero"].includes(pos)) return "🧤";
-  if (pos.includes("df") || pos.includes("def") || pos === "li" || pos === "ld" || pos === "dfc") return "🛡️";
-  if (pos.includes("mc") || pos.includes("md") || pos.includes("mi") || pos.includes("mcd") || pos.includes("mco")) return "⚙️";
-  if (pos.includes("dc") || pos.includes("del") || pos.includes("ei") || pos.includes("ed") || pos.includes("ext")) return "⚡";
-  return "🔹";
-}
-
-function getLineupEntries() {
-  const entries = [];
-  formaciones[currentFormation]?.forEach((slot, index) => {
-    const player = placedPlayers[index];
-    if (player) entries.push({ type: "field", index, player, role: slot.rol });
-  });
-  benchPlayers.forEach((player, index) => {
-    if (player) entries.push({ type: "bench", index, player, role: `B${index + 1}` });
-  });
-  return entries;
-}
-
-function getTargetKey(type, index) {
-  return `${type}:${Number(index)}`;
-}
-
-function getAutoJerseys() {
-  const entries = getLineupEntries();
-  const assigned = {};
-  let nextNumber = 1;
-
-  entries.forEach(entry => {
-    assigned[getTargetKey(entry.type, entry.index)] = nextNumber;
-    nextNumber += 1;
-  });
-
-  return assigned;
-}
-
-function getJerseyForTarget(type, index) {
-  const player = getTargetPlayer(type, index);
-  if (player?.freePlayer && player.dorsal) return player.dorsal;
-  return getAutoJerseys()[getTargetKey(type, index)] ?? null;
-}
-
-function getPersonKey(player) {
-  if (!player) return null;
-  if (player.freePlayer) {
-    return {
-      freePlayer: true,
-      nombre: player.nombre || "Jugador libre",
-      posicion: player.posicion || "",
-      equipo: player.equipo || "Libre",
-      dorsal: player.dorsal || "",
-      foto: player.foto || player.imagen || player.imageUrl || player.url || ""
-    };
-  }
-  return player.id ?? player.nombre ?? null;
-}
-
-function findPersonByKey(key) {
-  if (!key) return null;
-  if (typeof key === "object") {
-    return {
-      freePlayer: true,
-      nombre: key.nombre || key.name || "Jugador libre",
-      posicion: key.posicion || key.position || "",
-      equipo: key.equipo || key.team || "Libre",
-      dorsal: key.dorsal || key.number || "",
-      foto: key.foto || key.imagen || key.imageUrl || key.url || ""
-    };
-  }
-  return personajes.find(player => String(player.id ?? player.nombre) === String(key)) || null;
-}
-
-function getTemplateData() {
-  generateOutput();
-  return {
-    version: 2,
-    exportedAt: new Date().toISOString(),
-    eventName: eventoInput.value.trim(),
-    teamName: equipoInput.value.trim(),
-    formation: currentFormation,
-    mode: templateModeValue,
-    fieldStyle: fieldStyleValue,
-    theme: themeValue,
-    zoom: zoomValue,
-    templateName: getActiveTemplate()?.name || teamNameOrDefault(),
-    starters: Object.fromEntries(
-      Object.entries(placedPlayers).map(([index, player]) => [index, getPersonKey(player)])
-    ),
-    bench: benchPlayers.map(getPersonKey),
-    managers: managers.map(getPersonKey),
-    coach: getPersonKey(coach),
-    stats: matchStats,
-    chemistryEnabled,
-    text: output.value
-  };
-}
-
-function exportTemplateJson() {
-  const data = getTemplateData();
-
-  const safeName = normalize(`${data.eventName || "plantilla"}-${data.teamName || "equipo"}`)
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "plantilla-inazuma";
-
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${safeName}.json`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-
-  btnExportar.textContent = "Exportado ✅";
-  setTimeout(() => btnExportar.textContent = "Exportar JSON", 1400);
-}
-
-
-function encodeTemplateCode(data) {
-  const json = JSON.stringify(data);
-  return `INAZUMA-CODE:${btoa(unescape(encodeURIComponent(json)))}`;
-}
-
-function decodeTemplateCode(text) {
-  const match = String(text || "").match(/INAZUMA-CODE:([A-Za-z0-9+/=]+)/);
-  if (!match) return null;
-  const json = decodeURIComponent(escape(atob(match[1])));
-  return JSON.parse(json);
-}
-
-async function copyTemplateCode() {
-  const code = encodeTemplateCode(getTemplateData());
-  await navigator.clipboard.writeText(code);
-  btnCopiarCodigo.textContent = "Código copiado ✅";
-  setTimeout(() => btnCopiarCodigo.textContent = "Copiar código", 1400);
-}
-
-function loadTemplateData(data) {
-  isLoadingTemplate = true;
-  eventoInput.value = data.eventName ?? data.evento ?? "";
-  equipoInput.value = data.teamName ?? data.equipo ?? "";
-  templateModeValue = data.mode || data.tipo || "normal";
-  fieldStyleValue = data.fieldStyle || data.campo || "classic";
-  themeValue = data.theme || data.tema || "ds";
-  zoomValue = Number(data.zoom || 100);
-  if (templateMode) templateMode.value = templateModeValue;
-  if (fieldStyleSelect) fieldStyleSelect.value = fieldStyleValue;
-  if (themeSelect) themeSelect.value = themeValue;
-  if (zoomRange) zoomRange.value = String(zoomValue);
-  applyVisualSettings();
-
-  const importedFormation = data.formation ?? data.formacion;
-  if (importedFormation && formaciones[importedFormation]) {
-    currentFormation = importedFormation;
-    formationSelect.value = importedFormation;
-  }
-
-  placedPlayers = {};
-  const importedStarters = data.starters ?? data.titulares ?? {};
-  Object.entries(importedStarters).forEach(([index, key]) => {
-    const player = findPersonByKey(key);
-    if (player) placedPlayers[index] = player;
-  });
-
-  benchPlayers = Array(BENCH_SIZE).fill(null);
-  (data.bench ?? data.banquillo ?? []).slice(0, BENCH_SIZE).forEach((key, index) => {
-    benchPlayers[index] = findPersonByKey(key);
-  });
-
-  managers = Array(MANAGER_SIZE).fill(null);
-  (data.managers ?? data.gerentes ?? []).slice(0, MANAGER_SIZE).forEach((key, index) => {
-    managers[index] = findPersonByKey(key);
-  });
-
-  coach = findPersonByKey(data.coach ?? data.entrenador);
-  matchStats = data.stats ?? data.estadisticas ?? {};
-  chemistryEnabled = data.chemistryEnabled ?? data.sinergiaActiva ?? true;
-  updateChemistryToggleButton();
-
-  updateBoardTitle();
-  renderAll();
-  isLoadingTemplate = false;
-}
-
-function importTemplateFromPaste() {
-  try {
-    const data = decodeTemplateCode(output.value);
-    if (!data) {
-      alert("Pega en la caja un código que empiece por INAZUMA-CODE:");
-      return;
-    }
-    loadTemplateData(data);
-    btnImportarPaste.textContent = "Paste importado ✅";
-    setTimeout(() => btnImportarPaste.textContent = "Importar paste", 1400);
-  } catch (error) {
-    console.error(error);
-    alert("No he podido importar ese paste. Revisa que el código INAZUMA-CODE esté completo.");
-  }
-}
-
-async function importTemplateJson(event) {
-  const file = event.target.files?.[0];
-  if (!file) return;
-
-  try {
-    const text = await file.text();
-    const data = JSON.parse(text);
-    loadTemplateData(data);
-
-    btnImportar.textContent = "Importado ✅";
-    setTimeout(() => btnImportar.textContent = "Importar JSON", 1400);
-  } catch (error) {
-    console.error(error);
-    alert("No he podido importar ese JSON. Revisa que sea una plantilla exportada desde esta herramienta.");
-  } finally {
-    event.target.value = "";
-  }
-}
-
-async function copyTemplate() {
-  generateOutput();
-  await navigator.clipboard.writeText(output.value);
-  btnCopiar.textContent = "Copiado ✅";
-  setTimeout(() => btnCopiar.textContent = "Copiar Discord", 1400);
-}
-
-function clearBoard() {
-  placedPlayers = {};
-  benchPlayers = Array(BENCH_SIZE).fill(null);
-  managers = Array(MANAGER_SIZE).fill(null);
-  coach = null;
-  matchStats = {};
-  renderAll();
-}
-
-
-function teamNameOrDefault() {
-  return equipoInput?.value?.trim() || eventoInput?.value?.trim() || "Plantilla";
-}
-
-function getActiveTemplate() {
-  return templates.find(template => template.id === activeTemplateId) || null;
-}
-
-function collectCurrentTemplateData() {
-  return {
-    version: 3,
-    id: activeTemplateId,
-    name: getActiveTemplate()?.name || teamNameOrDefault(),
-    eventName: eventoInput.value.trim(),
-    teamName: equipoInput.value.trim(),
-    formation: currentFormation,
-    mode: templateModeValue,
-    fieldStyle: fieldStyleValue,
-    theme: themeValue,
-    zoom: zoomValue,
-    starters: Object.fromEntries(Object.entries(placedPlayers).map(([index, player]) => [index, getPersonKey(player)])),
-    bench: benchPlayers.map(getPersonKey),
-    managers: managers.map(getPersonKey),
-    coach: getPersonKey(coach),
-    stats: matchStats,
-    chemistryEnabled,
-    text: output?.value || ""
-  };
-}
-
-function saveActiveTemplateState() {
-  if (isLoadingTemplate || !activeTemplateId) return;
-  const template = getActiveTemplate();
-  if (!template) return;
-  const data = collectCurrentTemplateData();
-  Object.assign(template, data);
-  template.name = (equipoInput.value.trim() || eventoInput.value.trim() || template.name || "Plantilla").slice(0, 42);
-  renderTemplateSelect();
-}
-
-function initTemplateSystem() {
-  templates = [{
-    id: `tpl-${Date.now()}`,
-    name: "Plantilla 1",
-    eventName: "",
-    teamName: "",
-    formation: currentFormation || Object.keys(formaciones)[0],
-    mode: "normal",
-    fieldStyle: "classic",
-    theme: "ds",
-    zoom: 100,
-    starters: {},
-    bench: Array(BENCH_SIZE).fill(null),
-    managers: Array(MANAGER_SIZE).fill(null),
-    coach: null,
-    stats: {},
-    chemistryEnabled: true
-  }];
-  activeTemplateId = templates[0].id;
-  renderTemplateSelect();
-  applyVisualSettings();
-}
-
-function renderTemplateSelect() {
-  if (!templateSelect) return;
-  const currentValue = templateSelect.value || activeTemplateId;
-  templateSelect.innerHTML = templates.map(template => `<option value="${escapeAttribute(template.id)}">${escapeHtml(template.name || "Plantilla")}</option>`).join("");
-  templateSelect.value = templates.some(t => t.id === currentValue) ? currentValue : activeTemplateId;
-}
-
-function switchTemplate(id) {
-  if (!id || id === activeTemplateId) return;
-  saveActiveTemplateState();
-  activeTemplateId = id;
-  const template = getActiveTemplate();
-  if (template) loadTemplateData(template);
-  renderTemplateSelect();
-}
-
-function createNewTemplate() {
-  saveActiveTemplateState();
-  const count = templates.length + 1;
-  const template = {
-    id: `tpl-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    name: `Plantilla ${count}`,
-    eventName: "",
-    teamName: "",
-    formation: currentFormation || Object.keys(formaciones)[0],
-    mode: templateModeValue || "normal",
-    fieldStyle: fieldStyleValue || "classic",
-    theme: themeValue || "ds",
-    zoom: zoomValue || 100,
-    starters: {},
-    bench: Array(BENCH_SIZE).fill(null),
-    managers: Array(MANAGER_SIZE).fill(null),
-    coach: null,
-    stats: {},
-    chemistryEnabled: true
-  };
-  templates.push(template);
-  activeTemplateId = template.id;
-  loadTemplateData(template);
-  renderTemplateSelect();
-}
-
-function duplicateTemplate() {
-  saveActiveTemplateState();
-  const base = getActiveTemplate();
-  if (!base) return;
-  const copy = JSON.parse(JSON.stringify(base));
-  copy.id = `tpl-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  copy.name = `${base.name || "Plantilla"} copia`;
-  templates.push(copy);
-  activeTemplateId = copy.id;
-  loadTemplateData(copy);
-  renderTemplateSelect();
-}
-
-function deleteTemplate() {
-  if (templates.length <= 1) {
-    alert("Debe existir al menos una plantilla.");
-    return;
-  }
-  const template = getActiveTemplate();
-  if (!confirm(`¿Borrar ${template?.name || "esta plantilla"}?`)) return;
-  templates = templates.filter(item => item.id !== activeTemplateId);
-  activeTemplateId = templates[0].id;
-  loadTemplateData(templates[0]);
-  renderTemplateSelect();
-}
-
-
-function switchTemplateByOffset(offset) {
-  if (!templates.length) return;
-  saveActiveTemplateState();
-  const currentIndex = Math.max(0, templates.findIndex(template => template.id === activeTemplateId));
-  const nextIndex = (currentIndex + offset + templates.length) % templates.length;
-  switchTemplate(templates[nextIndex].id);
-}
-
-function bindLayoutTools() {
-  templateSelect?.addEventListener("change", () => switchTemplate(templateSelect.value));
-  btnNuevaPlantilla?.addEventListener("click", createNewTemplate);
-  btnDuplicarPlantilla?.addEventListener("click", duplicateTemplate);
-  btnBorrarPlantilla?.addEventListener("click", deleteTemplate);
-  btnPlantillaAnterior?.addEventListener("click", () => switchTemplateByOffset(-1));
-  btnPlantillaSiguiente?.addEventListener("click", () => switchTemplateByOffset(1));
-
-  templateMode?.addEventListener("change", () => {
-    templateModeValue = templateMode.value;
-    applyVisualSettings();
-    renderPlayers();
-    saveActiveTemplateState();
-  });
-  fieldStyleSelect?.addEventListener("change", () => {
-    fieldStyleValue = fieldStyleSelect.value;
-    applyVisualSettings();
-    saveActiveTemplateState();
-  });
-  themeSelect?.addEventListener("change", () => {
-    themeValue = themeSelect.value;
-    applyVisualSettings();
-    saveActiveTemplateState();
-  });
-  zoomRange?.addEventListener("input", () => {
-    zoomValue = Number(zoomRange.value || 100);
-    applyVisualSettings();
-    saveActiveTemplateState();
-  });
-
-  quickCopiar?.addEventListener("click", () => btnCopiar?.click());
-  quickCodigo?.addEventListener("click", () => btnCopiarCodigo?.click());
-  quickExportar?.addEventListener("click", () => btnExportar?.click());
-  quickImportar?.addEventListener("click", () => btnImportar?.click());
-  quickFullscreen?.addEventListener("click", () => {
-    document.body.classList.toggle("focus-field");
-    quickFullscreen.textContent = document.body.classList.contains("focus-field") ? "↩ Volver" : "⛶ Solo campo";
-  });
-  document.addEventListener("keydown", event => {
-    if (event.target && ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)) return;
-    if (event.key === "ArrowLeft") switchTemplateByOffset(-1);
-    if (event.key === "ArrowRight") switchTemplateByOffset(1);
-  });
-
-  [freeName, freePosition, freeNumber, freeImage, freeTeam].forEach(input => input?.addEventListener("input", updateFreePreview));
-  freeSave?.addEventListener("click", saveFreePlayer);
-  freeRemove?.addEventListener("click", () => {
-    if (!freeSelectedTarget) return;
-    setTargetPlayer(freeSelectedTarget.type, freeSelectedTarget.index, null);
-    freePlayerDialog?.close();
+  function commit(mutator, message = '') {
+    const before = JSON.stringify(state);
+    mutator();
+    if (JSON.stringify(state) === before) return;
+    history.push(before);
+    if (history.length > 35) history.shift();
+    future = [];
+    saveState();
     renderAll();
-  });
-  freeClose?.addEventListener("click", () => freePlayerDialog?.close());
-}
-
-function applyVisualSettings() {
-  document.body.classList.toggle("mode-free", templateModeValue === "free");
-  document.body.classList.remove("theme-go", "theme-victory", "theme-dark", "theme-aero");
-  if (themeValue && themeValue !== "ds") document.body.classList.add(`theme-${themeValue}`);
-  document.documentElement.style.setProperty("--field-zoom", String((Number(zoomValue) || 100) / 100));
-  const board = document.getElementById("board");
-  if (board) {
-    board.className = board.className.split(" ").filter(cls => !cls.startsWith("field-")).join(" ");
-    board.classList.add(`field-${fieldStyleValue || "classic"}`);
+    if (message) showToast(message);
   }
-}
 
-function openFreePlayerDialog(type, index) {
-  freeSelectedTarget = { type, index };
-  const current = getTargetPlayer(type, index);
-  if (freeSlotInfo) freeSlotInfo.textContent = `Hueco seleccionado: ${targetLabel(type, index)}`;
-  if (freeName) freeName.value = current?.nombre || "";
-  if (freePosition) freePosition.value = current?.posicion || (type === "field" ? (formaciones[currentFormation]?.[index]?.rol || "") : "");
-  if (freeNumber) freeNumber.value = current?.dorsal || "";
-  if (freeImage) freeImage.value = current?.foto || current?.imagen || current?.imageUrl || current?.url || "";
-  if (freeTeam) freeTeam.value = current?.equipo || equipoInput.value.trim() || "Rival temporal";
-  updateFreePreview();
-  freePlayerDialog?.showModal();
-}
-
-function updateFreePreview() {
-  if (!freePreview) return;
-  const name = freeName?.value?.trim() || "Jugador libre";
-  const image = freeImage?.value?.trim();
-  const pos = freePosition?.value?.trim() || "Posición";
-  if (image) {
-    freePreview.innerHTML = `<img src="${escapeAttribute(image)}" alt="${escapeAttribute(name)}" onerror="this.remove()"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(pos)}</span>`;
-  } else {
-    freePreview.innerHTML = `<strong>${escapeHtml(name)}</strong><span>${escapeHtml(pos)}</span>`;
+  function undo() {
+    if (!history.length) return;
+    future.push(JSON.stringify(state));
+    state = JSON.parse(history.pop());
+    saveState();
+    renderAll();
+    showToast('Movimiento deshecho');
   }
-}
 
-function saveFreePlayer() {
-  if (!freeSelectedTarget) return;
-  const player = {
-    freePlayer: true,
-    nombre: freeName?.value?.trim() || "Jugador libre",
-    posicion: freePosition?.value?.trim() || "",
-    dorsal: freeNumber?.value?.trim() || "",
-    foto: freeImage?.value?.trim() || "",
-    equipo: freeTeam?.value?.trim() || "Libre"
-  };
-  setTargetPlayer(freeSelectedTarget.type, freeSelectedTarget.index, player);
-  freePlayerDialog?.close();
-  renderAll();
-}
+  function redo() {
+    if (!future.length) return;
+    history.push(JSON.stringify(state));
+    state = JSON.parse(future.pop());
+    saveState();
+    renderAll();
+    showToast('Movimiento rehecho');
+  }
 
-function normalize(text) {
-  return String(text ?? "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
+  function showToast(message) {
+    clearTimeout(toastTimer);
+    dom.toast.textContent = message;
+    dom.toast.classList.add('show');
+    toastTimer = setTimeout(() => dom.toast.classList.remove('show'), 2200);
+  }
 
-function escapeHtml(text) {
-  return String(text ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
+  function positionGroup(position) {
+    if (position === 'POR') return 'POR';
+    if (['DFC', 'LD', 'LI'].includes(position)) return 'DEF';
+    if (['MCD', 'MC', 'MCO', 'MI', 'MD'].includes(position)) return 'MED';
+    if (['DC', 'EI', 'ED'].includes(position)) return 'ATA';
+    return 'STAFF';
+  }
 
-function escapeAttribute(text) {
-  return escapeHtml(text).replaceAll("'", "&#039;");
-}
+  function positionFit(playerPosition, slotRole) {
+    if (!playerPosition || !slotRole) return 0;
+    if (playerPosition === slotRole) return 100;
+    const playerGroup = positionGroup(playerPosition);
+    const slotGroup = positionGroup(slotRole);
+    if (playerGroup === slotGroup) {
+      if (['LI', 'LD'].includes(playerPosition) && slotRole === 'DFC') return 76;
+      if (playerPosition === 'DFC' && ['LI', 'LD'].includes(slotRole)) return 70;
+      return 72;
+    }
+    if ((playerGroup === 'MED' && ['DEF', 'ATA'].includes(slotGroup)) || (slotGroup === 'MED' && ['DEF', 'ATA'].includes(playerGroup))) return 38;
+    return 8;
+  }
 
-// --- Soporte táctil / pointer-based drag & drop mejorado ---
-function initPointerDrag() {
-  const state = { active: false, ghost: null, longPressTimer: null, startX: 0, startY: 0, moved: false };
+  function resolvePlayerKey(key) {
+    if (!key) return null;
+    if (typeof key === 'object') key = key.id || key.nombre || key.name;
+    return playerById.get(String(key))?.id || playerByName.get(normalize(key))?.id || null;
+  }
 
-  function findPlayerByElement(el) {
-    const name = el.dataset.name;
-    if (name) return personajes.find(p => p.nombre === name) || findPersonByKey(name);
+  function playerImage(player, extraClass = '') {
+    const initials = escapeHTML((player.name || '?').split(/\s+/).slice(0, 2).map(part => part[0]).join(''));
+    return `<span class="avatar ${extraClass}"><span>${initials}</span><img src="${escapeHTML(player.image)}" alt="" onerror="this.remove()"></span>`;
+  }
+
+  function slotImage(player) {
+    const initials = escapeHTML((player.name || '?').split(/\s+/).slice(0, 2).map(part => part[0]).join(''));
+    return `<span>${initials}</span><img src="${escapeHTML(player.image)}" alt="" onerror="this.remove()">`;
+  }
+
+  function allAssignments(squad = activeSquad()) {
+    return [...squad.starters, ...squad.bench, ...squad.staff].filter(Boolean);
+  }
+
+  function locatePlayer(playerId, squad = activeSquad()) {
+    for (const type of ['starters', 'bench', 'staff']) {
+      const index = squad[type].indexOf(playerId);
+      if (index >= 0) return { type: type === 'starters' ? 'field' : type, index };
+    }
     return null;
   }
 
-  function startDragImmediate(el, e, source) {
-    const player = source ? getTargetPlayer(source.type, source.index) : findPlayerByElement(el) || null;
+  function targetArray(squad, type) {
+    return type === 'field' ? squad.starters : squad[type];
+  }
+
+  function assignPlayer(target, playerId, source = null) {
+    const squad = activeSquad();
+    const player = playerById.get(playerId);
+    if (!player || !target) return;
+    if (target.type === 'staff' && !['ENT', 'GER'].includes(player.position)) return showToast('Ese hueco está reservado al cuerpo técnico');
+    if (target.type !== 'staff' && ['ENT', 'GER'].includes(player.position)) return showToast('Añádelo desde la pestaña Cuerpo técnico');
+    commit(() => {
+      const current = source || locatePlayer(playerId, squad);
+      const targetList = targetArray(squad, target.type);
+      const displaced = targetList[target.index] || null;
+      if (current && current.type === target.type && current.index === target.index) return;
+      if (current) targetArray(squad, current.type)[current.index] = displaced;
+      else if (displaced) {
+        const freeBench = squad.bench.findIndex(item => !item);
+        if (target.type === 'field' && freeBench >= 0) squad.bench[freeBench] = displaced;
+      }
+      targetList[target.index] = playerId;
+      if (squad.captain === displaced && !allAssignments(squad).includes(displaced)) squad.captain = null;
+    }, `${player.name} añadido a la plantilla`);
+  }
+
+  function removeTarget(target) {
+    const squad = activeSquad();
+    const list = targetArray(squad, target.type);
+    const removed = list[target.index];
+    if (!removed) return;
+    commit(() => {
+      list[target.index] = null;
+      if (squad.captain === removed) squad.captain = null;
+      delete squad.stats[removed];
+    }, 'Integrante retirado');
+  }
+
+  function renderAll() {
+    renderControls();
+    renderLibrary();
+    renderField();
+    renderBench();
+    renderInspector();
+    requestAnimationFrame(drawChemistry);
+  }
+
+  function renderControls() {
+    const squad = activeSquad();
+    dom.squadSelect.innerHTML = state.squads.map(item => `<option value="${item.id}">${escapeHTML(item.name)}</option>`).join('');
+    dom.squadSelect.value = squad.id;
+    if (!dom.formationSelect.options.length) dom.formationSelect.innerHTML = formationNames.map(name => `<option value="${escapeHTML(name)}">${escapeHTML(name)}</option>`).join('');
+    dom.formationSelect.value = squad.formation;
+    dom.formationDisplay.textContent = squad.formation;
+    dom.teamName.value = squad.name;
+    dom.eventName.value = squad.event;
+    dom.undoButton.disabled = !history.length;
+    dom.redoButton.disabled = !future.length;
+    dom.chemistryButton.classList.toggle('active', state.chemistryVisible);
+    dom.chemistryButton.textContent = state.chemistryVisible ? '✦ Química' : '○ Química';
+  }
+
+  function filterMatches(player, filter) {
+    if (filter === 'all') return true;
+    return positionGroup(player.position) === filter;
+  }
+
+  function renderPositionButtons(container, current, callback, includeRecommended = false) {
+    const options = includeRecommended ? [['recommended', 'Recomendados'], ['all', 'Todos'], ['POR', 'POR'], ['DEF', 'DEF'], ['MED', 'MED'], ['ATA', 'ATA'], ['STAFF', 'Staff']] : [['all', 'Todos'], ['POR', 'POR'], ['DEF', 'DEF'], ['MED', 'MED'], ['ATA', 'ATA'], ['STAFF', 'Staff']];
+    container.innerHTML = options.map(([value, label]) => `<button class="${current === value ? 'active' : ''}" data-position="${value}" type="button">${label}</button>`).join('');
+    container.querySelectorAll('button').forEach(button => button.addEventListener('click', () => callback(button.dataset.position)));
+  }
+
+  function renderLibrary() {
+    if (!dom.teamFilter.options.length || dom.teamFilter.options.length === 1) {
+      const teams = [...new Set(DATA.players.map(player => player.team))].sort((a, b) => a.localeCompare(b, 'es'));
+      dom.teamFilter.innerHTML = '<option value="">Todos los equipos</option>' + teams.map(team => `<option value="${escapeHTML(team)}">${escapeHTML(team)}</option>`).join('');
+    }
+    renderPositionButtons(dom.positionFilters, libraryPosition, value => { libraryPosition = value; renderLibrary(); });
+    const query = normalize(dom.playerSearch.value);
+    const team = dom.teamFilter.value;
+    const squad = activeSquad();
+    const assigned = new Set(allAssignments(squad));
+    const players = DATA.players.filter(player => (!query || normalize(`${player.name} ${player.team} ${player.position}`).includes(query)) && (!team || player.team === team) && filterMatches(player, libraryPosition));
+    dom.playerCount.textContent = players.length;
+    dom.playerLibrary.innerHTML = players.length ? players.map(player => `
+      <article class="player-card ${assigned.has(player.id) ? 'used' : ''}" data-player="${player.id}" draggable="true" tabindex="0">
+        ${playerImage(player)}<div class="player-copy"><strong>${escapeHTML(player.name)}</strong><span>${escapeHTML(player.team)} · ${player.number || '—'}</span></div>
+        <span class="position-tag ${player.position === 'POR' ? 'gk' : ['ENT', 'GER'].includes(player.position) ? 'staff' : ''}">${escapeHTML(player.position)}</span>
+      </article>`).join('') : '<div class="empty-state">No hay jugadores que coincidan con estos filtros.</div>';
+    dom.playerLibrary.querySelectorAll('.player-card').forEach(card => {
+      const playerId = card.dataset.player;
+      card.addEventListener('click', () => quickAdd(playerId));
+      card.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); quickAdd(playerId); } });
+      card.addEventListener('dragstart', event => startDrag(event, { type: 'library', playerId }));
+      card.addEventListener('dragend', clearDrag);
+    });
+  }
+
+  function quickAdd(playerId) {
+    const squad = activeSquad();
+    const existing = locatePlayer(playerId, squad);
+    if (existing) return openPlayer(playerId, existing);
+    const player = playerById.get(playerId);
+    if (['ENT', 'GER'].includes(player.position)) {
+      const staffIndex = squad.staff.findIndex(item => !item);
+      if (staffIndex >= 0) return assignPlayer({ type: 'staff', index: staffIndex }, playerId);
+      return openPicker({ type: 'staff', index: 0 });
+    }
+    const slots = DATA.formations[squad.formation];
+    const candidates = slots.map((slot, index) => ({ index, fit: positionFit(player.position, slot.rol) })).filter(item => !squad.starters[item.index]).sort((a, b) => b.fit - a.fit);
+    if (candidates.length) return assignPlayer({ type: 'field', index: candidates[0].index }, playerId);
+    const benchIndex = squad.bench.findIndex(item => !item);
+    if (benchIndex >= 0) return assignPlayer({ type: 'bench', index: benchIndex }, playerId);
+    openPlayer(playerId, null);
+  }
+
+  function slotHTML(playerId, slot, index) {
+    const player = playerById.get(playerId);
+    const fit = player ? positionFit(player.position, slot.rol) : 100;
+    return `<div class="slot" data-target="field" data-index="${index}" style="left:${slot.x}%;top:${slot.y}%">
+      <div class="slot-core" draggable="${Boolean(player)}">${player ? slotImage(player) : '<span class="empty-plus">＋</span>'}
+        ${player ? `<span class="slot-number">${player.number || index + 1}</span>` : ''}<span class="slot-role ${fit < 60 ? 'bad-fit' : ''}">${escapeHTML(slot.rol)}</span>${activeSquad().captain === playerId ? '<span class="captain-badge">C</span>' : ''}
+      </div><span class="slot-name ${player ? '' : 'empty'}">${player ? escapeHTML(player.name) : 'Elegir jugador'}</span>
+    </div>`;
+  }
+
+  function renderField() {
+    const squad = activeSquad();
+    const formation = DATA.formations[squad.formation];
+    dom.fieldSlots.innerHTML = formation.map((slot, index) => slotHTML(squad.starters[index], slot, index)).join('');
+    dom.chemistryLayer.classList.toggle('hidden', !state.chemistryVisible);
+    dom.fieldSlots.querySelectorAll('.slot').forEach(slotElement => {
+      const target = { type: 'field', index: Number(slotElement.dataset.index) };
+      const playerId = squad.starters[target.index];
+      slotElement.querySelector('.slot-core').addEventListener('click', () => playerId ? openPlayer(playerId, target) : openPicker(target));
+      if (playerId) {
+        slotElement.querySelector('.slot-core').addEventListener('dragstart', event => startDrag(event, { type: 'field', index: target.index, playerId }));
+        slotElement.querySelector('.slot-core').addEventListener('dragend', clearDrag);
+      }
+      enableDrop(slotElement, target);
+    });
+  }
+
+  function renderBench() {
+    const squad = activeSquad();
+    dom.benchSlots.innerHTML = squad.bench.map((playerId, index) => {
+      const player = playerById.get(playerId);
+      return `<div class="mini-slot ${player ? '' : 'empty'}" data-target="bench" data-index="${index}" draggable="${Boolean(player)}">${player ? `${playerImage(player)}<span class="mini-name">${escapeHTML(player.name)}</span>` : `＋ B${index + 1}`}</div>`;
+    }).join('');
+    dom.benchSlots.querySelectorAll('.mini-slot').forEach(element => {
+      const index = Number(element.dataset.index), playerId = squad.bench[index], target = { type: 'bench', index };
+      element.addEventListener('click', () => playerId ? openPlayer(playerId, target) : openPicker(target));
+      if (playerId) {
+        element.addEventListener('dragstart', event => startDrag(event, { type: 'bench', index, playerId }));
+        element.addEventListener('dragend', clearDrag);
+      }
+      enableDrop(element, target);
+    });
+  }
+
+  function startDrag(event, payload) {
+    dragPayload = payload;
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', JSON.stringify(payload));
+  }
+
+  function clearDrag() {
+    dragPayload = null;
+    document.querySelectorAll('.drop-target').forEach(element => element.classList.remove('drop-target'));
+  }
+
+  function enableDrop(element, target) {
+    element.addEventListener('dragover', event => { event.preventDefault(); element.classList.add('drop-target'); });
+    element.addEventListener('dragleave', () => element.classList.remove('drop-target'));
+    element.addEventListener('drop', event => {
+      event.preventDefault();
+      element.classList.remove('drop-target');
+      let payload = dragPayload;
+      try { payload ||= JSON.parse(event.dataTransfer.getData('text/plain')); } catch (error) {}
+      if (payload?.playerId) assignPlayer(target, payload.playerId, payload.type === 'library' ? null : { type: payload.type, index: payload.index });
+      clearDrag();
+    });
+  }
+
+  function activeRelationships(ids) {
+    const normalized = new Map(ids.map(id => [normalize(playerById.get(id)?.name), id]));
+    return relationships.filter(link => normalized.has(link.a) && normalized.has(link.b)).map(link => ({ ...link, aId: normalized.get(link.a), bId: normalized.get(link.b) }));
+  }
+
+  function calculateAnalysis() {
+    const squad = activeSquad();
+    const formation = DATA.formations[squad.formation];
+    const filled = squad.starters.filter(Boolean);
+    const fits = squad.starters.map((id, index) => id ? positionFit(playerById.get(id).position, formation[index].rol) : 0).filter((_, index) => squad.starters[index]);
+    const fit = fits.length ? Math.round(fits.reduce((sum, value) => sum + value, 0) / fits.length) : 0;
+    const links = activeRelationships(filled);
+    const positivePoints = links.reduce((sum, link) => sum + link.points, 0);
+    const teamCounts = filled.reduce((counts, id) => { const team = playerById.get(id).team; counts[team] = (counts[team] || 0) + 1; return counts; }, {});
+    const teams = Object.keys(teamCounts).length;
+    const largestBlock = Math.max(0, ...Object.values(teamCounts));
+    const score = Math.max(0, Math.min(100, Math.round((filled.length / 11) * 36 + fit * .27 + Math.min(24, Math.max(-12, positivePoints * 1.35)) + (largestBlock / Math.max(1, filled.length)) * 13)));
+    return { filled, fit, links, teams, teamCounts, largestBlock, score, formation };
+  }
+
+  function renderInspector() {
+    const squad = activeSquad();
+    const analysis = calculateAnalysis();
+    dom.chemistryScore.textContent = analysis.score;
+    dom.scoreRing.style.setProperty('--score', `${analysis.score}%`);
+    dom.scoreRing.querySelector('i').textContent = `${analysis.score}%`;
+    dom.chemistryLabel.textContent = analysis.score >= 85 ? 'Equipo preparado para competir' : analysis.score >= 65 ? 'Base sólida con margen de mejora' : analysis.score >= 40 ? 'La estructura empieza a tomar forma' : 'Plantilla por construir';
+    dom.filledMetric.textContent = `${analysis.filled.length}/11`;
+    dom.fitMetric.textContent = `${analysis.fit}%`;
+    dom.linksMetric.textContent = analysis.links.length;
+    dom.teamsMetric.textContent = analysis.teams;
+    renderRecommendations(analysis);
+    renderRelationships(analysis.links);
+    renderLineup();
+    renderStaff();
+  }
+
+  function renderRecommendations(analysis) {
+    const squad = activeSquad();
+    const items = [];
+    const empty = 11 - analysis.filled.length;
+    if (empty) items.push({ type: 'warn', icon: '＋', text: `Faltan ${empty} ${empty === 1 ? 'titular' : 'titulares'} para completar el once.` });
+    const badFits = squad.starters.filter((id, index) => id && positionFit(playerById.get(id).position, analysis.formation[index].rol) < 60).length;
+    if (badFits) items.push({ type: 'bad', icon: '!', text: `${badFits} ${badFits === 1 ? 'jugador está' : 'jugadores están'} claramente fuera de posición.` });
+    else if (analysis.filled.length >= 6) items.push({ type: 'good', icon: '✓', text: 'Todos los jugadores ocupan posiciones compatibles.' });
+    const keeperIndex = analysis.formation.findIndex(slot => slot.rol === 'POR');
+    if (keeperIndex >= 0 && !squad.starters[keeperIndex]) items.push({ type: 'bad', icon: '🧤', text: 'La portería sigue vacía: conviene resolverla primero.' });
+    const negative = analysis.links.filter(link => link.points < 0).length;
+    if (negative) items.push({ type: 'bad', icon: '↯', text: `${negative} vínculo negativo puede afectar al vestuario.` });
+    const positive = analysis.links.filter(link => link.points > 0).length;
+    if (positive >= 3) items.push({ type: 'good', icon: '✦', text: `Hay ${positive} vínculos positivos activos en el once.` });
+    if (analysis.largestBlock >= 6) items.push({ type: 'good', icon: '⚑', text: `El bloque principal comparte equipo: ${analysis.largestBlock} futbolistas.` });
+    if (!items.length) items.push({ type: '', icon: '○', text: 'Añade jugadores para recibir recomendaciones tácticas.' });
+    dom.recommendations.innerHTML = items.map(item => `<div class="recommendation ${item.type}"><b>${item.icon}</b> ${escapeHTML(item.text)}</div>`).join('');
+  }
+
+  function renderRelationships(links) {
+    const sorted = [...links].sort((a, b) => b.points - a.points);
+    dom.relationshipList.innerHTML = sorted.length ? sorted.slice(0, 12).map(link => {
+      const a = playerById.get(link.aId), b = playerById.get(link.bId), meta = relationMeta[link.type] || {};
+      return `<div class="relationship-row ${link.points < 0 ? 'negative' : ''}"><i>${meta.icono || (link.points < 0 ? '↯' : '✦')}</i><div><strong>${escapeHTML(a.name)} · ${escapeHTML(b.name)}</strong><span>${escapeHTML(link.reason)}</span></div><b>${link.points > 0 ? '+' : ''}${link.points}</b></div>`;
+    }).join('') : '<div class="empty-state">Todavía no hay vínculos automáticos dentro del once.</div>';
+  }
+
+  function renderLineup() {
+    const squad = activeSquad(), formation = DATA.formations[squad.formation];
+    const rows = squad.starters.map((id, index) => lineupRow(id, formation[index].rol, { type: 'field', index })).join('');
+    const benchRows = squad.bench.map((id, index) => id ? lineupRow(id, `B${index + 1}`, { type: 'bench', index }) : '').join('');
+    dom.lineupList.innerHTML = `<div class="lineup-divider">Titulares</div>${rows}<div class="lineup-divider">Banquillo</div>${benchRows || '<div class="empty-state">Banquillo vacío</div>'}`;
+    dom.lineupList.querySelectorAll('.lineup-row').forEach(row => row.addEventListener('click', event => {
+      if (event.target.closest('button')) return;
+      const id = row.dataset.player;
+      if (id) openPlayer(id, { type: row.dataset.type, index: Number(row.dataset.index) });
+    }));
+    dom.lineupList.querySelectorAll('[data-remove]').forEach(button => button.addEventListener('click', () => removeTarget({ type: button.dataset.type, index: Number(button.dataset.index) })));
+  }
+
+  function lineupRow(playerId, role, target) {
+    const player = playerById.get(playerId);
+    return `<div class="lineup-row" data-player="${playerId || ''}" data-type="${target.type}" data-index="${target.index}">${player ? playerImage(player) : '<span class="avatar">＋</span>'}<div><strong>${player ? escapeHTML(player.name) : 'Hueco libre'}</strong><span>${escapeHTML(role)}${player ? ` · ${escapeHTML(player.position)}` : ''}</span></div>${player ? `<button data-remove data-type="${target.type}" data-index="${target.index}" title="Retirar">×</button>` : ''}</div>`;
+  }
+
+  function renderStaff() {
+    const squad = activeSquad();
+    const labels = ['Entrenador/a', 'Gerente', 'Asistente'];
+    dom.staffSlots.innerHTML = squad.staff.map((id, index) => {
+      const player = playerById.get(id);
+      return `<div class="staff-slot" data-index="${index}" draggable="${Boolean(player)}">${player ? playerImage(player) : '<span class="avatar">＋</span>'}<div><strong>${player ? escapeHTML(player.name) : labels[index]}</strong><span>${player ? `${escapeHTML(player.position)} · ${escapeHTML(player.team)}` : 'Pulsa para elegir'}</span></div></div>`;
+    }).join('');
+    dom.staffSlots.querySelectorAll('.staff-slot').forEach(element => {
+      const index = Number(element.dataset.index), id = squad.staff[index], target = { type: 'staff', index };
+      element.addEventListener('click', () => id ? openPlayer(id, target) : openPicker(target));
+      if (id) {
+        element.addEventListener('dragstart', event => startDrag(event, { type: 'staff', index, playerId: id }));
+        element.addEventListener('dragend', clearDrag);
+      }
+      enableDrop(element, target);
+    });
+  }
+
+  function drawChemistry() {
+    const squad = activeSquad();
+    if (!state.chemistryVisible) { dom.chemistryLayer.innerHTML = ''; return; }
+    const formation = DATA.formations[squad.formation];
+    const links = activeRelationships(squad.starters.filter(Boolean)).slice(0, 14);
+    const width = dom.field.clientWidth || 700, height = dom.field.clientHeight || 520;
+    dom.chemistryLayer.innerHTML = links.map(link => {
+      const aIndex = squad.starters.indexOf(link.aId), bIndex = squad.starters.indexOf(link.bId);
+      const a = formation[aIndex], b = formation[bIndex];
+      if (!a || !b) return '';
+      const dx = (b.x - a.x) / 100 * width, dy = (b.y - a.y) / 100 * height;
+      const length = Math.sqrt(dx * dx + dy * dy), angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      const meta = relationMeta[link.type] || {};
+      return `<div class="chem-line ${link.points < 0 ? 'negative' : ''}" style="left:${a.x}%;top:${a.y}%;width:${length}px;transform:rotate(${angle}deg);--link-color:${meta.color || '#60e5ff'}"><span>${meta.icono || '✦'}</span></div>`;
+    }).join('');
+  }
+
+  function openPicker(target) {
+    pickerTarget = target;
+    pickerPosition = 'recommended';
+    dom.pickerSearch.value = '';
+    const squad = activeSquad();
+    const role = target.type === 'field' ? DATA.formations[squad.formation][target.index].rol : target.type === 'staff' ? 'ENT / GER' : 'Banquillo';
+    dom.pickerTitle.textContent = `Elegir para ${role}`;
+    renderPicker();
+    dom.pickerDialog.showModal();
+    setTimeout(() => dom.pickerSearch.focus(), 30);
+  }
+
+  function renderPicker() {
+    renderPositionButtons(dom.pickerFilters, pickerPosition, value => { pickerPosition = value; renderPicker(); }, true);
+    const squad = activeSquad(), used = new Set(allAssignments(squad));
+    const query = normalize(dom.pickerSearch.value);
+    const role = pickerTarget?.type === 'field' ? DATA.formations[squad.formation][pickerTarget.index].rol : null;
+    let players = pickerTarget?.type === 'staff' ? staffPlayers : fieldPlayers;
+    players = players.filter(player => !used.has(player.id) && (!query || normalize(`${player.name} ${player.team} ${player.position}`).includes(query)));
+    if (pickerPosition === 'recommended' && role) players = players.filter(player => positionFit(player.position, role) >= 60).sort((a, b) => positionFit(b.position, role) - positionFit(a.position, role));
+    else if (pickerPosition === 'recommended' && pickerTarget?.type === 'staff') players = staffPlayers.filter(player => !used.has(player.id));
+    else if (pickerPosition !== 'all' && pickerPosition !== 'recommended') players = players.filter(player => filterMatches(player, pickerPosition));
+    dom.pickerPlayers.innerHTML = players.length ? players.map(player => `<button class="picker-card" data-player="${player.id}" type="button">${playerImage(player)}<span><strong>${escapeHTML(player.name)}</strong><span>${escapeHTML(player.team)} · ${escapeHTML(player.position)}${role ? ` · ${positionFit(player.position, role)}%` : ''}</span></span></button>`).join('') : '<div class="empty-state">No quedan opciones disponibles con este filtro.</div>';
+    dom.pickerPlayers.querySelectorAll('.picker-card').forEach(card => card.addEventListener('click', () => { assignPlayer(pickerTarget, card.dataset.player); dom.pickerDialog.close(); }));
+  }
+
+  function openPlayer(playerId, target = null) {
+    const player = playerById.get(playerId);
     if (!player) return;
-
-    draggedItem = { player, source };
-    document.body.classList.add('dragging-player');
-    if (source && el) el.classList.add('drag-source');
-    document.body.style.overflow = 'hidden';
-
-    const rect = el.getBoundingClientRect();
-    const ghost = el.cloneNode(true);
-    ghost.classList.add('drag-ghost');
-    ghost.style.position = 'fixed';
-    ghost.style.left = (e.clientX - rect.width / 2) + 'px';
-    ghost.style.top = (e.clientY - rect.height / 2) + 'px';
-    ghost.style.width = rect.width + 'px';
-    ghost.style.height = rect.height + 'px';
-    ghost.style.zIndex = 9999;
-    ghost.style.pointerEvents = 'none';
-    document.body.appendChild(ghost);
-
-    state.active = true;
-    state.ghost = ghost;
+    const squad = activeSquad(), location = target || locatePlayer(playerId, squad), stats = squad.stats[playerId] || { goals: 0, assists: 0, yellow: false, red: false };
+    dom.playerDialogTitle.textContent = player.name;
+    dom.playerDialogBody.innerHTML = `<div class="profile-photo"><img src="${escapeHTML(player.image)}" alt="${escapeHTML(player.name)}" onerror="this.remove()"></div><div class="profile-content"><h1>${escapeHTML(player.name)}</h1><p class="profile-sub">${escapeHTML(player.team)} · Dorsal ${player.number || '—'}</p><div class="profile-chips"><span>${escapeHTML(player.position)}</span><span>${location ? locationLabel(location) : 'Sin convocar'}</span>${squad.captain === playerId ? '<span>👑 Capitán/a</span>' : ''}</div><div class="stats-grid"><div class="stat-field"><label>Goles</label><input id="detailGoals" type="number" min="0" max="99" value="${Number(stats.goals) || 0}"></div><div class="stat-field"><label>Asistencias</label><input id="detailAssists" type="number" min="0" max="99" value="${Number(stats.assists) || 0}"></div><div class="stat-field"><label>Tarjeta</label><select id="detailCard"><option value="none">Sin tarjeta</option><option value="yellow" ${stats.yellow ? 'selected' : ''}>Amarilla</option><option value="red" ${stats.red ? 'selected' : ''}>Roja</option></select></div></div><div class="dialog-actions"><a class="button quiet" href="../centro-inazuma.html">Abrir en Inazuma Central</a>${location ? `<button class="button quiet" id="captainDetail" type="button">${squad.captain === playerId ? 'Quitar capitanía' : 'Nombrar capitán/a'}</button><button class="button quiet danger-text" id="removeDetail" type="button">Retirar</button>` : ''}</div></div>`;
+    ['detailGoals', 'detailAssists', 'detailCard'].forEach(id => $(id)?.addEventListener('change', saveDetailStats));
+    $('captainDetail')?.addEventListener('click', () => { commit(() => { squad.captain = squad.captain === playerId ? null : playerId; }, 'Capitanía actualizada'); dom.playerDialog.close(); });
+    $('removeDetail')?.addEventListener('click', () => { removeTarget(location); dom.playerDialog.close(); });
+    function saveDetailStats() {
+      commit(() => { squad.stats[playerId] = { goals: Number($('detailGoals').value) || 0, assists: Number($('detailAssists').value) || 0, yellow: $('detailCard').value === 'yellow', red: $('detailCard').value === 'red' }; });
+    }
+    dom.playerDialog.showModal();
   }
 
-  function onPointerMove(e) {
-    if (state.longPressTimer && !state.moved) {
-      const dx = Math.abs(e.clientX - state.startX);
-      const dy = Math.abs(e.clientY - state.startY);
-      if (dx > 8 || dy > 8) {
-        // user moved finger: cancel long-press and start drag
-        clearTimeout(state.longPressTimer);
-        state.longPressTimer = null;
-        state.moved = true;
-        const el = e.target.closest('[draggable="true"], .draggable-card, .player-card, .player-choice, .magnet.filled, .roster-card.filled, .mini-slot.filled');
-        if (el) startDragImmediate(el, e, el.dataset.type !== undefined && el.dataset.index !== undefined ? { type: el.dataset.type, index: Number(el.dataset.index) } : null);
-      }
-    }
-
-    if (!state.active || !state.ghost) return;
-    state.ghost.style.left = (e.clientX - state.ghost.offsetWidth / 2) + 'px';
-    state.ghost.style.top = (e.clientY - state.ghost.offsetHeight / 2) + 'px';
-
-    // auto-scroll when near edges
-    const margin = 60;
-    if (e.clientY < margin) window.scrollBy({ top: -20, behavior: 'smooth' });
-    else if (window.innerHeight - e.clientY < margin) window.scrollBy({ top: 20, behavior: 'smooth' });
-
-    // highlight drop target under pointer
-    const under = document.elementFromPoint(e.clientX, e.clientY);
-    const drop = under ? under.closest('[data-type][data-index]') : null;
-    document.querySelectorAll('.drop-hover').forEach(x => x.classList.remove('drop-hover'));
-    if (drop) drop.classList.add('drop-hover');
+  function locationLabel(location) {
+    if (location.type === 'field') return `Titular · ${DATA.formations[activeSquad().formation][location.index].rol}`;
+    if (location.type === 'bench') return `Banquillo · B${location.index + 1}`;
+    return ['Entrenador/a', 'Gerente', 'Asistente'][location.index] || 'Cuerpo técnico';
   }
 
-  function finishPointerDrag(e) {
-    if (state.longPressTimer) {
-      clearTimeout(state.longPressTimer);
-      state.longPressTimer = null;
-      // treat as tap: open picker if tapping a slot/magnet
-      const tapEl = document.elementFromPoint(e.clientX, e.clientY)?.closest('.magnet, .mini-slot, .roster-card, .slot, [data-type]');
-      if (tapEl) {
-        const type = tapEl.dataset.type ?? tapEl.closest('[data-type]')?.dataset.type;
-        const idx = tapEl.dataset.index ?? tapEl.closest('[data-index]')?.dataset.index;
-        if (type !== undefined && idx !== undefined) openPicker(type, Number(idx));
-      }
-    }
-
-    if (!state.active) return;
-
-    const under = document.elementFromPoint(e.clientX, e.clientY);
-    const drop = under ? under.closest('[data-type][data-index]') : null;
-    if (drop && draggedItem) moveDraggedItemTo(drop.dataset.type, Number(drop.dataset.index));
-    else endDrag();
-
-    if (state.ghost && state.ghost.parentNode) state.ghost.parentNode.removeChild(state.ghost);
-    state.active = false;
-    state.ghost = null;
-    state.moved = false;
-    document.body.style.overflow = '';
-    document.removeEventListener('pointermove', onPointerMove);
-    document.removeEventListener('pointerup', finishPointerDrag);
-    document.body.classList.remove('dragging-player');
-    document.querySelectorAll('.drop-hover, .drag-source').forEach(el => el.classList.remove('drop-hover', 'drag-source'));
-  }
-
-  document.addEventListener('pointerdown', function start(e) {
-    const el = e.target.closest('[draggable="true"], .draggable-card, .player-card, .player-choice, .magnet.filled, .roster-card.filled, .mini-slot.filled, .magnet');
-    if (!el) return;
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-
-    // For touch, implement long-press to open picker; start drag only after move or for mouse immediately
-    state.startX = e.clientX;
-    state.startY = e.clientY;
-    state.moved = false;
-
-    if (e.pointerType === 'mouse') {
-      e.preventDefault();
-      const source = el.dataset.type !== undefined && el.dataset.index !== undefined ? { type: el.dataset.type, index: Number(el.dataset.index) } : null;
-      startDragImmediate(el, e, source);
-      document.addEventListener('pointermove', onPointerMove);
-      document.addEventListener('pointerup', finishPointerDrag);
-      return;
-    }
-
-    // touch / pen
-    state.longPressTimer = setTimeout(() => {
-      state.longPressTimer = null;
-      // if user long-presses a magnet/slot, open the picker instead of starting a drag
-      const slotEl = el.closest('.magnet, .mini-slot, .roster-card, .slot, [data-type]');
-      if (slotEl) {
-        const type = slotEl.dataset.type ?? slotEl.closest('[data-type]')?.dataset.type;
-        const idx = slotEl.dataset.index ?? slotEl.closest('[data-index]')?.dataset.index;
-        if (type !== undefined && idx !== undefined) {
-          openPicker(type, Number(idx));
-          return;
-        }
-      }
-    }, 450);
-
-    document.addEventListener('pointermove', onPointerMove);
-    document.addEventListener('pointerup', finishPointerDrag);
-  }, { passive: false });
-}
-
-// Inicializar soporte pointer al arrancar
-initPointerDrag();
-
-// Welcome animation trigger: remove overlay after animation completes
-function playWelcomeAnimation() {
-  const overlay = document.getElementById('welcomeOverlay');
-  const welcomeMsg = document.getElementById('welcomeMsg');
-  const welcomeSub = document.getElementById('welcomeSub');
-  const skip = document.getElementById('skipIntro');
-  if (!overlay) return;
-
-  // allow skipping
-  if (skip) skip.addEventListener('click', () => {
-    overlay.classList.add('hidden');
-    setTimeout(() => overlay.remove(), 500);
-  });
-
-  // show dynamic welcome message after main animation
-  requestAnimationFrame(() => {
-    const team = (document.getElementById('equipoInput')?.value || document.getElementById('boardTeamName')?.textContent || '').trim();
-    const nameText = team ? `¡Bienvenido, ${team}!` : '¡Bienvenido, entrenador!';
-
-    // after primary animation (ball fly) show welcome message
-    const primary = 1400;
-    setTimeout(() => {
-      if (welcomeSub) welcomeSub.style.opacity = '0';
-      if (welcomeMsg) {
-        welcomeMsg.textContent = nameText;
-        welcomeMsg.classList.add('show');
-        welcomeMsg.setAttribute('aria-hidden', 'false');
-      }
-    }, primary);
-
-    // total display time (primary + message): then hide
-    const total = primary + 1600;
-    setTimeout(() => {
-      overlay.classList.add('hidden');
-      setTimeout(() => overlay.remove(), 700);
-    }, total);
-  });
-}
-
-window.addEventListener('load', () => playWelcomeAnimation());
-
-/* =====================================================
-   V5 - química avanzada, draft inteligente, partido, ST
-===================================================== */
-
-// Los filtros del selector se mantienen exactos: DC no incluye extremos, LI/LD no incluyen DFC.
-// Las categorías amplias solo se resuelven dentro de positionsAreCompatible para draft/reglas antiguas.
-
-let historyStackV5 = [];
-let redoStackV5 = [];
-let historyLockedV5 = false;
-let simulatedEventsV5 = [];
-let simulatedScoreV5 = { home: 0, away: 0 };
-
-function normalizeChemistryRules(data) {
-  const empty = { relaciones: [], ajustes: [], efectos: [], posicionesFavoritas: [], capitanes: [], reglasGlobales: {}, tiposRelaciones: {} };
-  if (!data || typeof data !== "object") return empty;
-
-  const relaciones = [];
-  const ajustes = [];
-  const efectos = [];
-
-  const addRel = (jugadores, puntos, nivel, motivo, tipo = "relacion") => {
-    if (!Array.isArray(jugadores) || jugadores.length < 2) return;
-    relaciones.push({
-      jugadores: jugadores.slice(0, 2).map(name => normalizePersonName(name)),
-      puntos: Number(puntos ?? 0),
-      nivel: nivel || levelFromPoints(Number(puntos ?? 0)),
-      motivo: motivo || tipo,
-      tipo
-    });
-  };
-
-  (Array.isArray(data.relaciones) ? data.relaciones : []).forEach(item => {
-    const jugadores = item.jugadores || item.players || item.personajes;
-    addRel(jugadores, item.puntos ?? item.points ?? item.valor, item.nivel || item.level, item.motivo || item.reason || item.tipo || "quimica.json", item.tipo || item.nivel || "relacion");
-  });
-
-  const categoryConfig = [
-    ["parejas", 8, "perfect", "pareja canon", "pareja"],
-    ["exparejas", -4, "dead", "expareja / relación rota", "expareja"],
-    ["padres", 7, "perfect", "familia: padre/madre e hijo/a", "familia"],
-    ["hermanos", 6, "perfect", "familia: hermanos", "familia"],
-    ["primos", 3, "medium", "familia: primos", "familia"],
-    ["mejoresAmigos", 5, "strong", "mejores amigos", "amistad"],
-    ["rivales", 2, "weak", "rivalidad sana", "rivalidad"]
-  ];
-
-  categoryConfig.forEach(([key, defaultPoints, defaultLevel, defaultReason, tipo]) => {
-    (Array.isArray(data[key]) ? data[key] : []).forEach(item => {
-      if (Array.isArray(item)) addRel(item, defaultPoints, defaultLevel, defaultReason, tipo);
-      else addRel(item.jugadores || item.players || item.personajes, item.puntos ?? defaultPoints, item.nivel ?? defaultLevel, item.motivo ?? defaultReason, item.tipo ?? tipo);
-    });
-  });
-
-  (Array.isArray(data.ajustes) ? data.ajustes : []).forEach(item => {
-    const jugador = item.jugador || item.player || item.personaje;
-    if (!jugador) return;
-    ajustes.push({
-      jugador: normalizePersonName(jugador),
-      puntos: Number(item.puntos ?? item.points ?? item.valor ?? 0),
-      motivo: item.motivo || item.reason || "ajuste manual"
-    });
-  });
-
-  const sourceEfectos = [
-    ...(Array.isArray(data.efectos) ? data.efectos : []),
-    ...(Array.isArray(data.presencias) ? data.presencias : []),
-    ...(Array.isArray(data.bonusPorPresencia) ? data.bonusPorPresencia : [])
-  ];
-
-  sourceEfectos.forEach(item => {
-    const fuente = item.fuente || item.jugador || item.player || item.personaje;
-    if (!fuente) return;
-    const rawZonas = item.zonas || item.ubicaciones || item.where || item.en || item.zona;
-    const zonas = (Array.isArray(rawZonas) ? rawZonas : [rawZonas || "field"]).map(normalizeZone).filter(Boolean);
-    const rawObjetivos = item.objetivos || item.targets || item.receptores || item.a || item.para || item.jugadoresObjetivo || item.objetivo || "*";
-    const objetivos = (Array.isArray(rawObjetivos) ? rawObjetivos : [rawObjetivos]).map(target => String(target).trim() === "*" ? "*" : normalizePersonName(target));
-    efectos.push({
-      fuente: normalizePersonName(fuente),
-      fuenteOriginal: String(fuente),
-      zonas: zonas.length ? zonas : ["field"],
-      objetivos: objetivos.length ? objetivos : ["*"],
-      puntos: Number(item.puntos ?? item.points ?? item.valor ?? item.bonus ?? 0),
-      motivo: item.motivo || item.reason || "efecto por presencia",
-      nombre: item.nombre || item.name || "efecto de presencia"
-    });
-  });
-
-  return {
-    relaciones,
-    ajustes,
-    efectos,
-    posicionesFavoritas: Array.isArray(data.posicionesFavoritas) ? data.posicionesFavoritas : [],
-    capitanes: Array.isArray(data.capitanes) ? data.capitanes : [],
-    reglasGlobales: data.reglasGlobales || {},
-    tiposRelaciones: data.tiposRelaciones || {}
-  };
-}
-
-function levelFromPoints(points) {
-  if (points >= 6) return "perfect";
-  if (points >= 4) return "strong";
-  if (points >= 2) return "medium";
-  if (points > 0) return "weak";
-  return "dead";
-}
-
-function collectV5BonusLinks() {
-  const bonus = [];
-  const starters = getStarterEntries();
-  const allEntries = getChemistryPresenceEntries ? getChemistryPresenceEntries() : starters;
-
-  // Posición favorita: Ren EI, Kiyoka MCD, y las que se añadan en quimica.json.
-  (chemistryRules.posicionesFavoritas || []).forEach(rule => {
-    const wanted = normalizePersonName(rule.jugador || rule.player || rule.personaje || "");
-    if (!wanted) return;
-    starters.forEach(entry => {
-      if (normalizePersonName(entry.player?.nombre || "") !== wanted) return;
-      const posiciones = Array.isArray(rule.posiciones) ? rule.posiciones : [rule.posicion || rule.position];
-      const match = posiciones.some(pos => positionsAreCompatible(entry.slot?.rol, pos));
-      if (!match) return;
-      bonus.push({
-        points: Number(rule.puntos ?? 2),
-        level: "medium",
-        reason: rule.motivo || "posición favorita",
-        type: "position",
-        a: entry,
-        b: entry
+  function changeFormation(name) {
+    if (!DATA.formations[name] || name === activeSquad().formation) return;
+    commit(() => {
+      const squad = activeSquad(), players = squad.starters.filter(Boolean), slots = DATA.formations[name];
+      const available = [...players], next = Array(11).fill(null);
+      slots.forEach((slot, index) => {
+        if (!available.length) return;
+        available.sort((a, b) => positionFit(playerById.get(b).position, slot.rol) - positionFit(playerById.get(a).position, slot.rol));
+        next[index] = available.shift();
       });
+      squad.formation = name;
+      squad.starters = next;
+    }, `Formación cambiada a ${name}`);
+  }
+
+  function runDraft(mode) {
+    const squad = activeSquad(), slots = DATA.formations[squad.formation], pool = [...fieldPlayers], chosen = [];
+    const next = slots.map(slot => {
+      pool.sort((a, b) => draftScore(b, slot, chosen, mode) - draftScore(a, slot, chosen, mode));
+      const selection = mode === 'chaos' ? pool.splice(Math.floor(Math.random() * pool.length), 1)[0] : pool.splice(0, 1)[0];
+      chosen.push(selection.id);
+      return selection.id;
     });
-  });
+    commit(() => { squad.starters = next; squad.captain = next[0]; }, mode === 'chemistry' ? 'Draft de química completado' : mode === 'chaos' ? 'Draft caótico completado' : 'Draft equilibrado completado');
+    dom.draftDialog.close();
+  }
 
-  // Capitán marcado en datos del partido.
-  allEntries.forEach(entry => {
-    const stats = getStatsForTarget(entry.type, entry.index);
-    if (!stats.captain) return;
-    const rule = (chemistryRules.capitanes || []).find(item => normalizePersonName(item.jugador || item.player || "") === normalizePersonName(entry.player.nombre));
-    const points = Number(rule?.puntos ?? chemistryRules.reglasGlobales?.capitan?.puntos ?? 2);
-    bonus.push({ points, level: "strong", reason: rule?.motivo || "capitán del equipo", type: "captain", a: entry, b: entry });
-  });
-
-  // Bonus si los 11 titulares son del mismo equipo.
-  const teamBonus = Number(chemistryRules.reglasGlobales?.equipoCompleto?.puntos ?? 3);
-  if (starters.length >= 11) {
-    const teams = starters.map(e => e.player?.equipo).filter(Boolean);
-    const uniqueTeams = [...new Set(teams)];
-    if (uniqueTeams.length === 1) {
-      bonus.push({ points: teamBonus, level: "strong", reason: `equipo completo: ${uniqueTeams[0]}`, type: "team", a: starters[0], b: starters[starters.length - 1] });
+  function draftScore(player, slot, chosen, mode) {
+    if (mode === 'chaos') return Math.random();
+    let score = positionFit(player.position, slot.rol) + Math.random() * 10;
+    if (mode === 'balanced') {
+      const teams = chosen.map(id => playerById.get(id).team);
+      score += teams.includes(player.team) ? -4 : 8;
     }
+    if (mode === 'chemistry') {
+      const playerName = normalize(player.name);
+      chosen.forEach(id => {
+        const other = normalize(playerById.get(id).name);
+        const link = relationships.find(item => (item.a === playerName && item.b === other) || (item.b === playerName && item.a === other));
+        if (link) score += link.points * 8;
+        if (playerById.get(id).team === player.team) score += 4;
+      });
+    }
+    return score;
   }
 
-  return bonus;
-}
-
-function calculateChemistry() {
-  const starters = getStarterEntries();
-  if (!chemistryEnabled) return { score: 0, label: "Desactivada", links: 0, perfectLinks: 0, strongLinks: 0, mediumLinks: 0, weakLinks: 0, deadLinks: 0, teams: {}, bonusLinks: [] };
-  const links = getChemistryLinks();
-  const bonusLinks = collectV5BonusLinks();
-  const allLinks = links.concat(bonusLinks);
-  const teamCounts = {};
-  starters.forEach(entry => {
-    const team = entry.player.equipo || "Sin equipo";
-    teamCounts[team] = (teamCounts[team] || 0) + 1;
-  });
-  const totalPoints = allLinks.reduce((total, link) => total + (link.points ?? link.puntos ?? 0), 0);
-  const perfectLinks = allLinks.filter(link => link.level === "perfect").length;
-  const strongLinks = allLinks.filter(link => link.level === "strong").length;
-  const mediumLinks = allLinks.filter(link => link.level === "medium").length;
-  const weakLinks = allLinks.filter(link => link.level === "weak").length;
-  const deadLinks = allLinks.filter(link => link.level === "dead").length;
-  const starterRatio = starters.length ? starters.length / 11 : 0;
-  const maxPoints = Math.max(1, allLinks.length * 8 + 8);
-  const rawScore = Math.round((totalPoints / maxPoints) * 100);
-  const score = Math.min(100, Math.max(0, Math.round(rawScore * starterRatio)));
-  let label = "Baja";
-  if (score >= 90) label = "Perfecta";
-  else if (score >= 75) label = "Alta";
-  else if (score >= 50) label = "Media";
-  return { score, label, links: allLinks.length, perfectLinks, strongLinks, mediumLinks, weakLinks, deadLinks, teams: teamCounts, bonusLinks };
-}
-
-function renderStatsEditor() {
-  const entries = getMatchLineupEntries();
-  return `
-    <section class="stats-editor-collapsed">
-      <button id="openMatchDataFromHudV5" type="button">📊 Datos del partido ${entries.length ? `(${entries.length})` : ""}</button>
-      <p class="hud-tip">Las tarjetas, goles, asistencias y capitán se editan desde el modal para no llenar la HUD.</p>
-    </section>
-  `;
-}
-
-function bindStatsEditorEvents() {
-  document.getElementById("openMatchDataFromHudV5")?.addEventListener("click", openMatchDataV5);
-}
-
-function getDefaultStats() {
-  return { yellow: false, red: false, goals: 0, assists: 0, captain: false, viceCaptain: false };
-}
-
-function renderPlayerMatchBadges(type, index) {
-  const stats = getStatsForTarget(type, index);
-  const goals = Math.max(0, Math.min(9, Number(stats.goals || 0)));
-  const assists = Math.max(0, Math.min(9, Number(stats.assists || 0)));
-  const cards = [];
-  if (stats.yellow) cards.push(`<span class="card-square yellow-card" title="Tarjeta amarilla"></span>`);
-  if (stats.red) cards.push(`<span class="card-square red-card" title="Tarjeta roja"></span>`);
-  const captainBadge = stats.captain ? `<span class="player-marker captain-marker" title="Capitán">👑</span>` : "";
-  const cardBadge = cards.length ? `<span class="player-marker cards-marker" title="Tarjetas">${cards.join("")}</span>` : "";
-  const goalBadge = goals > 0 ? `<span class="player-marker goals-marker" title="${goals} gol${goals === 1 ? "" : "es"}"><span class="marker-icon">⚽</span>${goals > 1 ? `<span class="marker-count">${goals}</span>` : ""}</span>` : "";
-  const assistBadge = assists > 0 ? `<span class="player-marker assists-marker" title="${assists} asistencia${assists === 1 ? "" : "s"}"><span class="marker-icon">🦶</span>${assists > 1 ? `<span class="marker-count">${assists}</span>` : ""}</span>` : "";
-  return captainBadge + cardBadge + goalBadge + assistBadge;
-}
-
-function formatStatsForPaste(type, index) {
-  const stats = getStatsForTarget(type, index);
-  const parts = [];
-  if (stats.captain) parts.push("👑 Capitán");
-  if (stats.goals > 0) parts.push(`⚽ x${stats.goals}`);
-  if (stats.assists > 0) parts.push(`🅰️ x${stats.assists}`);
-  if (stats.yellow) parts.push("🟨");
-  if (stats.red) parts.push("🟥");
-  return parts.length ? ` — ${parts.join(" ")}` : "";
-}
-
-function pushHistoryV5() {
-  if (historyLockedV5) return;
-  try {
-    historyStackV5.push(JSON.stringify(collectCurrentTemplateData()));
-    if (historyStackV5.length > 60) historyStackV5.shift();
-    redoStackV5 = [];
-  } catch (error) {
-    console.warn("No se pudo guardar historial", error);
+  function buildExport() {
+    return { version: 7, exportedAt: new Date().toISOString(), squad: activeSquad() };
   }
-}
 
-const originalSetTargetPlayerV5 = setTargetPlayer;
-setTargetPlayer = function(type, index, player) {
-  pushHistoryV5();
-  return originalSetTargetPlayerV5(type, index, player);
-};
-
-function restoreSnapshotV5(raw) {
-  if (!raw) return;
-  historyLockedV5 = true;
-  try {
-    const data = JSON.parse(raw);
-    loadTemplateData({ ...getActiveTemplate(), ...data });
-  } finally {
-    historyLockedV5 = false;
+  function encodeCode(payload) {
+    const bytes = new TextEncoder().encode(JSON.stringify(payload));
+    let binary = '';
+    bytes.forEach(byte => binary += String.fromCharCode(byte));
+    return `INAZUMA-V7:${btoa(binary)}`;
   }
-}
 
-function undoV5() {
-  if (!historyStackV5.length) return alert("No hay nada que deshacer.");
-  redoStackV5.push(JSON.stringify(collectCurrentTemplateData()));
-  restoreSnapshotV5(historyStackV5.pop());
-}
+  function decodeCode(text) {
+    const clean = String(text).trim().replace(/^INAZUMA-V7:/, '');
+    const binary = atob(clean), bytes = Uint8Array.from(binary, character => character.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
 
-function redoV5() {
-  if (!redoStackV5.length) return alert("No hay nada que rehacer.");
-  historyStackV5.push(JSON.stringify(collectCurrentTemplateData()));
-  restoreSnapshotV5(redoStackV5.pop());
-}
+  function importPayload(payload) {
+    const raw = payload?.squad || payload;
+    if (!raw || (!raw.starters && !raw.formation)) throw new Error('Formato no reconocido');
+    const squad = cleanSquad({ ...raw, id: uid(), name: `${raw.name || raw.teamName || 'Equipo importado'} · importado` });
+    commit(() => { state.squads.push(squad); state.activeSquadId = squad.id; }, 'Plantilla importada');
+  }
 
-function openDraftV5() {
-  document.getElementById("draftStrategyDialog")?.showModal();
-}
+  function downloadSquad() {
+    const payload = buildExport(), safe = normalize(activeSquad().name).replace(/[^a-z0-9]+/g, '-') || 'equipo-inazuma';
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob); link.download = `${safe}.json`; link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    showToast('Equipo exportado');
+  }
 
-function draftCompatibilityScore(player, slot, selected) {
-  let score = positionsAreCompatible(player.posicion, slot?.rol) ? 50 : -30;
-  selected.forEach(other => {
-    const rel = getManualRelationship(player, other);
-    if (rel) score += Number(rel.puntos || 0) * 5;
-    else if (player.equipo && other.equipo && player.equipo === other.equipo) score += 3;
-    if (getSurname(player) && getSurname(player) === getSurname(other)) score += 4;
-  });
-  (chemistryRules.posicionesFavoritas || []).forEach(rule => {
-    if (normalizePersonName(rule.jugador || "") !== normalizePersonName(player.nombre)) return;
-    const posiciones = Array.isArray(rule.posiciones) ? rule.posiciones : [rule.posicion];
-    if (posiciones.some(pos => positionsAreCompatible(slot?.rol, pos))) score += Number(rule.puntos ?? 2) * 4;
-  });
-  score += Math.random() * 3;
-  return score;
-}
-
-function pickDraftCandidate(candidates, slot, selected, strategy) {
-  if (!candidates.length) return null;
-  const scored = candidates.map(player => ({ player, score: draftCompatibilityScore(player, slot, selected) }));
-  if (strategy === "best") scored.sort((a, b) => b.score - a.score);
-  else if (strategy === "worst") scored.sort((a, b) => a.score - b.score);
-  else scored.sort(() => Math.random() - 0.5);
-  return scored[0].player;
-}
-
-function runDraftV5(strategy = "random") {
-  if (!personajes.length) return;
-  pushHistoryV5();
-  historyLockedV5 = true;
-  try {
-    const pool = personajes.filter(p => !["Gerente", "Entrenador"].some(pos => positionsAreCompatible(p.posicion, pos)));
-    const staffPool = personajes.filter(p => positionsAreCompatible(p.posicion, "Gerente") || positionsAreCompatible(p.posicion, "Entrenador"));
-    const used = new Set();
-    const selected = [];
-    placedPlayers = {};
-    matchStats = {};
-
-    (formaciones[currentFormation] || []).forEach((slot, index) => {
-      const compatible = pool.filter(p => !used.has(p.nombre) && positionsAreCompatible(p.posicion, slot.rol));
-      const fallback = pool.filter(p => !used.has(p.nombre));
-      const picked = pickDraftCandidate(compatible.length ? compatible : fallback, slot, selected, strategy);
-      if (!picked) return;
-      placedPlayers[index] = picked;
-      used.add(picked.nombre);
-      selected.push(picked);
+  function buildDiscordText() {
+    const squad = activeSquad(), formation = DATA.formations[squad.formation], analysis = calculateAnalysis();
+    const starters = squad.starters.map((id, index) => {
+      const player = playerById.get(id); if (!player) return `▫️ ${formation[index].rol}: —`;
+      const stats = squad.stats[id] || {}, extras = [stats.goals ? `⚽ ${stats.goals}` : '', stats.assists ? `🅰️ ${stats.assists}` : '', stats.red ? '🟥' : stats.yellow ? '🟨' : ''].filter(Boolean).join(' · ');
+      return `${squad.captain === id ? '👑' : '⚽'} ${formation[index].rol}: ${player.name} #${player.number || index + 1}${extras ? ` · ${extras}` : ''}`;
     });
-
-    benchPlayers = Array(BENCH_SIZE).fill(null).map(() => {
-      const remaining = pool.filter(p => !used.has(p.nombre));
-      const picked = pickDraftCandidate(remaining, { rol: "DEL" }, selected, strategy);
-      if (!picked) return null;
-      used.add(picked.nombre);
-      selected.push(picked);
-      return picked;
-    });
-
-    managers = Array(MANAGER_SIZE).fill(null).map((_, index) => {
-      const remaining = staffPool.filter(p => !used.has(p.nombre) && positionsAreCompatible(p.posicion, "Gerente"));
-      const picked = remaining[index] || remaining[0] || null;
-      if (picked) used.add(picked.nombre);
-      return picked;
-    });
-
-    const coachCandidate = staffPool.find(p => !used.has(p.nombre) && positionsAreCompatible(p.posicion, "Entrenador"));
-    coach = coachCandidate || coach;
-  } finally {
-    historyLockedV5 = false;
+    const bench = squad.bench.map(id => playerById.get(id)?.name).filter(Boolean);
+    const staff = squad.staff.map(id => playerById.get(id)?.name).filter(Boolean);
+    return [`## ${squad.name}`, squad.event ? `**${squad.event}**` : '', `Formación: **${squad.formation}** · Química: **${analysis.score}/100**`, '', ...starters, '', `**Banquillo:** ${bench.join(', ') || 'Sin definir'}`, `**Cuerpo técnico:** ${staff.join(', ') || 'Sin definir'}`].filter((line, index, all) => line !== '' || all[index - 1] !== '').join('\n');
   }
+
+  async function copyText(text, successMessage) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      const area = document.createElement('textarea');
+      area.value = text; area.style.position = 'fixed'; area.style.opacity = '0'; document.body.appendChild(area); area.select(); document.execCommand('copy'); area.remove();
+    }
+    showToast(successMessage);
+  }
+
+  function openTechniqueBuilder() {
+    const players = activeSquad().starters.map(id => playerById.get(id)).filter(Boolean);
+    const options = players.map(player => `<option value="${player.id}">${escapeHTML(player.name)}</option>`).join('');
+    dom.techniquePlayerA.innerHTML = options || '<option>Completa el once primero</option>';
+    dom.techniquePlayerB.innerHTML = options;
+    if (players[1]) dom.techniquePlayerB.value = players[1].id;
+    dom.techniqueOutput.value = '';
+    dom.techniqueDialog.showModal();
+  }
+
+  function generateTechnique() {
+    const a = playerById.get(dom.techniquePlayerA.value), b = playerById.get(dom.techniquePlayerB.value);
+    const name = dom.techniqueName.value.trim() || 'Supertécnica sin nombre';
+    const text = [`⚡ **${name}**`, `Tipo: ${dom.techniqueType.value} · ${dom.techniqueGrade.value}`, `Participantes: ${[a?.name, b?.name].filter(Boolean).join(' + ') || 'Por definir'}`, dom.techniqueDescription.value.trim() ? `Descripción: ${dom.techniqueDescription.value.trim()}` : ''].filter(Boolean).join('\n');
+    dom.techniqueOutput.value = text;
+  }
+
+  function bindEvents() {
+    dom.playerSearch.addEventListener('input', renderLibrary);
+    dom.teamFilter.addEventListener('change', renderLibrary);
+    dom.pickerSearch.addEventListener('input', renderPicker);
+    dom.formationSelect.addEventListener('change', () => changeFormation(dom.formationSelect.value));
+    dom.squadSelect.addEventListener('change', () => { state.activeSquadId = dom.squadSelect.value; history = []; future = []; saveState(); renderAll(); });
+    dom.previousSquad.addEventListener('click', () => switchSquad(-1));
+    dom.nextSquad.addEventListener('click', () => switchSquad(1));
+    dom.newSquad.addEventListener('click', () => commit(() => { const squad = createSquad(`Plantilla ${state.squads.length + 1}`); state.squads.push(squad); state.activeSquadId = squad.id; }, 'Nueva plantilla creada'));
+    dom.duplicateSquad.addEventListener('click', () => commit(() => { const copy = JSON.parse(JSON.stringify(activeSquad())); copy.id = uid(); copy.name = `${copy.name} · copia`; state.squads.push(copy); state.activeSquadId = copy.id; }, 'Plantilla duplicada'));
+    dom.deleteSquad.addEventListener('click', () => {
+      if (state.squads.length <= 1) return showToast('Debe existir al menos una plantilla');
+      if (!confirm(`¿Borrar ${activeSquad().name}?`)) return;
+      commit(() => { const id = activeSquad().id; state.squads = state.squads.filter(item => item.id !== id); state.activeSquadId = state.squads[0].id; }, 'Plantilla borrada');
+    });
+    dom.teamName.addEventListener('input', () => { activeSquad().name = dom.teamName.value.slice(0, 60) || 'Nuevo equipo'; saveState(); dom.squadSelect.options[dom.squadSelect.selectedIndex].textContent = activeSquad().name; });
+    dom.eventName.addEventListener('input', () => { activeSquad().event = dom.eventName.value.slice(0, 80); saveState(); });
+    dom.undoButton.addEventListener('click', undo); dom.redoButton.addEventListener('click', redo);
+    dom.chemistryButton.addEventListener('click', () => commit(() => state.chemistryVisible = !state.chemistryVisible));
+    dom.focusButton.addEventListener('click', () => { document.body.classList.toggle('focus-mode'); dom.focusButton.textContent = document.body.classList.contains('focus-mode') ? '← Volver' : '⛶ Solo campo'; requestAnimationFrame(drawChemistry); });
+    dom.clearButton.addEventListener('click', () => { if (confirm('¿Vaciar titulares, banquillo y cuerpo técnico?')) commit(() => { const squad = activeSquad(); squad.starters.fill(null); squad.bench.fill(null); squad.staff.fill(null); squad.captain = null; squad.stats = {}; }, 'Plantilla vaciada'); });
+    dom.draftButton.addEventListener('click', () => { document.querySelector('.more-menu').removeAttribute('open'); dom.draftDialog.showModal(); });
+    dom.draftDialog.querySelectorAll('[data-draft]').forEach(button => button.addEventListener('click', () => runDraft(button.dataset.draft)));
+    dom.copyButton.addEventListener('click', () => copyText(buildDiscordText(), 'Plantilla copiada para Discord'));
+    dom.copyCodeButton.addEventListener('click', () => { document.querySelector('.more-menu').removeAttribute('open'); dom.codeArea.value = encodeCode(buildExport()); dom.codeDialog.showModal(); });
+    dom.copyCodeFromDialog.addEventListener('click', () => copyText(dom.codeArea.value, 'Código copiado'));
+    dom.loadCodeButton.addEventListener('click', () => { try { importPayload(decodeCode(dom.codeArea.value)); dom.codeDialog.close(); } catch (error) { showToast('Ese código no es válido'); } });
+    dom.exportButton.addEventListener('click', downloadSquad);
+    dom.importButton.addEventListener('click', () => dom.importFile.click());
+    dom.importFile.addEventListener('change', async event => { const file = event.target.files?.[0]; if (!file) return; try { importPayload(JSON.parse(await file.text())); } catch (error) { showToast('No se pudo importar ese archivo'); } event.target.value = ''; });
+    dom.techniqueButton.addEventListener('click', () => { document.querySelector('.more-menu').removeAttribute('open'); openTechniqueBuilder(); });
+    dom.generateTechnique.addEventListener('click', generateTechnique);
+    dom.copyTechnique.addEventListener('click', () => { if (!dom.techniqueOutput.value) generateTechnique(); copyText(dom.techniqueOutput.value, 'Supertécnica copiada'); });
+    document.querySelectorAll('.inspector-tabs button').forEach(button => button.addEventListener('click', () => {
+      document.querySelectorAll('.inspector-tabs button').forEach(item => item.classList.toggle('active', item === button));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `${button.dataset.tab}Tab`));
+    }));
+    document.addEventListener('keydown', event => {
+      if (!(event.ctrlKey || event.metaKey) || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
+      if (event.key.toLowerCase() === 'z') { event.preventDefault(); event.shiftKey ? redo() : undo(); }
+      if (event.key.toLowerCase() === 'y') { event.preventDefault(); redo(); }
+    });
+    window.addEventListener('resize', () => requestAnimationFrame(drawChemistry));
+  }
+
+  function switchSquad(offset) {
+    const index = state.squads.findIndex(squad => squad.id === state.activeSquadId);
+    const next = (index + offset + state.squads.length) % state.squads.length;
+    state.activeSquadId = state.squads[next].id; history = []; future = []; saveState(); renderAll();
+  }
+
+  bindEvents();
+  saveState();
   renderAll();
-  document.getElementById("draftStrategyDialog")?.close();
-}
-
-function openMatchDataV5() {
-  const dialog = document.getElementById("matchDataDialogV5");
-  const list = document.getElementById("matchDataListV5");
-  if (!dialog || !list) return;
-  const entries = getMatchLineupEntries();
-  if (!entries.length) {
-    list.innerHTML = `<p>No hay jugadores en la plantilla.</p>`;
-  } else {
-    list.innerHTML = entries.map(entry => {
-      const stats = getStatsForTarget(entry.type, entry.index);
-      const key = `${entry.type}:${entry.index}`;
-      return `
-        <div class="v5-match-row" data-key="${escapeAttribute(key)}" data-type="${escapeAttribute(entry.type)}" data-index="${escapeAttribute(entry.index)}">
-          <div class="v5-match-player">${renderAvatar(entry.player)}<div><strong>#${escapeHtml(getJerseyForTarget(entry.type, entry.index) ?? "?")} ${escapeHtml(entry.player.nombre)}</strong><span>${escapeHtml(entry.role)} · ${escapeHtml(entry.player.equipo || "Sin equipo")}</span></div></div>
-          <label class="v5-mini-field">⚽<select data-stat="goals">${[0,1,2,3,4,5].map(n => `<option value="${n}" ${Number(stats.goals) === n ? "selected" : ""}>${n}</option>`).join("")}</select></label>
-          <label class="v5-mini-field">🅰️<select data-stat="assists">${[0,1,2,3,4,5].map(n => `<option value="${n}" ${Number(stats.assists) === n ? "selected" : ""}>${n}</option>`).join("")}</select></label>
-          <button class="v5-toggle ${stats.yellow ? "active" : ""}" data-toggle="yellow" type="button">🟨</button>
-          <button class="v5-toggle ${stats.red ? "active" : ""}" data-toggle="red" type="button">🟥</button>
-          <button class="v5-toggle ${stats.captain ? "active" : ""}" data-toggle="captain" type="button">👑</button>
-        </div>`;
-    }).join("");
-  }
-  list.querySelectorAll("select[data-stat]").forEach(select => {
-    select.addEventListener("change", event => {
-      const row = event.target.closest(".v5-match-row");
-      setStatsForTarget(row.dataset.type, Number(row.dataset.index), { [event.target.dataset.stat]: Number(event.target.value) });
-      renderAll();
-    });
-  });
-  list.querySelectorAll("button[data-toggle]").forEach(button => {
-    button.addEventListener("click", () => {
-      const row = button.closest(".v5-match-row");
-      const type = row.dataset.type;
-      const index = Number(row.dataset.index);
-      const stat = button.dataset.toggle;
-      const stats = getStatsForTarget(type, index);
-      if (stat === "captain" && !stats.captain) {
-        Object.keys(matchStats).forEach(key => { matchStats[key] = { ...getDefaultStats(), ...matchStats[key], captain: false }; });
-      }
-      setStatsForTarget(type, index, { [stat]: !stats[stat] });
-      openMatchDataV5();
-      renderAll();
-    });
-  });
-  dialog.showModal();
-}
-
-function getLineupPlayersV5() {
-  return getMatchLineupEntries().map(e => e.player).filter(Boolean);
-}
-
-function openSimMatchV5() {
-  simulatedEventsV5 = [];
-  simulatedScoreV5 = { home: 0, away: 0 };
-  document.getElementById("simMatchFeedV5").innerHTML = "";
-  document.getElementById("simMatchScoreV5").textContent = `${equipoInput.value || "Tu equipo"} 0-0 Rival`;
-  document.getElementById("simMatchDialogV5")?.showModal();
-}
-
-function nextSimEventV5() {
-  const players = getLineupPlayersV5();
-  if (!players.length) return;
-  const minute = Math.min(90, 1 + simulatedEventsV5.length * Math.floor(3 + Math.random() * 7));
-  const player = players[Math.floor(Math.random() * players.length)];
-  const roll = Math.random();
-  let text = "";
-  let cls = "";
-  if (roll < 0.36) {
-    simulatedScoreV5.home += 1;
-    const assistant = players.find(p => p.nombre !== player.nombre) || player;
-    text = `${minute}' ⚽ GOOOOOL de ${player.nombre}${assistant !== player ? ` · asistencia de ${assistant.nombre}` : ""}`;
-    cls = "goal";
-  } else if (roll < 0.48) {
-    text = `${minute}' 🟨 Tarjeta para ${player.nombre}`;
-    cls = "card";
-  } else if (roll < 0.58) {
-    text = `${minute}' 🔄 Cambio táctico alrededor de ${player.nombre}`;
-  } else {
-    text = `${minute}' ⚡ ${player.nombre} protagoniza una jugada peligrosa`;
-  }
-  simulatedEventsV5.unshift(text);
-  document.getElementById("simMatchScoreV5").textContent = `${equipoInput.value || "Tu equipo"} ${simulatedScoreV5.home}-${simulatedScoreV5.away} Rival`;
-  document.getElementById("simMatchFeedV5").innerHTML = simulatedEventsV5.map(event => `<div class="v5-feed-event ${cls}">${escapeHtml(event)}</div>`).join("");
-}
-
-function copySimSummaryV5() {
-  const text = [`# 📺 ${eventoInput.value || "Partido"}`, `${equipoInput.value || "Tu equipo"} ${simulatedScoreV5.home}-${simulatedScoreV5.away} Rival`, "", ...simulatedEventsV5.slice().reverse()].join("\n");
-  navigator.clipboard?.writeText(text);
-}
-
-function openStBuilderV5() {
-  const entries = getMatchLineupEntries();
-  const options = entries.map(e => `<option value="${escapeAttribute(e.player.nombre)}">${escapeHtml(e.player.nombre)}</option>`).join("");
-  const a = document.getElementById("stPlayerAV5");
-  const b = document.getElementById("stPlayerBV5");
-  if (a) a.innerHTML = options;
-  if (b) b.innerHTML = options;
-  document.getElementById("stBuilderDialogV5")?.showModal();
-}
-
-function generateStV5() {
-  const name = document.getElementById("stNameV5")?.value.trim() || "Supertécnica sin nombre";
-  const a = document.getElementById("stPlayerAV5")?.value || "Jugador A";
-  const b = document.getElementById("stPlayerBV5")?.value || "Jugador B";
-  const type = document.getElementById("stTypeV5")?.value || "Tiro";
-  const grade = document.getElementById("stGradeV5")?.value || "G5";
-  const desc = document.getElementById("stDescriptionV5")?.value.trim() || "Descripción pendiente.";
-  document.getElementById("stOutputV5").value = `# ⚡ ${name}\n**Participantes:** ${a} + ${b}\n**Tipo:** ${type}\n**Grado:** ${grade}\n**Descripción:** ${desc}`;
-}
-
-function initV5Modules() {
-  document.getElementById("btnDraftV5")?.addEventListener("click", openDraftV5);
-  document.getElementById("draftRandomV5")?.addEventListener("click", () => runDraftV5("random"));
-  document.getElementById("draftBestV5")?.addEventListener("click", () => runDraftV5("best"));
-  document.getElementById("draftWorstV5")?.addEventListener("click", () => runDraftV5("worst"));
-  document.getElementById("draftCloseV5")?.addEventListener("click", () => document.getElementById("draftStrategyDialog")?.close());
-  document.getElementById("btnMatchDataV5")?.addEventListener("click", openMatchDataV5);
-  document.getElementById("matchDataCloseV5")?.addEventListener("click", () => document.getElementById("matchDataDialogV5")?.close());
-  document.getElementById("btnUndoV5")?.addEventListener("click", undoV5);
-  document.getElementById("btnRedoV5")?.addEventListener("click", redoV5);
-  document.getElementById("btnToggleChemLinesV5")?.addEventListener("click", () => document.body.classList.toggle("show-chemistry-v5"));
-  document.getElementById("btnSimMatchV5")?.addEventListener("click", openSimMatchV5);
-  document.getElementById("simNextV5")?.addEventListener("click", nextSimEventV5);
-  document.getElementById("simCopyV5")?.addEventListener("click", copySimSummaryV5);
-  document.getElementById("simCloseV5")?.addEventListener("click", () => document.getElementById("simMatchDialogV5")?.close());
-  document.getElementById("btnStBuilderV5")?.addEventListener("click", openStBuilderV5);
-  document.getElementById("stGenerateV5")?.addEventListener("click", generateStV5);
-  document.getElementById("stCopyV5")?.addEventListener("click", () => navigator.clipboard?.writeText(document.getElementById("stOutputV5")?.value || ""));
-  document.getElementById("stCloseV5")?.addEventListener("click", () => document.getElementById("stBuilderDialogV5")?.close());
-  document.addEventListener("keydown", event => {
-    if (event.ctrlKey && event.key.toLowerCase() === "z") { event.preventDefault(); undoV5(); }
-    if (event.ctrlKey && event.key.toLowerCase() === "y") { event.preventDefault(); redoV5(); }
-  });
-}
-
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initV5Modules);
-else initV5Modules();
+})();

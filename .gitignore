@@ -1,4 +1,8 @@
 DiscordWebBot/.env
 DiscordWebBot/node_modules/
+DiscordWebBot/.bot-state.json
+
+# Copias locales de seguridad creadas antes de grandes renovaciones
+*.backup-before-*
 
 

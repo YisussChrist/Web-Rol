@@ -1,726 +1,154 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Archivo Tao Saotome | Sellos de Maldición</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Expediente interactivo de los quince Sellos de Tao Saotome.">
+  <title>Sellos de Tao — Archivo Maldito</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap');
-
-    :root {
-      --bg: #080808;
-      --panel: rgba(18, 18, 18, 0.92);
-      --panel-2: rgba(28, 28, 28, 0.95);
-      --paper: #e8e0d0;
-      --muted: #9b9386;
-      --red: #b31217;
-      --red-2: #ff2830;
-      --line: rgba(255,255,255,0.12);
-      --shadow: rgba(179,18,23,0.32);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--paper);
-      font-family: 'Inter', system-ui, sans-serif;
-      background:
-        radial-gradient(circle at 20% 10%, rgba(179,18,23,0.20), transparent 28%),
-        radial-gradient(circle at 80% 15%, rgba(255,255,255,0.05), transparent 28%),
-        linear-gradient(135deg, #030303 0%, #111 45%, #070707 100%);
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 34px 34px;
-      mask-image: radial-gradient(circle at center, black, transparent 85%);
-    }
-
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.025),
-        rgba(255,255,255,0.025) 1px,
-        transparent 1px,
-        transparent 4px
-      );
-      opacity: .18;
-      mix-blend-mode: overlay;
-    }
-
-    .wrap {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 36px 0 60px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .header {
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 22px;
-      align-items: stretch;
-      margin-bottom: 24px;
-    }
-
-    .case-file, .subject-card, .seal-grid, .detail-card {
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, var(--panel), rgba(10,10,10,0.96));
-      box-shadow: 0 20px 55px rgba(0,0,0,.45), 0 0 34px rgba(179,18,23,.08);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .case-file::before, .subject-card::before, .detail-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(120deg, transparent 0 35%, rgba(255,255,255,0.035), transparent 65% 100%);
-      pointer-events: none;
-    }
-
-    .case-file {
-      padding: 30px;
-      min-height: 280px;
-    }
-
-    .tag {
-      display: inline-flex;
-      gap: 10px;
-      align-items: center;
-      padding: 8px 12px;
-      border: 1px solid rgba(179,18,23,.6);
-      color: var(--red-2);
-      background: rgba(179,18,23,.08);
-      font-size: 12px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      font-weight: 800;
-      margin-bottom: 14px;
-    }
-
-    h1 {
-      font-family: 'Bebas Neue', Impact, sans-serif;
-      font-size: clamp(54px, 9vw, 108px);
-      line-height: .86;
-      letter-spacing: .03em;
-      margin: 0;
-      text-transform: uppercase;
-      text-shadow: 4px 4px 0 #000, -2px 0 0 rgba(179,18,23,.8);
-    }
-
-    .subtitle {
-      max-width: 660px;
-      margin: 18px 0 0;
-      color: #c9c0b1;
-      font-size: 15px;
-      line-height: 1.65;
-    }
-
-    .meta {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 25px;
-    }
-
-    .meta div {
-      border: 1px solid var(--line);
-      padding: 12px;
-      background: rgba(255,255,255,.035);
-      min-height: 70px;
-    }
-
-    .meta span {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .14em;
-      margin-bottom: 8px;
-    }
-
-    .meta strong {
-      font-family: 'Bebas Neue';
-      font-size: 25px;
-      letter-spacing: .04em;
-      font-weight: 400;
-    }
-
-    .subject-card {
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 280px;
-    }
-
-    .portrait {
-      flex: 1;
-      border: 1px dashed rgba(232,224,208,.28);
-      display: grid;
-      place-items: center;
-      background:
-        linear-gradient(45deg, rgba(255,255,255,.04) 25%, transparent 25% 50%, rgba(255,255,255,.04) 50% 75%, transparent 75%),
-        radial-gradient(circle, rgba(179,18,23,.25), transparent 62%);
-      background-size: 18px 18px, auto;
-      min-height: 160px;
-      margin-bottom: 16px;
-      position: relative;
-    }
-
-    .portrait .kanji {
-      font-family: 'Bebas Neue';
-      font-size: 76px;
-      color: rgba(232,224,208,.12);
-      position: absolute;
-      z-index: 3;
-    }
-
-    .portrait p {
-      z-index: 3;
-      text-transform: uppercase;
-      letter-spacing: .22em;
-      color: #ddd1bf;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .portrait-photo {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 1;
-      display: block;
-    }
-
-    .portrait-photo.is-empty {
-      display: none;
-    }
-
-    .warning {
-      border-left: 4px solid var(--red);
-      padding: 12px 14px;
-      background: rgba(179,18,23,.08);
-      color: #d9d0c3;
-      font-size: 13px;
-      line-height: 1.55;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 16px;
-      margin: 28px 0 12px;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 12px;
-    }
-
-    h2 {
-      margin: 0;
-      font-family: 'Bebas Neue';
-      font-size: 42px;
-      letter-spacing: .05em;
-      font-weight: 400;
-    }
-
-    .counter {
-      color: var(--muted);
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: .16em;
-    }
-
-    .seal-grid {
-      padding: 18px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-    }
-
-    .seal {
-      border: 1px solid rgba(255,255,255,.14);
-      min-height: 142px;
-      padding: 14px;
-      background: rgba(255,255,255,.035);
-      cursor: pointer;
-      transition: .2s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .seal:hover, .seal.active {
-      transform: translateY(-3px);
-      border-color: rgba(255,40,48,.75);
-      box-shadow: 0 0 24px var(--shadow);
-      background: rgba(179,18,23,.13);
-    }
-
-    .seal.locked {
-      cursor: not-allowed;
-      filter: grayscale(.6);
-      opacity: .7;
-    }
-
-    .seal.locked:hover { transform: none; box-shadow: none; border-color: rgba(255,255,255,.14); }
-
-    .number {
-      color: var(--red-2);
-      font-family: 'Bebas Neue';
-      font-size: 23px;
-    }
-
-    .icon {
-      font-size: 38px;
-      margin: 12px 0 6px;
-      filter: drop-shadow(0 0 12px rgba(255,255,255,.12));
-    }
-
-    .seal h3 {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.2;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-    }
-
-    .seal small {
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      font-size: 10px;
-    }
-
-    .seal.locked::after {
-      content: "████████████████████";
-      position: absolute;
-      left: -18px;
-      right: -18px;
-      bottom: 18px;
-      color: rgba(255,40,48,.28);
-      transform: rotate(-9deg);
-      font-size: 13px;
-      letter-spacing: .12em;
-    }
-
-    .detail-card {
-      margin-top: 18px;
-      padding: 28px;
-      display: grid;
-      grid-template-columns: .72fr 1.28fr;
-      gap: 26px;
-      min-height: 340px;
-    }
-
-    .detail-symbol {
-      border: 1px solid rgba(255,255,255,.12);
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(circle, rgba(179,18,23,.18), transparent 58%),
-        rgba(255,255,255,.03);
-      min-height: 280px;
-      position: relative;
-    }
-
-    .detail-symbol span {
-      font-size: 116px;
-      filter: drop-shadow(0 0 26px rgba(179,18,23,.5));
-    }
-
-
-    .seal-photo {
-      width: 100%;
-      height: 100%;
-      max-width: none;
-      max-height: none;
-      object-fit: cover;
-      position: relative;
-      z-index: 2;
-      filter: drop-shadow(0 0 22px rgba(179,18,23,.35));
-    }
-
-    .seal-photo.is-empty {
-      display: none;
-    }
-
-    .detail-symbol .placeholder-icon {
-      position: relative;
-      z-index: 2;
-      font-size: 116px;
-      filter: drop-shadow(0 0 26px rgba(179,18,23,.5));
-    }
-
-    .detail-symbol::before,
-    .detail-symbol::after {
-      content: "";
-      position: absolute;
-      width: 72%;
-      height: 1px;
-      background: rgba(255,40,48,.45);
-    }
-
-    .detail-symbol::before { transform: rotate(45deg); }
-    .detail-symbol::after { transform: rotate(-45deg); }
-
-    .detail-content h3 {
-      font-family: 'Bebas Neue';
-      font-size: clamp(44px, 6vw, 72px);
-      margin: 0 0 4px;
-      line-height: .9;
-      letter-spacing: .04em;
-    }
-
-    .quote {
-      color: #d4c8b8;
-      border-left: 3px solid var(--red);
-      padding-left: 14px;
-      margin: 14px 0 20px;
-      font-style: italic;
-      line-height: 1.6;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-
-    .chip {
-      border: 1px solid rgba(255,255,255,.14);
-      padding: 7px 10px;
-      background: rgba(255,255,255,.04);
-      color: #ded3c3;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .09em;
-    }
-
-    .columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .box {
-      border: 1px solid rgba(255,255,255,.12);
-      padding: 15px;
-      background: rgba(0,0,0,.22);
-    }
-
-    .box h4 {
-      margin: 0 0 10px;
-      color: var(--red-2);
-      text-transform: uppercase;
-      letter-spacing: .14em;
-      font-size: 12px;
-    }
-
-    ul { margin: 0; padding-left: 18px; color: #d7ccbc; line-height: 1.65; font-size: 14px; }
-
-    .classified {
-      font-family: 'Bebas Neue';
-      color: rgba(255,40,48,.75);
-      letter-spacing: .12em;
-      font-size: 26px;
-      text-transform: uppercase;
-    }
-
-    .progress {
-      margin-top: 24px;
-      border: 1px solid var(--line);
-      padding: 14px;
-      background: rgba(255,255,255,.035);
-    }
-
-    .bar {
-      height: 13px;
-      background: rgba(255,255,255,.08);
-      overflow: hidden;
-      margin-top: 10px;
-    }
-
-    .bar span {
-      display: block;
-      height: 100%;
-      width: 20%;
-      background: repeating-linear-gradient(45deg, var(--red), var(--red) 8px, #6b070a 8px, #6b070a 16px);
-      box-shadow: 0 0 18px var(--shadow);
-    }
-
-    .footer-note {
-      margin-top: 22px;
-      color: var(--muted);
-      font-size: 12px;
-      text-align: right;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    @media (max-width: 880px) {
-      .header, .detail-card { grid-template-columns: 1fr; }
-      .meta { grid-template-columns: repeat(2, 1fr); }
-      .seal-grid { grid-template-columns: repeat(3, 1fr); }
-      .columns { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 560px) {
-      .wrap { width: min(100% - 20px, 1180px); padding-top: 18px; }
-      .case-file, .subject-card, .detail-card { padding: 18px; }
-      .seal-grid { grid-template-columns: repeat(2, 1fr); padding: 12px; }
-      .seal { min-height: 128px; }
-      .meta { grid-template-columns: 1fr; }
-      h2 { font-size: 34px; }
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap');
+    :root{--bg:#050606;--bg2:#111514;--panel:rgba(17,20,19,.92);--panel2:rgba(31,35,32,.9);--paper:#eee7d7;--muted:#a9a194;--red:#d21f2b;--red2:#ff4852;--jade:#66d8b1;--gold:#d8b56b;--line:rgba(238,231,215,.14);--shadow:0 25px 75px rgba(0,0,0,.55)}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--paper);font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 12% 5%,rgba(210,31,43,.19),transparent 27rem),radial-gradient(circle at 88% 35%,rgba(102,216,177,.08),transparent 30rem),linear-gradient(145deg,var(--bg),var(--bg2));overflow-x:hidden}body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:38px 38px;mask-image:radial-gradient(circle,#000,transparent 88%);z-index:0}.shell{position:relative;z-index:1;width:min(1320px,calc(100% - 30px));margin:auto;padding:20px 0 64px}a{color:inherit}.topbar{position:sticky;top:12px;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:13px;padding:11px 13px;border:1px solid var(--line);border-radius:999px;background:rgba(7,9,8,.9);box-shadow:var(--shadow);backdrop-filter:blur(20px)}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:950}.brand-mark{width:44px;height:44px;display:grid;place-items:center;border-radius:7px 17px 7px 17px;color:#160506;background:linear-gradient(135deg,#f0e5ca,var(--red2));box-shadow:0 0 24px rgba(210,31,43,.42);font:1.55rem 'Bebas Neue'}.brand small{display:block;color:var(--red2);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase}.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:10px 13px;color:var(--paper);background:rgba(255,255,255,.05);font:800 .8rem Inter;cursor:pointer;text-decoration:none;transition:.18s}.btn:hover{transform:translateY(-2px);border-color:rgba(255,72,82,.55);background:rgba(210,31,43,.12)}.btn.primary{color:#200608;border-color:transparent;background:linear-gradient(135deg,#f1e4c5,var(--red2))}.btn.danger{color:#ffaaa0;border-color:rgba(255,72,82,.4)}.save-state{padding:8px 11px;border-radius:999px;color:var(--jade);background:rgba(102,216,177,.1);font-size:.72rem;font-weight:900}.save-state.dirty{color:#ffb27c;background:rgba(210,31,43,.13)}
+    .hero{position:relative;overflow:hidden;display:grid;grid-template-columns:1.18fr .82fr;gap:24px;margin-top:24px;padding:clamp(25px,5vw,56px);border:1px solid var(--line);border-radius:8px 38px 8px 38px;background:radial-gradient(circle at 80% 35%,rgba(210,31,43,.25),transparent 18rem),linear-gradient(130deg,rgba(42,43,39,.93),rgba(8,10,9,.97));box-shadow:var(--shadow)}.hero::after{content:"封";position:absolute;right:4%;top:-22%;font:clamp(15rem,29vw,26rem)/1 serif;color:rgba(255,72,82,.055);transform:rotate(-9deg)}.hero-copy,.subject{position:relative;z-index:1}.classification{display:inline-flex;gap:8px;align-items:center;padding:7px 11px;border:1px solid rgba(255,72,82,.34);color:var(--red2);background:rgba(210,31,43,.08);font-size:.73rem;font-weight:950;letter-spacing:.15em;text-transform:uppercase}.hero h1{margin:14px 0 0;font:clamp(3.7rem,9vw,7.7rem)/.78 'Bebas Neue';letter-spacing:.025em;text-transform:uppercase}.hero h1 span{display:block;color:var(--red2);text-shadow:0 0 28px rgba(210,31,43,.46)}.hero p{max-width:710px;margin:18px 0 0;color:var(--muted);line-height:1.7;font-weight:600}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:25px}.metric{padding:13px;border:1px solid var(--line);background:rgba(0,0,0,.22)}.metric strong{display:block;color:var(--paper);font-size:1.35rem}.metric span{display:block;margin-top:3px;color:var(--muted);font-size:.68rem;font-weight:800}.subject{align-self:center;min-height:300px;display:grid;place-items:end center;overflow:hidden;border:1px solid var(--line);background:radial-gradient(circle,rgba(210,31,43,.2),transparent 64%)}.subject img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;opacity:.72}.subject::after{content:"SUJETO · TAO SAOTOME";position:relative;z-index:2;width:100%;padding:13px;text-align:center;background:linear-gradient(transparent,rgba(4,5,5,.96));font-size:.7rem;font-weight:950;letter-spacing:.18em}.warning{margin-top:13px;padding:12px 14px;border-left:4px solid var(--red);background:rgba(210,31,43,.09);color:#d7cec0;font-size:.78rem;line-height:1.55}
+    .portals{display:flex;gap:9px;overflow:auto;margin:15px 0 18px;padding:2px 1px 6px}.portal{flex:0 0 auto;padding:11px 13px;border:1px solid var(--line);background:rgba(255,255,255,.04);text-decoration:none;font-size:.81rem;font-weight:850}.portal:hover{background:rgba(210,31,43,.11);border-color:rgba(255,72,82,.42)}.controls{display:grid;grid-template-columns:minmax(250px,1fr) repeat(2,auto);gap:10px;align-items:center;padding:13px;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow);backdrop-filter:blur(18px)}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:5px;padding:12px 13px;color:var(--paper);background:rgba(0,0,0,.24);font:inherit;outline:none}input:focus,select:focus,textarea:focus{border-color:rgba(255,72,82,.58);box-shadow:0 0 0 3px rgba(210,31,43,.1)}select option{color:#211;background:#eee7d7}.search{position:relative}.search input{padding-left:41px}.search span{position:absolute;left:14px;top:50%;transform:translateY(-50%)}.view-switch{display:flex;gap:5px;padding:5px;border:1px solid var(--line);border-radius:999px;background:rgba(0,0,0,.18)}.view-btn{border:0;border-radius:999px;padding:8px 11px;color:var(--muted);background:transparent;font-weight:900;cursor:pointer}.view-btn.active{color:#210507;background:linear-gradient(135deg,#efe3c7,var(--red2))}.content{margin-top:18px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:4px 0 13px}.section-head h2{margin:0;font:2.1rem 'Bebas Neue';letter-spacing:.06em}.section-head span{color:var(--muted);font-size:.78rem;font-weight:800}.empty{padding:35px;border:1px dashed var(--line);text-align:center;color:var(--muted);font-weight:800}
+    .archive-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}.seal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;border:1px solid var(--line);background:var(--panel)}.seal-card{position:relative;overflow:hidden;min-height:160px;padding:13px;border:1px solid var(--line);color:var(--paper);background:rgba(255,255,255,.035);text-align:left;cursor:pointer;transition:.18s}.seal-card:hover,.seal-card.active{transform:translateY(-3px);border-color:rgba(255,72,82,.68);background:rgba(210,31,43,.13);box-shadow:0 0 24px rgba(210,31,43,.18)}.seal-card.locked{cursor:default;opacity:.54;filter:grayscale(.6)}.seal-card.locked:hover{transform:none;border-color:var(--line);background:rgba(255,255,255,.035);box-shadow:none}.seal-number{color:var(--red2);font:1.45rem 'Bebas Neue'}.seal-icon{display:block;margin:13px 0 7px;font-size:2.3rem}.seal-card h3{margin:0;font-size:.82rem;text-transform:uppercase}.seal-card small{display:block;margin-top:5px;color:var(--muted);font-size:.61rem;letter-spacing:.09em;text-transform:uppercase}.seal-card.locked::after{content:"CLASIFICADO";position:absolute;left:-12px;right:-12px;bottom:21px;transform:rotate(-8deg);color:rgba(255,72,82,.24);font-size:.72rem;font-weight:950;letter-spacing:.18em;text-align:center}.detail-card{position:sticky;top:88px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(155deg,var(--panel2),var(--panel));box-shadow:var(--shadow)}.detail-visual{position:relative;height:310px;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle,rgba(210,31,43,.2),transparent 63%)}.detail-visual img{width:100%;height:100%;object-fit:cover}.detail-fallback{font-size:7rem;filter:drop-shadow(0 0 24px rgba(210,31,43,.5))}.detail-body{padding:20px}.detail-body h3{margin:4px 0 0;font:clamp(2.6rem,5vw,4.6rem)/.9 'Bebas Neue'}.detail-quote{margin:13px 0;padding-left:13px;border-left:3px solid var(--red);color:#d5cbbb;font-style:italic;line-height:1.55}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{padding:6px 8px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-size:.67rem;font-weight:800}.detail-columns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.info-box{padding:12px;border:1px solid var(--line);background:rgba(0,0,0,.2)}.info-box h4{margin:0 0 8px;color:var(--red2);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}.info-box ul{margin:0;padding-left:17px;color:#d7cdbd;font-size:.75rem;line-height:1.55}.detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .combine-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}.combine-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch}.combine-side{padding:18px;border:1px solid var(--line);background:var(--panel)}.combine-side .big-icon{display:grid;place-items:center;height:210px;margin-bottom:13px;font-size:6rem;background:radial-gradient(circle,rgba(210,31,43,.2),transparent 64%)}.combine-side h3{margin:0;font:2rem 'Bebas Neue'}.combine-side p{margin:4px 0;color:var(--muted)}.versus{align-self:center;font:3rem 'Bebas Neue';color:var(--red2)}.combination-report{margin-top:14px;padding:16px;border:1px solid rgba(255,72,82,.35);background:rgba(210,31,43,.09)}.combination-report h3{margin:0 0 8px}.combination-report p{color:var(--muted);line-height:1.55}.dossier{display:grid;grid-template-columns:.75fr 1.25fr;gap:14px}.dossier-photo{min-height:470px;overflow:hidden;border:1px solid var(--line);background:var(--panel)}.dossier-photo img{width:100%;height:100%;object-fit:cover;object-position:top}.dossier-copy{padding:22px;border:1px solid var(--line);background:var(--panel)}.dossier-copy h2{margin:0;font:3.2rem 'Bebas Neue'}.dossier-copy p{color:var(--muted);line-height:1.7}.progress{margin-top:16px}.progress-head{display:flex;justify-content:space-between;color:var(--muted);font-size:.74rem;font-weight:850}.bar{height:13px;margin-top:8px;background:rgba(255,255,255,.08);overflow:hidden}.bar span{display:block;height:100%;background:repeating-linear-gradient(45deg,var(--red),var(--red) 8px,#6b070a 8px,#6b070a 16px);box-shadow:0 0 18px rgba(210,31,43,.35)}
+    dialog{width:min(900px,calc(100% - 24px));max-height:90vh;padding:0;border:1px solid var(--line);border-radius:8px;color:var(--paper);background:#111413;box-shadow:0 35px 100px rgba(0,0,0,.76)}dialog::backdrop{background:rgba(2,3,3,.82);backdrop-filter:blur(7px)}.dialog-head{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line);background:rgba(17,20,19,.96)}.dialog-head h2{margin:0}.icon-btn{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;color:var(--paper);background:rgba(255,255,255,.06);cursor:pointer}.form-wrap{padding:20px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{color:var(--muted);font-size:.74rem;font-weight:850}.field textarea{min-height:88px;resize:vertical}.form-help{color:var(--muted);font-size:.69rem;line-height:1.45}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
+    @media(max-width:1000px){.hero,.archive-layout,.dossier{grid-template-columns:1fr}.subject{min-height:260px}.detail-card{position:relative;top:auto}.controls{grid-template-columns:1fr 1fr}.search,.view-switch{grid-column:1/-1}.view-switch{justify-content:center}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.shell{width:min(100% - 18px,1320px)}.topbar{border-radius:18px;align-items:flex-start}.actions{justify-content:flex-start}.actions .save-state{width:100%}.hero{padding:23px 17px}.controls,.combine-controls,.form-grid{grid-template-columns:1fr}.search,.view-switch,.field.full{grid-column:auto}.seal-grid{grid-template-columns:repeat(2,1fr);padding:10px}.seal-card{min-height:140px}.detail-columns,.combine-grid{grid-template-columns:1fr}.versus{text-align:center}.dossier-photo{min-height:350px}}
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="header">
-      <article class="case-file">
-        <div class="tag">● Archivo confidencial / Maldición activa</div>
-        <h1>Sellos de<br>Tao Saotome</h1>
-        <p class="subtitle">
-          Registro interno de los sellos animales atribuidos a Tao. La mayoría de datos siguen bajo censura.
-        </p>
-        <div class="meta">
-          <div><span>Sujeto</span><strong>Tao Saotome</strong></div>
-          <div><span>Estado</span><strong>Activa</strong></div>
-          <div><span>Sellos</span><strong>3 / 15</strong></div>
-          <div><span>Riesgo</span><strong>Especial</strong></div>
-        </div>
-      </article>
-
-      <aside class="subject-card">
-        <div class="portrait">
-            <img id="portraitImage" class="portrait-photo is-empty" src="" alt="Foto del sujeto">
-            <div class="kanji">封</div>
-            <p>Imagen del sujeto<br>pendiente de insertar</p>
-          </div>
-        <div class="warning">
-          <strong>Advertencia:</strong> no se recomienda provocar una liberación simultánea. El patrón de los sellos parece responder tanto al daño recibido como al instinto de supervivencia del sujeto.
-        </div>
-      </aside>
-    </section>
-
-    <div class="section-title">
-      <h2>Registro de sellos</h2>
-      <div class="counter">Revelados: 3 / 15</div>
-    </div>
-
-    <section class="seal-grid" id="sealGrid"></section>
-
-    <section class="detail-card" id="detailCard">
-      <div class="detail-symbol">
-        <img id="detailImage" class="seal-photo is-empty" src="" alt="Imagen del sello">
-        <span id="detailIcon" class="placeholder-icon">🐆</span>
-      </div>
-      <div class="detail-content">
-        <div class="number" id="detailNumber">SELLO 01</div>
-        <h3 id="detailName">Guepardo del Horizonte</h3>
-        <div class="quote" id="detailQuote">“Corre antes de que el enemigo comprenda que te has movido.”</div>
-        <div class="chips" id="detailChips"></div>
-        <div class="columns">
-          <div class="box">
-            <h4>Capacidades</h4>
-            <ul id="detailPowers"></ul>
-          </div>
-          <div class="box">
-            <h4>Riesgos / Limitaciones</h4>
-            <ul id="detailRisks"></ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="progress">
-      <div class="counter">Progreso de expediente: 20%</div>
-      <div class="bar"><span></span></div>
-    </section>
-
-    <div class="footer-note">Última actualización: sellos conocidos registrados manualmente</div>
+  <main class="shell">
+    <nav class="topbar"><a class="brand" href="dragon-dex.html?character=tao-saotome"><span class="brand-mark">封</span><span><small>Archivo confidencial · Eternal Warriors</small>Sellos de Tao</span></a><div class="actions"><span class="save-state" id="saveState">Datos del código</span><a class="btn" href="index.html">← HUB</a><button class="btn" id="backupBtn" type="button">⇩ Copia JSON</button><button class="btn primary" id="saveCodeBtn" type="button">▣ Guardar en el código</button><button class="btn primary" id="newBtn" type="button">＋ Revelar sello</button></div></nav>
+    <header class="hero"><div class="hero-copy"><span class="classification" id="classification">● Archivo confidencial</span><h1>Los Sellos de <span>Tao Saotome</span></h1><p>Expediente interno de los quince sellos animales ligados a Tao. Cada liberación altera una faceta distinta del sujeto: cuerpo, instinto, percepción o capacidad táctica.</p><div class="metrics"><div class="metric"><strong id="metricRevealed">0 / 15</strong><span>Sellos revelados</span></div><div class="metric"><strong id="metricTypes">0</strong><span>Clases conocidas</span></div><div class="metric"><strong id="metricCoverage">0%</strong><span>Expediente</span></div><div class="metric"><strong id="metricRisk">—</strong><span>Nivel de riesgo</span></div></div><div class="warning" id="warning"></div></div><div class="subject" id="subject"></div></header>
+    <nav class="portals"><a class="portal" href="dragon-dex.html?character=tao-saotome">🐲 Tao en Dragon Dex</a><a class="portal" href="poder.html">⚡ Poder</a><a class="portal" href="transformacionesdragonball.html?v=2">🔺 Transformaciones</a><a class="portal" href="parejasdragonball.html">🌳 Linajes</a><a class="portal" href="cronica.html#dragonball">⌛ Crónica DB</a></nav>
+    <section class="controls"><label class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar sello, capacidad, riesgo o etiqueta…"></label><select id="typeFilter"><option value="all">Todos los tipos</option></select><div class="view-switch"><button class="view-btn active" type="button" data-view="archive">Archivo</button><button class="view-btn" type="button" data-view="combine">Combinar</button><button class="view-btn" type="button" data-view="dossier">Sujeto</button></div></section>
+    <section class="content" id="content"></section>
   </main>
-
-  <script>
-    const seals = [
-      {
-        id: 9,
-        icon: '🐆',
-        image: 'Sellos/Guepardo.png',
-        name: 'Guepardo del Horizonte',
-        type: 'Velocidad',
-        status: 'Revelado',
-        quote: '“Corre antes de que el enemigo comprenda que te has movido.”',
-        tags: ['Velocidad', 'Reflejos', 'Aceleración'],
-        powers: [
-          'Aumenta drásticamente la velocidad de desplazamiento.',
-          'Permite aceleraciones explosivas en espacios cortos.',
-          'Mejora los reflejos y la lectura de trayectorias rápidas.',
-          'Ideal para esquivar, reposicionarse o rematar a un enemigo abierto.'
-        ],
-        risks: [
-          'Sobrecarga muscular si se mantiene demasiado tiempo.',
-          'Pierde valor en espacios muy cerrados o con movilidad limitada.',
-          'Puede volver a Tao predecible si solo busca velocidad frontal.'
+  <dialog id="editDialog"><div class="dialog-head"><h2 id="editTitle">Revelar sello</h2><button class="icon-btn" type="button" data-close="editDialog">✕</button></div><form class="form-wrap" id="editForm"><input id="editOriginalId" type="hidden"><div class="form-grid"><div class="field"><label for="editSlot">Ranura *</label><select id="editSlot" required></select></div><div class="field"><label for="editName">Nombre *</label><input id="editName" required maxlength="120"></div><div class="field"><label for="editIcon">Icono</label><input id="editIcon" maxlength="10" placeholder="🐅"></div><div class="field"><label for="editType">Tipo</label><input id="editType" maxlength="100"></div><div class="field full"><label for="editImage">Imagen</label><input id="editImage" placeholder="Sellos/Nombre.png"></div><div class="field full"><label for="editQuote">Lema</label><input id="editQuote" maxlength="300"></div><div class="field full"><label for="editTags">Etiquetas</label><input id="editTags" placeholder="Velocidad, Reflejos, Aceleración"></div><div class="field"><label for="editPowers">Capacidades</label><textarea id="editPowers" placeholder="Una capacidad por línea"></textarea></div><div class="field"><label for="editRisks">Riesgos y limitaciones</label><textarea id="editRisks" placeholder="Un riesgo por línea"></textarea></div><div class="field"><label for="editActivation">Activación</label><textarea id="editActivation"></textarea></div><div class="field"><label for="editNotes">Notas</label><textarea id="editNotes"></textarea></div><div class="field full"><small class="form-help">Los cambios quedan como borrador hasta pulsar “Guardar en el código”.</small></div></div><div class="modal-actions"><button class="btn" type="button" data-close="editDialog">Cancelar</button><button class="btn primary" type="submit">Guardar sello</button></div></form></dialog>
+  <script src="sellos-tao-datos.js"></script><script>
+    // Respaldo integrado para apertura local o si falta el archivo externo.
+    if (!window.TAO_SEALS_DATA) {
+      /*
+       * SELLOS DE TAO — ARCHIVO DE DATOS
+       *
+       * Fuente definitiva del expediente. Puedes editarla desde “sellos tao.html”
+       * y pulsar “Guardar en el código”. Cada sello ocupa una ranura única del 1 al 15.
+       */
+      window.TAO_SEALS_DATA = {
+        "version": 2,
+        "totalSlots": 15,
+        "subject": {
+          "id": "tao-saotome",
+          "name": "Tao Saotome",
+          "image": "fotos-poderes/Tao Saotome.jpg",
+          "status": "Maldición activa",
+          "risk": "Especial",
+          "classification": "Archivo confidencial",
+          "warning": "No se recomienda provocar una liberación simultánea. El patrón de los sellos parece responder tanto al daño recibido como al instinto de supervivencia del sujeto."
+        },
+        "seals": [
+          {
+            "id": "9",
+            "name": "Guepardo del Horizonte",
+            "icon": "🐆",
+            "image": "Sellos/Guepardo.png",
+            "type": "Velocidad",
+            "status": "Revelado",
+            "quote": "“Corre antes de que el enemigo comprenda que te has movido.”",
+            "tags": [
+              "Velocidad",
+              "Reflejos",
+              "Aceleración"
+            ],
+            "powers": [
+              "Aumenta drásticamente la velocidad de desplazamiento.",
+              "Permite aceleraciones explosivas en espacios cortos.",
+              "Mejora los reflejos y la lectura de trayectorias rápidas.",
+              "Ideal para esquivar, reposicionarse o rematar a un enemigo abierto."
+            ],
+            "risks": [
+              "Sobrecarga muscular si se mantiene demasiado tiempo.",
+              "Pierde valor en espacios muy cerrados o con movilidad limitada.",
+              "Puede volver a Tao predecible si solo busca velocidad frontal."
+            ],
+            "activation": "",
+            "compatibility": [],
+            "notes": ""
+          },
+          {
+            "id": "2",
+            "name": "Pulpo Abisal",
+            "icon": "🐙",
+            "image": "Sellos/Pulpo.png",
+            "type": "Adaptación",
+            "status": "Revelado",
+            "quote": "“La victoria pertenece a quien entiende el combate antes de comenzarlo.”",
+            "tags": [
+              "Análisis",
+              "Adaptación",
+              "Control"
+            ],
+            "powers": [
+              "Aumenta la capacidad de análisis durante el combate.",
+              "Mejora la lectura de patrones y hábitos del rival.",
+              "Potencia la coordinación corporal y la creatividad táctica.",
+              "Permite adaptarse a estilos de lucha caóticos o impredecibles."
+            ],
+            "risks": [
+              "Puede generar agotamiento mental intenso.",
+              "No aumenta de forma directa la fuerza bruta.",
+              "Si Tao se bloquea emocionalmente, el análisis puede volverse inútil."
+            ],
+            "activation": "",
+            "compatibility": [],
+            "notes": ""
+          },
+          {
+            "id": "5",
+            "name": "Elefante Africano",
+            "icon": "🐘",
+            "image": "Sellos/Elefante.png",
+            "type": "Fuerza / Resistencia",
+            "status": "Revelado",
+            "quote": "“Ni el acero ni la montaña pueden detener aquello que avanza.”",
+            "tags": [
+              "Fuerza",
+              "Resistencia",
+              "Estabilidad"
+            ],
+            "powers": [
+              "Incrementa enormemente la fuerza física.",
+              "Aumenta la resistencia al daño directo.",
+              "Mejora la estabilidad corporal y reduce el retroceso recibido.",
+              "Convierte a Tao en una fuerza de avance difícil de frenar."
+            ],
+            "risks": [
+              "Reduce la movilidad y la capacidad de esquiva.",
+              "Consume mucha energía si se combina con sellos veloces.",
+              "Puede forzar a Tao a recibir golpes en vez de evitarlos."
+            ],
+            "activation": "",
+            "compatibility": [],
+            "notes": ""
+          }
         ]
-      },
-      {
-        id: 2,
-        icon: '🐙',
-        image: 'Sellos/Pulpo.png',
-        name: 'Pulpo Abisal',
-        type: 'Adaptación',
-        status: 'Revelado',
-        quote: '“La victoria pertenece a quien entiende el combate antes de comenzarlo.”',
-        tags: ['Análisis', 'Adaptación', 'Control'],
-        powers: [
-          'Aumenta la capacidad de análisis durante el combate.',
-          'Mejora la lectura de patrones y hábitos del rival.',
-          'Potencia la coordinación corporal y la creatividad táctica.',
-          'Permite adaptarse a estilos de lucha caóticos o impredecibles.'
-        ],
-        risks: [
-          'Puede generar agotamiento mental intenso.',
-          'No aumenta de forma directa la fuerza bruta.',
-          'Si Tao se bloquea emocionalmente, el análisis puede volverse inútil.'
-        ]
-      },
-      {
-        id: 5,
-        icon: '🐘',
-        image: 'Sellos/Elefante.png',
-        name: 'Elefante Africano',
-        type: 'Fuerza / Resistencia',
-        status: 'Revelado',
-        quote: '“Ni el acero ni la montaña pueden detener aquello que avanza.”',
-        tags: ['Fuerza', 'Resistencia', 'Estabilidad'],
-        powers: [
-          'Incrementa enormemente la fuerza física.',
-          'Aumenta la resistencia al daño directo.',
-          'Mejora la estabilidad corporal y reduce el retroceso recibido.',
-          'Convierte a Tao en una fuerza de avance difícil de frenar.'
-        ],
-        risks: [
-          'Reduce la movilidad y la capacidad de esquiva.',
-          'Consume mucha energía si se combina con sellos veloces.',
-          'Puede forzar a Tao a recibir golpes en vez de evitarlos.'
-        ]
-      }
-    ];
+      };
 
-    const grid = document.getElementById('sealGrid');
-    const knownMap = Object.fromEntries(seals.map(seal => [seal.id, seal]));
-
-    function sealLabel(n) {
-      return String(n).padStart(2, '0');
     }
-
-    function createGrid() {
-      for (let i = 1; i <= 15; i++) {
-        const data = knownMap[i];
-        const card = document.createElement('article');
-        card.className = 'seal' + (data ? '' : ' locked');
-        card.dataset.id = i;
-
-        if (data) {
-          card.innerHTML = `
-            <div class="number">${sealLabel(i)}</div>
-            <div class="icon">${data.icon}</div>
-            <h3>${data.name}</h3>
-            <small>${data.type}</small>
-          `;
-          card.addEventListener('click', () => selectSeal(i));
-        } else {
-          card.innerHTML = `
-            <div class="number">${sealLabel(i)}</div>
-            <div class="icon">封</div>
-            <h3>Información clasificada</h3>
-            <small>Acceso denegado</small>
-          `;
-        }
-
-        grid.appendChild(card);
-      }
-    }
-
-    function selectSeal(id) {
-      const data = knownMap[id];
-      if (!data) return;
-
-      document.querySelectorAll('.seal').forEach(card => card.classList.remove('active'));
-      document.querySelector(`.seal[data-id="${id}"]`).classList.add('active');
-
-      const detailImage = document.getElementById('detailImage');
-      const detailIcon = document.getElementById('detailIcon');
-
-      if (data.image) {
-        detailImage.src = data.image;
-        detailImage.alt = `Imagen del sello ${data.name}`;
-        detailImage.classList.remove('is-empty');
-        detailIcon.style.display = 'none';
-      } else {
-        detailImage.src = '';
-        detailImage.alt = 'Imagen del sello';
-        detailImage.classList.add('is-empty');
-        detailIcon.style.display = '';
-        detailIcon.textContent = data.icon;
-      }
-
-      document.getElementById('detailIcon').textContent = data.icon;
-      document.getElementById('detailNumber').textContent = `SELLO ${sealLabel(data.id)}`;
-      document.getElementById('detailName').textContent = data.name;
-      document.getElementById('detailQuote').textContent = data.quote;
-
-      const chips = document.getElementById('detailChips');
-      chips.innerHTML = data.tags.map(tag => `<span class="chip">${tag}</span>`).join('');
-
-      const powers = document.getElementById('detailPowers');
-      powers.innerHTML = data.powers.map(power => `<li>${power}</li>`).join('');
-
-      const risks = document.getElementById('detailRisks');
-      risks.innerHTML = data.risks.map(risk => `<li>${risk}</li>`).join('');
-    }
-
-    createGrid();
-    function setPortrait(src) {
-      const img = document.getElementById('portraitImage');
-      const caption = document.querySelector('.portrait p');
-      if (!img) return;
-      if (src) {
-        img.src = src;
-        img.alt = 'Foto del sujeto';
-        img.classList.remove('is-empty');
-        if (caption) caption.style.display = 'none';
-      } else {
-        img.src = '';
-        img.classList.add('is-empty');
-        if (caption) caption.style.display = '';
-      }
-    }
-
-    // carga por defecto la foto del sujeto (ruta relativa al archivo)
-    setPortrait('OST/img/TaoSaotome.jpg');
-
-    selectSeal(1);
   </script>
-
+  <script>
+    const TAO_DRAFT_KEY='rpTaoSealsDraftV1';let taoData=taoLoadData(),taoDirty=taoHasDraft(),taoView='archive',taoSelectedId='',taoCombineA='',taoCombineB='';const taoContent=document.getElementById('content'),taoSearch=document.getElementById('searchInput'),taoTypeFilter=document.getElementById('typeFilter'),taoEditDialog=document.getElementById('editDialog'),taoEditForm=document.getElementById('editForm');
+    function taoClone(value){return JSON.parse(JSON.stringify(value))}function taoNormalize(value=''){return String(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()}function taoEscape(value=''){return String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]))}function taoNormalizeData(value){const source=value&&typeof value==='object'?taoClone(value):{};return{...source,version:Number(source.version||2),totalSlots:Number(source.totalSlots||15),subject:source.subject&&typeof source.subject==='object'?source.subject:{},seals:Array.isArray(source.seals)?source.seals:[]}}function taoLoadData(){try{const draft=JSON.parse(localStorage.getItem(TAO_DRAFT_KEY));if(draft&&Array.isArray(draft.seals))return taoNormalizeData(draft)}catch{}return taoNormalizeData(window.TAO_SEALS_DATA)}function taoHasDraft(){try{return Boolean(localStorage.getItem(TAO_DRAFT_KEY))}catch{return false}}function taoPersist(){try{localStorage.setItem(TAO_DRAFT_KEY,JSON.stringify(taoData))}catch{}taoDirty=true;taoUpdateState()}function taoMarkSaved(){try{localStorage.removeItem(TAO_DRAFT_KEY)}catch{}taoDirty=false;taoUpdateState()}function taoUpdateState(){const node=document.getElementById('saveState');node.textContent=taoDirty?'Cambios pendientes':'Datos del código';node.classList.toggle('dirty',taoDirty)}function taoLines(value=''){return String(value).split(/\r?\n/).map(item=>item.trim()).filter(Boolean)}function taoList(value=''){return String(value).split(',').map(item=>item.trim()).filter(Boolean)}function taoLabel(value){return String(value).padStart(2,'0')}
+    function taoTypes(){return[...new Set(taoData.seals.map(seal=>seal.type||'Sin clasificar'))].sort((a,b)=>a.localeCompare(b,'es'))}function taoFiltered(){const query=taoNormalize(taoSearch.value),type=taoTypeFilter.value;return taoData.seals.filter(seal=>{const text=taoNormalize(`${seal.name} ${seal.type} ${seal.quote} ${(seal.tags||[]).join(' ')} ${(seal.powers||[]).join(' ')} ${(seal.risks||[]).join(' ')} ${seal.activation} ${seal.notes}`);return(!query||text.includes(query))&&(type==='all'||(seal.type||'Sin clasificar')===type)})}function taoFind(id){return taoData.seals.find(seal=>String(seal.id)===String(id))}
+    function taoRenderHero(){const total=taoData.totalSlots,revealed=taoData.seals.length,coverage=Math.round(revealed/total*100),subject=taoData.subject||{};document.getElementById('classification').textContent=`● ${subject.classification||'Archivo confidencial'}`;document.getElementById('metricRevealed').textContent=`${revealed} / ${total}`;document.getElementById('metricTypes').textContent=taoTypes().length;document.getElementById('metricCoverage').textContent=`${coverage}%`;document.getElementById('metricRisk').textContent=subject.risk||'—';document.getElementById('warning').innerHTML=`<strong>Advertencia:</strong> ${taoEscape(subject.warning||'Manipulación restringida.')}`;document.getElementById('subject').innerHTML=`${subject.image?`<img src="${taoEscape(subject.image)}" alt="${taoEscape(subject.name||'Tao Saotome')}" onerror="this.remove()">`:''}`}
+    function taoRenderFilters(){const current=taoTypeFilter.value||'all';taoTypeFilter.innerHTML='<option value="all">Todos los tipos</option>'+taoTypes().map(type=>`<option>${taoEscape(type)}</option>`).join('');taoTypeFilter.value=taoTypes().includes(current)?current:'all'}function taoSealCard(slot,visibleIds){const seal=taoFind(slot);if(!seal)return`<article class="seal-card locked"><span class="seal-number">${taoLabel(slot)}</span><span class="seal-icon">封</span><h3>Información clasificada</h3><small>Acceso denegado</small></article>`;if(!visibleIds.has(String(slot)))return'';return`<button class="seal-card ${String(slot)===String(taoSelectedId)?'active':''}" type="button" data-seal="${taoEscape(slot)}"><span class="seal-number">${taoLabel(slot)}</span><span class="seal-icon">${taoEscape(seal.icon||'◈')}</span><h3>${taoEscape(seal.name)}</h3><small>${taoEscape(seal.type||'Sin clasificar')}</small></button>`}
+    function taoDetail(seal){if(!seal)return'<article class="detail-card"><div class="empty">Selecciona un sello revelado.</div></article>';const powers=(seal.powers||[]).map(item=>`<li>${taoEscape(item)}</li>`).join(''),risks=(seal.risks||[]).map(item=>`<li>${taoEscape(item)}</li>`).join('');return`<article class="detail-card"><div class="detail-visual">${seal.image?`<img src="${taoEscape(seal.image)}" alt="${taoEscape(seal.name)}" onerror="this.remove();this.nextElementSibling.style.display='block'">`:''}<span class="detail-fallback" ${seal.image?'style="display:none"':''}>${taoEscape(seal.icon||'◈')}</span></div><div class="detail-body"><span class="seal-number">SELLO ${taoLabel(seal.id)}</span><h3>${taoEscape(seal.name)}</h3><div class="detail-quote">${taoEscape(seal.quote||'Información incompleta.')}</div><div class="chips">${(seal.tags||[]).map(tag=>`<span class="chip">${taoEscape(tag)}</span>`).join('')}</div><div class="detail-columns"><div class="info-box"><h4>Capacidades</h4><ul>${powers||'<li>Sin datos registrados.</li>'}</ul></div><div class="info-box"><h4>Riesgos / limitaciones</h4><ul>${risks||'<li>Sin datos registrados.</li>'}</ul></div></div>${seal.activation?`<div class="info-box" style="margin-top:10px"><h4>Activación</h4>${taoEscape(seal.activation)}</div>`:''}${seal.notes?`<div class="info-box" style="margin-top:10px"><h4>Notas</h4>${taoEscape(seal.notes)}</div>`:''}<div class="detail-actions"><button class="btn primary" id="editCurrent" type="button">Editar sello</button><a class="btn" href="dragon-dex.html?character=${encodeURIComponent(taoData.subject.id||'tao-saotome')}">Abrir Dragon Dex</a><button class="btn danger" id="deleteCurrent" type="button">Ocultar sello</button></div></div></article>`}
+    function taoRenderArchive(){const filtered=taoFiltered(),visibleIds=new Set(filtered.map(seal=>String(seal.id)));if(!taoSelectedId||!visibleIds.has(String(taoSelectedId)))taoSelectedId=filtered.slice().sort((a,b)=>Number(a.id)-Number(b.id))[0]?.id||'';taoContent.innerHTML=`<div class="section-head"><h2>Registro de los quince sellos</h2><span>${filtered.length} revelados visibles · ${taoData.totalSlots-taoData.seals.length} clasificados</span></div><div class="archive-layout"><div class="seal-grid">${Array.from({length:taoData.totalSlots},(_,index)=>taoSealCard(index+1,visibleIds)).join('')}</div>${taoDetail(taoFind(taoSelectedId))}</div>`;taoContent.querySelectorAll('[data-seal]').forEach(card=>card.onclick=()=>{taoSelectedId=card.dataset.seal;taoRenderArchive()});const edit=document.getElementById('editCurrent'),remove=document.getElementById('deleteCurrent');if(edit)edit.onclick=()=>taoOpenEditor(taoSelectedId);if(remove)remove.onclick=()=>taoDeleteSeal(taoSelectedId)}
+    function taoCombineOptions(selected){return taoData.seals.slice().sort((a,b)=>Number(a.id)-Number(b.id)).map(seal=>`<option value="${taoEscape(seal.id)}" ${String(seal.id)===String(selected)?'selected':''}>${taoLabel(seal.id)} · ${taoEscape(seal.name)}</option>`).join('')}function taoCombineSide(seal){if(!seal)return'<article class="combine-side"><div class="empty">Sin sello</div></article>';return`<article class="combine-side"><div class="big-icon">${taoEscape(seal.icon||'◈')}</div><h3>${taoEscape(seal.name)}</h3><p>${taoEscape(seal.type||'Sin clasificar')}</p><div class="chips">${(seal.tags||[]).map(tag=>`<span class="chip">${taoEscape(tag)}</span>`).join('')}</div></article>`}function taoRenderCombine(){const seals=taoData.seals;if(!taoCombineA)taoCombineA=seals[0]?.id||'';if(!taoCombineB)taoCombineB=seals[1]?.id||taoCombineA;const a=taoFind(taoCombineA),b=taoFind(taoCombineB),tags=[...new Set([...(a?.tags||[]),...(b?.tags||[])])],shared=(a?.tags||[]).filter(tag=>(b?.tags||[]).some(other=>taoNormalize(other)===taoNormalize(tag)));taoContent.innerHTML=`<div class="section-head"><h2>Simulador de liberación doble</h2><span>Análisis documental, no predicción de combate</span></div><div class="combine-controls"><select id="combineA">${taoCombineOptions(taoCombineA)}</select><select id="combineB">${taoCombineOptions(taoCombineB)}</select></div><div class="combine-grid">${taoCombineSide(a)}<div class="versus">＋</div>${taoCombineSide(b)}</div><div class="combination-report"><h3>Cobertura conjunta</h3><div class="chips">${tags.map(tag=>`<span class="chip">${taoEscape(tag)}</span>`).join('')}</div><p>${shared.length?`Coinciden en ${shared.map(taoEscape).join(', ')}. La acumulación puede intensificar esos rasgos.`:'No comparten etiquetas registradas; la combinación cubriría capacidades diferentes.'}</p><p><strong>Advertencia:</strong> ${taoEscape(taoData.subject.warning||'Liberación simultánea no recomendada.')}</p></div>`;document.getElementById('combineA').onchange=event=>{taoCombineA=event.target.value;taoRenderCombine()};document.getElementById('combineB').onchange=event=>{taoCombineB=event.target.value;taoRenderCombine()}}
+    function taoRenderDossier(){const subject=taoData.subject||{},coverage=Math.round(taoData.seals.length/taoData.totalSlots*100);taoContent.innerHTML=`<div class="section-head"><h2>Expediente del sujeto</h2><span>${taoEscape(subject.status||'Estado desconocido')}</span></div><div class="dossier"><div class="dossier-photo">${subject.image?`<img src="${taoEscape(subject.image)}" alt="${taoEscape(subject.name||'Tao Saotome')}" onerror="this.remove()">`:''}</div><article class="dossier-copy"><span class="classification">● ${taoEscape(subject.classification||'Archivo confidencial')}</span><h2>${taoEscape(subject.name||'Tao Saotome')}</h2><p>El expediente reúne los sellos animales conocidos y mantiene visibles las ranuras todavía clasificadas. Cada revelación puede documentarse sin alterar el resto del archivo.</p><div class="detail-columns"><div class="info-box"><h4>Estado</h4>${taoEscape(subject.status||'—')}</div><div class="info-box"><h4>Riesgo</h4>${taoEscape(subject.risk||'—')}</div></div><div class="progress"><div class="progress-head"><span>Progreso del expediente</span><strong>${coverage}%</strong></div><div class="bar"><span style="width:${coverage}%"></span></div></div><div class="warning"><strong>Protocolo:</strong> ${taoEscape(subject.warning||'Manipulación restringida.')}</div><div class="detail-actions"><a class="btn primary" href="dragon-dex.html?character=${encodeURIComponent(subject.id||'tao-saotome')}">Abrir ficha completa</a><button class="btn" id="editSubject" type="button">Editar próximo sello</button></div></article></div>`;document.getElementById('editSubject').onclick=()=>taoOpenEditor()}
+    function taoSlots(selected=''){const occupied=new Set(taoData.seals.map(seal=>String(seal.id)));document.getElementById('editSlot').innerHTML=Array.from({length:taoData.totalSlots},(_,index)=>String(index+1)).filter(id=>id===String(selected)||!occupied.has(id)).map(id=>`<option value="${id}" ${id===String(selected)?'selected':''}>Sello ${taoLabel(id)}</option>`).join('')}function taoOpenEditor(id=''){const seal=id?taoFind(id):null;taoEditForm.reset();taoSlots(seal?.id||'');document.getElementById('editTitle').textContent=seal?'Editar sello':'Revelar sello';document.getElementById('editOriginalId').value=seal?.id||'';if(seal){document.getElementById('editName').value=seal.name||'';document.getElementById('editIcon').value=seal.icon||'';document.getElementById('editType').value=seal.type||'';document.getElementById('editImage').value=seal.image||'';document.getElementById('editQuote').value=seal.quote||'';document.getElementById('editTags').value=(seal.tags||[]).join(', ');document.getElementById('editPowers').value=(seal.powers||[]).join('\n');document.getElementById('editRisks').value=(seal.risks||[]).join('\n');document.getElementById('editActivation').value=seal.activation||'';document.getElementById('editNotes').value=seal.notes||''}taoEditDialog.showModal()}
+    taoEditForm.onsubmit=event=>{event.preventDefault();const originalId=document.getElementById('editOriginalId').value,id=document.getElementById('editSlot').value,seal={id,name:document.getElementById('editName').value.trim(),icon:document.getElementById('editIcon').value.trim()||'◈',image:document.getElementById('editImage').value.trim(),type:document.getElementById('editType').value.trim()||'Sin clasificar',status:'Revelado',quote:document.getElementById('editQuote').value.trim(),tags:taoList(document.getElementById('editTags').value),powers:taoLines(document.getElementById('editPowers').value),risks:taoLines(document.getElementById('editRisks').value),activation:document.getElementById('editActivation').value.trim(),compatibility:taoFind(originalId)?.compatibility||[],notes:document.getElementById('editNotes').value.trim()};if(originalId)taoData.seals=taoData.seals.filter(item=>String(item.id)!==String(originalId));taoData.seals.push(seal);taoData.seals.sort((a,b)=>Number(a.id)-Number(b.id));taoSelectedId=id;taoPersist();taoEditDialog.close();taoRender()};function taoDeleteSeal(id){const seal=taoFind(id);if(!seal||!confirm(`¿Volver a clasificar “${seal.name}”?`))return;taoData.seals=taoData.seals.filter(item=>String(item.id)!==String(id));taoSelectedId='';taoPersist();taoRender()}
+    function taoRender(){taoRenderHero();taoRenderFilters();document.querySelectorAll('[data-view]').forEach(button=>button.classList.toggle('active',button.dataset.view===taoView));if(taoView==='combine')taoRenderCombine();else if(taoView==='dossier')taoRenderDossier();else taoRenderArchive();taoUpdateState()}[taoSearch,taoTypeFilter].forEach(control=>control.addEventListener(control===taoSearch?'input':'change',taoRender));document.querySelectorAll('[data-view]').forEach(button=>button.onclick=()=>{taoView=button.dataset.view;taoRender()});document.querySelectorAll('[data-close]').forEach(button=>button.onclick=()=>document.getElementById(button.dataset.close).close());document.getElementById('newBtn').onclick=()=>taoOpenEditor();document.getElementById('backupBtn').onclick=()=>{const blob=new Blob([JSON.stringify(taoData,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=`sellos-tao-${new Date().toISOString().slice(0,10)}.json`;link.click();URL.revokeObjectURL(url)};document.getElementById('saveCodeBtn').onclick=async()=>{const code=`/*\n * SELLOS DE TAO — ARCHIVO DE DATOS\n * Fuente definitiva del expediente. Cada sello ocupa una ranura del 1 al 15.\n */\nwindow.TAO_SEALS_DATA = ${JSON.stringify(taoData,null,2)};\n`;try{if('showOpenFilePicker'in window){const[handle]=await window.showOpenFilePicker({multiple:false,types:[{description:'Datos JavaScript de Sellos de Tao',accept:{'text/javascript':['.js']}}]});if(handle.name!=='sellos-tao-datos.js'&&!confirm(`Has elegido “${handle.name}”. ¿Quieres sobrescribirlo?`))return;const writable=await handle.createWritable();await writable.write(code);await writable.close();taoMarkSaved();alert('Sellos de Tao guardados en el código.');return}const blob=new Blob([code],{type:'text/javascript'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='sellos-tao-datos.js';link.click();URL.revokeObjectURL(url);alert('Se ha descargado sellos-tao-datos.js. Sustituye el archivo anterior en la carpeta principal.')}catch(error){if(error?.name!=='AbortError')alert('No se ha podido guardar. Descarga una copia JSON como respaldo.')}};taoRender();
+  </script>
 </body>
 </html>
