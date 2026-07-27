@@ -666,6 +666,21 @@ const characters = [
             }
         ]
     },
+    {
+        character: "Thalia Kane",
+        characterFace: "img/Thalia.jpg",
+        lore: "La salvación del Planeta Tierra. Recorre el espacio y tiempo para que todos prosperen hacia un futuro en paz.",
+        tracks: [
+            {
+                songTitle: "Flower Girl",
+                songDescription: "El uso del poder todos aquellos que han perecido en batalla. Usará toda esa rabia para vengar a cada caído.",
+                songCover: "img/ThaliaCover.png",
+                audio: "audio/Flower Girl.mp3",
+                tags: ["Battle", "Epic", "Emotional"],
+                lore: "La epicidad de la canción entra acorde al poder de la chica. Si le brilla el pelo, huye."
+            }
+        ]
+    },
 ];
 
 const soundtracks = characters.flatMap((char, characterIndex) =>
