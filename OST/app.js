@@ -23,7 +23,18 @@
   ];
 
   const $ = selector => document.querySelector(selector);
-  const audio = new Audio();
+  const sharedShell = (() => {
+    try { return window.parent !== window ? window.parent.ResonanceShell || null : null; }
+    catch (error) { return null; }
+  })();
+  const audio = sharedShell?.audio || new Audio();
+  if (sharedShell) {
+    const sharedState = sharedShell.getState();
+    state.current = sharedState.current;
+    state.playing = sharedState.playing;
+    state.shuffle = sharedState.shuffle;
+    state.volume = sharedState.volume;
+  }
   audio.preload = 'metadata';
   audio.volume = state.volume;
   let lastFocus = null;
@@ -127,6 +138,13 @@
   function loadTrack(index, autoplay = true) {
     const track = soundtracks[index];
     if (!track) return;
+    if (sharedShell) {
+      state.current = index;
+      localStorage.setItem('resonanceTrack', String(index));
+      sharedShell.setTrack(index, autoplay);
+      render();
+      return;
+    }
     const changed = state.current !== index || !audio.src;
     state.current = index;
     localStorage.setItem('resonanceTrack', String(index));
@@ -137,6 +155,11 @@
   }
 
   async function togglePlayback(forcePlay = false) {
+    if (sharedShell) {
+      if (forcePlay) await sharedShell.play();
+      else sharedShell.toggle();
+      return;
+    }
     if (!audio.src) audio.src = soundtracks[state.current].audio;
     if (state.playing && !forcePlay) audio.pause();
     else {
@@ -148,7 +171,7 @@
 
   function renderPlayer() {
     const track = soundtracks[state.current];
-    nodes.player.hidden = !audio.src;
+    nodes.player.hidden = sharedShell ? true : !audio.src;
     nodes.playerCover.src = track.songCover;
     nodes.playerCover.alt = `Portada de ${track.songTitle}`;
     nodes.playerTitle.textContent = track.songTitle;
@@ -186,6 +209,7 @@
   function toggleShuffle() {
     state.shuffle = !state.shuffle;
     localStorage.setItem('resonanceShuffle', JSON.stringify(state.shuffle));
+    if (sharedShell) sharedShell.setShuffle(state.shuffle);
     renderPlayer();
   }
 
@@ -283,12 +307,12 @@
 
   audio.addEventListener('play', () => { state.playing = true; render(); });
   audio.addEventListener('pause', () => { state.playing = false; render(); });
-  audio.addEventListener('ended', () => nextTrack(1));
+  if (!sharedShell) audio.addEventListener('ended', () => nextTrack(1));
   audio.addEventListener('loadedmetadata', () => { nodes.duration.textContent = formatTime(audio.duration); });
   audio.addEventListener('timeupdate', () => { const percent = audio.duration ? audio.currentTime / audio.duration * 100 : 0; nodes.currentTime.textContent = formatTime(audio.currentTime); nodes.progress.value = percent; nodes.progress.style.setProperty('--fill', `${percent}%`); });
   document.addEventListener('keydown', event => { if (event.key === 'Escape') { closeModal(); nodes.queue.classList.remove('open'); } if (event.code === 'Space' && !['INPUT','BUTTON'].includes(document.activeElement.tagName)) { event.preventDefault(); togglePlayback(); } });
 
-  if ('mediaSession' in navigator) {
+  if (!sharedShell && 'mediaSession' in navigator) {
     navigator.mediaSession.setActionHandler('play', () => togglePlayback(true));
     navigator.mediaSession.setActionHandler('pause', () => togglePlayback());
     navigator.mediaSession.setActionHandler('previoustrack', () => nextTrack(-1));
@@ -305,5 +329,12 @@
   });
   $('#chooseNewDesign').focus();
 
+  if (sharedShell) sharedShell.subscribe(sharedState => {
+    state.current = sharedState.current;
+    state.playing = sharedState.playing;
+    state.shuffle = sharedState.shuffle;
+    state.volume = sharedState.volume;
+    render();
+  });
   render();
 })();
