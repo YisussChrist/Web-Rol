@@ -705,6 +705,29 @@ const characters = [
             }
         ]
     },
+    {
+        character: "Kaedehara Kazuha",
+        characterFace: "img/Kaedehara.jpg",
+        lore: "Un samurái ágil y astuto capaz de cortar el viento. No te sorprendas si te queman sus golpes (literalmente).",
+        tracks: [
+            {
+                songTitle: "Kindled Heart",
+                songDescription: "¿Notas como se caldea el ambiente? Si Kaedehara pelea, es para darlo todo.",
+                songCover: "img/KaedeharaCover.png",
+                audio: "audio/Kindled Heart.mp3",
+                tags: ["battle", "epic"],
+                lore: "Si tú luchas por tus bienes, él también luchará por los tuyos."
+            },
+            {
+                songTitle: "Sunshine",
+                songDescription: "¿Que tú eres más fuerte que yo? ¿Y eso quién lo decidió?",
+                songCover: "img/KaedeharaCover2.png",
+                audio: "audio/Sunshine.mp3",
+                tags: ["battle", "bossbattle", "epic"],
+                lore: "Es el poder de aquel que arde con la soberbia de su fuerza. Siempre va a considerarte débil, porque solo el fuerte prevalece."
+            }
+        ]
+    },
 ];
 
 const soundtracks = characters.flatMap((char, characterIndex) =>
