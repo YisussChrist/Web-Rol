@@ -81,6 +81,14 @@ const characters = [
                 audio: "audio/The Elder Hammer Of Justice.mp3",
                 tags: ["Serious Battle", "Epic", "Heroic"],
                 lore: "Cuando los héroes de hoy en día no son suficiente, las viejas glorias tienen que empuñar una última vez su martillo"
+            },
+            {
+            songTitle: "Another Tale",
+            songDescription: "Cuando Gerson cuenta una historia, el mundo calla. Déjate llevar por el maravilloso universo de la literatura!",
+            songCover: "img/GersonCover2.png",
+            audio: "audio/Another Tale.mp3",
+            tags: ["Chill", "Ambiental", "calm"],
+            lore: "Érase una vez, Gerson, un poderoso héroe conocido como el Señor del Martillo yacía tumbado en una pradera. 'Otra vez la misma historia? Cuenta otra distinta papá!'"
             }
         ]
     },
@@ -226,6 +234,14 @@ const characters = [
                 audio: "audio/Circus March.mp3",
                 tags: ["NormalBattle", "Circus"],
                 lore: "¡Miss Magilou siempre se ha dedicado a su público encantador! ¡Y prácticamente sin sangre, sudor, ni lágrimas! (creo)"
+            },
+            {
+                songTitle: "Little Sorceress",
+                songDescription: "¡La banda sonora que acompaña a Miss Magilou, la brujita que todos los niños adoran!",
+                songCover: "img/MagilouCover2.png",
+                audio: "audio/Little Sorceress.mp3",
+                tags: ["Circus", "Fun", "Chill", "calm"],
+                lore: "¡Cuando Magilou entra en escena el viento rezuma diversión a raudales!"
             }
         ]
     },
@@ -602,6 +618,14 @@ const characters = [
                 audio: "audio/Shout your soul.mp3",
                 tags: ["Battle", "Epic"],
                 lore: "El valor nunca se puede poner en entredicho, menos a una guerrera que disputa sus peores batallas en su propia piel"
+            },
+            {
+                songTitle: "Red Velvet",
+                songDescription: "La melancólica y motivadora melodía de Velvet, quien a pesar de todo lo sufrido, luchará por lo que es justo.",
+                songCover: "img/VelvetCover2.png",
+                audio: "audio/Red Velvet.mp3",
+                tags: ["Melancholic", "Inspirational", "calm", "Chill"],
+                lore: "Velvet agradece día a día poder seguir siendo consciente del siguiente amanecer, y su corazón seguirá luchando para que esa sensación sea eterna."
             }
         ]
     },
