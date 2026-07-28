@@ -1,39 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Equipos Pokémon | RP Hub</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Registro de entrenadores, equipos y progreso de la Liga de Etruria.">
+  <title>Registro de Entrenadores | Liga de Etruria</title>
   <style>
     :root {
-      --bg: #101827;
-      --bg-soft: #17233a;
-      --card: rgba(255, 255, 255, 0.9);
-      --text: #152033;
-      --muted: #64748b;
-      --yellow: #ffcb05;
-      --blue: #2a75bb;
-      --red: #ef4444;
-      --green: #22c55e;
-      --border: rgba(255, 255, 255, 0.25);
-      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
-      --radius: 26px;
+      color-scheme: dark;
+      --ink: #f7f8ff;
+      --muted: #aab6cc;
+      --dim: #73829c;
+      --line: rgba(189, 214, 255, .16);
+      --panel: rgba(11, 22, 41, .88);
+      --panel-strong: #101e36;
+      --blue: #4ea7ff;
+      --blue-dark: #1660a8;
+      --yellow: #ffd44f;
+      --red: #ff5c67;
+      --green: #67e29b;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .34);
+      --radius: 28px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
+      margin: 0;
+      min-width: 300px;
       min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(255, 203, 5, 0.22), transparent 28%),
-        radial-gradient(circle at top right, rgba(42, 117, 187, 0.35), transparent 30%),
-        linear-gradient(135deg, #07111f 0%, #14213d 45%, #0f172a 100%);
-      color: white;
+        radial-gradient(circle at 10% 0, rgba(46, 125, 210, .30), transparent 32rem),
+        radial-gradient(circle at 92% 20%, rgba(255, 212, 79, .11), transparent 25rem),
+        linear-gradient(145deg, #07101e, #0a1629 46%, #081321);
       overflow-x: hidden;
     }
 
@@ -41,800 +42,789 @@
       content: "";
       position: fixed;
       inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-      background-size: 34px 34px;
-      mask-image: linear-gradient(to bottom, black, transparent 85%);
       pointer-events: none;
+      opacity: .28;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: linear-gradient(to bottom, #000 10%, transparent 85%);
     }
 
-    .page {
-      width: min(1220px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 34px 0 60px;
+    button, input, select { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(255, 212, 79, .75);
+      outline-offset: 3px;
+    }
+
+    .page-shell {
       position: relative;
       z-index: 1;
+      width: min(1380px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 22px 0 70px;
     }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+      padding: 11px 14px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(7, 16, 30, .76);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 14px 36px rgba(0,0,0,.18);
+    }
+
+    .brand, .nav-links { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      color: #07101e;
+      font-size: 1.25rem;
+      font-weight: 1000;
+      background: linear-gradient(145deg, var(--yellow), #ff9d45);
+      box-shadow: inset 0 -4px 0 rgba(0,0,0,.12);
+    }
+    .brand-copy strong, .brand-copy small { display: block; }
+    .brand-copy strong { font-size: .96rem; }
+    .brand-copy small { margin-top: 2px; color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .09em; }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 42px;
+      padding: 0 15px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: .87rem;
+      font-weight: 850;
+      background: rgba(255,255,255,.055);
+      transition: border-color .2s ease, background .2s ease, transform .2s ease;
+    }
+    .nav-link:hover { transform: translateY(-2px); border-color: rgba(78,167,255,.5); background: rgba(78,167,255,.12); }
 
     .hero {
       position: relative;
+      isolation: isolate;
       overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 34px;
-      padding: 34px;
+      min-height: 420px;
+      padding: clamp(28px, 5vw, 64px);
+      border: 1px solid rgba(133, 190, 255, .26);
+      border-radius: 38px;
       background:
-        linear-gradient(135deg, rgba(42, 117, 187, 0.94), rgba(11, 25, 48, 0.96)),
-        url("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png");
+        linear-gradient(108deg, rgba(8, 24, 46, .97) 0 48%, rgba(12, 44, 78, .82) 72%, rgba(28, 78, 119, .7)),
+        radial-gradient(circle at 86% 52%, rgba(255,212,79,.28), transparent 26rem);
       box-shadow: var(--shadow);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 470px;
+      aspect-ratio: 1;
+      right: -54px;
+      top: -20px;
+      border: 38px solid rgba(255,255,255,.08);
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 16px rgba(255,212,79,.08), 0 0 0 70px rgba(78,167,255,.035);
     }
 
     .hero::after {
       content: "";
       position: absolute;
-      width: 360px;
-      height: 360px;
-      right: -110px;
-      top: -90px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle, transparent 0 34%, #111827 35% 38%, transparent 39%),
-        linear-gradient(to bottom, #ef4444 0 48%, #111827 49% 53%, #f8fafc 54% 100%);
-      opacity: 0.22;
-      transform: rotate(-15deg);
+      z-index: -1;
+      width: 620px;
+      height: 62px;
+      right: -100px;
+      top: 183px;
+      transform: rotate(-9deg);
+      background: rgba(255,255,255,.07);
+      box-shadow: 0 9px 0 rgba(255,212,79,.12);
     }
 
-    .eyebrow {
-      width: fit-content;
+    .league-label {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 14px;
+      width: fit-content;
+      padding: 8px 13px;
+      border: 1px solid rgba(255,212,79,.32);
       border-radius: 999px;
-      color: #111827;
-      font-weight: 900;
-      background: var(--yellow);
-      box-shadow: 0 8px 0 rgba(0,0,0,0.18);
-      text-transform: uppercase;
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-    }
-
-    h1 {
-      margin-top: 22px;
-      font-size: clamp(2.4rem, 7vw, 5.8rem);
-      line-height: 0.92;
-      letter-spacing: -0.08em;
-      text-transform: uppercase;
-      text-shadow: 0 6px 0 rgba(0,0,0,0.18);
-    }
-
-    .hero p {
-      max-width: 720px;
-      margin-top: 18px;
-      color: rgba(255,255,255,0.82);
-      font-size: 1.05rem;
-      line-height: 1.6;
-    }
-
-    .controls {
-      margin-top: 24px;
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 12px;
-    }
-
-    .search, .select {
-      border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 18px;
-      padding: 14px 16px;
-      background: rgba(255,255,255,0.12);
-      color: white;
-      outline: none;
-      font: inherit;
-      backdrop-filter: blur(10px);
-    }
-
-    .search::placeholder {
-      color: rgba(255,255,255,0.65);
-    }
-
-    .select option {
-      color: #111827;
-    }
-
-    .stats-bar {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin: 22px 0 28px;
-    }
-
-    .stat {
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 18px;
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.16);
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 1.7rem;
       color: var(--yellow);
-    }
-
-    .stat span {
-      color: rgba(255,255,255,0.75);
-      font-size: 0.92rem;
-    }
-
-    .teams-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-      gap: 22px;
-    }
-
-    .team-card {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--radius);
-      background: var(--card);
-      color: var(--text);
-      box-shadow: var(--shadow);
-      border: 4px solid rgba(255,255,255,0.8);
-      transition: transform .25s ease, box-shadow .25s ease;
-    }
-
-    .team-card:hover {
-      transform: translateY(-7px);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
-    }
-
-    .team-top {
-      position: relative;
-      padding: 22px;
-      background:
-        linear-gradient(135deg, var(--team-a), var(--team-b)),
-        linear-gradient(45deg, rgba(255,255,255,0.18), transparent);
-      color: white;
-      overflow: hidden;
-    }
-
-    .team-top::after {
-      content: "";
-      position: absolute;
-      width: 150px;
-      height: 150px;
-      right: -32px;
-      bottom: -54px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle, transparent 0 34%, rgba(255,255,255,0.85) 35% 38%, transparent 39%),
-        linear-gradient(to bottom, rgba(255,255,255,0.38) 0 48%, rgba(255,255,255,0.85) 49% 53%, rgba(255,255,255,0.26) 54% 100%);
-      opacity: .5;
-    }
-
-    .trainer-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .trainer-info h2 {
-      font-size: 1.7rem;
-      letter-spacing: -0.04em;
-    }
-
-    .trainer-info p {
-      margin-top: 5px;
-      color: rgba(255,255,255,0.8);
-    }
-
-    .badge {
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.25);
-      font-weight: 800;
-      font-size: 0.8rem;
-      white-space: nowrap;
-    }
-
-    .team-note {
-      margin-top: 18px;
-      line-height: 1.5;
-      color: rgba(255,255,255,0.86);
-    }
-
-    .pokemon-list {
-      padding: 18px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      background:
-        radial-gradient(circle at 20% 15%, rgba(42,117,187,0.08), transparent 30%),
-        #f8fafc;
-    }
-
-    .pokemon-card {
-      min-height: 142px;
-      position: relative;
-      overflow: hidden;
-      border-radius: 20px;
-      padding: 12px;
-      padding-right: 104px;
-      background: white;
-      border: 1px solid rgba(15,23,42,0.08);
-      box-shadow: 0 10px 22px rgba(15,23,42,0.08);
-    }
-
-    .pokemon-card::before {
-      content: "";
-      position: absolute;
-      width: 88px;
-      height: 88px;
-      right: -26px;
-      top: -24px;
-      border-radius: 50%;
-      background: rgba(42,117,187,0.08);
-    }
-
-    .pokemon-card img {
-      position: absolute;
-      right: 4px;
-      bottom: 2px;
-      width: 98px;
-      height: 98px;
-      object-fit: contain;
-      filter: drop-shadow(0 8px 8px rgba(0,0,0,0.16));
-      transition: transform .25s ease;
-    }
-
-    .pokemon-card:hover img {
-      transform: scale(1.12) rotate(2deg);
-    }
-
-    .dex {
-      display: inline-block;
-      font-size: 0.73rem;
-      font-weight: 900;
-      color: var(--muted);
-      letter-spacing: .06em;
-    }
-
-    .pokemon-card h3 {
-      margin-top: 4px;
-      text-transform: capitalize;
-      font-size: 1.05rem;
-      letter-spacing: -0.03em;
-      max-width: 100%;
-      position: relative;
-      z-index: 1;
-    }
-
-    .type-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-top: 8px;
-      position: relative;
-      z-index: 2;
-      max-width: 100%;
-    }
-
-    .type {
-      padding: 4px 7px;
-      border-radius: 999px;
-      color: white;
-      font-size: 0.68rem;
-      font-weight: 900;
+      background: rgba(255,212,79,.08);
+      font-size: .75rem;
+      font-weight: 950;
+      letter-spacing: .12em;
       text-transform: uppercase;
-      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.18);
     }
 
-    .team-footer {
-      display: flex;
+    .league-label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 16px var(--yellow); }
+    h1 { max-width: 820px; margin: 20px 0 0; font-size: clamp(3rem, 7vw, 6.4rem); line-height: .9; letter-spacing: -.075em; text-transform: uppercase; }
+    h1 span { display: block; color: var(--blue); }
+    .hero-copy { max-width: 700px; margin: 22px 0 0; color: #c5d4ea; font-size: clamp(1rem, 1.5vw, 1.18rem); line-height: 1.65; }
+
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .primary-action, .secondary-action {
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 16px 18px 18px;
-      background: #ffffff;
-      border-top: 1px solid rgba(15,23,42,0.08);
-    }
-
-    .footer-label {
-      color: var(--muted);
-      font-size: 0.85rem;
-      font-weight: 700;
-    }
-
-    .copy-btn {
-      border: none;
-      border-radius: 14px;
-      padding: 10px 14px;
-      background: #111827;
-      color: white;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 15px;
       font-weight: 900;
+      text-decoration: none;
       cursor: pointer;
-      transition: transform .2s ease, background .2s ease;
+    }
+    .primary-action { color: #07101e; background: linear-gradient(135deg, var(--yellow), #ffad4e); box-shadow: 0 10px 24px rgba(255,174,78,.2); }
+    .secondary-action { color: var(--ink); border: 1px solid var(--line); background: rgba(255,255,255,.07); }
+
+    .hero-id {
+      position: absolute;
+      right: clamp(28px, 5vw, 64px);
+      bottom: clamp(28px, 5vw, 60px);
+      display: grid;
+      grid-template-columns: repeat(2, 96px);
+      gap: 10px;
+      width: fit-content;
+    }
+    .hero-id div { padding: 15px; border: 1px solid var(--line); border-radius: 18px; background: rgba(3,13,26,.58); backdrop-filter: blur(12px); }
+    .hero-id strong, .hero-id span { display: block; }
+    .hero-id strong { color: var(--yellow); font-size: 1.45rem; }
+    .hero-id span { margin-top: 2px; color: var(--muted); font-size: .7rem; font-weight: 800; text-transform: uppercase; }
+
+    .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; }
+    .stat-card { position: relative; overflow: hidden; padding: 20px; border: 1px solid var(--line); border-radius: 22px; background: rgba(13,27,49,.78); }
+    .stat-card::after { content: attr(data-icon); position: absolute; right: 13px; bottom: -12px; font-size: 3.8rem; opacity: .09; }
+    .stat-card strong, .stat-card span { display: block; }
+    .stat-card strong { font-size: 1.8rem; letter-spacing: -.04em; }
+    .stat-card span { margin-top: 4px; color: var(--muted); font-size: .82rem; font-weight: 750; }
+
+    .workspace {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(8, 19, 35, .72);
+      box-shadow: 0 18px 50px rgba(0,0,0,.18);
     }
 
-    .copy-btn:hover {
-      transform: translateY(-2px);
-      background: var(--blue);
-    }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+    .section-heading h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.35rem); letter-spacing: -.045em; }
+    .section-heading p { margin: 5px 0 0; color: var(--muted); }
+    .result-count { flex: 0 0 auto; padding: 8px 12px; border-radius: 999px; color: #d9e8ff; background: rgba(78,167,255,.12); font-size: .78rem; font-weight: 850; }
 
-    .empty {
-      display: none;
-      text-align: center;
-      padding: 40px 20px;
-      color: rgba(255,255,255,0.74);
-      border: 1px dashed rgba(255,255,255,0.24);
-      border-radius: 24px;
-      background: rgba(255,255,255,0.08);
+    .filters { display: grid; grid-template-columns: minmax(240px, 1fr) repeat(2, minmax(155px, .32fr)); gap: 10px; margin-bottom: 18px; }
+    .field { position: relative; }
+    .field > span { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .control {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      color: var(--ink);
+      background: #0c1b31;
+      outline: none;
     }
+    input.control { padding: 0 15px 0 43px; }
+    select.control { padding: 0 38px 0 14px; cursor: pointer; }
+    .control::placeholder { color: #8290a8; }
+    .control:hover, .control:focus { border-color: rgba(78,167,255,.55); }
 
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 22px;
-      transform: translateX(-50%) translateY(120px);
-      padding: 12px 18px;
-      border-radius: 999px;
-      background: #111827;
-      color: white;
-      font-weight: 800;
-      box-shadow: var(--shadow);
-      transition: transform .3s ease;
-      z-index: 10;
+    .trainer-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .trainer-card {
+      --trainer-a: #2a75bb;
+      --trainer-b: #174b7d;
+      position: relative;
+      overflow: hidden;
+      min-width: 0;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 25px;
+      color: var(--ink);
+      background: linear-gradient(155deg, rgba(18,34,59,.98), rgba(9,20,37,.98));
+      box-shadow: 0 18px 36px rgba(0,0,0,.18);
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
     }
+    .trainer-card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--trainer-a) 70%, white 20%); box-shadow: 0 22px 50px rgba(0,0,0,.3); }
+    .trainer-stripe { height: 6px; background: linear-gradient(90deg, var(--trainer-a), var(--trainer-b)); }
+    .trainer-main { padding: 20px; }
+    .trainer-header { display: grid; grid-template-columns: 56px minmax(0,1fr) auto; align-items: center; gap: 13px; }
+    .trainer-avatar { position: relative; display: grid; place-items: center; width: 56px; height: 56px; overflow: hidden; border: 2px solid rgba(255,255,255,.6); border-radius: 18px; color: white; background: linear-gradient(145deg, var(--trainer-a), var(--trainer-b)); font-size: 1.05rem; font-weight: 1000; box-shadow: inset 0 -5px 0 rgba(0,0,0,.15); }
+    .trainer-avatar::after { content: ""; position: absolute; width: 50px; height: 6px; background: rgba(255,255,255,.25); transform: rotate(-35deg); }
+    .trainer-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .trainer-avatar span { position: relative; z-index: 1; }
+    .trainer-identity { min-width: 0; }
+    .trainer-identity h3 { overflow: hidden; margin: 0; font-size: 1.18rem; letter-spacing: -.02em; text-overflow: ellipsis; white-space: nowrap; }
+    .trainer-identity p { overflow: hidden; margin: 4px 0 0; color: var(--muted); font-size: .82rem; text-overflow: ellipsis; white-space: nowrap; }
+    .status-pill { padding: 7px 10px; border: 1px solid rgba(103,226,155,.22); border-radius: 999px; color: var(--green); background: rgba(103,226,155,.08); font-size: .7rem; font-weight: 900; }
+    .trainer-summary { min-height: 47px; margin: 16px 0; color: #c0cbdd; font-size: .84rem; line-height: 1.5; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+    .meta-pill { padding: 6px 9px; border: 1px solid var(--line); border-radius: 9px; color: #c8d6e9; background: rgba(255,255,255,.035); font-size: .69rem; font-weight: 800; }
 
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
+    .team-preview { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; }
+    .poke-slot { position: relative; display: grid; place-items: center; min-width: 0; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.045); }
+    .poke-slot img { display: block; width: 88%; height: 88%; min-width: 0; min-height: 0; max-width: 88%; max-height: 88%; object-fit: contain; filter: drop-shadow(0 7px 6px rgba(0,0,0,.35)); }
+    .poke-slot.empty::before { content: "+"; color: rgba(255,255,255,.18); font-size: 1.45rem; font-weight: 400; }
+    .poke-slot[title] { cursor: help; }
+
+    .card-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .progress-copy { color: var(--muted); font-size: .72rem; font-weight: 750; }
+    .progress-copy strong { color: var(--ink); }
+    .open-profile { border: 0; border-radius: 12px; padding: 9px 12px; color: #06101e; background: linear-gradient(135deg, var(--yellow), #ffad4e); font-size: .76rem; font-weight: 950; cursor: pointer; }
+
+    .empty-state { display: none; padding: 52px 20px; border: 1px dashed var(--line); border-radius: 22px; color: var(--muted); text-align: center; }
+    .empty-state strong { display: block; margin-bottom: 6px; color: var(--ink); font-size: 1.15rem; }
+
+    .code-guide { margin-top: 18px; border: 1px solid var(--line); border-radius: 24px; background: rgba(10,22,40,.78); }
+    .code-guide summary { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 20px; list-style: none; cursor: pointer; font-weight: 900; }
+    .code-guide summary::-webkit-details-marker { display: none; }
+    .code-guide summary span { color: var(--yellow); }
+    .guide-body { padding: 0 20px 20px; border-top: 1px solid var(--line); }
+    .guide-body p { color: var(--muted); line-height: 1.55; }
+    .guide-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+    .guide-step { padding: 15px; border: 1px solid var(--line); border-radius: 15px; background: rgba(255,255,255,.035); }
+    .guide-step strong { display: block; margin-bottom: 5px; color: var(--yellow); }
+    .code-template { position: relative; overflow: auto; max-height: 320px; padding: 17px; border: 1px solid var(--line); border-radius: 16px; color: #d5e5f8; background: #060d18; font: .78rem/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre; }
+    .copy-template { margin-top: 10px; border: 1px solid var(--line); border-radius: 12px; padding: 10px 13px; color: var(--ink); background: rgba(78,167,255,.12); font-weight: 850; cursor: pointer; }
+
+    dialog {
+      width: min(1050px, calc(100% - 28px));
+      max-height: calc(100vh - 28px);
+      padding: 0;
+      border: 1px solid rgba(156,197,255,.22);
+      border-radius: 30px;
+      color: var(--ink);
+      background: #0a1729;
+      box-shadow: 0 35px 100px rgba(0,0,0,.68);
     }
+    dialog::backdrop { background: rgba(1,6,14,.78); backdrop-filter: blur(10px); }
+    .profile-shell { --trainer-a: #2a75bb; --trainer-b: #174b7d; }
+    .profile-hero { position: relative; overflow: hidden; padding: 26px; background: linear-gradient(125deg, var(--trainer-a), var(--trainer-b)); }
+    .profile-hero::after { content: ""; position: absolute; width: 250px; aspect-ratio: 1; right: -45px; top: -70px; border: 22px solid rgba(255,255,255,.12); border-radius: 50%; }
+    .profile-top { position: relative; z-index: 1; display: grid; grid-template-columns: 72px 1fr auto; align-items: center; gap: 16px; }
+    .profile-avatar { display: grid; place-items: center; width: 72px; height: 72px; overflow: hidden; border: 3px solid rgba(255,255,255,.75); border-radius: 22px; background: rgba(5,15,28,.24); font-size: 1.35rem; font-weight: 1000; }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-title h2 { margin: 0; font-size: clamp(1.65rem, 4vw, 2.8rem); letter-spacing: -.05em; }
+    .profile-title p { margin: 5px 0 0; color: rgba(255,255,255,.78); }
+    .close-profile { position: relative; z-index: 2; width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.28); border-radius: 13px; color: white; background: rgba(0,0,0,.2); font-size: 1.25rem; cursor: pointer; }
+    .profile-body { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(260px,.75fr); gap: 16px; padding: 20px; }
+    .profile-main, .profile-side { display: grid; align-content: start; gap: 14px; }
+    .dossier-section { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,.035); }
+    .dossier-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 13px; }
+    .dossier-heading h3 { margin: 0; font-size: 1rem; }
+    .dossier-heading span { color: var(--muted); font-size: .72rem; font-weight: 750; }
+    .current-team { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+    .pokemon-entry { display: flex; flex-direction: column; min-width: 0; min-height: 188px; overflow: hidden; padding: 10px; border: 1px solid var(--line); border-radius: 15px; background: rgba(0,0,0,.15); }
+    .pokemon-art { display: flex; flex: 0 0 112px; align-items: center; justify-content: center; width: 100%; height: 112px; min-width: 0; min-height: 0; overflow: hidden; border-radius: 12px; background: radial-gradient(circle, rgba(78,167,255,.14), transparent 68%); }
+    .pokemon-art img { display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; max-width: 126px; max-height: 108px; object-fit: contain; filter: drop-shadow(0 8px 7px rgba(0,0,0,.35)); }
+    .pokemon-info { position: relative; z-index: 2; min-width: 0; margin-top: auto; padding-top: 8px; background: linear-gradient(to bottom, transparent, rgba(8,18,33,.5) 22%); }
+    .pokemon-entry strong { display: block; overflow: hidden; margin: 0; font-size: .84rem; line-height: 1.25; text-overflow: ellipsis; text-transform: capitalize; white-space: nowrap; }
+    .type-row { display: flex; position: relative; z-index: 2; flex-wrap: wrap; align-items: flex-start; gap: 4px; min-height: 22px; margin-top: 7px; }
+    .type-pill { display: inline-flex; align-items: center; min-height: 19px; padding: 3px 7px; border-radius: 6px; color: #fff; font-size: .58rem; line-height: 1; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,.45); text-transform: uppercase; }
+    .badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .league-badge { display: flex; min-width: 0; min-height: 155px; flex-direction: column; align-items: center; padding: 10px; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; text-align: center; background: rgba(255,255,255,.035); }
+    .badge-visual { display: grid; place-items: center; width: 70px; height: 70px; min-height: 70px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; background: radial-gradient(circle, rgba(255,212,79,.16), transparent 68%); }
+    .badge-visual img { display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; max-width: 62px; max-height: 62px; object-fit: contain; filter: drop-shadow(0 7px 6px rgba(0,0,0,.35)); }
+    .league-badge .badge-icon { font-size: 1.75rem; }
+    .league-badge strong { display: block; margin-top: 8px; font-size: .72rem; line-height: 1.25; }
+    .league-badge small { display: block; margin-top: 3px; color: var(--muted); font-size: .6rem; line-height: 1.3; }
+    .league-badge time { display: block; margin-top: 4px; color: var(--yellow); font-size: .58rem; font-weight: 850; }
+    .badge-note { display: -webkit-box; overflow: hidden; margin: 7px 0 0; color: #bdc9dc; font-size: .62rem; line-height: 1.4; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+    .blank-block { padding: 15px; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); background: rgba(0,0,0,.1); font-size: .8rem; line-height: 1.45; }
+    .info-list { display: grid; gap: 8px; }
+    .info-item { padding: 11px 12px; border: 1px solid var(--line); border-radius: 13px; background: rgba(0,0,0,.11); }
+    .info-item small, .info-item strong { display: block; }
+    .info-item small { color: var(--muted); font-size: .64rem; font-weight: 850; text-transform: uppercase; letter-spacing: .07em; }
+    .info-item strong { margin-top: 4px; font-size: .82rem; line-height: 1.4; }
+    .achievement-list { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+    .achievement-list li { padding: 10px 11px; border-left: 3px solid var(--yellow); border-radius: 0 10px 10px 0; color: #d6dfec; background: rgba(255,212,79,.06); font-size: .78rem; }
+    .profile-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .profile-action { flex: 1 1 auto; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: rgba(78,167,255,.1); text-align: center; text-decoration: none; font-size: .74rem; font-weight: 850; cursor: pointer; }
 
+    .toast { position: fixed; z-index: 100; left: 50%; bottom: 24px; transform: translate(-50%, 18px); padding: 11px 16px; border: 1px solid rgba(255,255,255,.2); border-radius: 13px; color: #07101e; background: var(--yellow); box-shadow: 0 16px 35px rgba(0,0,0,.35); font-size: .82rem; font-weight: 900; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 980px) {
+      .hero-id { position: static; grid-template-columns: repeat(4, 1fr); margin-top: 30px; }
+      .hero-id div { min-width: 0; }
+      .profile-body { grid-template-columns: 1fr; }
+    }
     @media (max-width: 780px) {
-      .hero {
-        padding: 24px;
-      }
-
-      .controls,
-      .stats-bar {
-        grid-template-columns: 1fr;
-      }
-
-      .pokemon-list {
-        grid-template-columns: 1fr;
-      }
+      .topbar { align-items: flex-start; }
+      .nav-links { flex-wrap: wrap; justify-content: flex-end; }
+      .brand-copy { display: none; }
+      .nav-link { padding: 0 11px; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .filters { grid-template-columns: 1fr; }
+      .trainer-grid { grid-template-columns: 1fr; }
+      .guide-steps { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .page-shell { width: min(100% - 18px, 1380px); padding-top: 9px; }
+      .topbar { padding: 9px; border-radius: 17px; }
+      .brand-mark { width: 38px; height: 38px; border-radius: 12px; }
+      .nav-link { min-height: 38px; font-size: 0; }
+      .nav-link span { font-size: 1rem; }
+      .hero { min-height: auto; padding: 27px 21px; border-radius: 28px; }
+      h1 { font-size: clamp(2.55rem, 17vw, 4rem); }
+      .hero-copy { font-size: .92rem; }
+      .hero-id { grid-template-columns: repeat(2, 1fr); }
+      .stats-bar { gap: 8px; }
+      .stat-card { padding: 15px; }
+      .workspace { padding: 12px; border-radius: 21px; }
+      .section-heading { align-items: flex-start; }
+      .trainer-main { padding: 15px; }
+      .trainer-header { grid-template-columns: 50px minmax(0,1fr); }
+      .trainer-avatar { width: 50px; height: 50px; }
+      .status-pill { grid-column: 1 / -1; width: fit-content; }
+      .team-preview { gap: 4px; }
+      .poke-slot { border-radius: 10px; }
+      .profile-hero { padding: 18px; }
+      .profile-top { grid-template-columns: 56px 1fr auto; gap: 10px; }
+      .profile-avatar { width: 56px; height: 56px; border-radius: 17px; }
+      .profile-body { padding: 12px; }
+      .current-team { grid-template-columns: repeat(2, 1fr); }
+      .badge-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
     }
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="hero">
-      <span class="eyebrow">⚡ Nueva sección · Equipos Pokémon</span>
-      <h1>Equipos Pokémon</h1>
-      <p>
-        Archivo visual de entrenadores, equipos principales y estilos de combate del rol.
-        Las imágenes se cargan automáticamente usando arte oficial de PokéAPI, así que no hace falta llenar el repositorio de sprites.
-      </p>
+  <main class="page-shell">
+    <nav class="topbar" aria-label="Navegación Pokémon">
+      <div class="brand">
+        <div class="brand-mark">E</div>
+        <div class="brand-copy">
+          <strong>Liga de Etruria</strong>
+          <small>Archivo regional</small>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link" href="../hub.html"><span>⌂</span> Volver al HUB</a>
+        <a class="nav-link" href="mapa etruria.html"><span>🗺️</span> Mapa</a>
+        <a class="nav-link" href="datos.html"><span>📊</span> Datos Pokémon</a>
+      </div>
+    </nav>
 
-      <div class="controls">
-        <input id="searchInput" class="search" type="search" placeholder="Buscar entrenador, región o Pokémon..." />
-        <select id="regionFilter" class="select">
-          <option value="all">Todas las regiones</option>
-        </select>
-        <select id="styleFilter" class="select">
-          <option value="all">Todos los estilos</option>
-        </select>
+    <header class="hero">
+      <span class="league-label">Registro oficial · Temporada activa</span>
+      <h1>Archivo de <span>Entrenadores</span></h1>
+      <p class="hero-copy">Expedientes de la Liga, equipos actuales, medallas, reservas y progreso de cada entrenador reunidos en un único registro.</p>
+      <div class="hero-actions">
+        <a class="primary-action" href="#directorio">Consultar expedientes</a>
+        <a class="secondary-action" href="mapa etruria.html">Explorar Etruria</a>
+      </div>
+      <div class="hero-id" aria-label="Resumen del registro">
+        <div><strong id="heroTrainerCount">0</strong><span>Entrenadores</span></div>
+        <div><strong id="heroPokemonCount">0</strong><span>Compañeros</span></div>
+        <div><strong id="heroBadgeCount">0</strong><span>Medallas</span></div>
+        <div><strong id="heroRegionCount">0</strong><span>Regiones</span></div>
+      </div>
+    </header>
+
+    <section class="stats-bar" aria-label="Estadísticas del archivo">
+      <article class="stat-card" data-icon="🪪"><strong id="trainerCount">0</strong><span>Expedientes registrados</span></article>
+      <article class="stat-card" data-icon="⚔️"><strong id="completeCount">0</strong><span>Equipos completos</span></article>
+      <article class="stat-card" data-icon="🏅"><strong id="badgeCount">0</strong><span>Medallas documentadas</span></article>
+      <article class="stat-card" data-icon="📦"><strong id="reserveCount">0</strong><span>Pokémon en reserva</span></article>
+    </section>
+
+    <section class="workspace" id="directorio">
+      <div class="section-heading">
+        <div>
+          <h2>Directorio de la Liga</h2>
+          <p>Selecciona un entrenador para abrir su expediente completo.</p>
+        </div>
+        <span class="result-count" id="resultCount">0 resultados</span>
+      </div>
+
+      <div class="filters" aria-label="Filtros del directorio">
+        <label class="field">
+          <span aria-hidden="true">⌕</span>
+          <input class="control" id="searchInput" type="search" placeholder="Buscar entrenador, Pokémon, región..." autocomplete="off">
+        </label>
+        <label>
+          <select class="control" id="regionFilter" aria-label="Filtrar por región">
+            <option value="all">Todas las regiones</option>
+          </select>
+        </label>
+        <label>
+          <select class="control" id="progressFilter" aria-label="Filtrar por progreso">
+            <option value="all">Todo el progreso</option>
+            <option value="complete">Equipo completo</option>
+            <option value="incomplete">Equipo por completar</option>
+            <option value="badges">Con medallas</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="trainer-grid" id="trainerGrid"></div>
+      <div class="empty-state" id="emptyState">
+        <strong>No hay expedientes que coincidan.</strong>
+        Prueba con otra región, Pokémon o estado del equipo.
       </div>
     </section>
 
-    <section class="stats-bar">
-      <article class="stat">
-        <strong id="teamCount">0</strong>
-        <span>equipos registrados</span>
-      </article>
-      <article class="stat">
-        <strong id="pokemonCount">0</strong>
-        <span>Pokémon en archivo</span>
-      </article>
-      <article class="stat">
-        <strong id="regionCount">0</strong>
-        <span>regiones representadas</span>
-      </article>
-    </section>
-
-    <section id="teamsGrid" class="teams-grid"></section>
-    <section id="emptyState" class="empty">No hay equipos que coincidan con esa búsqueda. Hasta el Rotom Dex se ha quedado en blanco.</section>
+    <details class="code-guide">
+      <summary>✍️ Cómo añadir entrenadores y progreso <span>Ver guía</span></summary>
+      <div class="guide-body">
+        <p>Todo vive en <strong>entrenadores-datos.js</strong>. No hay base de datos ni información escondida en el navegador: editas ese archivo y el cambio será visible para todos cuando publiques la web.</p>
+        <div class="guide-steps">
+          <div class="guide-step"><strong>1 · Copia</strong>Duplica una ficha completa dentro de la lista.</div>
+          <div class="guide-step"><strong>2 · Edita</strong>Cambia sus datos y añade Pokémon o medallas.</div>
+          <div class="guide-step"><strong>3 · Publica</strong>Guarda el archivo y súbelo junto a la página.</div>
+        </div>
+        <pre class="code-template" id="codeTemplate">{
+  id: "nombre-entrenador",
+  name: "Nombre del entrenador",
+  title: "Título o rango",
+  region: "Etruria",
+  style: "Equilibrado",
+  status: "Activo",
+  location: "Lugar actual",
+  goal: "Objetivo actual",
+  colors: ["#2a75bb", "#174b7d"],
+  summary: "Descripción breve.",
+  team: [
+    { id: 25, name: "pikachu", types: ["electric"] }
+  ],
+  reserves: [],
+  badges: [
+    {
+      name: "Medalla Ígnea",
+      gym: "Gimnasio de tipo Fuego",
+      image: "Medallas/Medalla Ignea.png",
+      date: "12 de agosto",
+      note: "Conseguida tras derrotar al líder del gimnasio."
+    }
+  ],
+  achievements: [],
+  links: []
+}</pre>
+        <button class="copy-template" id="copyTemplate" type="button">Copiar plantilla</button>
+      </div>
+    </details>
   </main>
 
-  <div id="toast" class="toast">Equipo copiado al portapapeles</div>
+  <dialog id="profileDialog" aria-labelledby="profileName">
+    <div id="profileContent"></div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <script src="entrenadores-datos.js"></script>
   <script>
-    const TYPE_COLORS = {
-      normal: "#9ca3af",
-      fire: "#f97316",
-      water: "#0ea5e9",
-      electric: "#eab308",
-      grass: "#22c55e",
-      ice: "#67e8f9",
-      fighting: "#dc2626",
-      poison: "#a855f7",
-      ground: "#ca8a04",
-      flying: "#60a5fa",
-      psychic: "#ec4899",
-      bug: "#84cc16",
-      rock: "#78716c",
-      ghost: "#6366f1",
-      dragon: "#7c3aed",
-      dark: "#111827",
-      steel: "#64748b",
-      fairy: "#f472b6"
-    };
-
-    const TYPE_ES = {
-      normal: "Normal",
-      fire: "Fuego",
-      water: "Agua",
-      electric: "Eléctrico",
-      grass: "Planta",
-      ice: "Hielo",
-      fighting: "Lucha",
-      poison: "Veneno",
-      ground: "Tierra",
-      flying: "Volador",
-      psychic: "Psíquico",
-      bug: "Bicho",
-      rock: "Roca",
-      ghost: "Fantasma",
-      dragon: "Dragón",
-      dark: "Siniestro",
-      steel: "Acero",
-      fairy: "Hada"
-    };
-
-    /*
-      GUÍA RÁPIDA PARA FORMAS ESPECIALES
-
-      Pokémon normal:
-      { id: 448, name: "lucario", types: ["fighting", "steel"] }
-
-      Forma regional / alternativa de PokéAPI:
-      Usa spriteId o formId con el número interno de esa forma.
-      El id sigue siendo el de la Pokédex nacional, pero spriteId carga la imagen especial.
-      { id: 706, spriteId: 10242, name: "goodra de hisui", form: "Hisui", types: ["dragon", "steel"] }
-
-      Forma femenina:
-      { id: 902, name: "basculegion hembra", female: true, types: ["water", "ghost"] }
-
-      Shiny:
-      { id: 448, name: "lucario shiny", shiny: true, types: ["fighting", "steel"] }
-
-      Sprite pequeño en vez de artwork:
-      { id: 25, name: "pikachu", spriteMode: "sprite", types: ["electric"] }
-
-      Imagen propia / Fakemon / forma del rol:
-      { name: "aegislash de hyrule", image: "Pokemon Custom/Aegislash de Hyrule.png", types: ["fairy", "steel"] }
-    */
-
-    const TEAMS = [
-      {
-        trainer: "Link Ordon",
-        title: "Campeón de Hyrule",
-        region: "Hyrule",
-        style: "Equilibrado",
-        colors: ["#32CD32 ", "#006400"],
-        note: "Un equpo sólido y equilibrado, llevado por una persona con la experiencia suficiente para salid campeón. Pelean bajo la bendición de la Diosa Hylia.",
-        pokemon: [
-          { id: 724, name: "decidueye", types: ["grass", "ghost"] },
-          { id: 530, name: "excadrill", types: ["ground", "steel"] },
-          {
-            id: 1150,
-            name: "aegislash-de-Hyruke",
-            image: "Pokemon Custom/Aegislash de Hyrule.png",
-            types: ["fairy", "steel"]
-          },
-          { id: 902, name: "basculegion-f", types: ["water", "ghost"] },
-          { id: 169, name: "crobat", types: ["flying", "poison"] },
-          { id: 887, name: "dragapult", types: ["dragon", "ghost"] },
-        ]
-      },
-      {
-        trainer: "Shin Haein",
-        title: "Entrenadora Cantante",
-        region: "Etruria",
-        style: "Especial",
-        colors: ["#8900FF", "#B561FF"],
-        note: "Una chica que ama la música pero prefiere el reto de cantar mientras pelea con los suyos.",
-        pokemon: [
-          { id: 160, name: "feralgatr", types: ["water"] },
-          {
-            id: 1126,
-            name: "chattoroti",
-            image: "Pokemon Custom/Chattoroti.png",
-            types: ["normal", "flying"]
-          },          
-          { id: 272, name: "ludicolo", types: ["water", "grass"] },
-          { id: 40, name: "wigglytuff", types: ["normal", "fairy"] },
-          { id: 849, name: "toxtricity", types: ["electric", "poison"] },
-          { id: 715, name: "noivern", types: ["flying", "dragon"] }
-        ]
-      },
-      {
-        trainer: "Serena Vaniville",
-        title: "Concursante Excelente",
-        region: "Kalos",
-        style: "Equilibrado",
-        colors: ["#FFED00", "#8F8200"],
-        note: "Su equipo Pokémon está compuesto por todos aquellos que tienen una oportunidad para brillar, sean bonitos o no.",
-        pokemon: [
-          { id: 655, name: "delphox", types: ["fire", "psychic"] },
-          { id: 282, name: "gardevoir", types: ["psychic", "fairy"] },
-          { id: 24, name: "arbok", types: ["poison"] },
-          { id: 428, name: "lopunny", types: ["normal"] },
-          { id: 1018, name: "archaludon", types: ["steel", "dragon"] },
-          { id: 979, name: "annihilape", types: ["fighting", "ghost"] }
-        ]
-      },
-      {
-        trainer: "Mencía Scarlet",
-        title: "Luchadora Carmesí",
-        region: "Paldea",
-        style: "Físico",
-        colors: ["#004702", "#00AB03"],
-        note: "Una chica que quiere pelear para demostrar que los combates no solo son obligaciones a los Pokémon, todos pueden disfrutar de uno.",
-        pokemon: [
-          { id: 923, name: "pawmo", types: ["fighting", "electric"] },
-          { id: 908, name: "meowscarada", types: ["grass", "dark"] },
-          { id: 212, name: "scizor", types: ["bug", "steel"] },
-          { id: 149, name: "dragonite", types: ["dragon", "flying"] },
-          { id: 214, name: "heracross", types: ["bug", "fighting"] },
-          { id: 934, name: "garganacl", types: ["rock"] }
-        ]
-      },
-      {
-        trainer: "Judith",
-        title: "Líder de Gimnasio de Tipo Lucha",
-        region: "Galar",
-        style: "Físico",
-        colors: ["#875800", "#C48100"],
-        note: "Un equipo pensado para imponer misterio, evolución forzada y una cantidad preocupante de malas intenciones con bata de laboratorio.",
-        pokemon: [
-          { id: 68, name: "machamp", types: ["fighting"] },
-          { id: 701, name: "hawlucha", types: ["fighting", "flying"] },
-          { id: 865, name: "sirfetch'd", types: ["fighting"] },
-          { id: 620, name: "mienshao", types: ["fighting"] },
-          { id: 534, name: "conkeldurr", types: ["fighting"] },
-          { id: 257, name: "blaziken", types: ["fire", "fighting"] }
-        ]
-      },
-      {
-        trainer: "Mogari Shishikuno",
-        title: "Heredero Shishikuno",
-        region: "Etruria",
-        style: "Equilibrado",
-        colors: ["#2B2B2B", "#878686"],
-        note: "Equipo dispuesto a crear los mejores platos y a honrar el nombre del Clan Shishikuno.",
-        pokemon: [
-          { id: 395, name: "empoleon", types: ["water", "steel"] },
-          { id: 560, name: "scrafty", types: ["dark", "fighting"] },
-          { id: 18, name: "pidgeot", types: ["normal", "flying"] },
-          { id: 609, name: "chandelure", types: ["fire", "ghost"] },
-          { id: 617, name: "accelgor", types: ["bug"] },
-          { id: 713, name: "avalugg", types: ["ice"] }
-        ]
-      },
-      {
-        trainer: "Gama Sazare",
-        title: "Fotógrafa Entrenadora",
-        region: "Sinnoh",
-        style: "Equilibrado",
-        colors: ["#003E8F", "#00CBE3"],
-        note: "Entrenadora entregada a sus fotos, un equipo precioso para posar frente a la playa en un atardecer.",
-        pokemon: [
-          { id: 706, spriteId: 10242, name: "goodra de hisui", form: "Hisui", types: ["dragon", "steel"] },
-          { id: 620, name: "mienshao", types: ["fighting"] },
-          { id: 133, name: "eevee", types: ["normal"] },
-          { id: 733, name: "toucannon", types: ["normal", "flying"] },
-          { id: 523, name: "zebritska", types: ["electric"] },
-          { id: 448, name: "lucario", types: ["fighting", "steel"] }
-        ]
-      },
-      {
-        trainer: "Philip",
-        title: "Entrenador Erudito",
-        region: "Etruria",
-        style: "Equilibrado",
-        colors: ["#1C6600", "#33BA00"],
-        note: "Un entrenador erudito con unas ganas abrumantes de aprender y superarse cada día.",
-        pokemon: [
-          { id: 497, name: "Serperior", types: ["grass"] },
-          { id: 521, name: "unfezant", types: ["normal", "flying"] },
-          { id: 606, name: "beheyeem", types: ["psychic"] },
-          { id: 132, name: "ditto", types: ["normal"] },
-          { id: 55, name: "golduck", types: ["water"] },
-          { id: 442, name: "spiritomb", types: ["dark", "ghost"] }
-        ]
-      },
-    ];
-
+    const TRAINERS = Array.isArray(window.ETRURIA_TRAINERS) ? window.ETRURIA_TRAINERS : [];
     const SPRITES_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
+    const TYPE_COLORS = {
+      normal: "#8b8b78", fire: "#e76f32", water: "#3d78d8", electric: "#d5a914",
+      grass: "#58a942", ice: "#55aeb4", fighting: "#bb493d", poison: "#91469b",
+      ground: "#bd9343", flying: "#7188d0", psychic: "#d64a79", bug: "#85951f",
+      rock: "#9c812f", ghost: "#65568d", dragon: "#5b3fc0", dark: "#5b4b42",
+      steel: "#858aa6", fairy: "#d678a3"
+    };
+    const TYPE_ES = {
+      normal: "Normal", fire: "Fuego", water: "Agua", electric: "Eléctrico", grass: "Planta",
+      ice: "Hielo", fighting: "Lucha", poison: "Veneno", ground: "Tierra", flying: "Volador",
+      psychic: "Psíquico", bug: "Bicho", rock: "Roca", ghost: "Fantasma", dragon: "Dragón",
+      dark: "Siniestro", steel: "Acero", fairy: "Hada"
+    };
 
-    const artworkUrl = (id) => `${SPRITES_BASE}/other/official-artwork/${id}.png`;
-    const femaleArtworkUrl = (id) => `${SPRITES_BASE}/other/official-artwork/female/${id}.png`;
-    const shinyArtworkUrl = (id) => `${SPRITES_BASE}/other/official-artwork/shiny/${id}.png`;
-    const spriteUrl = (id) => `${SPRITES_BASE}/${id}.png`;
-    const femaleSpriteUrl = (id) => `${SPRITES_BASE}/female/${id}.png`;
-    const shinySpriteUrl = (id) => `${SPRITES_BASE}/shiny/${id}.png`;
-
-    function getPokemonSpriteId(pokemon) {
-      return pokemon.spriteId || pokemon.formId || pokemon.apiId || pokemon.id;
-    }
-
-    function getPokemonDexId(pokemon) {
-      return pokemon.dexId || pokemon.id || pokemon.spriteId || pokemon.formId || pokemon.apiId;
-    }
-
-    function getPokemonImage(pokemon) {
-      if (pokemon.image) return pokemon.image;
-
-      const spriteId = getPokemonSpriteId(pokemon);
-
-      if (pokemon.spritePath) return `${SPRITES_BASE}/${pokemon.spritePath}`;
-      if (pokemon.female) return femaleArtworkUrl(spriteId);
-      if (pokemon.shiny) return shinyArtworkUrl(spriteId);
-      if (pokemon.spriteMode === "female") return femaleArtworkUrl(spriteId);
-      if (pokemon.spriteMode === "female-sprite") return femaleSpriteUrl(spriteId);
-      if (pokemon.spriteMode === "shiny") return shinyArtworkUrl(spriteId);
-      if (pokemon.spriteMode === "shiny-sprite") return shinySpriteUrl(spriteId);
-      if (pokemon.spriteMode === "sprite") return spriteUrl(spriteId);
-
-      return artworkUrl(spriteId);
-    }
-
-    function getFallbackImage(pokemon) {
-      const spriteId = getPokemonSpriteId(pokemon) || 1;
-      if (pokemon.female || pokemon.spriteMode === "female") return femaleSpriteUrl(spriteId);
-      if (pokemon.shiny || pokemon.spriteMode === "shiny") return shinySpriteUrl(spriteId);
-      return spriteUrl(spriteId);
-    }
-
-    const teamsGrid = document.getElementById("teamsGrid");
+    const grid = document.getElementById("trainerGrid");
+    const emptyState = document.getElementById("emptyState");
+    const resultCount = document.getElementById("resultCount");
     const searchInput = document.getElementById("searchInput");
     const regionFilter = document.getElementById("regionFilter");
-    const styleFilter = document.getElementById("styleFilter");
-    const emptyState = document.getElementById("emptyState");
+    const progressFilter = document.getElementById("progressFilter");
+    const profileDialog = document.getElementById("profileDialog");
+    const profileContent = document.getElementById("profileContent");
     const toast = document.getElementById("toast");
 
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalize(value) {
+      return String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
+
     function formatName(name) {
-      return name
-        .split("-")
-        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(" ");
+      return String(name ?? "").split("-").map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
     }
 
-    function createTypePill(type) {
-      return `<span class="type" style="background:${TYPE_COLORS[type] || "#475569"}">${TYPE_ES[type] || type}</span>`;
+    function initials(name) {
+      return String(name).split(/\s+/).slice(0, 2).map(part => part[0] || "").join("").toUpperCase();
     }
 
-    function createPokemonCard(pokemon) {
+    function pokemonImage(pokemon) {
+      if (pokemon.image) return pokemon.image;
+      const id = pokemon.spriteId || pokemon.formId || pokemon.apiId || pokemon.id;
+      if (pokemon.shiny) return `${SPRITES_BASE}/other/official-artwork/shiny/${id}.png`;
+      if (pokemon.female) return `${SPRITES_BASE}/other/official-artwork/female/${id}.png`;
+      if (pokemon.spriteMode === "sprite") return `${SPRITES_BASE}/${id}.png`;
+      return `${SPRITES_BASE}/other/official-artwork/${id}.png`;
+    }
+
+    function avatarMarkup(trainer, className) {
+      if (trainer.portrait) return `<div class="${className}"><img src="${escapeHtml(trainer.portrait)}" alt="Retrato de ${escapeHtml(trainer.name)}"></div>`;
+      return `<div class="${className}"><span>${escapeHtml(initials(trainer.name))}</span></div>`;
+    }
+
+    function typePills(types = []) {
+      return types.map(type => `<span class="type-pill" style="background:${TYPE_COLORS[type] || "#64748b"}">${escapeHtml(TYPE_ES[type] || type)}</span>`).join("");
+    }
+
+    function previewSlots(team = []) {
+      const slots = Array.from({ length: 6 }, (_, index) => team[index] || null);
+      return slots.map(pokemon => pokemon
+        ? `<div class="poke-slot" title="${escapeHtml(formatName(pokemon.name))}"><img src="${escapeHtml(pokemonImage(pokemon))}" alt="${escapeHtml(formatName(pokemon.name))}" loading="lazy" onerror="this.remove()"></div>`
+        : '<div class="poke-slot empty" aria-label="Hueco de equipo disponible"></div>'
+      ).join("");
+    }
+
+    function trainerCard(trainer) {
+      const team = trainer.team || [];
+      const badges = trainer.badges || [];
       return `
-        <article class="pokemon-card">
-          <span class="dex">#${String(getPokemonDexId(pokemon)).padStart(4, "0")}${pokemon.form ? ` · ${pokemon.form}` : ""}${pokemon.female ? " · ♀" : ""}${pokemon.shiny ? " · Shiny" : ""}</span>
-          <h3>${formatName(pokemon.name)}</h3>
-          <div class="type-row">${pokemon.types.map(createTypePill).join("")}</div>
-          <img src="${getPokemonImage(pokemon)}" alt="${formatName(pokemon.name)}" loading="lazy" onerror="this.onerror=null;this.src='${getFallbackImage(pokemon)}';" />
-        </article>
-      `;
-    }
-
-    function createTeamCard(team) {
-      return `
-        <article class="team-card" style="--team-a:${team.colors[0]}; --team-b:${team.colors[1]};">
-          <header class="team-top">
-            <div class="trainer-row">
-              <div class="trainer-info">
-                <h2>${team.trainer}</h2>
-                <p>${team.title} · ${team.region}</p>
+        <article class="trainer-card" style="--trainer-a:${escapeHtml(trainer.colors?.[0] || "#2a75bb")};--trainer-b:${escapeHtml(trainer.colors?.[1] || "#174b7d")}">
+          <div class="trainer-stripe"></div>
+          <div class="trainer-main">
+            <header class="trainer-header">
+              ${avatarMarkup(trainer, "trainer-avatar")}
+              <div class="trainer-identity">
+                <h3>${escapeHtml(trainer.name)}</h3>
+                <p>${escapeHtml(trainer.title || "Entrenador sin rango")} · ${escapeHtml(trainer.region || "Sin región")}</p>
               </div>
-              <span class="badge">${team.style}</span>
+              <span class="status-pill">● ${escapeHtml(trainer.status || "Por registrar")}</span>
+            </header>
+            <p class="trainer-summary">${escapeHtml(trainer.summary || "Expediente pendiente de completar.")}</p>
+            <div class="meta-row">
+              <span class="meta-pill">⚔️ ${escapeHtml(trainer.style || "Estilo pendiente")}</span>
+              <span class="meta-pill">🏅 ${badges.length} medalla${badges.length === 1 ? "" : "s"}</span>
+              <span class="meta-pill">📦 ${(trainer.reserves || []).length} en reserva</span>
             </div>
-            <p class="team-note">${team.note}</p>
-          </header>
-
-          <div class="pokemon-list">
-            ${team.pokemon.map(createPokemonCard).join("")}
+            <div class="team-preview" aria-label="Equipo actual de ${escapeHtml(trainer.name)}">${previewSlots(team)}</div>
+            <footer class="card-footer">
+              <span class="progress-copy"><strong>${team.length}/6</strong> en el equipo actual</span>
+              <button class="open-profile" type="button" data-profile="${escapeHtml(trainer.id)}">Abrir expediente</button>
+            </footer>
           </div>
-
-          <footer class="team-footer">
-            <span class="footer-label">Equipo de ${team.pokemon.length} Pokémon</span>
-            <button class="copy-btn" data-team="${team.trainer}">Copiar equipo</button>
-          </footer>
-        </article>
-      `;
+        </article>`;
     }
 
-    function populateFilters() {
-      const regions = [...new Set(TEAMS.map(team => team.region))].sort();
-      const styles = [...new Set(TEAMS.map(team => team.style))].sort();
-
-      regionFilter.innerHTML += regions.map(region => `<option value="${region}">${region}</option>`).join("");
-      styleFilter.innerHTML += styles.map(style => `<option value="${style}">${style}</option>`).join("");
+    function pokemonEntries(team = []) {
+      if (!team.length) return '<div class="blank-block">Todavía no hay Pokémon registrados en esta sección.</div>';
+      return team.map(pokemon => `
+        <article class="pokemon-entry">
+          <div class="pokemon-art"><img src="${escapeHtml(pokemonImage(pokemon))}" alt="${escapeHtml(formatName(pokemon.name))}" loading="lazy" onerror="this.remove()"></div>
+          <div class="pokemon-info">
+            <strong>${escapeHtml(formatName(pokemon.name))}${pokemon.form ? ` · ${escapeHtml(pokemon.form)}` : ""}${pokemon.shiny ? " · Shiny" : ""}</strong>
+            <div class="type-row">${typePills(pokemon.types)}</div>
+          </div>
+        </article>`).join("");
     }
 
-    function updateStats(list = TEAMS) {
-      const regions = new Set(list.map(team => team.region));
-      const totalPokemon = list.reduce((total, team) => total + team.pokemon.length, 0);
-
-      document.getElementById("teamCount").textContent = list.length;
-      document.getElementById("pokemonCount").textContent = totalPokemon;
-      document.getElementById("regionCount").textContent = regions.size;
+    function badgesMarkup(badges = []) {
+      if (!badges.length) return '<div class="blank-block">Sin medallas registradas. El expediente está preparado para añadirlas cuando avance su recorrido.</div>';
+      return `<div class="badge-grid">${badges.map(badge => `
+        <div class="league-badge">
+          <div class="badge-visual">
+            ${badge.image
+              ? `<img src="${escapeHtml(badge.image)}" alt="${escapeHtml(badge.name || "Medalla")}" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="badge-icon" hidden>${escapeHtml(badge.icon || "🏅")}</span>`
+              : `<span class="badge-icon">${escapeHtml(badge.icon || "🏅")}</span>`}
+          </div>
+          <strong>${escapeHtml(badge.name || "Medalla")}</strong>
+          <small>${escapeHtml(badge.gym || "Liga de Etruria")}</small>
+          ${badge.date ? `<time>${escapeHtml(badge.date)}</time>` : ""}
+          ${badge.note ? `<p class="badge-note" title="${escapeHtml(badge.note)}">${escapeHtml(badge.note)}</p>` : ""}
+        </div>`).join("")}</div>`;
     }
 
-    function filterTeams() {
-      const search = searchInput.value.trim().toLowerCase();
-      const selectedRegion = regionFilter.value;
-      const selectedStyle = styleFilter.value;
+    function achievementsMarkup(items = []) {
+      if (!items.length) return '<div class="blank-block">No hay logros o participaciones documentados todavía.</div>';
+      return `<ul class="achievement-list">${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+    }
 
-      const filtered = TEAMS.filter(team => {
-        const haystack = [
-          team.trainer,
-          team.title,
-          team.region,
-          team.style,
-          team.note,
-          ...team.pokemon.map(p => p.name),
-          ...team.pokemon.flatMap(p => p.types.map(type => TYPE_ES[type] || type))
-        ].join(" ").toLowerCase();
+    function openProfile(id) {
+      const trainer = TRAINERS.find(item => item.id === id);
+      if (!trainer) return;
+      const team = trainer.team || [];
+      const reserves = trainer.reserves || [];
+      const links = trainer.links || [];
+      profileContent.innerHTML = `
+        <article class="profile-shell" style="--trainer-a:${escapeHtml(trainer.colors?.[0] || "#2a75bb")};--trainer-b:${escapeHtml(trainer.colors?.[1] || "#174b7d")}">
+          <header class="profile-hero">
+            <div class="profile-top">
+              ${avatarMarkup(trainer, "profile-avatar")}
+              <div class="profile-title">
+                <h2 id="profileName">${escapeHtml(trainer.name)}</h2>
+                <p>${escapeHtml(trainer.title || "Entrenador")} · ${escapeHtml(trainer.region || "Región por registrar")}</p>
+              </div>
+              <button class="close-profile" type="button" aria-label="Cerrar expediente">×</button>
+            </div>
+          </header>
+          <div class="profile-body">
+            <div class="profile-main">
+              <section class="dossier-section">
+                <div class="dossier-heading"><h3>⚔️ Equipo actual</h3><span>${team.length}/6 integrantes</span></div>
+                <div class="current-team">${pokemonEntries(team)}</div>
+              </section>
+              <section class="dossier-section">
+                <div class="dossier-heading"><h3>🏅 Medallas</h3><span>${(trainer.badges || []).length} registradas</span></div>
+                ${badgesMarkup(trainer.badges)}
+              </section>
+              <section class="dossier-section">
+                <div class="dossier-heading"><h3>📦 Reservas y antiguos compañeros</h3><span>${reserves.length} registrados</span></div>
+                ${reserves.length ? `<div class="current-team">${pokemonEntries(reserves)}</div>` : pokemonEntries([])}
+              </section>
+            </div>
+            <aside class="profile-side">
+              <section class="dossier-section">
+                <div class="dossier-heading"><h3>🪪 Datos del entrenador</h3></div>
+                <div class="info-list">
+                  <div class="info-item"><small>Estado</small><strong>${escapeHtml(trainer.status || "Por registrar")}</strong></div>
+                  <div class="info-item"><small>Estilo de combate</small><strong>${escapeHtml(trainer.style || "Por registrar")}</strong></div>
+                  <div class="info-item"><small>Ubicación actual</small><strong>${escapeHtml(trainer.location || "Por registrar")}</strong></div>
+                  <div class="info-item"><small>Objetivo actual</small><strong>${escapeHtml(trainer.goal || "Por registrar")}</strong></div>
+                </div>
+              </section>
+              <section class="dossier-section">
+                <div class="dossier-heading"><h3>📖 Perfil</h3></div>
+                <div class="blank-block">${escapeHtml(trainer.summary || "Expediente pendiente de completar.")}</div>
+              </section>
+              <section class="dossier-section">
+                <div class="dossier-heading"><h3>🏆 Logros y cargos</h3></div>
+                ${achievementsMarkup(trainer.achievements)}
+              </section>
+              <section class="dossier-section">
+                <div class="dossier-heading"><h3>🔗 Accesos relacionados</h3></div>
+                <div class="profile-actions">
+                  <a class="profile-action" href="mapa etruria.html">Mapa de Etruria</a>
+                  <a class="profile-action" href="datos.html">Analizar Pokémon</a>
+                  ${links.map(link => `<a class="profile-action" href="${escapeHtml(link.url)}">${escapeHtml(link.label)}</a>`).join("")}
+                  <button class="profile-action copy-team" type="button" data-copy-team="${escapeHtml(trainer.id)}">Copiar equipo</button>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </article>`;
+      if (typeof profileDialog.showModal === "function") profileDialog.showModal();
+      else profileDialog.setAttribute("open", "");
+    }
 
-        const matchesSearch = !search || haystack.includes(search);
-        const matchesRegion = selectedRegion === "all" || team.region === selectedRegion;
-        const matchesStyle = selectedStyle === "all" || team.style === selectedStyle;
+    function searchText(trainer) {
+      return normalize([
+        trainer.name, trainer.title, trainer.region, trainer.style, trainer.status,
+        trainer.location, trainer.goal, trainer.summary,
+        ...(trainer.team || []).flatMap(pokemon => [pokemon.name, ...(pokemon.types || [])]),
+        ...(trainer.reserves || []).flatMap(pokemon => [pokemon.name, ...(pokemon.types || [])]),
+        ...(trainer.badges || []).flatMap(badge => [badge.name, badge.gym]),
+        ...(trainer.achievements || [])
+      ].join(" "));
+    }
 
-        return matchesSearch && matchesRegion && matchesStyle;
+    function filteredTrainers() {
+      const query = normalize(searchInput.value.trim());
+      return TRAINERS.filter(trainer => {
+        const matchesQuery = !query || searchText(trainer).includes(query);
+        const matchesRegion = regionFilter.value === "all" || trainer.region === regionFilter.value;
+        const teamSize = (trainer.team || []).length;
+        const matchesProgress = progressFilter.value === "all"
+          || (progressFilter.value === "complete" && teamSize >= 6)
+          || (progressFilter.value === "incomplete" && teamSize < 6)
+          || (progressFilter.value === "badges" && (trainer.badges || []).length > 0);
+        return matchesQuery && matchesRegion && matchesProgress;
       });
-
-      renderTeams(filtered);
-      updateStats(filtered);
     }
 
-    function renderTeams(list = TEAMS) {
-      teamsGrid.innerHTML = list.map(createTeamCard).join("");
+    function render() {
+      const list = filteredTrainers();
+      grid.innerHTML = list.map(trainerCard).join("");
       emptyState.style.display = list.length ? "none" : "block";
+      resultCount.textContent = `${list.length} expediente${list.length === 1 ? "" : "s"}`;
+    }
+
+    function populateRegions() {
+      [...new Set(TRAINERS.map(trainer => trainer.region).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))
+        .forEach(region => regionFilter.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(region)}">${escapeHtml(region)}</option>`));
+    }
+
+    function updateStats() {
+      const pokemonCount = TRAINERS.reduce((sum, trainer) => sum + (trainer.team || []).length, 0);
+      const badges = TRAINERS.reduce((sum, trainer) => sum + (trainer.badges || []).length, 0);
+      const reserves = TRAINERS.reduce((sum, trainer) => sum + (trainer.reserves || []).length, 0);
+      const complete = TRAINERS.filter(trainer => (trainer.team || []).length >= 6).length;
+      const regions = new Set(TRAINERS.map(trainer => trainer.region).filter(Boolean)).size;
+      document.getElementById("heroTrainerCount").textContent = TRAINERS.length;
+      document.getElementById("heroPokemonCount").textContent = pokemonCount;
+      document.getElementById("heroBadgeCount").textContent = badges;
+      document.getElementById("heroRegionCount").textContent = regions;
+      document.getElementById("trainerCount").textContent = TRAINERS.length;
+      document.getElementById("completeCount").textContent = complete;
+      document.getElementById("badgeCount").textContent = badges;
+      document.getElementById("reserveCount").textContent = reserves;
     }
 
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 1800);
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1900);
     }
 
-    document.addEventListener("click", async (event) => {
-      const button = event.target.closest(".copy-btn");
-      if (!button) return;
-
-      const team = TEAMS.find(item => item.trainer === button.dataset.team);
-      const text = `${team.trainer}: ${team.pokemon.map(p => formatName(p.name)).join(", ")}`;
-
+    async function copyText(text, message) {
       try {
         await navigator.clipboard.writeText(text);
-        showToast("Equipo copiado al portapapeles");
+        showToast(message);
       } catch {
-        showToast("No se pudo copiar, pero el equipo está más arriba");
+        showToast("No se ha podido copiar automáticamente");
+      }
+    }
+
+    [searchInput, regionFilter, progressFilter].forEach(control => control.addEventListener(control === searchInput ? "input" : "change", render));
+
+    document.addEventListener("click", event => {
+      const profileButton = event.target.closest("[data-profile]");
+      if (profileButton) openProfile(profileButton.dataset.profile);
+
+      if (event.target.closest(".close-profile")) profileDialog.close();
+
+      const copyButton = event.target.closest("[data-copy-team]");
+      if (copyButton) {
+        const trainer = TRAINERS.find(item => item.id === copyButton.dataset.copyTeam);
+        if (trainer) copyText(`${trainer.name}: ${(trainer.team || []).map(pokemon => formatName(pokemon.name)).join(", ")}`, "Equipo copiado");
       }
     });
 
-    searchInput.addEventListener("input", filterTeams);
-    regionFilter.addEventListener("change", filterTeams);
-    styleFilter.addEventListener("change", filterTeams);
+    profileDialog.addEventListener("click", event => {
+      if (event.target === profileDialog) profileDialog.close();
+    });
 
-    populateFilters();
-    renderTeams();
+    document.getElementById("copyTemplate").addEventListener("click", () => {
+      copyText(document.getElementById("codeTemplate").textContent.trim(), "Plantilla copiada");
+    });
+
+    populateRegions();
     updateStats();
+    render();
   </script>
 </body>
 </html>

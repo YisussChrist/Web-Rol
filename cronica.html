@@ -523,7 +523,7 @@
       pokemon:{
         name:'Crónica Pokémon · Etruria',universe:'Pokémon',theme:'pokemon',eyebrow:'● Cuaderno de campo',title:'Explora. Descubre.<br>Deja constancia.',copy:'Un diario de expedición para capturas, evoluciones, combates, rutas y secretos descubiertos por los entrenadores de Etruria.',
         types:['Sesión','Misión','Combate','Descubrimiento','Relación','Torneo','Otro'],
-        portals:[['🗺️ Mapa de Etruria','Pokemon/mapa etruria.html'],['⚔️ Equipos Pokémon','Pokemon/index.html'],['📊 Datos Pokémon','Pokemon/datos.html'],['📆 Calendario','calendario.html'],['🎵 Resonance','OST/index.html']]
+        portals:[['🗺️ Mapa de Etruria','Pokemon/mapa etruria.html'],['🪪 Entrenadores Pokémon','Pokemon/index.html'],['📊 Datos Pokémon','Pokemon/datos.html'],['📆 Calendario','calendario.html'],['🎵 Resonance','OST/index.html']]
       },
       multiverse:{
         name:'Crónica del Multiverso',universe:null,theme:'multiverse',eyebrow:'✦ Archivo general de los servidores',title:'Tres mundos.<br>Una historia completa.',copy:'Consulta en un solo lugar los acontecimientos de Inazuma Eleven, Dragon Ball y Pokémon.',
@@ -806,6 +806,27 @@
       const blob=new Blob([JSON.stringify({version:2,server:activeServer,exportedAt:new Date().toISOString(),events:exportedEvents},null,2)],{type:'application/json'});
       const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`cronica-${activeServer}-${new Date().toISOString().slice(0,10)}.json`;link.click();URL.revokeObjectURL(url);showToast('Crónica exportada');
     });
+
+    function downloadCodeFile(code){
+      const blob=new Blob([code],{type:'text/javascript'});
+      const url=URL.createObjectURL(blob);
+      const link=document.createElement('a');
+      link.href=url;
+      link.download='cronica-datos.js';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      alert('El navegador no permite sobrescribir el archivo desde esta vista, así que se ha descargado “cronica-datos.js” ya actualizado. Sustituye el archivo anterior por este para publicar las nuevas entradas.');
+    }
+
+    function filePickerWindow(){
+      try{
+        if(window.top&&window.top!==window&&window.top.location.origin===window.location.origin)return window.top;
+      }catch{}
+      return window;
+    }
+
     document.getElementById('saveCodeBtn').addEventListener('click',async()=>{
       const code=`/*
  * ═══════════════════════════════════════════════════════════════════════
@@ -834,9 +855,10 @@
  */
 window.CRONICA_EVENTS = ${JSON.stringify(events,null,2)};
 `;
-      try{
-        if('showOpenFilePicker' in window){
-          const [handle]=await window.showOpenFilePicker({multiple:false,types:[{description:'Datos JavaScript de la Crónica',accept:{'text/javascript':['.js']}}]});
+      const pickerWindow=filePickerWindow();
+      if('showOpenFilePicker' in pickerWindow){
+        try{
+          const [handle]=await pickerWindow.showOpenFilePicker({multiple:false,types:[{description:'Datos JavaScript de la Crónica',accept:{'text/javascript':['.js']}}]});
           if(handle.name!=='cronica-datos.js'&&!confirm(`Has seleccionado “${handle.name}”. ¿Quieres sobrescribir ese archivo con los datos de la Crónica?`))return;
           const writable=await handle.createWritable();
           await writable.write(code);
@@ -844,13 +866,12 @@ window.CRONICA_EVENTS = ${JSON.stringify(events,null,2)};
           markCodeSaved();
           showToast('El archivo del código ha quedado actualizado');
           return;
+        }catch(error){
+          if(error?.name==='AbortError')return;
+          console.warn('No se ha podido usar el guardado directo; se descargará el archivo.',error);
         }
-        const blob=new Blob([code],{type:'text/javascript'});
-        const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='cronica-datos.js';link.click();URL.revokeObjectURL(url);
-        alert('Se ha descargado “cronica-datos.js”. Sustituye el archivo con ese nombre en la carpeta principal de la web para publicar las nuevas entradas.');
-      }catch(error){
-        if(error?.name!=='AbortError')alert('No se ha podido guardar el archivo. Puedes usar “Copia JSON” como respaldo y volver a intentarlo.');
       }
+      downloadCodeFile(code);
     });
     document.getElementById('importBtn').addEventListener('click',()=>importInput.click());
     importInput.addEventListener('change',async()=>{

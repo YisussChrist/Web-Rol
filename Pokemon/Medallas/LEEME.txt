@@ -1,0 +1,23 @@
+FOTOS DE MEDALLAS
+=================
+
+Guarda en esta carpeta las imágenes de tus medallas.
+
+Después, dentro de entrenadores-datos.js, utiliza la ruta:
+
+image: "Medallas/Nombre exacto de la imagen.png"
+
+Ejemplo completo:
+
+badges: [
+  {
+    name: "Medalla Ígnea",
+    gym: "Gimnasio de tipo Fuego",
+    image: "Medallas/Medalla Ignea.png",
+    date: "12 de agosto",
+    note: "Conseguida tras derrotar al líder del gimnasio."
+  }
+],
+
+El nombre y la extensión deben coincidir exactamente con los de la imagen.
+Se recomienda utilizar PNG con fondo transparente.
