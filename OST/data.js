@@ -728,6 +728,29 @@ const characters = [
             }
         ]
     },
+    {
+        character: "Rin Drayton",
+        characterFace: "img/Rin.jpg",
+        lore: "Un niño con un pasado devastador y un futuro prometedor.",
+        tracks: [
+            {
+                songTitle: "Heir to the Mantle",
+                songDescription: "Las ganas y determinación del chico lo convierten en alguien capaz de convertirse en un superhéroe.",
+                songCover: "img/RinCover.png",
+                audio: "audio/Heir to the Mantle.mp3",
+                tags: ["battle", "epic"],
+                lore: "Cuando la canción suene, prepárate para pelear contra alguien que está dispuesto a darlo todo."
+            },
+            {
+                songTitle: "A True Superhero",
+                songDescription: "La ascendencia de un verdadero superhéroe que, por todos los medios, busca la salvación de todos.",
+                songCover: "img/Rin2Cover.png",
+                audio: "audio/A True Superhero.mp3",
+                tags: ["epic", "bossbattle"],
+                lore: "Si en su cabeza hay dos volutas, significa que ha duplicado sus ganas de vencer."
+            }
+        ]
+    },  
 ];
 
 const soundtracks = characters.flatMap((char, characterIndex) =>
