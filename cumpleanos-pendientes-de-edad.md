@@ -1,0 +1,264 @@
+# Cumplea?os pendientes de edad
+
+Quedan **249 cumplea?os antiguos** sin edad. No se incluyen los 47 personajes nuevos de Poder ni acontecimientos con un a?o concreto.
+
+Escribe la edad actual en el hueco. Al incorporarla al calendario se sumar? uno para mostrar la edad que cumple el personaje.
+
+## Dragon Ball / Poder (109)
+
+- [ ] **Juri Han** ? 1 de enero ? Edad actual: 29
+- [ ] **Yoruichi Shihouin** ? 1 de enero ? Edad actual: 258
+- [ ] **Addvok Vileborne** ? 2 de enero ? Edad actual: ???
+- [ ] **Keigo Magami** ? 3 de enero ? Edad actual: 25
+- [ ] **Lancelot Tsukue** ? 5 de enero ? Edad actual: 31
+- [ ] **Kamin** ? 10 de enero ? Edad actual: ???
+- [ ] **Colombina Hiposelenia** ? 14 de enero ? Edad actual: 26
+- [ ] **Alma Azkaban** ? 16 de enero ? Edad actual: 30
+- [ ] **Khrome Ryugu** ? 16 de enero ? Edad actual: 28
+- [ ] **Skadi Dragenfelt** ? 16 de enero ? Edad actual: 2810
+- [ ] **Moe Kamiji** ? 18 de enero ? Edad actual: 27
+- [ ] **Scar** ? 18 de enero ? Edad actual: 30
+- [ ] **Mikado Akira** ? 22 de enero ? Edad actual: ???
+- [ ] **Hugo Vega** ? 27 de enero ? Edad actual: ____
+- [ ] **YoRHa No.9 Type S** ? 30 de enero ? Edad actual: ____
+- [ ] **Roxy Migurdia** ? 31 de enero ? Edad actual: ____
+- [ ] **Deborah Gollini** ? 8 de febrero ? Edad actual: ____
+- [ ] **Yao Guang** ? 13 de febrero ? Edad actual: ____
+- [ ] **Zafir Midori** ? 24 de febrero ? Edad actual: ____
+- [ ] **Ares Kane** ? 3 de marzo ? Edad actual: ____
+- [ ] **Baiken Tatakai** ? 5 de marzo ? Edad actual: ____
+- [ ] **Royd Wattson** ? 12 de marzo ? Edad actual: ____
+- [ ] **Law Vireon** ? 16 de marzo ? Edad actual: ____
+- [ ] **Rai Komazawa** ? 21 de marzo ? Edad actual: ____
+- [ ] **Kuusetsu Dautherelle** ? 25 de marzo ? Edad actual: ____
+- [ ] **Shionne Imeris** ? 25 de marzo ? Edad actual: ____
+- [ ] **Shiva Kane** ? 27 de marzo ? Edad actual: ____
+- [ ] **Magilou Maivyn** ? 1 de abril ? Edad actual: ____
+- [ ] **Zenos Shochiku** ? 3 de abril ? Edad actual: ____
+- [ ] **Garou Silverfang** ? 9 de abril ? Edad actual: ____
+- [ ] **Mei Hatsume** ? 18 de abril ? Edad actual: ____
+- [ ] **Tokishikko Dannar** ? 18 de abril ? Edad actual: ____
+- [ ] **Gerson Boom** ? 23 de abril ? Edad actual: ____
+- [ ] **Kaoruko Awata** ? 23 de abril ? Edad actual: ____
+- [ ] **Dax Aethereon** ? 25 de abril ? Edad actual: ____
+- [ ] **Zani Diabolos** ? 29 de abril ? Edad actual: ____
+- [ ] **Wiš'adel Kal'zen** ? 1 de mayo ? Edad actual: ____
+- [ ] **Koneko Tojo** ? 3 de mayo ? Edad actual: ____
+- [ ] **Marl Barrock** ? 3 de mayo ? Edad actual: ____
+- [ ] **Cheelai** ? 4 de mayo ? Edad actual: ____
+- [ ] **Jibril Hellsdothir** ? 6 de mayo ? Edad actual: ____
+- [ ] **Justicia** ? 15 de mayo ? Edad actual: ____
+- [ ] **Motoko Kusanagi** ? 15 de mayo ? Edad actual: ____
+- [ ] **Waru Shintarou** ? 18 de mayo ? Edad actual: ____
+- [ ] **Beelzebub** ? 22 de mayo ? Edad actual: ____
+- [ ] **Gasper Vladi** ? 23 de mayo ? Edad actual: ____
+- [ ] **Izuna Hatsuse** ? 28 de mayo ? Edad actual: ____
+- [ ] **Kurumi Tokisaki** ? 10 de junio ? Edad actual: ____
+- [ ] **Kiawa Martínez** ? 11 de junio ? Edad actual: ____
+- [ ] **Kanabe Tsukue** ? 15 de junio ? Edad actual: ____
+- [ ] **Toru Hagakure** ? 16 de junio ? Edad actual: ____
+- [ ] **Mereoleona Vermillion** ? 26 de junio ? Edad actual: ____
+- [ ] **Shuvi Karashina** ? 27 de junio ? Edad actual: ____
+- [ ] **Kael Kane** ? 28 de junio ? Edad actual: ____
+- [ ] **Yuuto Kiba** ? 30 de junio ? Edad actual: ____
+- [ ] **Hitoshi Shinso** ? 1 de julio ? Edad actual: ____
+- [ ] **Killua Zoldyck** ? 7 de julio ? Edad actual: ____
+- [ ] **Zeo Thorzeus** ? 7 de julio ? Edad actual: ____
+- [ ] **Changli Lawrence** ? 8 de julio ? Edad actual: ____
+- [ ] **Arthur Boyle** ? 10 de julio ? Edad actual: ____
+- [ ] **Tier Harribel** ? 25 de julio ? Edad actual: ____
+- [ ] **Simon Drayton** ? 28 de julio ? Edad actual: ____
+- [ ] **Mina Ashido** ? 30 de julio ? Edad actual: ____
+- [ ] **Grimmjow Jaegerjaquez** ? 31 de julio ? Edad actual: ____
+- [ ] **Grillby Kamiji** ? 5 de agosto ? Edad actual: ____
+- [ ] **Himiko Toga** ? 7 de agosto ? Edad actual: ____
+- [ ] **Hak Aethereon** ? 9 de agosto ? Edad actual: ____
+- [ ] **Kinboshi Shintarou** ? 12 de agosto ? Edad actual: ____
+- [ ] **Qingy Hatsume** ? 14 de agosto ? Edad actual: ____
+- [ ] **Rokurou Rangetsu** ? 21 de agosto ? Edad actual: ____
+- [ ] **Kiriya Azkaban** ? 23 de agosto ? Edad actual: ____
+- [ ] **David Martínez** ? 25 de agosto ? Edad actual: ____
+- [ ] **Gilthunder Rainford** ? 26 de agosto ? Edad actual: ____
+- [ ] **Utena Vileborne** ? 27 de agosto ? Edad actual: ____
+- [ ] **Feixiao Hatsuse** ? 10 de septiembre ? Edad actual: ____
+- [ ] **Albedo Dautherelle** ? 13 de septiembre ? Edad actual: ____
+- [ ] **Velvet Crowe** ? 22 de septiembre ? Edad actual: ____
+- [ ] **Momo Yaoyorozu** ? 23 de septiembre ? Edad actual: ____
+- [ ] **Yuno Grinberryal** ? 4 de octubre ? Edad actual: ____
+- [ ] **Basara Tojo** ? 10 de octubre ? Edad actual: ____
+- [ ] **Undyne** ? 10 de octubre ? Edad actual: ____
+- [ ] **Agoti Kamiji** ? 12 de octubre ? Edad actual: ____
+- [ ] **Eijiro Kirishima** ? 16 de octubre ? Edad actual: ____
+- [ ] **Rias Gremory** ? 17 de octubre ? Edad actual: ____
+- [ ] **Glorio Daimo** ? 18 de octubre ? Edad actual: ____
+- [ ] **Ryuko Matoi** ? 23 de octubre ? Edad actual: ____
+- [ ] **Eula Lawrence** ? 25 de octubre ? Edad actual: ____
+- [ ] **Kurokami Medaka** ? 28 de octubre ? Edad actual: ____
+- [ ] **Kaedehara Kazuha** ? 29 de octubre ? Edad actual: ____
+- [ ] **Derieri Sukuna** ? 30 de octubre ? Edad actual: ____
+- [ ] **Uzui Tengen** ? 31 de octubre ? Edad actual: ____
+- [ ] **Ryomen Sukuna** ? 1 de noviembre ? Edad actual: ____
+- [ ] **Hakuryuu Ren** ? 10 de noviembre ? Edad actual: ____
+- [ ] **Crownslayer** ? 11 de noviembre ? Edad actual: ____
+- [ ] **Sawa Yamuchi** ? 13 de noviembre ? Edad actual: ____
+- [ ] **Aya Tademaru** ? 22 de noviembre ? Edad actual: ____
+- [ ] **Sentencia** ? 23 de noviembre ? Edad actual: ____
+- [ ] **Billy Kid** ? 25 de noviembre ? Edad actual: ____
+- [ ] **Yelena Vetrova** ? 2 de diciembre ? Edad actual: ____
+- [ ] **Hermes Kane** ? 4 de diciembre ? Edad actual: ____
+- [ ] **Asia Argento** ? 6 de diciembre ? Edad actual: ____
+- [ ] **Tao Saotome** ? 6 de diciembre ? Edad actual: ____
+- [ ] **Freyja Kane** ? 7 de diciembre ? Edad actual: ____
+- [ ] **Jin Mori** ? 12 de diciembre ? Edad actual: ____
+- [ ] **Gogo Karashina** ? 19 de diciembre ? Edad actual: ____
+- [ ] **Zelda Hellsdothir** ? 21 de diciembre ? Edad actual: ____
+- [ ] **Exusiai** ? 24 de diciembre ? Edad actual: ____
+- [ ] **Rin Drayton** ? 27 de diciembre ? Edad actual: ____
+- [ ] **Hawks** ? 28 de diciembre ? Edad actual: ____
+
+## Inazuma Eleven (127)
+
+- [ ] **Mountain Skalin** ? 1 de enero ? Edad actual: ____
+- [ ] **Yokoya Hitoyoshi** ? 1 de enero ? Edad actual: ____
+- [ ] **Yuito Sumeragi** ? 1 de enero ? Edad actual: ____
+- [ ] **Shushu Withering** ? 2 de enero ? Edad actual: ____
+- [ ] **Senku Ishigami** ? 4 de enero ? Edad actual: ____
+- [ ] **Jeanne d'Arc** ? 6 de enero ? Edad actual: ____
+- [ ] **Joanna d'Arc** ? 6 de enero ? Edad actual: ____
+- [ ] **Norman Heartless** ? 15 de enero ? Edad actual: ____
+- [ ] **Gonta Gokuhara** ? 23 de enero ? Edad actual: ____
+- [ ] **Jibril Foster** ? 25 de enero ? Edad actual: ____
+- [ ] **Lucyna Tanaka** ? 26 de enero ? Edad actual: ____
+- [ ] **Power Aoyama** ? 29 de enero ? Edad actual: ____
+- [ ] **Maki Harukawa** ? 2 de febrero ? Edad actual: ____
+- [ ] **Shin Wolford** ? 2 de febrero ? Edad actual: ____
+- [ ] **Rin Tohsaka** ? 3 de febrero ? Edad actual: ____
+- [ ] **Diamond White** ? 9 de febrero ? Edad actual: ____
+- [ ] **Celeste Foster** ? 11 de febrero ? Edad actual: ____
+- [ ] **Ciro Castañeda** ? 13 de febrero ? Edad actual: ____
+- [ ] **Katya Felis** ? 14 de febrero ? Edad actual: ____
+- [ ] **Yachiho Azuma** ? 14 de febrero ? Edad actual: ____
+- [ ] **Irene Villa** ? 20 de febrero ? Edad actual: ____
+- [ ] **Kaito Takahashi** ? 3 de marzo ? Edad actual: ____
+- [ ] **Jesús Murcia** ? 4 de marzo ? Edad actual: ____
+- [ ] **Renzu Itō** ? 4 de marzo ? Edad actual: ____
+- [ ] **Serena Kitagawa** ? 6 de marzo ? Edad actual: ____
+- [ ] **Siete de Marzo** ? 7 de marzo ? Edad actual: ____
+- [ ] **Yuuki Wakura** ? 12 de marzo ? Edad actual: ____
+- [ ] **Chiaki Nanami** ? 14 de marzo ? Edad actual: ____
+- [ ] **James Smith** ? 15 de marzo ? Edad actual: ____
+- [ ] **Alice Berardi** ? 17 de marzo ? Edad actual: ____
+- [ ] **Hina Heartless** ? 21 de marzo ? Edad actual: ____
+- [ ] **Axel Heartless** ? 28 de marzo ? Edad actual: ____
+- [ ] **Kodama Melone** ? 1 de abril ? Edad actual: ____
+- [ ] **Tadashi Fukino** ? 3 de abril ? Edad actual: ____
+- [ ] **Tetora Karashina** ? 5 de abril ? Edad actual: ____
+- [ ] **Kaito Momota** ? 12 de abril ? Edad actual: ____
+- [ ] **Ayane Kurogane** ? 17 de abril ? Edad actual: ____
+- [ ] **Irina Greenway** ? 21 de abril ? Edad actual: ____
+- [ ] **Nagito Komaeda** ? 28 de abril ? Edad actual: ____
+- [ ] **Delta Hervieux** ? 29 de abril ? Edad actual: ____
+- [ ] **Candace Foster** ? 3 de mayo ? Edad actual: ____
+- [ ] **Mikan Tsumiki** ? 12 de mayo ? Edad actual: ____
+- [ ] **Akira Tendou** ? 14 de mayo ? Edad actual: ____
+- [ ] **Lee Yeowoon** ? 14 de mayo ? Edad actual: ____
+- [ ] **Syon Blaze** ? 30 de mayo ? Edad actual: ____
+- [ ] **Isabelle Trick** ? 1 de junio ? Edad actual: ____
+- [ ] **Abigail Jones** ? 2 de junio ? Edad actual: ____
+- [ ] **Nagi Karman** ? 5 de junio ? Edad actual: ____
+- [ ] **Kiyoka Sendou** ? 6 de junio ? Edad actual: ____
+- [ ] **Hikaru Hoshihara** ? 9 de junio ? Edad actual: ____
+- [ ] **Bisco Akaboshi** ? 10 de junio ? Edad actual: ____
+- [ ] **Kurumi Tokisaki** ? 10 de junio ? Edad actual: ____
+- [ ] **Lidia Foster** ? 12 de junio ? Edad actual: ____
+- [ ] **Sen Kaibara** ? 12 de junio ? Edad actual: ____
+- [ ] **Nalu Tanaka** ? 16 de junio ? Edad actual: ____
+- [ ] **Kokichi Oma** ? 21 de junio ? Edad actual: ____
+- [ ] **Ethan Whitering** ? 22 de junio ? Edad actual: ____
+- [ ] **Mavuika Heartless** ? 22 de junio ? Edad actual: ____
+- [ ] **Leii Ishikawa** ? 25 de junio ? Edad actual: ____
+- [ ] **Lambda Zinaida** ? 26 de junio ? Edad actual: ____
+- [ ] **Marceline Abadeer** ? 27 de junio ? Edad actual: ____
+- [ ] **Yae Miko** ? 27 de junio ? Edad actual: ____
+- [ ] **Peko Pekoyama** ? 30 de junio ? Edad actual: ____
+- [ ] **Dan Heng** ? 3 de julio ? Edad actual: ____
+- [ ] **Ryuji Sakamoto** ? 3 de julio ? Edad actual: ____
+- [ ] **Kaede Blue** ? 4 de julio ? Edad actual: ____
+- [ ] **Suzu Blue** ? 4 de julio ? Edad actual: ____
+- [ ] **Shizuka Mikazuki** ? 9 de julio ? Edad actual: ____
+- [ ] **Akane Owari** ? 15 de julio ? Edad actual: ____
+- [ ] **Dayann Midford** ? 15 de julio ? Edad actual: ____
+- [ ] **Dark Walker** ? 20 de julio ? Edad actual: ____
+- [ ] **Zaira Altamira** ? 2 de agosto ? Edad actual: ____
+- [ ] **Waru Walker** ? 3 de agosto ? Edad actual: ____
+- [ ] **Dan Karman** ? 7 de agosto ? Edad actual: ____
+- [ ] **Rumi Kurogane** ? 7 de agosto ? Edad actual: ____
+- [ ] **Shiro Harukawa** ? 7 de agosto ? Edad actual: ____
+- [ ] **Judar Ramírez** ? 9 de agosto ? Edad actual: ____
+- [ ] **Mateo Luna** ? 9 de agosto ? Edad actual: ____
+- [ ] **Shinbad Ramírez** ? 9 de agosto ? Edad actual: ____
+- [ ] **Nara Midori** ? 15 de agosto ? Edad actual: ____
+- [ ] **Carlos Arroyo** ? 20 de agosto ? Edad actual: ____
+- [ ] **Top Blaze** ? 21 de agosto ? Edad actual: ____
+- [ ] **Himari Azuma** ? 28 de agosto ? Edad actual: ____
+- [ ] **Shu Ogata** ? 2 de septiembre ? Edad actual: ____
+- [ ] **Kyouka Uzen** ? 4 de septiembre ? Edad actual: ____
+- [ ] **Phil Wingate** ? 6 de septiembre ? Edad actual: ____
+- [ ] **Riko Wingate** ? 6 de septiembre ? Edad actual: ____
+- [ ] **Shuichi Saihara** ? 7 de septiembre ? Edad actual: ____
+- [ ] **Justin Kaido** ? 11 de septiembre ? Edad actual: ____
+- [ ] **Xavier Foster** ? 16 de septiembre ? Edad actual: ____
+- [ ] **Claire Lesnow** ? 20 de septiembre ? Edad actual: ____
+- [ ] **Rubí Arroyo** ? 21 de septiembre ? Edad actual: ____
+- [ ] **Chisato Nishikigi** ? 23 de septiembre ? Edad actual: ____
+- [ ] **Rikuo Nura** ? 23 de septiembre ? Edad actual: ____
+- [ ] **Thiago Valverde** ? 25 de septiembre ? Edad actual: ____
+- [ ] **Jordan Greenway** ? 26 de septiembre ? Edad actual: ____
+- [ ] **Nerea Alonso** ? 26 de septiembre ? Edad actual: ____
+- [ ] **Alejandro Luna** ? 30 de septiembre ? Edad actual: ____
+- [ ] **Rebecca Whitering** ? 30 de septiembre ? Edad actual: ____
+- [ ] **Tenka Izumo** ? 1 de octubre ? Edad actual: ____
+- [ ] **Jikan Alonso** ? 12 de octubre ? Edad actual: ____
+- [ ] **Wang Qing** ? 13 de octubre ? Edad actual: ____
+- [ ] **Corvus Cardson** ? 14 de octubre ? Edad actual: ____
+- [ ] **Victor Koga** ? 16 de octubre ? Edad actual: ____
+- [ ] **Yuichiro Hyakuya** ? 16 de octubre ? Edad actual: ____
+- [ ] **Fran Castillo** ? 19 de octubre ? Edad actual: ____
+- [ ] **Nico Koga** ? 19 de octubre ? Edad actual: ____
+- [ ] **Serval Hoshihara** ? 1 de noviembre ? Edad actual: ____
+- [ ] **Alya Mikhailovna** ? 7 de noviembre ? Edad actual: ____
+- [ ] **Nakaoka Foster** ? 8 de noviembre ? Edad actual: ____
+- [ ] **Bronya Wingate** ? 11 de noviembre ? Edad actual: ____
+- [ ] **Jenny Heart** ? 14 de noviembre ? Edad actual: ____
+- [ ] **Jewls Pyrite** ? 15 de noviembre ? Edad actual: ____
+- [ ] **Miu Iruma** ? 16 de noviembre ? Edad actual: ____
+- [ ] **Aika Wingate** ? 30 de noviembre ? Edad actual: ____
+- [ ] **David Villa** ? 3 de diciembre ? Edad actual: ____
+- [ ] **Lylia Cardson** ? 4 de diciembre ? Edad actual: ____
+- [ ] **Kuro Fujimoto** ? 8 de diciembre ? Edad actual: ____
+- [ ] **Gundham Tanaka** ? 14 de diciembre ? Edad actual: ____
+- [ ] **Hiro Ryugasaki** ? 19 de diciembre ? Edad actual: ____
+- [ ] **Fubuki Sumiye** ? 22 de diciembre ? Edad actual: ____
+- [ ] **Icy Scarf** ? 22 de diciembre ? Edad actual: ____
+- [ ] **Candela Alonso** ? 24 de diciembre ? Edad actual: ____
+- [ ] **Akari Foster** ? 25 de diciembre ? Edad actual: ____
+- [ ] **Iker Fernando Alonso** ? 25 de diciembre ? Edad actual: ____
+- [ ] **Shinoa Hiragi** ? 25 de diciembre ? Edad actual: ____
+- [ ] **Jiro Yakuin** ? 26 de diciembre ? Edad actual: ____
+
+## Pok?mon (13)
+
+- [ ] **Serena Vaniville** ? 2 de febrero ? Edad actual: ____
+- [ ] **Mencía Scarlett** ? 12 de febrero ? Edad actual: ____
+- [ ] **Mogari Shishikuno** ? 19 de abril ? Edad actual: ____
+- [ ] **Aoyagi Toya** ? 25 de mayo ? Edad actual: ____
+- [ ] **Carla Black** ? 28 de mayo ? Edad actual: ____
+- [ ] **Verónica Collins** ? 14 de julio ? Edad actual: ____
+- [ ] **Gabriel Pegaso** ? 4 de agosto ? Edad actual: ____
+- [ ] **Gama Sazare** ? 19 de agosto ? Edad actual: ____
+- [ ] **Judith** ? 27 de agosto ? Edad actual: ____
+- [ ] **Justin Kaido** ? 4 de septiembre ? Edad actual: ____
+- [ ] **Matís Hugh** ? 12 de octubre ? Edad actual: ____
+- [ ] **Pyra Magnum** ? 1 de diciembre ? Edad actual: ____
+- [ ] **Link Ordon** ? 21 de diciembre ? Edad actual: ____
+
