@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08080c">
+  <meta name="description" content="Elige un universo y convierte tu historia dentro del rol en leyenda.">
+  <title>Copero del Rol · Crea tu leyenda</title>
+  <style>
+    :root{--bg:#08080c;--ink:#f7f5ec;--muted:#92919b;--line:rgba(255,255,255,.11);--lime:#edff54}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}a{color:inherit;text-decoration:none}.shell{width:min(1180px,calc(100% - 44px));margin:auto}
+    .nav{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);position:relative;z-index:5}.brand{display:flex;align-items:center;gap:12px;font-family:Impact,"Arial Narrow",sans-serif;font-size:22px;letter-spacing:.08em}.brand-mark{width:34px;height:34px;display:grid;place-items:center;border:2px solid var(--lime);color:var(--lime);transform:skew(-9deg)}.back{color:#aaa9b3;font-size:11px;letter-spacing:.09em;text-transform:uppercase;transition:.2s}.back:hover{color:white}.online{display:flex;align-items:center;gap:8px;color:#aaa9b3;font-size:10px;letter-spacing:.08em}.online i{width:7px;height:7px;border-radius:50%;background:#b6ee57;box-shadow:0 0 10px #b6ee57}
+    .hero{min-height:610px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}.hero:before{content:"";position:absolute;inset:0;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:68px 68px;mask-image:linear-gradient(to bottom,transparent,#000 30%,transparent 92%)}.hero:after{content:"";position:absolute;width:700px;height:280px;border-radius:50%;background:rgba(237,255,84,.06);filter:blur(90px);top:230px}.pill,.kicker{font-size:9px;font-weight:800;letter-spacing:.24em;color:var(--lime)}.pill{padding:9px 14px;border:1px solid rgba(237,255,84,.28);background:rgba(237,255,84,.05);position:relative;z-index:1}.hero h1{font-family:Impact,"Arial Narrow",sans-serif;font-size:clamp(76px,12vw,145px);font-weight:900;line-height:.76;letter-spacing:-.025em;text-transform:uppercase;margin:48px 0 36px;position:relative;z-index:1}.hero h1 span{color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.48)}.hero p{max-width:620px;color:#a7a6ae;line-height:1.75;font-size:14px;margin:0;position:relative;z-index:1}.hero-cta{margin-top:30px;background:var(--lime);color:#111207;font-weight:900;text-transform:uppercase;letter-spacing:.09em;font-size:10px;padding:16px 20px;display:inline-flex;gap:32px;align-items:center;position:relative;z-index:1;transition:.2s}.hero-cta:hover{transform:translateY(-3px);box-shadow:0 12px 35px rgba(237,255,84,.2)}
+    .games{padding:105px 0 120px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:45px}.section-head h2{font-family:Impact,"Arial Narrow",sans-serif;text-transform:uppercase;font-size:clamp(36px,5vw,58px);font-weight:900;line-height:1;margin:12px 0 0;letter-spacing:.01em}.section-head p{width:330px;margin:0;color:var(--muted);font-size:12px;line-height:1.7}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{--accent:#fff;min-height:560px;border:1px solid var(--line);background:#101015;position:relative;overflow:hidden;display:flex;flex-direction:column;transition:.25s}.card:hover{transform:translateY(-7px);border-color:var(--accent)}.card:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 12%,color-mix(in srgb,var(--accent),transparent 66%),transparent 38%);opacity:.62}.card-number{position:absolute;z-index:2;top:19px;left:20px;color:rgba(255,255,255,.38);font-size:11px}.art{height:225px;display:grid;place-items:center;position:relative}.orbit{position:absolute;width:190px;height:190px;border:1px solid color-mix(in srgb,var(--accent),transparent 58%);border-radius:50%;animation:spin 16s linear infinite}.orbit:after{content:"";position:absolute;width:6px;height:6px;background:var(--accent);border-radius:50%;top:17px;right:33px;box-shadow:0 0 12px var(--accent)}.emblem{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;position:relative;z-index:1;background:var(--accent);color:#09090c;font-family:Impact,"Arial Narrow",sans-serif;font-size:45px;box-shadow:0 0 44px color-mix(in srgb,var(--accent),transparent 55%)}.monster .emblem{border:25px solid #f7f5ec;background:#111;color:transparent;box-shadow:0 -38px 0 -1px #e94c48 inset,0 0 42px rgba(255,216,74,.28)}.monster .emblem:before{content:"";position:absolute;width:110px;height:10px;background:#111;top:27px}.monster .emblem:after{content:"";position:absolute;width:24px;height:24px;background:#fff;border:7px solid #111;border-radius:50%;top:20px}.body{padding:5px 26px 26px;margin-top:auto;position:relative;z-index:2}.eyebrow{font-size:8px;letter-spacing:.22em;font-weight:900;color:var(--accent)}.body h3{font-family:Impact,"Arial Narrow",sans-serif;text-transform:uppercase;font-size:42px;line-height:.95;letter-spacing:.01em;margin:10px 0 7px}.body strong{font-size:11px;color:#c7c6cc}.body p{color:#83828c;font-size:11px;line-height:1.65;min-height:54px;margin:16px 0}.stats{display:flex;gap:7px;flex-wrap:wrap}.stats span{font-size:8px;text-transform:uppercase;letter-spacing:.08em;padding:7px 8px;border:1px solid var(--line);color:#96959e}.play{width:100%;margin-top:22px;padding:18px 0 0;border:0;border-top:1px solid var(--line);background:transparent;color:white;text-align:left;text-transform:uppercase;letter-spacing:.12em;font-weight:900;font-size:9px;display:flex;justify-content:space-between;cursor:pointer}.play b{font-size:15px;color:var(--accent)}
+    .how{padding:90px 0 105px;border-top:1px solid var(--line)}.steps{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin-top:30px}.step{padding:36px;min-height:180px}.step+.step{border-left:1px solid var(--line)}.step b{color:var(--lime);font-size:11px}.step h3{font-family:Impact,"Arial Narrow",sans-serif;text-transform:uppercase;font-size:24px;letter-spacing:.03em;margin:22px 0 8px}.step p{color:var(--muted);font-size:11px;line-height:1.6;margin:0}footer{height:120px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;color:#6f6e77;font-size:9px;letter-spacing:.08em}
+    .modal-bg{position:fixed;inset:0;z-index:50;background:rgba(2,2,5,.84);backdrop-filter:blur(12px);display:none;place-items:center;padding:20px}.modal-bg.open{display:grid}.modal{--accent:var(--lime);width:min(650px,100%);max-height:calc(100vh - 40px);overflow:auto;background:#111116;border:1px solid color-mix(in srgb,var(--accent),transparent 50%);padding:46px;position:relative;box-shadow:0 30px 100px #000}.modal:before{content:"";position:absolute;height:3px;left:0;right:0;top:0;background:var(--accent)}.close{position:absolute;top:12px;right:17px;border:0;background:none;color:#8c8b94;font-size:26px;cursor:pointer}.modal h2{font-family:Impact,"Arial Narrow",sans-serif;font-size:44px;line-height:.98;text-transform:uppercase;letter-spacing:.02em;margin:14px 0}.intro,.result p,.event-copy{color:#94939d;font-size:12px;line-height:1.7}.modal form{margin-top:28px}.modal form>label,.modal legend,.field-label{display:block;color:#c2c1c7;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.13em;margin-bottom:10px}.modal input[type=text],.character-select{width:100%;background:#09090d;border:1px solid var(--line);color:white;padding:15px 16px;outline:none}.modal input[type=text]:focus,.character-select:focus{border-color:var(--accent)}fieldset{border:0;padding:0;margin:24px 0}.origins{display:grid;gap:7px}.origin{border:1px solid var(--line);padding:14px;display:flex;align-items:center;justify-content:space-between;color:#9a99a2;font-size:12px;cursor:pointer}.origin.active{color:#fff;border-color:var(--accent);background:color-mix(in srgb,var(--accent),transparent 93%)}.origin input{position:absolute;opacity:0}.origin b{color:var(--accent)}.start{width:100%;border:0;background:var(--accent);color:#0c0c0f;padding:17px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;font-size:10px;cursor:pointer;display:flex;justify-content:space-between}.start:disabled{opacity:.35;cursor:not-allowed}.result{text-align:center}.result-icon{width:88px;height:88px;margin:0 auto 24px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#111;font-family:Impact,"Arial Narrow",sans-serif;font-size:36px;box-shadow:0 0 40px color-mix(in srgb,var(--accent),transparent 65%)}.route{border:1px solid var(--line);padding:12px;margin:24px 0;color:var(--accent);font-size:9px;letter-spacing:.1em}
+    .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:24px 0}.mode-card{min-height:125px;border:1px solid var(--line);background:#0b0b10;color:#aaa9b3;padding:18px;text-align:left;cursor:pointer;transition:.2s}.mode-card.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent),transparent 94%);color:white}.mode-card b{display:block;color:var(--accent);font-family:Impact,"Arial Narrow",sans-serif;font-size:23px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}.mode-card span{font-size:10px;line-height:1.5}.setup-panel{margin:20px 0 25px}.setup-panel[hidden]{display:none}.existing-note{color:#777680;font-size:10px;line-height:1.55;margin:9px 0 0}.game-hud{margin:-8px 0 26px;padding-bottom:20px;border-bottom:1px solid var(--line)}.hud-top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:12px}.hud-player{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:white}.hud-chapter{font-size:9px;letter-spacing:.1em;color:var(--accent)}.progress{height:3px;background:#28282f;overflow:hidden}.progress i{display:block;height:100%;background:var(--accent);transition:width .35s}.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}.stat-chip{border:1px solid var(--line);padding:8px;text-align:center}.stat-chip b{display:block;color:white;font-size:14px}.stat-chip span{display:block;color:#777680;font-size:7px;text-transform:uppercase;letter-spacing:.07em;margin-top:2px}.event-label{color:var(--accent);font-size:8px;letter-spacing:.2em;font-weight:900;text-transform:uppercase}.event-title{font-family:Impact,"Arial Narrow",sans-serif;text-transform:uppercase;font-size:39px;line-height:1;margin:11px 0 13px;letter-spacing:.02em}.choices{display:grid;gap:8px;margin-top:24px}.choice{width:100%;border:1px solid var(--line);background:#0b0b10;color:#dddce3;padding:15px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;gap:14px;transition:.2s}.choice:hover,.choice:focus-visible{border-color:var(--accent);background:color-mix(in srgb,var(--accent),transparent 94%);outline:none}.choice span{font-size:11px;line-height:1.45}.choice b{color:var(--accent)}.outcome{border-left:3px solid var(--accent);background:#0b0b10;padding:17px;margin:23px 0}.outcome strong{display:block;color:var(--accent);font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}.outcome p{color:#b1b0b8;font-size:12px;line-height:1.65;margin:0}.delta{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.delta span{border:1px solid var(--line);color:#aaa9b3;font-size:8px;padding:6px 8px;text-transform:uppercase}.career-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:22px 0}.summary-cell{border:1px solid var(--line);padding:13px}.summary-cell span{display:block;color:#777680;font-size:8px;text-transform:uppercase;letter-spacing:.08em}.summary-cell b{display:block;font-size:17px;margin-top:4px}.ending-title{font-family:Impact,"Arial Narrow",sans-serif;color:var(--accent);font-size:30px;text-transform:uppercase;letter-spacing:.03em;margin:10px 0}.final-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ghost-button{border:1px solid var(--line);background:transparent;color:#bbb;cursor:pointer;padding:16px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}@keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:850px){.grid{grid-template-columns:1fr}.card{min-height:500px}.art{height:190px}.section-head{align-items:start;flex-direction:column}.section-head p{width:min(100%,440px)}.steps{grid-template-columns:1fr}.step+.step{border-left:0;border-top:1px solid var(--line)}}
+    @media(max-width:600px){.shell{width:min(100% - 28px,1180px)}.nav{height:70px}.online{display:none}.hero{min-height:590px}.hero h1{font-size:70px}.hero p{font-size:12px}.games{padding:78px 0}.body h3{font-size:37px}.step{padding:27px;min-height:150px}footer{height:155px;padding:27px 0;align-items:flex-start;flex-direction:column}.modal{padding:40px 23px 26px}.modal h2{font-size:36px}.mode-grid,.final-actions{grid-template-columns:1fr}.mode-card{min-height:100px}.stat-row{grid-template-columns:repeat(2,1fr)}.event-title{font-size:34px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.orbit{animation:none}*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <nav class="nav shell">
+    <a class="brand" href="#inicio"><span class="brand-mark">C</span><span>COPERO DEL ROL</span></a>
+    <a class="back" href="../index.html">← Volver a Minijuegos</a>
+    <span class="online"><i></i> 3 mundos activos</span>
+  </nav>
+
+  <main>
+    <section class="hero shell" id="inicio">
+      <span class="pill">TEMPORADA CERO · ELIGE TU UNIVERSO</span>
+      <h1>Tu historia.<br><span>Tu leyenda.</span></h1>
+      <p>Tres mundos conectados con el lore de nuestros servidores. Toma decisiones, crea alianzas y descubre qué final te estaba esperando.</p>
+      <a class="hero-cta" href="#mundos">Elegir aventura <span>↓</span></a>
+    </section>
+
+    <section class="games shell" id="mundos">
+      <div class="section-head">
+        <div><span class="kicker">TRES CAMINOS. UNA DECISIÓN.</span><h2>¿En qué mundo dejarás tu huella?</h2></div>
+        <p>Cada partida será distinta. Tus decisiones, alianzas y rivalidades cambiarán la historia del rol.</p>
+      </div>
+      <div class="grid" id="gameGrid"></div>
+    </section>
+
+    <section class="how shell">
+      <span class="kicker">UNA CARRERA EN TRES PASOS</span>
+      <div class="steps">
+        <article class="step"><b>01</b><h3>Elige tu origen</h3><p>Cada comienzo abre rutas, aliados y peligros diferentes.</p></article>
+        <article class="step"><b>02</b><h3>Toma decisiones</h3><p>Los personajes y acontecimientos del servidor reaccionan a tus pasos.</p></article>
+        <article class="step"><b>03</b><h3>Comparte tu leyenda</h3><p>Consigue un final único y reta al resto del servidor a superarlo.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell"><span class="brand"><span class="brand-mark">C</span>COPERO</span><span>EL LORE DEL SERVIDOR, CONVERTIDO EN LEYENDA</span><span>PRIMERA EDICIÓN · 2026</span></footer>
+
+  <div class="modal-bg" id="modalBg">
+    <section class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="close" id="closeModal" type="button" aria-label="Cerrar">×</button>
+      <div id="modalContent"></div>
+    </section>
+  </div>
+
+  <script src="../../dragon-dex-datos.js"></script>
+  <script src="../../centro-inazuma-datos.js"></script>
+  <script src="../../Pokemon/entrenadores-datos.js"></script>
+  <script>
+    const games = [
+      {
+        id: "ki", universe: "UNIVERSO DRAGON BALL", title: "Camino del guerrero", subtitle: "Tu poder. Tu saga.",
+        text: "Elige tu raza, encuentra un maestro y decide qué sacrificarás para proteger —o dominar— el universo del servidor.",
+        a: "#ff7138", icon: "四", stats: ["8 capítulos", "5+ finales", "5–8 min"],
+        statDefs: { poder: "Poder", control: "Control", honor: "Honor", fama: "Fama" },
+        origins: [
+          { name: "Saiyan exiliado", bonus: { poder: 12, honor: -3 } },
+          { name: "Humano prodigio", bonus: { control: 10, fama: 3 } },
+          { name: "Guerrero namekiano", bonus: { honor: 10, control: 5 } }
+        ],
+        events: [
+          { title: "El poder despierta", text: "Una descarga de ki sacude la zona de entrenamiento. Todos esperan que demuestres quién eres.", choices: [
+            { label: "Liberar todo tu poder delante de todos", effects: { poder: 12, fama: 6, control: -5 }, outcome: "La tierra tiembla bajo tus pies. Tu nombre empieza a circular, aunque controlar esa fuerza será otro combate." },
+            { label: "Contener el aura y estudiar a los presentes", effects: { control: 11, poder: 3 }, outcome: "Nadie ve tu límite real. Has aprendido más observando de lo que otros lograron presumiendo." },
+            { label: "Ayudar a los novatos a resistir la presión", effects: { honor: 11, fama: 3 }, outcome: "Tu primera victoria no es sobre un rival, sino sobre el miedo de quienes entrenan contigo." }
+          ]},
+          { title: "Un maestro improbable", text: "Dos maestros quieren entrenarte: uno promete fuerza inmediata; el otro, dominio absoluto del ki.", choices: [
+            { label: "Aceptar el entrenamiento brutal", effects: { poder: 12, control: -3 }, outcome: "Cada golpe derriba un límite. También deja claro que el poder sin pausa pasa factura." },
+            { label: "Aprender respiración y control del ki", effects: { control: 12, honor: 3 }, outcome: "Tu aura deja de desbordarse. Por primera vez, el poder responde exactamente a tu voluntad." },
+            { label: "Rechazarlos y crear tu propio método", effects: { fama: 8, poder: 5, honor: -2 }, outcome: "La decisión parece arrogante, pero tu estilo empieza a ser imposible de imitar." }
+          ]},
+          { title: "El Torneo del Horizonte", text: "Tu rival cae fuera del ring, pero una grieta en el suelo podría arrastrarlo al vacío.", choices: [
+            { label: "Salvarlo aunque pierdas el combate", effects: { honor: 15, fama: 4 }, outcome: "El estadio guarda silencio antes de estallar en aplausos. Has perdido un combate y ganado algo mucho mayor." },
+            { label: "Asegurar la victoria antes de ayudar", effects: { poder: 7, fama: 10, honor: -8 }, outcome: "Levantas el trofeo bajo miradas divididas. Nadie discute el resultado, pero muchos recuerdan el precio." },
+            { label: "Usar el ki para salvarlo sin salir del ring", effects: { control: 10, poder: 4, honor: 5 }, outcome: "Una maniobra perfecta te da la victoria y salva a tu rival. Los maestros toman nota." }
+          ]},
+          { title: "El Sello de Tao", text: "Un sello prohibido aparece entre los archivos. Ofrece un salto de poder, pero nadie conoce todavía su verdadero coste.", choices: [
+            { label: "Vincularte con el sello", effects: { poder: 16, control: -10, honor: -4 }, outcome: "El sello arde sobre tu piel. El poder llega de inmediato; también una presencia que antes no estaba allí.", flag: "tao" },
+            { label: "Entregarlo para que sea custodiado", effects: { honor: 12, fama: 4 }, outcome: "Renuncias al atajo. Quienes conocen los Sellos de Tao empiezan a confiar en ti." },
+            { label: "Estudiarlo sin activarlo", effects: { control: 11, poder: 3 }, outcome: "Descubres patrones que otros ignoraron. Quizá el sello no sea un arma, sino una prueba." }
+          ]},
+          { title: "La ciudad bajo ataque", text: "Una fuerza desconocida irrumpe mientras los guerreros más fuertes están lejos. Solo hay tiempo para una estrategia.", choices: [
+            { label: "Enfrentarte al líder de frente", effects: { poder: 13, fama: 8, control: -3 }, outcome: "El choque ilumina el cielo. Resistes el tiempo suficiente para que la ciudad pueda evacuar." },
+            { label: "Coordinar la defensa y proteger civiles", effects: { honor: 10, control: 7 }, outcome: "La ciudad no recuerda una gran explosión, sino que todos regresaron vivos a casa." },
+            { label: "Tender una trampa usando el terreno", effects: { control: 12, fama: 4 }, outcome: "El invasor cae sin entender cuándo perdió. La inteligencia también puede superar niveles de poder." }
+          ]},
+          { title: "La transformación", text: "Al límite de tus fuerzas, una forma nueva intenta emerger. El cambio podría salvarte o consumirte.", choices: [
+            { label: "Dejar que la rabia tome el control", effects: { poder: 18, control: -12 }, outcome: "La transformación estalla con una violencia descomunal. Ganas, pero apenas recuerdas cómo." , flag: "forma"},
+            { label: "Pensar en quienes confían en ti", effects: { honor: 8, control: 9, poder: 6 }, outcome: "La forma responde a un propósito, no a la rabia. Su energía es estable y completamente tuya.", flag: "forma" },
+            { label: "Rechazar la transformación y luchar en base", effects: { control: 13, honor: 5 }, outcome: "Vences sin depender de una forma desconocida. Has demostrado que la base también puede romper límites." }
+          ]},
+          { title: "El rival definitivo", text: "Un antiguo aliado se interpone en tu camino. Cree que solo un poder absoluto puede mantener el universo a salvo.", choices: [
+            { label: "Derrotarlo sin contenerte", effects: { poder: 14, fama: 7, honor: -5 }, outcome: "El combate termina en un cráter. El universo conoce tu fuerza, aunque la amistad quizá no sobreviva." },
+            { label: "Intentar hacerlo entrar en razón", effects: { honor: 12, control: 5 }, outcome: "Tus palabras atraviesan una defensa que ningún ataque pudo romper." },
+            { label: "Pelear hasta que ambos comprendáis al otro", effects: { poder: 7, honor: 7, control: 5 }, outcome: "Cada golpe es una respuesta. Cuando termina, ninguno piensa igual que al comenzar." }
+          ]},
+          { title: "La batalla por el universo", text: "El enemigo final reúne energía suficiente para borrar todo lo conocido. Solo queda una decisión.", choices: [
+            { label: "Lanzar tu técnica definitiva", effects: { poder: 15, fama: 10 }, outcome: "Tu ataque divide el cielo y queda grabado para siempre en la historia del servidor." },
+            { label: "Compartir tu energía con todos los guerreros", effects: { honor: 13, control: 8 }, outcome: "Miles de auras se convierten en una. La victoria pertenece a todo el universo." },
+            { label: "Absorber el ataque y arriesgarlo todo", effects: { control: 12, poder: 8, honor: 4 }, outcome: "Durante un instante sostienes el fin entre las manos. Después, el cielo vuelve a ser azul." }
+          ]},
+        ],
+        endings: [
+          { title: "Guardián del Universo", test: s => s.stats.honor >= 85, text: "Tu poder terminó siendo importante, pero tu forma de utilizarlo convirtió tu nombre en símbolo de esperanza." },
+          { title: "Poder sin Límites", test: s => s.stats.poder >= 92, text: "Superaste todas las escalas conocidas. Desde entonces, cada nuevo enemigo pregunta primero por ti." },
+          { title: "Maestro del Ki", test: s => s.stats.control >= 88, text: "Alcanzaste un dominio que parecía imposible. No desperdicias ni una chispa de energía." },
+          { title: "Portador del Tao", test: s => s.flags.tao && s.stats.control >= 65, text: "Dominaste aquello que debía dominarte y escribiste un nuevo capítulo en la historia de los Sellos de Tao." },
+          { title: "Leyenda de los Torneos", test: s => s.stats.fama >= 82, text: "Los estadios corean tu nombre. Tu carrera se convirtió en la medida con la que se compara a todos los guerreros." }
+        ],
+        defaultEnding: { title: "Guerrero de Élite", text: "Construiste una carrera respetada, llena de batallas y decisiones que ya forman parte del lore." }
+      },
+      {
+        id: "monster", universe: "MUNDO POKÉMON", title: "Maestro de Etruria", subtitle: "Atrápalos. Entrénalos. Haz historia.",
+        text: "Recibe tu primer compañero, recorre Etruria y deja tu nombre entre los entrenadores que cambiaron la región.",
+        a: "#ffd84a", icon: "●", stats: ["8 capítulos", "5+ finales", "5–8 min"],
+        statDefs: { equipo: "Equipo", vinculo: "Vínculo", medallas: "Medallas", fama: "Fama" },
+        origins: [
+          { name: "Villa Arcanum", bonus: { vinculo: 10, equipo: 4 } },
+          { name: "Entrenador de otra región", bonus: { fama: 8, medallas: 3 } },
+          { name: "Clan de Etruria", bonus: { equipo: 9, fama: 3 } }
+        ],
+        events: [
+          { title: "El primer compañero", text: "Tres Pokémon se acercan a ti en Villa Arcanum. Uno es fuerte, otro curioso y el tercero parece asustado.", choices: [
+            { label: "Elegir al más fuerte", effects: { equipo: 11, fama: 3 }, outcome: "Tu compañero demuestra talento desde el primer combate, aunque todavía debe aprender a confiar." },
+            { label: "Elegir al que siente curiosidad por ti", effects: { vinculo: 12, equipo: 3 }, outcome: "No deja de seguirte. La aventura comienza antes incluso de abandonar la plaza." },
+            { label: "Acercarte al que tiene miedo", effects: { vinculo: 14, fama: -2 }, outcome: "Tardáis horas en dar el primer paso, pero desde entonces ninguno vuelve a caminar solo." }
+          ]},
+          { title: "La Medalla Muscidae", text: "Gonta, líder de tipo Bicho, cubre el campo con una estrategia que encierra a tu equipo poco a poco.", choices: [
+            { label: "Atacar antes de que cierre la trampa", effects: { equipo: 10, medallas: 7 }, outcome: "Rompes la red con una ofensiva veloz y consigues tu primera gran victoria." },
+            { label: "Confiar en una idea de tu compañero", effects: { vinculo: 10, medallas: 7 }, outcome: "Tu Pokémon encuentra una salida que tú no habías visto. La Medalla Muscidae es de ambos." },
+            { label: "Cambiar constantemente de Pokémon", effects: { equipo: 7, fama: 5, medallas: 6 }, outcome: "La estrategia desconcierta al gimnasio. El público celebra cada cambio como una jugada maestra." }
+          ]},
+          { title: "Una ruta cerrada", text: "Un derrumbe bloquea el camino. Hay Pokémon salvajes atrapados y la siguiente ciudad queda al otro lado.", choices: [
+            { label: "Detener el viaje para rescatarlos", effects: { vinculo: 11, fama: 4 }, outcome: "Llegas tarde, cubierto de polvo, pero con todos los Pokémon a salvo." },
+            { label: "Abrir un camino trabajando en equipo", effects: { equipo: 10, vinculo: 4 }, outcome: "Cada miembro aporta algo distinto. La ruta vuelve a abrirse antes del anochecer." },
+            { label: "Buscar una ruta secreta por la montaña", effects: { medallas: 4, fama: 7 }, outcome: "Descubres un sendero olvidado y una historia que ningún mapa de Etruria recogía." }
+          ]},
+          { title: "La Medalla Estatua", text: "Holo convierte el combate de tipo Roca en una prueba de paciencia. Cada ataque directo fortalece su defensa.", choices: [
+            { label: "Insistir hasta quebrar la defensa", effects: { equipo: 12, medallas: 8, vinculo: -3 }, outcome: "La defensa finalmente cae. Ha sido una victoria dura, pero imposible de discutir." },
+            { label: "Usar el escenario a tu favor", effects: { medallas: 9, fama: 5 }, outcome: "Cambias el ritmo del combate y la roca más sólida termina fuera de posición." },
+            { label: "Dejar que tu Pokémon improvise", effects: { vinculo: 11, medallas: 7 }, outcome: "Una decisión inesperada abre el combate. Holo sonríe antes de entregarte la Medalla Estatua." }
+          ]},
+          { title: "La oferta del coleccionista", text: "Un coleccionista ofrece una fortuna por el Pokémon más raro de tu equipo. Promete tratarlo bien.", choices: [
+            { label: "Rechazar la oferta sin escucharla", effects: { vinculo: 14, fama: 2 }, outcome: "Tu compañero entiende cada palabra. Desde ese momento combate con una confianza diferente." },
+            { label: "Preguntar qué quiere tu Pokémon", effects: { vinculo: 10, equipo: 5 }, outcome: "La respuesta es clara: quiere continuar la aventura contigo." },
+            { label: "Aceptar para financiar la carrera", effects: { fama: 12, equipo: 5, vinculo: -15 }, outcome: "Tu equipo mejora, pero en cada victoria queda un espacio que nadie consigue llenar.", flag: "venta" }
+          ]},
+          { title: "La Medalla Centella", text: "Ciel llena el gimnasio de campos eléctricos. Tu estrategia inicial deja de funcionar en segundos.", choices: [
+            { label: "Arriesgar con un ataque inesperado", effects: { medallas: 10, fama: 9, equipo: 3 }, outcome: "El estadio se queda a oscuras tras el impacto. Cuando vuelve la luz, has ganado." },
+            { label: "Resistir hasta encontrar el patrón", effects: { equipo: 9, medallas: 9 }, outcome: "Cada descarga revela una pista. Finalmente anticipas el movimiento decisivo." },
+            { label: "Confiar en el Pokémon con peor ventaja", effects: { vinculo: 13, medallas: 8 }, outcome: "Contra todo pronóstico, responde con el mejor combate de su vida." }
+          ]},
+          { title: "La noche de Etruria", text: "Una organización desconocida intenta controlar a varios Pokémon cerca de Villa Arcanum.", choices: [
+            { label: "Entrar en su base sin esperar ayuda", effects: { fama: 10, equipo: 9, vinculo: -2 }, outcome: "La incursión es caótica, pero consigues liberar a los Pokémon antes de que llegue el amanecer." },
+            { label: "Reunir a otros entrenadores del servidor", effects: { equipo: 8, vinculo: 8, fama: 5 }, outcome: "Link, Shin y otros entrenadores responden a la llamada. Nadie tiene que luchar solo." },
+            { label: "Seguirlos para descubrir quién manda", effects: { medallas: 6, fama: 7 }, outcome: "La paciencia revela una red mucho mayor. Etruria ahora sabe dónde golpear." }
+          ]},
+          { title: "La Liga de Etruria", text: "La final está empatada. Solo queda un Pokémon en cada lado y todo el estadio espera tu última orden.", choices: [
+            { label: "Ordenar la técnica más poderosa", effects: { equipo: 12, fama: 12, medallas: 10 }, outcome: "El ataque atraviesa el campo y la Liga conoce a su nuevo campeón." },
+            { label: "Dejar que tu compañero decida", effects: { vinculo: 15, medallas: 9, fama: 5 }, outcome: "No das ninguna orden. Tu compañero te mira, comprende y realiza el movimiento perfecto." },
+            { label: "Cambiar la estrategia en el último segundo", effects: { medallas: 12, equipo: 7, fama: 7 }, outcome: "La jugada engaña incluso a los comentaristas. La final termina con tu nombre en todas las pantallas." }
+          ]}
+        ],
+        endings: [
+          { title: "Campeón de Etruria", test: s => s.stats.medallas >= 88, text: "Conquistaste la Liga y tu recorrido por Etruria ya forma parte de su historia oficial." },
+          { title: "Compañeros para Siempre", test: s => s.stats.vinculo >= 90, text: "Los trofeos importan poco al lado del vínculo que construiste. Tu equipo te seguiría a cualquier región." },
+          { title: "Entrenador de Élite", test: s => s.stats.equipo >= 88, text: "Convertiste un grupo de Pokémon distintos en un equipo capaz de superar cualquier combate." },
+          { title: "Estrella de la Liga", test: s => s.stats.fama >= 84, text: "Tu estilo cambió la forma de combatir en Etruria. Nuevos entrenadores intentan imitar cada una de tus jugadas." },
+          { title: "Victoria Vacía", test: s => s.flags.venta, text: "Llegaste lejos, pero el compañero que vendiste sigue apareciendo en tus recuerdos después de cada victoria." }
+        ],
+        defaultEnding: { title: "Entrenador de Etruria", text: "Completaste una aventura llena de medallas, rutas y compañeros que dejaron huella en la región." }
+      },
+      {
+        id: "eleven", universe: "UNIVERSO INAZUMA", title: "Leyenda del campo", subtitle: "Once jugadores. Un destino.",
+        text: "Escoge tu posición, crea tu supertécnica y lleva a tu equipo desde el instituto hasta lo más alto del fútbol.",
+        a: "#52b8ff", icon: "⚡", stats: ["8 capítulos", "5+ finales", "5–8 min"],
+        statDefs: { talento: "Talento", equipo: "Equipo", coraje: "Coraje", fama: "Fama" },
+        origins: [
+          { name: "Cantera del Raimon", bonus: { equipo: 10, coraje: 4 } },
+          { name: "Academia de élite", bonus: { talento: 11, fama: 3 } },
+          { name: "Equipo callejero", bonus: { coraje: 10, talento: 4 } }
+        ],
+        events: [
+          { title: "La prueba del Raimon", text: "Renzu Itō e Hikaru Hoshihara observan desde la banda. Solo tienes diez minutos para ganarte un puesto.", choices: [
+            { label: "Intentar marcar desde cualquier posición", effects: { talento: 12, fama: 5, equipo: -4 }, outcome: "Tu disparo golpea el larguero, rebota y entra. Nadie olvida tu nombre, aunque algunos compañeros fruncen el ceño." },
+            { label: "Crear la ocasión perfecta para otro jugador", effects: { equipo: 13, fama: 2 }, outcome: "El gol no figura a tu nombre, pero el entrenador sabe perfectamente quién lo hizo posible." },
+            { label: "Pedir marcar al delantero más fuerte", effects: { coraje: 11, talento: 5 }, outcome: "El duelo paraliza el entrenamiento. No ganas con facilidad, pero demuestras que no retrocedes." }
+          ]},
+          { title: "Tu primera supertécnica", text: "El entrenamiento termina, pero tú sigues en el campo. Es el momento de definir qué clase de jugador serás.", choices: [
+            { label: "Crear una técnica individual demoledora", effects: { talento: 13, fama: 4 }, outcome: "La nueva técnica deja una marca en el césped y un nombre en la memoria de todos." },
+            { label: "Diseñar una técnica combinada", effects: { equipo: 12, talento: 4 }, outcome: "Después de decenas de intentos, dos movimientos se convierten en uno solo." },
+            { label: "Crear una técnica que solo aparezca bajo presión", effects: { coraje: 12, talento: 5 }, outcome: "No funciona durante horas. Cuando todos están a punto de rendirse, por fin despierta." }
+          ]},
+          { title: "Raimon contra Protocolo Omega", text: "El rival controla el ritmo y el marcador está en contra. El vestuario espera una idea antes de volver al campo.", choices: [
+            { label: "Cambiar el sistema sin pedir permiso", effects: { talento: 8, coraje: 9, fama: 4 }, outcome: "La apuesta parece una locura hasta que el primer pase rompe todas las líneas rivales." },
+            { label: "Recordar al equipo por qué juega unido", effects: { equipo: 14, coraje: 3 }, outcome: "La segunda parte comienza con once jugadores moviéndose como uno solo." },
+            { label: "Provocar al capitán rival para sacarlo del partido", effects: { fama: 8, talento: 6, equipo: -3 }, outcome: "El plan funciona, aunque la victoria deja una discusión pendiente en el vestuario." }
+          ]},
+          { title: "La oferta de Galaxia", text: "Un representante de Galaxia te ofrece protagonismo inmediato. Raimon no puede prometerte que siempre serás titular.", choices: [
+            { label: "Fichar por Galaxia", effects: { fama: 13, talento: 8, equipo: -8 }, outcome: "Las cámaras esperan en tu presentación. Empieza una etapa brillante y mucho más solitaria.", flag: "transfer" },
+            { label: "Quedarte y luchar por el puesto", effects: { equipo: 11, coraje: 8 }, outcome: "No recibes ninguna garantía, solo un apretón de manos. Te basta." },
+            { label: "Exigir que ambos equipos jueguen un amistoso", effects: { coraje: 10, fama: 7 }, outcome: "Conviertes una negociación en un partido. El campo decidirá cuánto vales." }
+          ]},
+          { title: "El compañero lesionado", text: "Un compañero oculta una lesión antes de la semifinal. Si juega, el equipo será más fuerte, pero puede empeorar.", choices: [
+            { label: "Contárselo al entrenador", effects: { equipo: 11, fama: -2, coraje: 3 }, outcome: "Se enfada contigo durante unos minutos. Meses después admite que salvaste su carrera." },
+            { label: "Prometer cubrir su zona durante el partido", effects: { coraje: 11, equipo: 6, talento: -2 }, outcome: "Corres por dos durante noventa minutos. El equipo llega unido hasta el final." },
+            { label: "Dejar que decida por sí mismo", effects: { talento: 5, fama: 5, equipo: -4 }, outcome: "Juega un gran partido, pero el silencio del vestuario después de la victoria pesa demasiado." }
+          ]},
+          { title: "La semifinal bajo la tormenta", text: "La lluvia anula vuestra táctica habitual. Quedan cinco minutos y necesitáis un gol.", choices: [
+            { label: "Disparar desde medio campo", effects: { talento: 13, fama: 10 }, outcome: "El balón atraviesa la tormenta y entra junto al poste. El gol se repite durante años." },
+            { label: "Construir la jugada con todo el equipo", effects: { equipo: 13, talento: 4 }, outcome: "Diez pases vencen a la lluvia. El undécimo deja la portería vacía." },
+            { label: "Improvisar una supertécnica en pleno partido", effects: { coraje: 14, talento: 6 }, outcome: "Nadie entiende cómo lo hiciste, ni siquiera tú. Solo importa que el balón está dentro." }
+          ]},
+          { title: "La selección del servidor", text: "Solo queda una plaza en la convocatoria. Tu mejor amigo y tú sois los dos candidatos.", choices: [
+            { label: "Competir sin contenerte", effects: { talento: 10, fama: 8, equipo: -5 }, outcome: "Ganas la plaza limpiamente. La amistad necesitará tiempo para aceptar el resultado." },
+            { label: "Destacar todo lo que aporta tu amigo", effects: { equipo: 13, coraje: 4, fama: -3 }, outcome: "El seleccionador termina convocándoos a ambos. Dice que un jugador capaz de mejorar a otro también merece estar." },
+            { label: "Proponer una prueba jugando juntos", effects: { equipo: 8, talento: 7, fama: 4 }, outcome: "La combinación resulta tan buena que ya nadie puede imaginar la plantilla sin vosotros." }
+          ]},
+          { title: "La final mundial", text: "El capitán no puede continuar. El marcador está empatado y alguien debe asumir la última decisión de la temporada.", choices: [
+            { label: "Ponerte el brazalete y buscar el gol", effects: { coraje: 13, fama: 12, talento: 6 }, outcome: "La última jugada nace en tus botas. Cuando termina, levantas el trofeo con el brazalete puesto." },
+            { label: "Entregar el mando al equipo entero", effects: { equipo: 15, fama: 5 }, outcome: "No hay un solo capitán. Cada jugador toma la responsabilidad y la final se gana entre todos." },
+            { label: "Usar la técnica que nunca salió en entrenamiento", effects: { talento: 15, coraje: 8 }, outcome: "Por primera vez, la técnica es perfecta. El silbato final suena mientras el estadio todavía grita." }
+          ]}
+        ],
+        endings: [
+          { title: "Corazón del Raimon", test: s => s.stats.equipo >= 90, text: "No fuiste simplemente una estrella: convertiste a todos los que jugaron contigo en una versión mejor de sí mismos." },
+          { title: "As del Siglo", test: s => s.stats.talento >= 90, text: "Tus supertécnicas cambiaron el fútbol del servidor. Cada nueva generación estudia tus partidos." },
+          { title: "Héroe del Último Minuto", test: s => s.stats.coraje >= 88, text: "Cuando el partido parecía perdido, todo el estadio buscaba tu figura sobre el césped." },
+          { title: "Ídolo Mundial", test: s => s.stats.fama >= 85, text: "Conquistaste estadios, portadas y trofeos. Tu dorsal terminó siendo un símbolo." },
+          { title: "Estrella de Galaxia", test: s => s.flags.transfer, text: "El fichaje cambió tu carrera. Alcanzaste la cima lejos de casa, pagando cada paso con una nueva decisión." }
+        ],
+        defaultEnding: { title: "Leyenda del Campo", text: "Completaste una carrera llena de partidos, rivales y decisiones que ya pertenecen a la historia del servidor." }
+      }
+    ];
+
+    const existingSources = {
+      ki: (window.DRAGON_DEX_DATA?.characters || []).filter(x => x.status !== "Inactivo").map(x => ({ name: x.name, meta: `${x.role || "Guerrero/a"} · ${Number(x.basePower || 0).toLocaleString("es-ES")} poder` })),
+      monster: (window.ETRURIA_TRAINERS || []).filter(x => x.status !== "Inactivo").map(x => ({ name: x.name, meta: `${x.region || "Etruria"} · ${x.style || "Entrenador/a"}` })),
+      eleven: (window.INAZUMA_CENTER_DATA?.players || []).filter(x => x.status !== "Inactivo").map(x => ({ name: x.name, meta: `${x.team || "Sin equipo"} · ${x.positionGroup || x.position || "Jugador/a"}` }))
+    };
+
+    const grid = document.getElementById("gameGrid");
+    const bg = document.getElementById("modalBg");
+    const modal = document.getElementById("modal");
+    const content = document.getElementById("modalContent");
+    let state = null;
+
+    games.forEach((game, index) => {
+      const card = document.createElement("article");
+      card.className = `card ${game.id === "monster" ? "monster" : ""}`;
+      card.style.setProperty("--accent", game.a);
+      card.innerHTML = `<span class="card-number">0${index + 1}</span><div class="art"><span class="orbit"></span><span class="emblem">${game.icon}</span></div><div class="body"><span class="eyebrow">${game.universe} · JUGABLE</span><h3>${game.title}</h3><strong>${game.subtitle}</strong><p>${game.text}</p><div class="stats">${game.stats.map(s => `<span>${s}</span>`).join("")}</div><button class="play" type="button">Comenzar carrera <b>↗</b></button></div>`;
+      card.querySelector("button").addEventListener("click", () => openGame(game));
+      grid.appendChild(card);
+    });
+
+    function openGame(game) {
+      state = null;
+      modal.style.setProperty("--accent", game.a);
+      const existing = existingSources[game.id];
+      content.innerHTML = `
+        <span class="eyebrow">NUEVA PARTIDA · ${game.universe}</span>
+        <h2 id="modalTitle">¿Quién vivirá esta leyenda?</h2>
+        <p class="intro">Puedes introducir un personaje nuevo en el lore o tomar el control de alguien que ya existe en el servidor.</p>
+        <form id="startForm">
+          <div class="mode-grid">
+            <button class="mode-card active" type="button" data-mode="custom"><b>Nueva historia</b><span>Crea un personaje y elige su origen.</span></button>
+            <button class="mode-card" type="button" data-mode="existing"><b>Personaje del rol</b><span>Escoge entre los registros actuales del servidor.</span></button>
+          </div>
+          <div class="setup-panel" id="customPanel">
+            <label for="playerName">Nombre del protagonista</label>
+            <input id="playerName" type="text" maxlength="24" placeholder="Escribe su nombre..." autocomplete="off">
+            <fieldset><legend>Elige su origen</legend><div class="origins">${game.origins.map((origin, i) => `<label class="origin ${i === 0 ? "active" : ""}"><input type="radio" name="origin" value="${i}" ${i === 0 ? "checked" : ""}><span>${origin.name}</span><b>→</b></label>`).join("")}</div></fieldset>
+          </div>
+          <div class="setup-panel" id="existingPanel" hidden>
+            <label class="field-label" for="existingCharacter">Personaje del servidor</label>
+            <select class="character-select" id="existingCharacter">${existing.map((char, i) => `<option value="${i}">${escapeText(char.name)} — ${escapeText(char.meta)}</option>`).join("")}</select>
+            <p class="existing-note">La lista se lee directamente de los archivos actuales de Web-Rol, así que los personajes nuevos también aparecerán aquí.</p>
+          </div>
+          <button class="start" id="startButton" type="submit" disabled>Comenzar capítulo 1 <span>→</span></button>
+        </form>`;
+      bg.classList.add("open");
+      document.body.style.overflow = "hidden";
+      bindSetup(game, existing);
+    }
+
+    function bindSetup(game, existing) {
+      let mode = "custom";
+      const nameInput = document.getElementById("playerName");
+      const startButton = document.getElementById("startButton");
+      const customPanel = document.getElementById("customPanel");
+      const existingPanel = document.getElementById("existingPanel");
+      const refreshButton = () => { startButton.disabled = mode === "custom" ? !nameInput.value.trim() : existing.length === 0; };
+      nameInput.addEventListener("input", refreshButton);
+      nameInput.focus();
+      content.querySelectorAll(".mode-card").forEach(button => button.addEventListener("click", () => {
+        mode = button.dataset.mode;
+        content.querySelectorAll(".mode-card").forEach(x => x.classList.toggle("active", x === button));
+        customPanel.hidden = mode !== "custom";
+        existingPanel.hidden = mode !== "existing";
+        refreshButton();
+        if (mode === "custom") nameInput.focus();
+      }));
+      content.querySelectorAll(".origin").forEach(label => label.addEventListener("click", () => {
+        content.querySelectorAll(".origin").forEach(x => x.classList.remove("active"));
+        label.classList.add("active");
+      }));
+      document.getElementById("startForm").addEventListener("submit", event => {
+        event.preventDefault();
+        const stats = Object.fromEntries(Object.keys(game.statDefs).map(key => [key, 40]));
+        let player;
+        let origin;
+        if (mode === "custom") {
+          player = nameInput.value.trim();
+          const originIndex = Number(new FormData(event.target).get("origin"));
+          const originData = game.origins[originIndex];
+          origin = originData.name;
+          applyEffects(stats, originData.bonus);
+        } else {
+          const selected = existing[Number(document.getElementById("existingCharacter").value)];
+          player = selected.name;
+          origin = selected.meta;
+          stats[Object.keys(game.statDefs)[0]] += 7;
+          stats.fama += 5;
+        }
+        state = { game, mode, player, origin, stats, index: 0, flags: {}, decisions: [] };
+        renderEvent();
+      });
+    }
+
+    function renderHud() {
+      const progress = ((state.index + 1) / state.game.events.length) * 100;
+      return `<div class="game-hud"><div class="hud-top"><span class="hud-player">${escapeText(state.player)}</span><span class="hud-chapter">CAPÍTULO ${state.index + 1} / ${state.game.events.length}</span></div><div class="progress"><i style="width:${progress}%"></i></div><div class="stat-row">${Object.entries(state.game.statDefs).map(([key, label]) => `<div class="stat-chip"><b>${state.stats[key]}</b><span>${label}</span></div>`).join("")}</div></div>`;
+    }
+
+    function renderEvent() {
+      const event = state.game.events[state.index];
+      content.innerHTML = `${renderHud()}<span class="event-label">${state.game.universe}</span><h2 class="event-title" id="modalTitle">${event.title}</h2><p class="event-copy">${event.text}</p><div class="choices">${event.choices.map((choice, i) => `<button class="choice" type="button" data-choice="${i}"><span>${choice.label}</span><b>→</b></button>`).join("")}</div>`;
+      content.querySelectorAll(".choice").forEach(button => button.addEventListener("click", () => chooseOption(event, Number(button.dataset.choice))));
+    }
+
+    function chooseOption(event, index) {
+      const choice = event.choices[index];
+      applyEffects(state.stats, choice.effects);
+      if (choice.flag) state.flags[choice.flag] = true;
+      state.decisions.push(choice.label);
+      const delta = Object.entries(choice.effects).map(([key, value]) => `<span>${value > 0 ? "+" : ""}${value} ${state.game.statDefs[key]}</span>`).join("");
+      const last = state.index === state.game.events.length - 1;
+      content.innerHTML = `${renderHud()}<span class="event-label">DECISIÓN TOMADA</span><h2 class="event-title" id="modalTitle">${event.title}</h2><div class="outcome"><strong>Consecuencia</strong><p>${choice.outcome}</p><div class="delta">${delta}</div></div><button class="start" id="continueButton" type="button">${last ? "Ver mi leyenda" : "Continuar la historia"}<span>→</span></button>`;
+      document.getElementById("continueButton").addEventListener("click", () => {
+        if (last) finishGame(); else { state.index += 1; renderEvent(); }
+      });
+    }
+
+    function finishGame() {
+      const game = state.game;
+      const ending = game.endings.find(item => item.test(state)) || game.defaultEnding;
+      const entries = Object.entries(state.stats);
+      const best = entries.sort((a, b) => b[1] - a[1])[0];
+      const average = Math.round(entries.reduce((sum, [, value]) => sum + value, 0) / entries.length);
+      content.innerHTML = `<div class="result"><div class="result-icon">${game.icon}</div><span class="eyebrow">CARRERA COMPLETADA · ${game.universe}</span><h2 id="modalTitle">${escapeText(state.player)}</h2><div class="ending-title">${ending.title}</div><p>${ending.text}</p><div class="career-summary"><div class="summary-cell"><span>Origen</span><b>${escapeText(state.origin)}</b></div><div class="summary-cell"><span>Valoración</span><b>${average}/100</b></div><div class="summary-cell"><span>Mayor virtud</span><b>${game.statDefs[best[0]]} · ${best[1]}</b></div><div class="summary-cell"><span>Decisiones</span><b>${state.decisions.length}</b></div></div><div class="final-actions"><button class="ghost-button" id="copyResult" type="button">Copiar resultado</button><button class="start" id="retryGame" type="button">Jugar otra vez <span>↻</span></button></div></div>`;
+      document.getElementById("retryGame").addEventListener("click", () => openGame(game));
+      document.getElementById("copyResult").addEventListener("click", async event => {
+        const text = `${state.player} — ${ending.title}\n${game.title}\nValoración: ${average}/100 · ${game.statDefs[best[0]]}: ${best[1]}`;
+        try { await navigator.clipboard.writeText(text); event.target.textContent = "Resultado copiado"; } catch { event.target.textContent = "No se pudo copiar"; }
+      });
+    }
+
+    function applyEffects(stats, effects) {
+      Object.entries(effects || {}).forEach(([key, value]) => { stats[key] = Math.max(0, Math.min(100, (stats[key] || 0) + value)); });
+    }
+
+    function escapeText(text) {
+      const span = document.createElement("span");
+      span.textContent = String(text ?? "");
+      return span.innerHTML;
+    }
+
+    function closeModal() {
+      bg.classList.remove("open");
+      document.body.style.overflow = "";
+      content.innerHTML = "";
+      state = null;
+    }
+
+    document.getElementById("closeModal").addEventListener("click", closeModal);
+    bg.addEventListener("mousedown", event => { if (event.target === bg) closeModal(); });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") closeModal(); });
+  </script>
+</body>
+</html>
