@@ -118,8 +118,9 @@
 
     .mission-preview-shell {
       width: 100%;
-      overflow: auto;
-      padding: 12px;
+      min-height: 1px;
+      overflow: hidden;
+      padding: 0;
       border-radius: 18px;
       background: rgba(255, 255, 255, .025);
     }
@@ -140,17 +141,66 @@
       border: 1px solid rgba(255, 255, 255, .14);
       box-shadow: 0 28px 80px rgba(0, 0, 0, .48);
       isolation: isolate;
+      transform-origin: top left;
     }
 
     .mission-background {
       position: absolute;
       inset: 0;
-      width: 51%;
-      height: calc(100% - 190px);
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      opacity: .72;
+      object-position: center;
+      opacity: .64;
       filter: saturate(.9) contrast(1.08);
       z-index: -3;
+    }
+
+    .chatgpt-tools {
+      margin-top: 22px;
+      padding: 18px;
+      border: 1px solid rgba(139, 92, 246, .34);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(139, 92, 246, .12), rgba(255, 255, 255, .035));
+    }
+
+    .chatgpt-tools h2 { margin: 0 0 7px; }
+    .chatgpt-tools > p { margin: 0; color: #c9c9d8; line-height: 1.55; }
+
+    .chatgpt-copy-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .chatgpt-copy-grid button {
+      min-height: 88px;
+      margin: 0;
+      padding: 13px;
+      text-align: left;
+    }
+
+    .chatgpt-copy-grid button span,
+    .chatgpt-copy-grid button small { display: block; }
+    .chatgpt-copy-grid button span { font-weight: 900; }
+    .chatgpt-copy-grid button small { margin-top: 5px; color: rgba(255,255,255,.72); font-weight: 500; line-height: 1.4; }
+    .chatgpt-copy-grid button:disabled { cursor: not-allowed; opacity: .42; background: rgba(255,255,255,.08); }
+
+    .chatgpt-requirement {
+      display: block;
+      margin-top: 10px;
+      color: #fcd34d;
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+
+    .copy-status {
+      min-height: 22px;
+      margin: 10px 0 0;
+      color: #86efac;
+      font-size: .85rem;
+      font-weight: 800;
     }
 
     .mission-card::before {
@@ -395,6 +445,10 @@
 
     @media (max-width: 1100px) {
       .generator { grid-template-columns: 1fr !important; }
+    }
+
+    @media (max-width: 620px) {
+      .chatgpt-copy-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -677,6 +731,23 @@
         </article>
       </div>
 
+      <section class="chatgpt-tools" aria-labelledby="chatgptToolsTitle">
+        <h2 id="chatgptToolsTitle">Ayuda para escribir con ChatGPT</h2>
+        <p>Al pulsar uno de estos botones, la estructura de la misión se copiará al portapapeles. Después abre ChatGPT y pégala en el chat para que pueda ayudarte.</p>
+        <div class="chatgpt-copy-grid">
+          <button id="copyMissionStarterButton" type="button">
+            <span>✨ Copiar estructura para una misión nueva</span>
+            <small>Copia la plantilla vacía con todos los campos establecidos.</small>
+          </button>
+          <button id="copyMissionContinueButton" type="button" disabled>
+            <span>✍ Copiar misión escrita para continuar</span>
+            <small>Copia la misma estructura incluyendo todo lo que ya has rellenado.</small>
+          </button>
+        </div>
+        <small class="chatgpt-requirement">Para utilizar «Copiar misión escrita», escribe antes algo en cualquier campo. Ninguno de los botones envía información automáticamente.</small>
+        <p class="copy-status" id="missionCopyStatus" role="status" aria-live="polite"></p>
+      </section>
+
       <div class="output-actions">
         <button id="downloadMissionButton" type="button">Descargar imagen PNG</button>
         <button id="clearMissionButton" type="button">Limpiar formulario</button>
@@ -728,6 +799,163 @@
     return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)]
       .map(input => cleanValue(input.value))
       .filter(Boolean);
+  }
+
+  function collectMissionData() {
+    return {
+      title: cleanValue(document.getElementById("title").value),
+      missionType: cleanValue(document.getElementById("missionType").value),
+      difficulty: cleanValue(document.getElementById("difficulty").value),
+      planet: cleanValue(document.getElementById("planet").value),
+      zone: cleanValue(document.getElementById("zone").value),
+      conditions: cleanValue(document.getElementById("conditions").value),
+      synopsis: cleanValue(document.getElementById("synopsis").value),
+      mainObjective: cleanValue(document.getElementById("mainObjective").value),
+      secondaryObjectives: getRepeatValues("secondaryObjectives"),
+      knownInfo: getRepeatValues("knownInfo"),
+      minParticipants: cleanValue(document.getElementById("minParticipants").value),
+      maxParticipants: cleanValue(document.getElementById("maxParticipants").value),
+      minPower: cleanValue(document.getElementById("minPower").value),
+      maxPower: cleanValue(document.getElementById("maxPower").value),
+      alignments: getCheckedValues("alignmentOptions"),
+      requirements: getRepeatValues("requirements"),
+      threatLevel: cleanValue(document.getElementById("threatLevel").value),
+      threatDescription: cleanValue(document.getElementById("threatDescription").value),
+      rewards: getRepeatValues("rewards"),
+      gmNotes: getRepeatValues("gmNotes")
+    };
+  }
+
+  function hasMissionContent(data = collectMissionData()) {
+    return Object.values(data).some(value => Array.isArray(value) ? value.length > 0 : Boolean(value));
+  }
+
+  function missionDataAsText(data) {
+    const value = entry => entry || "Sin especificar";
+    const list = entries => entries.length ? entries.map(entry => `- ${entry}`).join("\n") : "- Sin especificar";
+    return `TÍTULO: ${value(data.title)}
+TIPO DE MISIÓN: ${value(data.missionType)}
+DIFICULTAD: ${value(data.difficulty)}
+
+LOCALIZACIÓN
+- Planeta: ${value(data.planet)}
+- Zona concreta: ${value(data.zone)}
+- Condiciones especiales: ${value(data.conditions)}
+
+SINOPSIS
+${value(data.synopsis)}
+
+OBJETIVO PRINCIPAL
+${value(data.mainObjective)}
+
+OBJETIVOS SECUNDARIOS
+${list(data.secondaryObjectives)}
+
+INFORMACIÓN CONOCIDA POR LOS PARTICIPANTES
+${list(data.knownInfo)}
+
+PARTICIPANTES
+- Mínimo: ${value(data.minParticipants)}
+- Máximo: ${value(data.maxParticipants)}
+
+RANGO DE PODER (EN MILLONES)
+- Mínimo: ${value(data.minPower)}
+- Máximo: ${value(data.maxPower)}
+
+ALINEACIONES PERMITIDAS
+${list(data.alignments)}
+
+REQUISITOS Y RESTRICCIONES
+${list(data.requirements)}
+
+AMENAZAS
+- Nivel: ${value(data.threatLevel)}
+- Información disponible: ${value(data.threatDescription)}
+
+RECOMPENSAS
+${list(data.rewards)}
+
+NOTAS PRIVADAS DEL GM
+${list(data.gmNotes)}`;
+  }
+
+  function starterPrompt() {
+    const emptyMission = {
+      title: "[Por definir]",
+      missionType: "[Por definir]",
+      difficulty: "[Por definir]",
+      planet: "[Por definir]",
+      zone: "[Por definir]",
+      conditions: "[Por definir]",
+      synopsis: "[Por definir]",
+      mainObjective: "[Por definir]",
+      secondaryObjectives: ["[Por definir]"],
+      knownInfo: ["[Por definir]"],
+      minParticipants: "[Por definir]",
+      maxParticipants: "[Por definir]",
+      minPower: "[Por definir]",
+      maxPower: "[Por definir]",
+      alignments: ["[Por definir]"],
+      requirements: ["[Por definir]"],
+      threatLevel: "[Por definir]",
+      threatDescription: "[Por definir]",
+      rewards: ["[Por definir]"],
+      gmNotes: ["[Por definir]"]
+    };
+    return `Quiero crear una misión de rol utilizando la siguiente estructura establecida:
+
+${missionDataAsText(emptyMission)}
+
+Ayúdame a rellenar esta plantilla desde cero. Pregúntame primero por la idea básica, el universo o servidor y el tono. Después hazme entre una y tres preguntas breves cada vez para completar los campos. No elimines ni cambies los encabezados de la estructura y separa siempre la información pública de las notas privadas del GM.`;
+  }
+
+  function continuationPrompt(data) {
+    return `Estoy preparando una misión de rol con la estructura establecida que aparece a continuación. Ya he escrito parte de la ficha y quiero que me ayudes a continuar sin perder ni sustituir lo que está rellenado.
+
+ESTRUCTURA Y DATOS ACTUALES DE LA MISIÓN
+${missionDataAsText(data)}
+
+Respeta exactamente esta estructura. Indícame qué apartados siguen sin especificar, qué posibles contradicciones ves y qué información falta para que la misión pueda jugarse bien. Después hazme entre una y tres preguntas concretas cada vez y ayúdame a completar los campos pendientes.
+
+Mantén separada la información que conocen los participantes de las notas privadas del GM. No inventes giros importantes sin mi confirmación. Cuando te lo pida, devuelve la ficha completa con los mismos encabezados y conservando literalmente lo que ya había escrito.`;
+  }
+
+  async function copyMissionPrompt(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (error) {
+      const helper = document.createElement("textarea");
+      helper.value = text;
+      helper.setAttribute("readonly", "");
+      helper.style.position = "fixed";
+      helper.style.opacity = "0";
+      document.body.appendChild(helper);
+      helper.select();
+      const copied = document.execCommand("copy");
+      helper.remove();
+      return copied;
+    }
+  }
+
+  function setCopyStatus(message, isError = false) {
+    const status = document.getElementById("missionCopyStatus");
+    status.textContent = message;
+    status.style.color = isError ? "#fca5a5" : "#86efac";
+  }
+
+  function syncContinueButton() {
+    const button = document.getElementById("copyMissionContinueButton");
+    if (button) button.disabled = !hasMissionContent();
+  }
+
+  function fitMissionPreview() {
+    const shell = document.querySelector(".mission-preview-shell");
+    const card = document.getElementById("missionCard");
+    if (!shell || !card || !shell.clientWidth) return;
+    const scale = Math.min(1, shell.clientWidth / 1600);
+    card.style.transform = `scale(${scale})`;
+    shell.style.height = `${Math.ceil(900 * scale)}px`;
   }
 
   function setText(id, value, fallback = "") {
@@ -833,6 +1061,7 @@
     setListSection("requirementsSection", "previewRequirements", requirements);
     setListSection("rewardsSection", "previewRewards", rewards);
     setListSection("gmNotesSection", "previewGmNotes", gmNotes);
+    syncContinueButton();
   }
 
   function sanitizeFilename(value) {
@@ -853,11 +1082,18 @@
     updatePreview();
 
     const card = document.getElementById("missionCard");
+    const shell = document.querySelector(".mission-preview-shell");
     const button = document.getElementById("downloadMissionButton");
     const originalText = button.textContent;
+    const originalTransform = card.style.transform;
+    const originalShellHeight = shell.style.height;
+    const originalShellOverflow = shell.style.overflow;
 
     button.disabled = true;
     button.textContent = "Generando imagen...";
+    card.style.transform = "none";
+    shell.style.height = "900px";
+    shell.style.overflow = "visible";
 
     try {
       const canvas = await html2canvas(card, {
@@ -881,6 +1117,10 @@
       console.error("No se pudo generar la imagen:", error);
       alert("No se pudo generar la imagen. Prueba con otra imagen de fondo o vuelve a intentarlo.");
     } finally {
+      card.style.transform = originalTransform;
+      shell.style.height = originalShellHeight;
+      shell.style.overflow = originalShellOverflow;
+      fitMissionPreview();
       button.disabled = false;
       button.textContent = originalText;
     }
@@ -907,6 +1147,7 @@
 
     addDefaultFields();
     updatePreview();
+    setCopyStatus("");
   }
 
   function addDefaultFields() {
@@ -954,8 +1195,30 @@
     document.getElementById("missionImage").addEventListener("change", handleImageUpload);
     document.getElementById("downloadMissionButton").addEventListener("click", downloadMissionImage);
     document.getElementById("clearMissionButton").addEventListener("click", clearForm);
+    document.getElementById("copyMissionStarterButton").addEventListener("click", async () => {
+      const copied = await copyMissionPrompt(starterPrompt());
+      if (copied) {
+        setCopyStatus("Estructura vacía copiada. Ahora abre ChatGPT y pégala en el chat.");
+      } else {
+        setCopyStatus("No se ha podido copiar automáticamente. Revisa los permisos del portapapeles.", true);
+      }
+    });
+    document.getElementById("copyMissionContinueButton").addEventListener("click", async () => {
+      const data = collectMissionData();
+      if (!hasMissionContent(data)) {
+        setCopyStatus("Escribe primero algo en la misión para poder continuarla con ChatGPT.", true);
+        return;
+      }
+      const copied = await copyMissionPrompt(continuationPrompt(data));
+      setCopyStatus(copied ? "Estructura y texto actual copiados. Ahora abre ChatGPT y pégalos en el chat." : "No se ha podido copiar automáticamente. Revisa los permisos del portapapeles.", !copied);
+    });
+
+    const previewShell = document.querySelector(".mission-preview-shell");
+    if ("ResizeObserver" in window) new ResizeObserver(fitMissionPreview).observe(previewShell);
+    else window.addEventListener("resize", fitMissionPreview);
 
     updatePreview();
+    fitMissionPreview();
   });
 </script>
 </body>
