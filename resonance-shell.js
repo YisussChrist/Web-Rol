@@ -14,7 +14,12 @@
     duration: $('globalDuration'), progress: $('globalProgress'), volume: $('globalVolume'), mute: $('globalMute'),
     queueButton: $('queueButton'), queue: $('globalQueue'), closeQueue: $('closeQueue'), queueList: $('globalQueueList'),
     collapse: $('collapsePlayer'), miniPlayer: $('miniPlayer'), miniIcon: $('miniIcon'), miniTitle: $('miniTitle'),
-    resumeNotice: $('resumeNotice'), resumeButton: $('resumeButton')
+    resumeNotice: $('resumeNotice'), resumeButton: $('resumeButton'),
+    loadingTitle: $('loadingTitle'), loadingHelp: $('loadingHelp'), retryRoute: $('retryRoute'), loadingBackHome: $('loadingBackHome'),
+    diagnosticTrigger: $('diagnosticTrigger'), diagnosticScrim: $('diagnosticScrim'), diagnosticPanel: $('diagnosticPanel'), diagnosticClose: $('diagnosticClose'),
+    diagnosticOnline: $('diagnosticOnline'), diagnosticRoute: $('diagnosticRoute'), diagnosticCount: $('diagnosticCount'), diagnosticHealth: $('diagnosticHealth'),
+    diagnosticClear: $('diagnosticClear'), diagnosticLog: $('diagnosticLog'), diagnosticToast: $('diagnosticToast'), diagnosticToastIcon: $('diagnosticToastIcon'),
+    diagnosticToastTitle: $('diagnosticToastTitle'), diagnosticToastText: $('diagnosticToastText'), diagnosticToastClose: $('diagnosticToastClose')
   };
   const baseURL = new URL('./', location.href.split('#')[0]);
   const subscribers = new Set();
@@ -28,9 +33,105 @@
     resumeWanted: localStorage.getItem('resonanceWasPlaying') === 'true'
   };
   let lastSavedSecond = -1;
+  let loadWarningTimer = 0;
+  let diagnosticToastTimer = 0;
+  let diagnosticEvents = (() => {
+    try { return JSON.parse(localStorage.getItem('rpDiagnosticEvents') || '[]').slice(0, 30); }
+    catch (error) { return []; }
+  })();
 
   function escapeHTML(value = '') {
     return String(value).replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
+  }
+
+  function saveDiagnostics() {
+    try { localStorage.setItem('rpDiagnosticEvents', JSON.stringify(diagnosticEvents.slice(0, 30))); }
+    catch (error) {}
+  }
+
+  function diagnosticTime(timestamp) {
+    return new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(timestamp));
+  }
+
+  function renderDiagnostics() {
+    if (!nodes.diagnosticLog) return;
+    const online = navigator.onLine;
+    nodes.diagnosticOnline.textContent = online ? 'En línea' : 'Sin conexión';
+    nodes.diagnosticOnline.className = online ? 'ok' : 'bad';
+    nodes.diagnosticRoute.textContent = state.route || routeFromHash();
+    nodes.diagnosticCount.textContent = `${diagnosticEvents.length} ${diagnosticEvents.length === 1 ? 'registrada' : 'registradas'}`;
+    nodes.diagnosticLog.innerHTML = diagnosticEvents.length ? diagnosticEvents.map(entry => `
+      <article class="diagnostic-entry ${escapeHTML(entry.level)}">
+        <header><strong>${escapeHTML(entry.title)}</strong><time datetime="${escapeHTML(entry.time)}">${escapeHTML(diagnosticTime(entry.time))}</time></header>
+        <p>${escapeHTML(entry.detail)}</p>
+      </article>`).join('') : '<p class="diagnostic-empty">Todavía no se ha detectado ningún problema.</p>';
+  }
+
+  function showDiagnosticToast(level, title, detail, duration = 6500) {
+    clearTimeout(diagnosticToastTimer);
+    nodes.diagnosticToast.className = `diagnostic-toast ${level}`;
+    nodes.diagnosticToastIcon.textContent = level === 'success' ? '✓' : level === 'error' ? '×' : '!';
+    nodes.diagnosticToastTitle.textContent = title;
+    nodes.diagnosticToastText.textContent = detail;
+    nodes.diagnosticToast.hidden = false;
+    diagnosticToastTimer = window.setTimeout(() => { nodes.diagnosticToast.hidden = true; }, duration);
+  }
+
+  function addDiagnostic(level, title, detail, notifyUser = false) {
+    const duplicate = diagnosticEvents[0];
+    if (!duplicate || duplicate.title !== title || duplicate.detail !== detail || Date.now() - new Date(duplicate.time).getTime() > 3000) {
+      diagnosticEvents.unshift({ level, title, detail, time: new Date().toISOString(), route: state.route });
+      diagnosticEvents = diagnosticEvents.slice(0, 30);
+      saveDiagnostics();
+      renderDiagnostics();
+    }
+    if (notifyUser) showDiagnosticToast(level, title, detail);
+  }
+
+  function openDiagnostics() {
+    renderDiagnostics();
+    nodes.diagnosticScrim.hidden = false;
+    nodes.diagnosticPanel.classList.add('open');
+    nodes.diagnosticPanel.setAttribute('aria-hidden', 'false');
+    nodes.diagnosticClose.focus();
+  }
+
+  function closeDiagnostics() {
+    nodes.diagnosticPanel.classList.remove('open');
+    nodes.diagnosticPanel.setAttribute('aria-hidden', 'true');
+    nodes.diagnosticScrim.hidden = true;
+    nodes.diagnosticTrigger.focus();
+  }
+
+  function runHealthCheck() {
+    let frameStatus = 'No disponible';
+    let missingResources = 0;
+    try {
+      const childDocument = frame.contentDocument;
+      frameStatus = childDocument?.readyState === 'complete' ? 'Página cargada' : `Estado: ${childDocument?.readyState || 'desconocido'}`;
+      missingResources = [...(childDocument?.images || [])].filter(image => image.complete && image.naturalWidth === 0).length;
+    } catch (error) { frameStatus = 'No se puede inspeccionar esta página'; }
+    const detail = `${navigator.onLine ? 'Conexión disponible' : 'Sin conexión'} · ${frameStatus} · ${tracks.length} canciones registradas · ${missingResources} imágenes ausentes`;
+    addDiagnostic(missingResources ? 'warning' : 'success', 'Revisión rápida completada', detail, true);
+  }
+
+  function installFrameDiagnostics(childWindow, childDocument) {
+    if (!childWindow || !childDocument || childDocument.documentElement?.dataset.rpDiagnostics === 'on') return;
+    if (childDocument.documentElement) childDocument.documentElement.dataset.rpDiagnostics = 'on';
+    childWindow.addEventListener('error', event => {
+      const target = event.target;
+      if (target && target !== childWindow) {
+        const tag = String(target.tagName || '').toLowerCase();
+        const source = target.currentSrc || target.src || target.href || 'recurso desconocido';
+        const important = ['script', 'link', 'audio', 'video'].includes(tag);
+        addDiagnostic(important ? 'error' : 'warning', important ? 'Archivo esencial no disponible' : 'Recurso no disponible', `${tag || 'archivo'}: ${source}`, important);
+      } else if (event.message) {
+        addDiagnostic('error', 'Error en la página', event.message, true);
+      }
+    }, true);
+    childWindow.addEventListener('unhandledrejection', event => {
+      addDiagnostic('error', 'La página no pudo completar una tarea', String(event.reason?.message || event.reason || 'Error desconocido'), true);
+    });
   }
 
   function formatTime(seconds) {
@@ -198,12 +299,23 @@
 
   function loadRoute(route, replace = false) {
     route = cleanRoute(route);
+    document.body.classList.toggle('route-hub', route.split(/[?#]/)[0] === 'hub.html');
     const hash = `#route=${encodeURIComponent(route)}`;
     if (replace) history.replaceState(null, '', hash);
     else if (location.hash !== hash) history.pushState(null, '', hash);
     if (state.route === route && frame.src) return;
     state.route = route;
-    nodes.loading.classList.remove('done');
+    clearTimeout(loadWarningTimer);
+    nodes.loading.classList.remove('done', 'slow', 'diagnostic-preview');
+    nodes.loadingTitle.textContent = 'Abriendo archivo…';
+    nodes.loadingHelp.hidden = true;
+    loadWarningTimer = window.setTimeout(() => {
+      if (nodes.loading.classList.contains('done')) return;
+      nodes.loading.classList.add('slow');
+      nodes.loadingTitle.textContent = 'La carga está tardando';
+      nodes.loadingHelp.hidden = false;
+      addDiagnostic('warning', 'Carga más lenta de lo normal', `La ruta ${route} lleva más de 8 segundos cargando. Puede ser la conexión o GitHub.`, false);
+    }, 8000);
     frame.src = new URL(route, baseURL).href;
   }
 
@@ -233,9 +345,11 @@
   }
 
   frame.addEventListener('load', () => {
+    clearTimeout(loadWarningTimer);
     nodes.loading.classList.add('done');
     try {
       const childDocument = frame.contentDocument;
+      installFrameDiagnostics(frame.contentWindow, childDocument);
       const childURL = new URL(frame.contentWindow.location.href);
       const route = relativeRoute(childURL);
       if (route && route !== state.route) {
@@ -276,6 +390,65 @@
   nodes.collapse.addEventListener('click', () => { state.collapsed = true; document.body.classList.add('player-collapsed'); localStorage.setItem('resonancePlayerCollapsed', 'true'); });
   nodes.miniPlayer.addEventListener('click', () => { state.collapsed = false; document.body.classList.remove('player-collapsed'); localStorage.setItem('resonancePlayerCollapsed', 'false'); });
   nodes.resumeButton.addEventListener('click', play);
+  nodes.retryRoute.addEventListener('click', () => {
+    const route = state.route || routeFromHash();
+    state.route = '';
+    loadRoute(route, true);
+  });
+  nodes.loadingBackHome.addEventListener('click', () => {
+    state.route = '';
+    loadRoute('hub.html', true);
+  });
+  nodes.diagnosticTrigger.addEventListener('click', openDiagnostics);
+  nodes.diagnosticClose.addEventListener('click', closeDiagnostics);
+  nodes.diagnosticScrim.addEventListener('click', closeDiagnostics);
+  nodes.diagnosticToastClose.addEventListener('click', () => {
+    clearTimeout(diagnosticToastTimer);
+    nodes.diagnosticToast.hidden = true;
+  });
+  nodes.diagnosticHealth.addEventListener('click', runHealthCheck);
+  nodes.diagnosticClear.addEventListener('click', () => {
+    diagnosticEvents = [];
+    saveDiagnostics();
+    renderDiagnostics();
+    showDiagnosticToast('success', 'Registro vacío', 'Se han eliminado las incidencias guardadas en este navegador.');
+  });
+  nodes.diagnosticPanel.addEventListener('click', event => {
+    const button = event.target.closest('[data-diagnostic-test]');
+    if (!button) return;
+    const test = button.dataset.diagnosticTest;
+    if (test === 'slow') {
+      addDiagnostic('warning', 'Prueba · Carga lenta', 'Simulación manual del aviso de carga prolongada.', false);
+      closeDiagnostics();
+      nodes.loading.classList.remove('done');
+      nodes.loading.classList.add('slow', 'diagnostic-preview');
+      nodes.loadingTitle.textContent = 'La carga está tardando';
+      nodes.loadingHelp.hidden = false;
+      return;
+    }
+    const tests = {
+      offline: ['warning', 'Prueba · Sin conexión', 'No hay conexión a Internet. Algunas páginas pueden no abrir hasta que la red vuelva.'],
+      github: ['error', 'Prueba · GitHub no responde', 'GitHub está tardando en servir los archivos. Prueba a reintentarlo dentro de unos segundos.'],
+      data: ['error', 'Prueba · Datos sin cargar', 'El archivo de datos de esta sección no se ha podido leer. Recarga la página y comprueba el registro.'],
+      resource: ['warning', 'Prueba · Recurso ausente', 'Una imagen o archivo asociado no está disponible. El resto de la página puede seguir funcionando.'],
+      audio: ['error', 'Prueba · Audio no disponible', 'No se ha podido cargar esta canción. El archivo puede faltar o seguir descargándose.']
+    };
+    const selected = tests[test];
+    if (selected) addDiagnostic(selected[0], selected[1], selected[2], true);
+  });
+  document.addEventListener('keydown', event => {
+    if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 'd') {
+      event.preventDefault();
+      nodes.diagnosticPanel.classList.contains('open') ? closeDiagnostics() : openDiagnostics();
+    } else if (event.key === 'Escape' && nodes.diagnosticPanel.classList.contains('open')) closeDiagnostics();
+  });
+
+  window.addEventListener('offline', () => addDiagnostic('warning', 'Sin conexión', 'Se ha perdido la conexión a Internet. Mantén la página abierta y vuelve a intentarlo cuando regrese.', true));
+  window.addEventListener('online', () => addDiagnostic('success', 'Conexión recuperada', 'La conexión a Internet vuelve a estar disponible.', true));
+  window.addEventListener('error', event => {
+    if (event.target === window && event.message) addDiagnostic('error', 'Error del reproductor global', event.message, true);
+  });
+  window.addEventListener('unhandledrejection', event => addDiagnostic('error', 'Tarea global interrumpida', String(event.reason?.message || event.reason || 'Error desconocido'), true));
 
   audio.addEventListener('play', () => { localStorage.setItem('resonanceWasPlaying', 'true'); renderPlayer(); notify(); });
   audio.addEventListener('pause', () => { renderPlayer(); notify(); });
@@ -291,6 +464,10 @@
     if (second !== lastSavedSecond) { lastSavedSecond = second; localStorage.setItem('resonanceCurrentTime', String(audio.currentTime)); }
   });
   audio.addEventListener('volumechange', () => setVolume(audio.volume, false));
+  audio.addEventListener('error', () => {
+    const title = tracks[state.current]?.songTitle || 'la canción seleccionada';
+    addDiagnostic('error', 'Audio no disponible', `No se ha podido cargar ${title}. Comprueba que el archivo existe y vuelve a intentarlo.`, true);
+  });
 
   if ('mediaSession' in navigator) {
     navigator.mediaSession.setActionHandler('play', play);
@@ -304,6 +481,9 @@
   document.body.classList.toggle('player-collapsed', state.collapsed);
   if (tracks.length) setTrack(state.current, false);
   nodes.resumeNotice.hidden = !state.resumeWanted;
+  renderDiagnostics();
+  if (!navigator.onLine) addDiagnostic('warning', 'Sin conexión al abrir la página', 'El navegador indica que no hay conexión a Internet.', true);
+  if (!tracks.length) addDiagnostic('error', 'Datos de Resonance sin cargar', 'No se ha encontrado ninguna canción. Es posible que el archivo de datos no haya cargado.', true);
   renderQueue();
   loadRoute(routeFromHash(), true);
 })();

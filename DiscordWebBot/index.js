@@ -28,6 +28,7 @@ const WIKI_API = "https://dragon-ball-eternal-warriors.fandom.com/es/api.php";
 const WIKI_BASE = "https://dragon-ball-eternal-warriors.fandom.com/es/wiki/";
 
 const RUTA_CALENDARIO = path.join(__dirname, "..", "calendario.html");
+const RUTA_DATOS_CALENDARIO = path.join(__dirname, "..", "calendario-datos.js");
 const RUTA_EMBARAZOS = path.join(__dirname, "..", "embarazos.html");
 const RUTA_PERSONAJES = path.join(__dirname, "..", "personajes.json");
 const RUTA_PODER = path.join(__dirname, "..", "poder.html");
@@ -228,6 +229,39 @@ function formatearNumero(numero) {
 }
 
 function extraerEventosCalendario() {
+    if (fs.existsSync(RUTA_DATOS_CALENDARIO)) {
+        try {
+            const contenido = fs.readFileSync(RUTA_DATOS_CALENDARIO, "utf8");
+            const inicio = contenido.indexOf("[");
+            const fin = contenido.lastIndexOf("]");
+
+            if (inicio !== -1 && fin > inicio) {
+                const datos = JSON.parse(contenido.slice(inicio, fin + 1));
+
+                return datos
+                    .filter(evento =>
+                        evento &&
+                        (evento.title || evento.name) &&
+                        Number.isInteger(Number(evento.day)) &&
+                        Number.isInteger(Number(evento.month)) &&
+                        evento.type
+                    )
+                    .map(evento => ({
+                        nombre: evento.title || evento.name,
+                        dia: Number(evento.day),
+                        mes: Number(evento.month),
+                        tipo: evento.type,
+                        edad: Number.isFinite(Number(evento.age)) && evento.age !== null && evento.age !== ""
+                            ? Number(evento.age)
+                            : null
+                    }));
+            }
+        } catch (error) {
+            console.error("No se ha podido leer calendario-datos.js:", error);
+        }
+    }
+
+    // Compatibilidad con el formato antiguo, cuando los datos estaban dentro del HTML.
     if (!fs.existsSync(RUTA_CALENDARIO)) return null;
 
     const contenido = fs.readFileSync(RUTA_CALENDARIO, "utf8");
@@ -718,8 +752,8 @@ async function comandoCumples(message, argumentos, soloProximos = false) {
     const eventos = extraerEventosCalendario();
     if (!eventos) {
         return message.reply({ embeds: [crearEmbedError(
-            "❌ No encuentro calendario.html",
-            "Comprueba que `calendario.html` esté en la carpeta correcta."
+            "❌ No encuentro los datos del calendario",
+            "Comprueba que `calendario-datos.js` esté junto a `calendario.html`."
         )] });
     }
 
@@ -1727,8 +1761,8 @@ if (solicitud?.nombre === "bolos") {
 
         if (!eventos) {
             const embed = crearEmbedError(
-                "❌ No encuentro calendario.html",
-                "Comprueba que `calendario.html` esté en la carpeta correcta."
+                "❌ No encuentro los datos del calendario",
+                "Comprueba que `calendario-datos.js` esté junto a `calendario.html`."
             );
 
             return message.reply({ embeds: [embed] });
@@ -1848,8 +1882,8 @@ if (solicitud?.nombre === "bolos") {
 
         if (!eventos) {
             const embed = crearEmbedError(
-                "❌ No encuentro calendario.html",
-                "Comprueba que `calendario.html` esté en la carpeta correcta."
+                "❌ No encuentro los datos del calendario",
+                "Comprueba que `calendario-datos.js` esté junto a `calendario.html`."
             );
 
             return message.reply({ embeds: [embed] });

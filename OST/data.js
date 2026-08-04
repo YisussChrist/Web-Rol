@@ -700,6 +700,105 @@ const characters = [
                 songDescription: "El uso del poder todos aquellos que han perecido en batalla. Usará toda esa rabia para vengar a cada caído.",
                 songCover: "img/ThaliaCover.png",
                 audio: "audio/Flower Girl.mp3",
+                // Pega la letra entre los acentos graves. El botón aparecerá automáticamente cuando haya contenido.
+                lyrics: `[Verse]
+Ten feet twenty the Flower Girl
+Is tending the last little bloom
+Petals have fallen far too soon
+Yet every morning
+Hope that blossoms in Flower Girl
+Would never wither into the rain
+One tiny flower can bloom again
+So she keeps the...
+
+[Chorus]
+Flower Girl, Flower Girl
+With the seeds in her hands still she stands
+Watching every little bud
+While she can
+Way up high in the sky
+With the tears in her eyes
+Isn't spring worth waiting for... Flowers
+
+[Verse]
+Ten feet twenty the Flower Girl
+Remembers a garden once bright
+Now only roots hold onto the light
+Yet every morning
+Winter learned every flower's name
+Still one last blossom carried the dawn
+Leaving her seeds to carry on
+So she keeps the...
+
+[Chorus]
+Flower Girl, Flower Girl
+With the seeds in her hands
+Still she stands
+Watching every little bud
+While she can
+Way up high in the sky
+With the tears in her eyes
+Isn't spring worth waiting for... Flowers
+
+[Verse]
+Ten feet twenty the Flower Girl
+Remembers a garden once bright
+Now only roots hold onto the light
+Yet every morning
+Winter learned every flower's name
+Still one last blossom carried the dawn
+Leaving her seeds to carry on
+So she keeps the...
+`.trim(),
+                // Traducción línea por línea: cada verso ocupa la misma posición que en lyrics.
+                lyricsTranslation: `[Verso]
+Diez pies veinte, la Chica Flor
+Cuida la última pequeña flor
+Los pétalos han caído demasiado pronto
+Sin embargo, cada mañana
+La esperanza que florece en la Chica Flor
+Jamás se marchitaría bajo la lluvia
+Una diminuta flor puede volver a florecer
+Así que ella conserva las...
+
+[Estribillo]
+Chica Flor, Chica Flor
+Con las semillas en sus manos, aún sigue en pie
+Observando cada pequeño brote mientras puede
+Allá arriba, en lo alto del cielo
+Con lágrimas en los ojos
+¿No merece la pena esperar a la primavera... a las flores?
+
+[Verso]
+Diez pies veinte, la Chica Flor
+Recuerda un jardín que una vez brilló
+Ahora solo las raíces se aferran a la luz
+Sin embargo, cada mañana
+El invierno aprendió el nombre de cada flor
+Aun así, una última flor llevó consigo el amanecer
+Dejando sus semillas para continuar
+Así que ella conserva las...
+
+[Estribillo]
+Chica Flor, Chica Flor
+Con las semillas en sus manos
+Aún sigue en pie
+Observando cada pequeño brote
+Mientras puede
+Allá arriba, en lo alto del cielo
+Con lágrimas en los ojos
+¿No merece la pena esperar a la primavera... a las flores?
+
+[Verso]
+Diez pies veinte, la Chica Flor
+Recuerda un jardín que una vez brilló
+Ahora solo las raíces se aferran a la luz
+Sin embargo, cada mañana
+El invierno aprendió el nombre de cada flor
+Aun así, una última flor llevó consigo el amanecer
+Dejando sus semillas para continuar
+Así que ella conserva las...
+`.trim(),
                 tags: ["Battle", "Epic", "Emotional"],
                 lore: "La epicidad de la canción entra acorde al poder de la chica. Si le brilla el pelo, huye."
             }
@@ -751,6 +850,36 @@ const characters = [
             }
         ]
     },  
+    {
+        character: "Urtiel (Sentencia)",
+        characterFace: "img/Sentencia.jpg",
+        lore: "Una demonio berserker que ejerció de abogada del diablo por un castigo. Es brutal y enormemente sanguinaria.",
+        tracks: [
+            {
+                songTitle: "Last Judgement",
+                songDescription: "Cuando Sentencia empieza a combatir, sus ojos se inyectan en sangre, y solo piensa en matar a su oponente.",
+                songCover: "img/SentenciaCover.png",
+                audio: "audio/Last Judgement.mp3",
+                tags: ["Epic Battle", "Evil"],
+                lore: "Urtiel, la ex-abogada del diablo, obligada a dar muerte solo en los tribunales, ahora es libre para acabar con cualquiera que se cruce en su camino"
+            }
+        ]
+    },
+    {
+        character: "Pandora Valzareth",
+        characterFace: "img/Pandora.jpg",
+        lore: "La extravagante y alocada científica real, mil experimentos fallidos y horas frente a una pantalla han provocado esta personalidad inestable.",
+        tracks: [
+            {
+                songTitle: "Titanium Paradox",
+                songDescription: "Pandora experimenta con sus creaciones en pleno combate, sin miedo a las explosiones o las muertes que pueda causar, pues buena parte de su cuerpo está protegida por titanio.",
+                songCover: "img/PandoraCover.png",
+                audio: "audio/Titanium Paradox.mp3",
+                tags: ["Battle", "Playfull"],
+                lore: "Pandora ha sufrido miles de modificaciones en su propio cuerpo debido a los experimentos fallidos, su cerebro sin embargo sigue intacto, como su tesoro más preciado"
+            }
+        ]
+    },
 ];
 
 const soundtracks = characters.flatMap((char, characterIndex) =>

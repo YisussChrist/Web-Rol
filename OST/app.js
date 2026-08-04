@@ -56,16 +56,32 @@
   const trackTags = track => (track.tags || []).map(tag => normalize(tag).replace(/\s+/g, ''));
   const formatTime = seconds => Number.isFinite(seconds) ? `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}` : '0:00';
   const escapeHTML = value => String(value || '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+  const lyricsText = track => Array.isArray(track?.lyrics) ? track.lyrics.join('\n').trim() : String(track?.lyrics || '').trim();
+  const lyricsTranslationText = track => Array.isArray(track?.lyricsTranslation) ? track.lyricsTranslation.join('\n').trim() : String(track?.lyricsTranslation || '').trim();
+  const hasLyrics = track => lyricsText(track).length > 0;
+
+  function lyricsMarkup(track) {
+    const original = lyricsText(track).split('\n');
+    const translation = lyricsTranslationText(track).split('\n');
+    const lineCount = Math.max(original.length, translation.length);
+    return Array.from({ length: lineCount }, (_, index) => {
+      const sourceLine = original[index] || '';
+      const translatedLine = translation[index] || '';
+      if (!sourceLine.trim() && !translatedLine.trim()) return '<div class="lyrics-stanza-gap" aria-hidden="true"></div>';
+      return `<div class="lyrics-line">${sourceLine ? `<p class="lyrics-original">${escapeHTML(sourceLine)}</p>` : ''}${translatedLine ? `<p class="lyrics-translation" lang="es">${escapeHTML(translatedLine)}</p>` : ''}</div>`;
+    }).join('');
+  }
 
   function visibleTracks() {
     const query = normalize(state.query);
     return soundtracks.map((track, index) => ({ track, index })).filter(({ track, index }) => {
-      const text = normalize(`${track.songTitle} ${track.character} ${track.songDescription} ${(track.tags || []).join(' ')}`);
+      const text = normalize(`${track.songTitle} ${track.character} ${track.songDescription} ${(track.tags || []).join(' ')} ${lyricsText(track)} ${lyricsTranslationText(track)}`);
       const tags = trackTags(track);
       const fightTags = ['normalbattle', 'seriousbattle', 'finalboss', 'rage'];
       const filterMatch = state.filter === 'all'
         || (state.filter === 'favorites' && state.favorites.includes(index))
         || (state.filter === 'fight' && tags.some(tag => fightTags.includes(tag)))
+        || (state.filter === 'lyrics' && hasLyrics(track))
         || tags.includes(state.filter);
       return (!query || text.includes(query)) && filterMatch;
     });
@@ -85,6 +101,7 @@
           <div class="hero-actions">
             <button class="primary-button" data-play="${state.current}">${state.playing ? 'Pausar' : 'Reproducir'}</button>
             <button class="secondary-button" data-lore="${state.current}">Ver historia</button>
+            ${hasLyrics(track) ? `<button class="secondary-button lyrics-button" data-lyrics="${state.current}">Ver letra</button>` : ''}
             <button class="secondary-button" data-cover="${state.current}">Ver portada</button>
           </div>
         </div>
@@ -93,7 +110,8 @@
 
   function renderFilters() {
     nodes.filterRow.hidden = state.view !== 'library';
-    nodes.filterRow.innerHTML = filters.map(([id, label]) => `<button class="filter-chip ${state.filter === id ? 'active' : ''}" data-filter="${id}" aria-pressed="${state.filter === id}">${label}</button>`).join('');
+    const availableFilters = soundtracks.some(hasLyrics) ? [...filters, ['lyrics', 'Con letra']] : filters;
+    nodes.filterRow.innerHTML = availableFilters.map(([id, label]) => `<button class="filter-chip ${state.filter === id ? 'active' : ''}" data-filter="${id}" aria-pressed="${state.filter === id}">${label}</button>`).join('');
   }
 
   function trackCard({ track, index }) {
@@ -101,6 +119,7 @@
     return `<article class="track-card ${state.current === index && state.playing ? 'playing' : ''}" data-detail="${index}">
       <div class="cover-shell">
         <img src="${escapeHTML(track.songCover)}" alt="Portada de ${escapeHTML(track.songTitle)}" loading="lazy">
+        ${hasLyrics(track) ? `<button class="card-lyrics" data-lyrics="${index}" aria-label="Ver letra de ${escapeHTML(track.songTitle)}">♫ Letra</button>` : ''}
         <button class="card-favorite ${favorite ? 'active' : ''}" data-favorite="${index}" aria-label="${favorite ? 'Quitar de' : 'Añadir a'} favoritos" aria-pressed="${favorite}">${favorite ? '♥' : '♡'}</button>
         <button class="card-play" data-play="${index}" aria-label="Reproducir ${escapeHTML(track.songTitle)}">${state.current === index && state.playing ? '❚❚' : '▶'}</button>
       </div>
@@ -246,7 +265,17 @@
     const track = soundtracks[index];
     lastFocus = document.activeElement;
     nodes.modalContent.className = 'modal-card';
-    nodes.modalContent.innerHTML = `<button class="icon-button modal-close" data-close-modal aria-label="Cerrar">×</button><div class="detail-head"><img src="${escapeHTML(track.songCover)}" alt="Portada de ${escapeHTML(track.songTitle)}"><div><p class="eyebrow">Soundtrack</p><h2 id="modalTitle">${escapeHTML(track.songTitle)}</h2></div></div><button class="detail-character" data-character="${track.characterIndex}"><img src="${escapeHTML(track.characterFace)}" alt="Retrato de ${escapeHTML(track.character)}"><div><strong>${escapeHTML(track.character)}</strong><span>Ver expediente del personaje</span></div></button><p class="detail-copy">${escapeHTML(track.lore || track.characterLore || track.songDescription)}</p><div class="hero-actions"><button class="primary-button" data-play="${index}">Reproducir</button><button class="secondary-button" data-cover="${index}">Ver portada</button></div>`;
+    nodes.modalContent.innerHTML = `<button class="icon-button modal-close" data-close-modal aria-label="Cerrar">×</button><div class="detail-head"><img src="${escapeHTML(track.songCover)}" alt="Portada de ${escapeHTML(track.songTitle)}"><div><p class="eyebrow">Soundtrack</p><h2 id="modalTitle">${escapeHTML(track.songTitle)}</h2></div></div><button class="detail-character" data-character="${track.characterIndex}"><img src="${escapeHTML(track.characterFace)}" alt="Retrato de ${escapeHTML(track.character)}"><div><strong>${escapeHTML(track.character)}</strong><span>Ver expediente del personaje</span></div></button><p class="detail-copy">${escapeHTML(track.lore || track.characterLore || track.songDescription)}</p><div class="hero-actions"><button class="primary-button" data-play="${index}">Reproducir</button>${hasLyrics(track) ? `<button class="secondary-button lyrics-button" data-lyrics="${index}">Ver letra</button>` : ''}<button class="secondary-button" data-cover="${index}">Ver portada</button></div>`;
+    openModal();
+  }
+
+  function openLyrics(index) {
+    const track = soundtracks[index];
+    const lyrics = lyricsText(track);
+    if (!track || !lyrics) return;
+    lastFocus = document.activeElement;
+    nodes.modalContent.className = 'modal-card lyrics-view';
+    nodes.modalContent.innerHTML = `<button class="icon-button modal-close" data-close-modal aria-label="Cerrar">×</button><div class="lyrics-heading"><img src="${escapeHTML(track.songCover)}" alt="Portada de ${escapeHTML(track.songTitle)}"><div><p class="eyebrow">${lyricsTranslationText(track) ? 'Letra · Traducción' : 'Letra'}</p><h2 id="modalTitle">${escapeHTML(track.songTitle)}</h2><p>${escapeHTML(track.character)}</p></div></div><div class="lyrics-copy">${lyricsMarkup(track)}</div><div class="hero-actions lyrics-actions"><button class="primary-button" data-play="${index}">Reproducir</button><button class="secondary-button" data-lore="${index}">Ver historia</button></div>`;
     openModal();
   }
 
@@ -277,10 +306,12 @@
     const character = event.target.closest('[data-character]');
     const cover = event.target.closest('[data-cover]');
     const lore = event.target.closest('[data-lore]');
+    const lyrics = event.target.closest('[data-lyrics]');
     const filter = event.target.closest('[data-filter]');
     const view = event.target.closest('[data-view]');
     if (play) { event.stopPropagation(); loadTrack(Number(play.dataset.play)); }
     else if (favorite) { event.stopPropagation(); toggleFavorite(Number(favorite.dataset.favorite)); }
+    else if (lyrics) { event.stopPropagation(); openLyrics(Number(lyrics.dataset.lyrics)); }
     else if (cover) openCover(Number(cover.dataset.cover));
     else if (lore) openTrackDetail(Number(lore.dataset.lore));
     else if (detail) openTrackDetail(Number(detail.dataset.detail));

@@ -7,12 +7,24 @@
   <meta name="description" content="RP HUB con reproductor persistente de Resonance.">
   <title>RP HUB · Resonance</title>
   <script>window.__RP_SHELL_NESTED__=window.self!==window.top;if(window.__RP_SHELL_NESTED__)window.parent.postMessage({type:'rp-shell-navigate',route:'hub.html'},'*');</script>
-  <link rel="stylesheet" href="resonance-shell.css?v=1">
+  <link rel="stylesheet" href="resonance-shell.css?v=3">
 </head>
 <body>
   <main class="page-stage" id="pageStage">
     <iframe id="siteFrame" title="Contenido de RP HUB" allow="autoplay; fullscreen; clipboard-read; clipboard-write"></iframe>
-    <div class="page-loading" id="pageLoading"><span></span><strong>Abriendo archivo…</strong></div>
+    <div class="page-loading" id="pageLoading">
+      <span class="loading-spinner" aria-hidden="true"></span>
+      <strong id="loadingTitle">Abriendo archivo…</strong>
+      <p class="loading-performance">⚙ Consejo: la página funciona mejor con la aceleración por hardware activada.</p>
+      <section class="loading-help" id="loadingHelp" aria-live="polite" hidden>
+        <b>Está tardando más de lo normal</b>
+        <p>Puede que tu conexión no sea buena en este momento o que GitHub esté tardando en cargar los archivos.</p>
+        <div class="loading-actions">
+          <button id="retryRoute" type="button">Reintentar</button>
+          <button id="loadingBackHome" type="button">Volver al HUB</button>
+        </div>
+      </section>
+    </div>
   </main>
 
   <footer class="resonance-bar" id="resonanceBar" aria-label="Reproductor global de Resonance">
@@ -49,9 +61,49 @@
     <div id="globalQueueList" class="queue-list"></div>
   </aside>
 
+  <button class="diagnostic-trigger" id="diagnosticTrigger" type="button" aria-label="Abrir panel de diagnóstico" title=""></button>
+  <div class="diagnostic-scrim" id="diagnosticScrim" hidden></div>
+  <aside class="diagnostic-panel" id="diagnosticPanel" role="dialog" aria-modal="true" aria-labelledby="diagnosticTitle" aria-hidden="true">
+    <header class="diagnostic-header">
+      <div><small>MANTENIMIENTO PRIVADO</small><h2 id="diagnosticTitle">Panel de diagnóstico</h2></div>
+      <button id="diagnosticClose" type="button" aria-label="Cerrar diagnóstico">×</button>
+    </header>
+    <div class="diagnostic-content">
+      <p class="diagnostic-intro">Comprueba avisos que normalmente solo aparecen cuando algo falla.</p>
+      <div class="diagnostic-status-grid">
+        <article><span>Conexión</span><strong id="diagnosticOnline">Comprobando…</strong></article>
+        <article><span>Página actual</span><strong id="diagnosticRoute">HUB</strong></article>
+        <article><span>Incidencias</span><strong id="diagnosticCount">0 registradas</strong></article>
+        <article><span>Rendimiento</span><strong>Aceleración recomendada</strong></article>
+      </div>
+      <section class="diagnostic-section">
+        <div class="diagnostic-section-head"><div><small>SIMULADOR</small><h3>Probar avisos</h3></div><button id="diagnosticHealth" type="button">Revisión rápida</button></div>
+        <div class="diagnostic-tests">
+          <button type="button" data-diagnostic-test="slow"><b>⌛ Carga lenta</b><span>Muestra el aviso completo de espera.</span></button>
+          <button type="button" data-diagnostic-test="offline"><b>📡 Sin conexión</b><span>Prueba el aviso de red.</span></button>
+          <button type="button" data-diagnostic-test="github"><b>🐙 GitHub no responde</b><span>Simula un fallo del alojamiento.</span></button>
+          <button type="button" data-diagnostic-test="data"><b>🗂 Datos sin cargar</b><span>Simula un archivo de datos roto.</span></button>
+          <button type="button" data-diagnostic-test="resource"><b>🖼 Recurso ausente</b><span>Simula una imagen o archivo perdido.</span></button>
+          <button type="button" data-diagnostic-test="audio"><b>🎵 Audio no disponible</b><span>Prueba un fallo de canción.</span></button>
+        </div>
+      </section>
+      <section class="diagnostic-section">
+        <div class="diagnostic-section-head"><div><small>REGISTRO LOCAL</small><h3>Últimas incidencias</h3></div><button id="diagnosticClear" type="button">Vaciar</button></div>
+        <div class="diagnostic-log" id="diagnosticLog"><p class="diagnostic-empty">Todavía no se ha detectado ningún problema.</p></div>
+      </section>
+      <p class="diagnostic-footnote">Este panel está oculto por comodidad, pero una web estática no puede ofrecer privacidad real sin un inicio de sesión.</p>
+    </div>
+  </aside>
+
+  <div class="diagnostic-toast" id="diagnosticToast" role="status" aria-live="polite" hidden>
+    <span class="diagnostic-toast-icon" id="diagnosticToastIcon">!</span>
+    <div><strong id="diagnosticToastTitle">Aviso</strong><p id="diagnosticToastText"></p></div>
+    <button id="diagnosticToastClose" type="button" aria-label="Cerrar aviso">×</button>
+  </div>
+
   <div class="resume-notice" id="resumeNotice" hidden><span>La canción estaba reproduciéndose antes de recargar.</span><button id="resumeButton" type="button">Continuar</button></div>
   <audio id="globalAudio" preload="metadata"></audio>
-  <script src="OST/data.js"></script>
-  <script src="resonance-shell.js?v=1"></script>
+  <script src="OST/data.js?v=20260804-lyrics"></script>
+  <script src="resonance-shell.js?v=3"></script>
 </body>
 </html>
