@@ -125,15 +125,16 @@
       background: rgba(255, 255, 255, .025);
     }
 
-    /* La imagen final siempre se genera en formato horizontal 16:9. */
+    /* La imagen parte de 1600x900 y crece en altura cuando el contenido lo necesita. */
     .mission-card {
       position: relative;
       width: 1600px;
-      height: 900px;
+      min-height: 900px;
+      height: auto;
       overflow: hidden;
       display: grid;
       grid-template-columns: 51% 49%;
-      grid-template-rows: 1fr 190px;
+      grid-template-rows: minmax(710px, auto) auto;
       color: #f8fafc;
       background:
         radial-gradient(circle at top right, rgba(139, 92, 246, .16), transparent 30%),
@@ -309,7 +310,7 @@
       min-width: 0;
       padding: 40px 42px 24px 18px;
       display: grid;
-      grid-template-rows: 112px 1fr;
+      grid-template-rows: auto 1fr;
       gap: 14px;
     }
 
@@ -349,7 +350,9 @@
     .mission-info-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-template-rows: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(min-content, auto));
+      grid-auto-rows: minmax(min-content, auto);
+      align-content: start;
       gap: 14px;
       min-height: 0;
     }
@@ -357,7 +360,7 @@
     .mission-section {
       min-width: 0;
       min-height: 0;
-      overflow: hidden;
+      overflow: visible;
       padding: 20px 22px;
       background: rgba(8, 12, 22, .92);
       border: 1px solid rgba(255, 255, 255, .13);
@@ -479,7 +482,7 @@
 
   
   <div class="preview-note">
-    💡 <strong>Importante:</strong> La vista previa puede mostrar la ficha recortada. El PNG descargado siempre se genera completo.
+    💡 <strong>Importante:</strong> La ficha parte de 1600 × 900 y aumenta su altura automáticamente cuando el contenido necesita más espacio.
 </div>
 
   <section class="generator">
@@ -954,8 +957,9 @@ Mantén separada la información que conocen los participantes de las notas priv
     const card = document.getElementById("missionCard");
     if (!shell || !card || !shell.clientWidth) return;
     const scale = Math.min(1, shell.clientWidth / 1600);
+    const cardHeight = Math.max(900, card.scrollHeight);
     card.style.transform = `scale(${scale})`;
-    shell.style.height = `${Math.ceil(900 * scale)}px`;
+    shell.style.height = `${Math.ceil(cardHeight * scale)}px`;
   }
 
   function setText(id, value, fallback = "") {
@@ -1062,6 +1066,7 @@ Mantén separada la información que conocen los participantes de las notas priv
     setListSection("rewardsSection", "previewRewards", rewards);
     setListSection("gmNotesSection", "previewGmNotes", gmNotes);
     syncContinueButton();
+    window.requestAnimationFrame(fitMissionPreview);
   }
 
   function sanitizeFilename(value) {
@@ -1092,16 +1097,17 @@ Mantén separada la información que conocen los participantes de las notas priv
     button.disabled = true;
     button.textContent = "Generando imagen...";
     card.style.transform = "none";
-    shell.style.height = "900px";
+    const captureHeight = Math.max(900, card.scrollHeight);
+    shell.style.height = `${captureHeight}px`;
     shell.style.overflow = "visible";
 
     try {
       const canvas = await html2canvas(card, {
         scale: 1.5,
         width: 1600,
-        height: 900,
+        height: captureHeight,
         windowWidth: 1600,
-        windowHeight: 900,
+        windowHeight: captureHeight,
         backgroundColor: null,
         useCORS: true,
         allowTaint: false,
@@ -1214,8 +1220,13 @@ Mantén separada la información que conocen los participantes de las notas priv
     });
 
     const previewShell = document.querySelector(".mission-preview-shell");
-    if ("ResizeObserver" in window) new ResizeObserver(fitMissionPreview).observe(previewShell);
-    else window.addEventListener("resize", fitMissionPreview);
+    if ("ResizeObserver" in window) {
+      const previewObserver = new ResizeObserver(fitMissionPreview);
+      previewObserver.observe(previewShell);
+      previewObserver.observe(document.getElementById("missionCard"));
+    } else {
+      window.addEventListener("resize", fitMissionPreview);
+    }
 
     updatePreview();
     fitMissionPreview();
