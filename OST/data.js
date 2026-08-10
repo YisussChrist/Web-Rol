@@ -855,6 +855,14 @@ Así que ella conserva las...
                 audio: "audio/A True Superhero.mp3",
                 tags: ["epic", "bossbattle"],
                 lore: "Si en su cabeza hay dos volutas, significa que ha duplicado sus ganas de vencer."
+            },
+            {
+                songTitle: "The Hero You Saw in Me",
+                songDescription: "No es solo que alguien confíe en ti, es que alguien te ha reconocido como su héroe.",
+                songCover: "img/Rin4Cover.png",
+                audio: "audio/The Hero You Saw in Me.mp3",
+                tags: ["calm", "chill", "emotional"],
+                lore: "Si reconoces que todos necesitan tu ayuda, también reconoces que tú necesitas la ayuda de todos."
             }
         ]
     },  
