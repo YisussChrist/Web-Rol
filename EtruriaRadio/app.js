@@ -3,15 +3,22 @@
 
   const data = window.ETRURIA_RADIO_DATA || { stations: [], soundtracks: [] };
   const stations = data.stations || [];
-  const tracks = (data.soundtracks || []).map((track, index) => ({
-    ...track,
-    index,
-    title: track.songTitle || track.title || `Canción ${index + 1}`,
-    artist: track.character || track.artist || "Etruria Radio",
-    cover: track.songCover || track.cover || "",
-    description: track.songDescription || track.description || track.lore || "",
-    station: track.station || "route"
-  }));
+  const tracks = (data.soundtracks || []).map((track, index) => {
+    const artist = track.character || track.artist || "Etruria Radio";
+    const challenge = String(track.challengeText ?? track.challenge ?? "")
+      .replace(/\{(?:character|name)\}/gi, artist);
+
+    return {
+      ...track,
+      index,
+      title: track.songTitle || track.title || `Canción ${index + 1}`,
+      artist,
+      challenge,
+      cover: track.songCover || track.cover || "",
+      description: track.songDescription || track.description || track.lore || "",
+      station: track.station || "route"
+    };
+  });
 
   const $ = (id) => document.getElementById(id);
   const audio = $("radioAudio");
@@ -185,7 +192,7 @@
     nodes.avatar.style.setProperty("--station-color", station.color);
     nodes.stationLine.textContent = `${station.name} · ${station.frequency} FM`;
     nodes.title.textContent = trackIsTuned ? track.title : station.show;
-    nodes.artist.textContent = trackIsTuned ? track.artist : `CON ${station.host}`;
+    nodes.artist.textContent = trackIsTuned ? (track.challenge || track.artist) : `CON ${station.host}`;
     nodes.message.textContent = state.error || (trackIsTuned ? (track.description || station.description) : station.description);
     nodes.status.textContent = state.error ? "REVISAR ARCHIVO" : playing ? `RECIBIENDO · ${station.frequency} FM` : trackIsTuned ? "EMISIÓN EN PAUSA" : "EMISORA SINTONIZADA";
     nodes.live.textContent = playing ? "AL AIRE" : "PAUSA";
