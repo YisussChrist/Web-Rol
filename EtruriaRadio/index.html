@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#092f32">
+  <meta name="description" content="Etruria Radio: música, rutas, combates y señales de la región de Etruria.">
+  <title>Etruria Radio</title>
+  <link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body>
+  <main class="radio-page">
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#radio" aria-label="Ir a la radio">
+        <span class="brand-mark"><i></i></span>
+        <span><b>ETRURIA</b><small>RADIO NETWORK</small></span>
+      </a>
+      <div class="header-note"><span class="live-dot"></span> SEÑAL REGIONAL · EN LÍNEA</div>
+    </header>
+
+    <section class="intro" aria-labelledby="pageTitle">
+      <div>
+        <p class="eyebrow">POKÉGEAR · TARJETA DE RADIO</p>
+        <h1 id="pageTitle">La región entera,<br><em>en tu frecuencia.</em></h1>
+      </div>
+      <p class="intro-copy">Sintoniza canciones, historias, combates y señales que quizá no deberían estar ahí. Una PokeRadio creada para Etruria.</p>
+    </section>
+
+    <section class="device-wrap" id="radio" aria-label="PokeRadio de Etruria">
+      <div class="device-shadow" aria-hidden="true"></div>
+      <div class="device">
+        <div class="device-topbar">
+          <span class="device-logo"><i></i> ETRURIA GEAR</span>
+          <div class="speaker-slots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="power-light" title="Encendido"></span>
+        </div>
+
+        <div class="screens">
+          <section class="broadcast-screen" aria-live="polite">
+            <div class="screen-grid" aria-hidden="true"></div>
+            <div class="screen-status">
+              <strong id="clock">--:--</strong>
+              <span id="dayLabel">CARGANDO</span>
+              <div class="signal-bars" aria-label="Señal fuerte"><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="broadcast-content">
+              <div class="station-avatar" id="stationAvatar">
+                <img id="stationCover" alt="" hidden>
+                <span id="stationInitial">E</span>
+                <i class="pulse" id="playingPulse"></i>
+              </div>
+              <div class="broadcast-copy">
+                <p id="stationLine">ETRURIA RADIO</p>
+                <h2 id="trackTitle">Elige una emisora</h2>
+                <span id="trackArtist">LISTA PARA SINTONIZAR</span>
+              </div>
+            </div>
+            <p class="broadcast-message" id="broadcastMessage">La programación aparecerá aquí.</p>
+            <div class="ticker"><span id="radioStatus">LISTA PARA SINTONIZAR</span><b id="liveLabel">PAUSA</b></div>
+          </section>
+
+          <section class="tuner-screen">
+            <div class="tuner-head"><span>RADIO</span><small>TOCA UNA FRECUENCIA</small></div>
+            <div class="dial-zone">
+              <div class="frequency-ring">
+                <div class="ring-ticks" aria-hidden="true"></div>
+                <div class="dial-pointer" id="dialPointer" aria-hidden="true"><i></i></div>
+                <button class="dial-center" id="dialPlay" type="button" aria-label="Reproducir emisión">
+                  <span id="dialPlayIcon">▶</span>
+                  <small id="dialFrequency">--.-</small>
+                </button>
+                <button class="station-node node-0" data-station="route" type="button"><b>RUTA</b><span>101.3</span></button>
+                <button class="station-node node-1" data-station="city" type="button"><b>CITY</b><span>88.7</span></button>
+                <button class="station-node node-2" data-station="league" type="button"><b>LIGA</b><span>94.6</span></button>
+                <button class="station-node node-3" data-station="mystery" type="button"><b>???</b><span>77.9</span></button>
+              </div>
+              <div class="side-presets" aria-label="Emisoras favoritas">
+                <button data-station="route" type="button"><span>1</span><b>RUTA</b></button>
+                <button data-station="city" type="button"><span>2</span><b>CITY</b></button>
+                <button data-station="league" type="button"><span>3</span><b>LIGA</b></button>
+                <button data-station="mystery" type="button"><span>4</span><b>???</b></button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="device-controls">
+          <button id="previousButton" type="button" aria-label="Canción anterior">‹</button>
+          <div class="progress-wrap">
+            <input class="track-line" id="progressInput" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posición de reproducción">
+            <span id="currentTime">0:00</span><b id="progressLabel">SIN EMISIÓN</b><span id="duration">0:00</span>
+          </div>
+          <button class="main-play" id="playButton" type="button" aria-label="Reproducir">▶</button>
+          <button id="nextButton" type="button" aria-label="Canción siguiente">›</button>
+          <label class="volume-control">
+            <span>VOL</span>
+            <input id="volumeInput" type="range" min="0" max="1" value="0.68" step="0.01" aria-label="Volumen">
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="library" aria-labelledby="libraryTitle">
+      <div class="library-heading">
+        <div><p class="eyebrow">PROGRAMACIÓN</p><h2 id="libraryTitle">Canciones de la emisora</h2></div>
+        <div class="library-actions"><span id="trackCount">0 CANCIONES</span><button id="shuffleButton" type="button" aria-pressed="false">ALEATORIO</button></div>
+      </div>
+      <div class="track-list" id="trackList"></div>
+      <div class="empty-library" id="emptyLibrary" hidden>
+        <span>♪</span>
+        <div><strong>Esta frecuencia aún está en silencio</strong><p>Añade archivos a <code>audio/</code> y registra las canciones en <code>data.js</code>.</p></div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>TRANSMITIENDO DESDE ALGÚN LUGAR DE ETRURIA</p>
+      <span>ARCHIVO MUSICAL REGIONAL</span>
+    </footer>
+
+    <audio id="radioAudio" preload="metadata"></audio>
+  </main>
+  <script src="data.js?v=1"></script>
+  <script src="app.js?v=1"></script>
+</body>
+</html>

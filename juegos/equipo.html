@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Constructor de un once ideal con los personajes del RP, varias formaciones y guardado automático.">
+  <title>Equipo Ideal — RP HUB</title>
+  <link rel="stylesheet" href="../assets/css/equipo-ideal.css">
+</head>
+<body>
+  <main class="shell">
+    <nav class="topbar" aria-label="Navegación principal">
+      <a class="brand" href="index.html"><span>XI</span><strong>Equipo Ideal<small>Minijuegos · RP HUB</small></strong></a>
+      <div class="top-actions"><a href="../index.html">HUB</a><button id="copyBtn" type="button">Copiar once</button></div>
+    </nav>
+
+    <header class="hero">
+      <div>
+        <span class="eyebrow">⚽ CONSTRUCTOR DE ALINEACIONES</span>
+        <h1>Tu once.<br><em>Tu historia.</em></h1>
+        <p>Escoge una formación, selecciona una posición y ficha personajes del archivo general. La alineación se guarda automáticamente en este navegador.</p>
+      </div>
+      <div class="hero-stats" aria-label="Resumen del equipo">
+        <article><strong id="filledMetric">0/11</strong><span>Puestos cubiertos</span></article>
+        <article><strong id="ownerMetric">0</strong><span>Dueños distintos</span></article>
+        <article><strong id="animeMetric">0</strong><span>Universos</span></article>
+      </div>
+    </header>
+
+    <section class="controls" aria-label="Controles de alineación">
+      <label><span>Formación</span><select id="formationSelect"><option>4-3-3</option><option>4-4-2</option><option>3-5-2</option></select></label>
+      <button id="randomBtn" type="button">🎲 Once aleatorio</button>
+      <button id="clearBtn" class="danger" type="button">Vaciar equipo</button>
+      <span class="save-state" id="saveState">Guardado automático</span>
+    </section>
+
+    <div class="workspace">
+      <section class="pitch-card" aria-labelledby="pitchTitle">
+        <div class="section-head"><div><span>CAMPO</span><h2 id="pitchTitle">Alineación titular</h2></div><p id="selectedHint">Selecciona un puesto</p></div>
+        <div class="pitch" id="pitch" aria-label="Campo con once posiciones"></div>
+      </section>
+
+      <aside class="squad-panel" aria-labelledby="squadTitle">
+        <div class="section-head"><div><span>ARCHIVO DEL RP</span><h2 id="squadTitle">Fichar personaje</h2></div><strong id="resultCount">0</strong></div>
+        <label class="search"><span>🔎</span><input id="characterSearch" type="search" placeholder="Nombre, serie o dueño..." autocomplete="off"></label>
+        <div class="filters">
+          <select id="ownerFilter" aria-label="Filtrar por dueño"><option value="all">Todos los dueños</option></select>
+          <select id="animeFilter" aria-label="Filtrar por universo"><option value="all">Todos los universos</option></select>
+        </div>
+        <div class="candidate-list" id="candidateList"></div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="../personajes-datos.js"></script>
+  <script src="../assets/js/equipo-ideal.js"></script>
+</body>
+</html>

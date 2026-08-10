@@ -10,11 +10,12 @@
     :root{--bg:#08080c;--ink:#f7f5ec;--muted:#92919b;--line:rgba(255,255,255,.11);--lime:#edff54}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}a{color:inherit;text-decoration:none}.shell{width:min(1180px,calc(100% - 44px));margin:auto}
     .nav{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);position:relative;z-index:5}.brand{display:flex;align-items:center;gap:12px;font-family:Impact,"Arial Narrow",sans-serif;font-size:22px;letter-spacing:.08em}.brand-mark{width:34px;height:34px;display:grid;place-items:center;border:2px solid var(--lime);color:var(--lime);transform:skew(-9deg)}.back{color:#aaa9b3;font-size:11px;letter-spacing:.09em;text-transform:uppercase;transition:.2s}.back:hover{color:white}.online{display:flex;align-items:center;gap:8px;color:#aaa9b3;font-size:10px;letter-spacing:.08em}.online i{width:7px;height:7px;border-radius:50%;background:#b6ee57;box-shadow:0 0 10px #b6ee57}
-    .hero{min-height:610px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}.hero:before{content:"";position:absolute;inset:0;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:68px 68px;mask-image:linear-gradient(to bottom,transparent,#000 30%,transparent 92%)}.hero:after{content:"";position:absolute;width:700px;height:280px;border-radius:50%;background:rgba(237,255,84,.06);filter:blur(90px);top:230px}.pill,.kicker{font-size:9px;font-weight:800;letter-spacing:.24em;color:var(--lime)}.pill{padding:9px 14px;border:1px solid rgba(237,255,84,.28);background:rgba(237,255,84,.05);position:relative;z-index:1}.hero h1{font-family:Impact,"Arial Narrow",sans-serif;font-size:clamp(76px,12vw,145px);font-weight:900;line-height:.76;letter-spacing:-.025em;text-transform:uppercase;margin:48px 0 36px;position:relative;z-index:1}.hero h1 span{color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.48)}.hero p{max-width:620px;color:#a7a6ae;line-height:1.75;font-size:14px;margin:0;position:relative;z-index:1}.hero-cta{margin-top:30px;background:var(--lime);color:#111207;font-weight:900;text-transform:uppercase;letter-spacing:.09em;font-size:10px;padding:16px 20px;display:inline-flex;gap:32px;align-items:center;position:relative;z-index:1;transition:.2s}.hero-cta:hover{transform:translateY(-3px);box-shadow:0 12px 35px rgba(237,255,84,.2)}
+    .hero{min-height:610px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}.hero:before{content:"";position:absolute;inset:0;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:68px 68px;mask-image:linear-gradient(to bottom,transparent,#000 30%,transparent 92%)}.hero:after{content:"";position:absolute;width:700px;height:280px;border-radius:50%;background:rgba(237,255,84,.06);filter:blur(90px);top:230px}.pill,.kicker{font-size:9px;font-weight:800;letter-spacing:.24em;color:var(--lime)}.pill{padding:9px 14px;border:1px solid rgba(237,255,84,.28);background:rgba(237,255,84,.05);position:relative;z-index:1}.hero h1{font-family:Impact,"Arial Narrow",sans-serif;font-size:clamp(76px,12vw,145px);font-weight:900;line-height:.76;letter-spacing:-.025em;text-transform:uppercase;margin:48px 0 36px;position:relative;z-index:1}.hero h1 span{color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.48)}.hero p{max-width:620px;color:#a7a6ae;line-height:1.75;font-size:14px;margin:0;position:relative;z-index:1}.hero-cta{margin-top:30px;background:var(--lime);color:#111207;font-weight:900;text-transform:uppercase;letter-spacing:.09em;font-size:10px;padding:16px 20px;display:inline-flex;gap:32px;align-items:center;position:relative;z-index:1;transition:.2s}.hero-cta:hover{transform:translateY(-3px);box-shadow:0 12px 35px rgba(237,255,84,.2)}.resume-run{margin-top:12px;border:1px solid rgba(255,255,255,.18);background:rgba(10,10,14,.78);color:white;padding:13px 18px;position:relative;z-index:2;cursor:pointer;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}.resume-run:hover{border-color:var(--lime);color:var(--lime)}.resume-run[hidden]{display:none}
     .games{padding:105px 0 120px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:45px}.section-head h2{font-family:Impact,"Arial Narrow",sans-serif;text-transform:uppercase;font-size:clamp(36px,5vw,58px);font-weight:900;line-height:1;margin:12px 0 0;letter-spacing:.01em}.section-head p{width:330px;margin:0;color:var(--muted);font-size:12px;line-height:1.7}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{--accent:#fff;min-height:560px;border:1px solid var(--line);background:#101015;position:relative;overflow:hidden;display:flex;flex-direction:column;transition:.25s}.card:hover{transform:translateY(-7px);border-color:var(--accent)}.card:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 12%,color-mix(in srgb,var(--accent),transparent 66%),transparent 38%);opacity:.62}.card-number{position:absolute;z-index:2;top:19px;left:20px;color:rgba(255,255,255,.38);font-size:11px}.art{height:225px;display:grid;place-items:center;position:relative}.orbit{position:absolute;width:190px;height:190px;border:1px solid color-mix(in srgb,var(--accent),transparent 58%);border-radius:50%;animation:spin 16s linear infinite}.orbit:after{content:"";position:absolute;width:6px;height:6px;background:var(--accent);border-radius:50%;top:17px;right:33px;box-shadow:0 0 12px var(--accent)}.emblem{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;position:relative;z-index:1;background:var(--accent);color:#09090c;font-family:Impact,"Arial Narrow",sans-serif;font-size:45px;box-shadow:0 0 44px color-mix(in srgb,var(--accent),transparent 55%)}.monster .emblem{border:25px solid #f7f5ec;background:#111;color:transparent;box-shadow:0 -38px 0 -1px #e94c48 inset,0 0 42px rgba(255,216,74,.28)}.monster .emblem:before{content:"";position:absolute;width:110px;height:10px;background:#111;top:27px}.monster .emblem:after{content:"";position:absolute;width:24px;height:24px;background:#fff;border:7px solid #111;border-radius:50%;top:20px}.body{padding:5px 26px 26px;margin-top:auto;position:relative;z-index:2}.eyebrow{font-size:8px;letter-spacing:.22em;font-weight:900;color:var(--accent)}.body h3{font-family:Impact,"Arial Narrow",sans-serif;text-transform:uppercase;font-size:42px;line-height:.95;letter-spacing:.01em;margin:10px 0 7px}.body strong{font-size:11px;color:#c7c6cc}.body p{color:#83828c;font-size:11px;line-height:1.65;min-height:54px;margin:16px 0}.stats{display:flex;gap:7px;flex-wrap:wrap}.stats span{font-size:8px;text-transform:uppercase;letter-spacing:.08em;padding:7px 8px;border:1px solid var(--line);color:#96959e}.play{width:100%;margin-top:22px;padding:18px 0 0;border:0;border-top:1px solid var(--line);background:transparent;color:white;text-align:left;text-transform:uppercase;letter-spacing:.12em;font-weight:900;font-size:9px;display:flex;justify-content:space-between;cursor:pointer}.play b{font-size:15px;color:var(--accent)}
     .how{padding:90px 0 105px;border-top:1px solid var(--line)}.steps{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin-top:30px}.step{padding:36px;min-height:180px}.step+.step{border-left:1px solid var(--line)}.step b{color:var(--lime);font-size:11px}.step h3{font-family:Impact,"Arial Narrow",sans-serif;text-transform:uppercase;font-size:24px;letter-spacing:.03em;margin:22px 0 8px}.step p{color:var(--muted);font-size:11px;line-height:1.6;margin:0}footer{height:120px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;color:#6f6e77;font-size:9px;letter-spacing:.08em}
     .modal-bg{position:fixed;inset:0;z-index:50;background:rgba(2,2,5,.84);backdrop-filter:blur(12px);display:none;place-items:center;padding:20px}.modal-bg.open{display:grid}.modal{--accent:var(--lime);width:min(650px,100%);max-height:calc(100vh - 40px);overflow:auto;background:#111116;border:1px solid color-mix(in srgb,var(--accent),transparent 50%);padding:46px;position:relative;box-shadow:0 30px 100px #000}.modal:before{content:"";position:absolute;height:3px;left:0;right:0;top:0;background:var(--accent)}.close{position:absolute;top:12px;right:17px;border:0;background:none;color:#8c8b94;font-size:26px;cursor:pointer}.modal h2{font-family:Impact,"Arial Narrow",sans-serif;font-size:44px;line-height:.98;text-transform:uppercase;letter-spacing:.02em;margin:14px 0}.intro,.result p,.event-copy{color:#94939d;font-size:12px;line-height:1.7}.modal form{margin-top:28px}.modal form>label,.modal legend,.field-label{display:block;color:#c2c1c7;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.13em;margin-bottom:10px}.modal input[type=text],.character-select{width:100%;background:#09090d;border:1px solid var(--line);color:white;padding:15px 16px;outline:none}.modal input[type=text]:focus,.character-select:focus{border-color:var(--accent)}fieldset{border:0;padding:0;margin:24px 0}.origins{display:grid;gap:7px}.origin{border:1px solid var(--line);padding:14px;display:flex;align-items:center;justify-content:space-between;color:#9a99a2;font-size:12px;cursor:pointer}.origin.active{color:#fff;border-color:var(--accent);background:color-mix(in srgb,var(--accent),transparent 93%)}.origin input{position:absolute;opacity:0}.origin b{color:var(--accent)}.start{width:100%;border:0;background:var(--accent);color:#0c0c0f;padding:17px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;font-size:10px;cursor:pointer;display:flex;justify-content:space-between}.start:disabled{opacity:.35;cursor:not-allowed}.result{text-align:center}.result-icon{width:88px;height:88px;margin:0 auto 24px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#111;font-family:Impact,"Arial Narrow",sans-serif;font-size:36px;box-shadow:0 0 40px color-mix(in srgb,var(--accent),transparent 65%)}.route{border:1px solid var(--line);padding:12px;margin:24px 0;color:var(--accent);font-size:9px;letter-spacing:.1em}
     .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:24px 0}.mode-card{min-height:125px;border:1px solid var(--line);background:#0b0b10;color:#aaa9b3;padding:18px;text-align:left;cursor:pointer;transition:.2s}.mode-card.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent),transparent 94%);color:white}.mode-card b{display:block;color:var(--accent);font-family:Impact,"Arial Narrow",sans-serif;font-size:23px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}.mode-card span{font-size:10px;line-height:1.5}.setup-panel{margin:20px 0 25px}.setup-panel[hidden]{display:none}.existing-note{color:#777680;font-size:10px;line-height:1.55;margin:9px 0 0}.game-hud{margin:-8px 0 26px;padding-bottom:20px;border-bottom:1px solid var(--line)}.hud-top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:12px}.hud-player{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:white}.hud-chapter{font-size:9px;letter-spacing:.1em;color:var(--accent)}.progress{height:3px;background:#28282f;overflow:hidden}.progress i{display:block;height:100%;background:var(--accent);transition:width .35s}.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}.stat-chip{border:1px solid var(--line);padding:8px;text-align:center}.stat-chip b{display:block;color:white;font-size:14px}.stat-chip span{display:block;color:#777680;font-size:7px;text-transform:uppercase;letter-spacing:.07em;margin-top:2px}.event-label{color:var(--accent);font-size:8px;letter-spacing:.2em;font-weight:900;text-transform:uppercase}.event-title{font-family:Impact,"Arial Narrow",sans-serif;text-transform:uppercase;font-size:39px;line-height:1;margin:11px 0 13px;letter-spacing:.02em}.choices{display:grid;gap:8px;margin-top:24px}.choice{width:100%;border:1px solid var(--line);background:#0b0b10;color:#dddce3;padding:15px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;gap:14px;transition:.2s}.choice:hover,.choice:focus-visible{border-color:var(--accent);background:color-mix(in srgb,var(--accent),transparent 94%);outline:none}.choice span{font-size:11px;line-height:1.45}.choice b{color:var(--accent)}.outcome{border-left:3px solid var(--accent);background:#0b0b10;padding:17px;margin:23px 0}.outcome strong{display:block;color:var(--accent);font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}.outcome p{color:#b1b0b8;font-size:12px;line-height:1.65;margin:0}.delta{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.delta span{border:1px solid var(--line);color:#aaa9b3;font-size:8px;padding:6px 8px;text-transform:uppercase}.career-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:22px 0}.summary-cell{border:1px solid var(--line);padding:13px}.summary-cell span{display:block;color:#777680;font-size:8px;text-transform:uppercase;letter-spacing:.08em}.summary-cell b{display:block;font-size:17px;margin-top:4px}.ending-title{font-family:Impact,"Arial Narrow",sans-serif;color:var(--accent);font-size:30px;text-transform:uppercase;letter-spacing:.03em;margin:10px 0}.final-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ghost-button{border:1px solid var(--line);background:transparent;color:#bbb;cursor:pointer;padding:16px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}@keyframes spin{to{transform:rotate(360deg)}}
+    .career-lists{display:grid;gap:7px;margin:0 0 22px;text-align:left}.career-list{border:1px solid var(--line);padding:11px 13px}.career-list b{display:block;color:var(--accent);font-size:8px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}.career-list span{color:#aaa9b3;font-size:10px;line-height:1.5}.final-actions{grid-template-columns:repeat(3,1fr)}.ghost-button:hover{border-color:var(--accent);color:var(--accent)}
     @media(max-width:850px){.grid{grid-template-columns:1fr}.card{min-height:500px}.art{height:190px}.section-head{align-items:start;flex-direction:column}.section-head p{width:min(100%,440px)}.steps{grid-template-columns:1fr}.step+.step{border-left:0;border-top:1px solid var(--line)}}
     @media(max-width:600px){.shell{width:min(100% - 28px,1180px)}.nav{height:70px}.online{display:none}.hero{min-height:590px}.hero h1{font-size:70px}.hero p{font-size:12px}.games{padding:78px 0}.body h3{font-size:37px}.step{padding:27px;min-height:150px}footer{height:155px;padding:27px 0;align-items:flex-start;flex-direction:column}.modal{padding:40px 23px 26px}.modal h2{font-size:36px}.mode-grid,.final-actions{grid-template-columns:1fr}.mode-card{min-height:100px}.stat-row{grid-template-columns:repeat(2,1fr)}.event-title{font-size:34px}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.orbit{animation:none}*{transition:none!important}}
@@ -33,6 +34,7 @@
       <h1>Tu historia.<br><span>Tu leyenda.</span></h1>
       <p>Tres mundos conectados con el lore de nuestros servidores. Toma decisiones, crea alianzas y descubre qué final te estaba esperando.</p>
       <a class="hero-cta" href="#mundos">Elegir aventura <span>↓</span></a>
+      <button class="resume-run" id="resumeRun" type="button" hidden>Continuar partida guardada</button>
     </section>
 
     <section class="games shell" id="mundos">
@@ -252,16 +254,88 @@
       }
     ];
 
+    const bonusEvents = {
+      ki: [
+        { id: "tao-echo", available: s => s.flags.tao, title: "El eco del Sello", text: "El Sello de Tao despierta mientras duermes y te muestra un futuro en el que ya no distingues tu voluntad de la suya.", choices: [
+          { label: "Dominarlo mediante meditación", effects: { control: 13, poder: 5 }, outcome: "Durante tres días combates dentro de tu propia mente. Cuando despiertas, el sello obedece.", career: { techniques: "Dominio del Sello de Tao" } },
+          { label: "Arrancar el sello por la fuerza", effects: { poder: 10, honor: 5, control: -4 }, outcome: "La explosión puede verse desde kilómetros. Sobrevives libre, aunque una cicatriz conserva la forma del sello." },
+          { label: "Negociar con la presencia del sello", effects: { control: 7, fama: 5, honor: -3 }, outcome: "No sois aliados, pero establecéis unas reglas. Por ahora, ambos las respetáis.", career: { techniques: "Pacto de Tao" } }
+        ]},
+        { id: "patrol", available: s => s.stats.honor >= 48, title: "La patrulla sin héroes", text: "Una colonia remota pide ayuda. No hay enemigos legendarios ni recompensa, solo gente que necesita protección.", choices: [
+          { label: "Viajar inmediatamente", effects: { honor: 12, fama: 3 }, outcome: "El rescate nunca aparece en las noticias, pero toda la colonia aprende tu nombre.", career: { titles: "Protector de la Colonia" } },
+          { label: "Enviar parte de tu energía a distancia", effects: { control: 10, honor: 5 }, outcome: "Una barrera cubre la colonia hasta que llegan refuerzos." },
+          { label: "Entrenar a sus defensores", effects: { honor: 8, control: 6 }, outcome: "No vuelven a pedir ayuda. Ahora saben protegerse por sí mismos." }
+        ]},
+        { id: "galactic-show", available: s => s.stats.fama >= 48, title: "El combate de exhibición", text: "La cadena galáctica ofrece retransmitir un combate contra una figura de Dragon Dex ante millones de espectadores.", choices: [
+          { label: "Aceptar y prometer una victoria rápida", effects: { fama: 14, poder: 7, honor: -3 }, outcome: "Cumples tu promesa. El vídeo del combate rompe todos los récords." },
+          { label: "Convertirlo en un entrenamiento público", effects: { fama: 8, honor: 7 }, outcome: "El público descubre que un gran combate también puede enseñar." },
+          { label: "Rechazar las cámaras y combatir en privado", effects: { control: 9, fama: -4 }, outcome: "Sin público ni presión, ambos guerreros muestran técnicas que jamás enseñarían en un estadio." }
+        ]},
+        { id: "gravity", available: () => true, title: "La cámara de gravedad", text: "Una cámara experimental puede multiplicar la gravedad hasta un nivel nunca probado. El sistema no garantiza poder detenerse.", choices: [
+          { label: "Subirla directamente al máximo", effects: { poder: 14, control: -5 }, outcome: "Sales caminando apenas, pero tu ki se siente como el de otra persona.", career: { techniques: "Entrenamiento de gravedad extrema" } },
+          { label: "Aumentar la gravedad por fases", effects: { poder: 8, control: 8 }, outcome: "El progreso es más lento y mucho más estable." },
+          { label: "Entrenar allí junto a un rival", effects: { poder: 7, honor: 6, fama: 3 }, outcome: "La competencia convierte cada minuto en una batalla." }
+        ]}
+      ],
+      monster: [
+        { id: "mystery-egg", available: s => s.stats.vinculo >= 48, title: "El huevo de Villa Arcanum", text: "Una anciana te confía un huevo Pokémon encontrado junto a las ruinas. Solo reacciona cuando tu equipo se acerca.", choices: [
+          { label: "Cuidarlo durante el viaje", effects: { vinculo: 12, equipo: 5 }, outcome: "El huevo eclosiona durante una tormenta y el recién nacido reconoce a todo tu equipo como familia.", career: { companions: "Pokémon nacido en las ruinas" } },
+          { label: "Llevarlo al laboratorio de Etruria", effects: { fama: 6, medallas: 4 }, outcome: "La investigación revela una conexión con una especie desaparecida." },
+          { label: "Buscar el lugar exacto donde apareció", effects: { equipo: 7, fama: 5 }, outcome: "El rastro conduce a una cámara que no figuraba en ningún mapa." }
+        ]},
+        { id: "rival", available: () => true, title: "El rival de la ruta norte", text: "Un entrenador te desafía cada vez que os cruzáis. Esta vez asegura conocer todos tus movimientos.", choices: [
+          { label: "Cambiar por completo tu equipo", effects: { equipo: 11, fama: 4 }, outcome: "Su preparación deja de servirle. Descubre que nunca terminaste de evolucionar." },
+          { label: "Usar la misma estrategia y perfeccionarla", effects: { medallas: 8, equipo: 5 }, outcome: "Conocer una jugada no significa poder detenerla." },
+          { label: "Proponer un combate doble como aliados", effects: { vinculo: 10, fama: 3 }, outcome: "Por primera vez lucháis en el mismo lado y entendéis por qué la rivalidad os hizo mejores.", career: { companions: "Rival de la ruta norte" } }
+        ]},
+        { id: "lost-pokemon", available: s => s.stats.equipo >= 48, title: "El Pokémon que no quiere dueño", text: "Un Pokémon poderoso lleva semanas derrotando a cualquiera que intenta capturarlo. Cuando llegas, no ataca: te observa.", choices: [
+          { label: "Lanzar una Poké Ball inmediatamente", effects: { equipo: 10, fama: 6, vinculo: -4 }, outcome: "La captura funciona, pero ganarse su confianza será una aventura distinta.", career: { companions: "Pokémon indomable" } },
+          { label: "Seguirlo sin intentar atraparlo", effects: { vinculo: 13, equipo: 3 }, outcome: "Al amanecer entra voluntariamente en una Poké Ball vacía.", career: { companions: "Compañero de la ruta salvaje" } },
+          { label: "Ayudarlo y dejarlo libre", effects: { vinculo: 10, fama: 5 }, outcome: "Desaparece entre los árboles. Mucho después volverá cuando más lo necesites.", career: { titles: "Amigo de los Pokémon salvajes" } }
+        ]},
+        { id: "contest", available: s => s.stats.fama >= 48, title: "El Festival de Etruria", text: "El Festival mezcla combates, actuaciones y pruebas de coordinación. Serena y Shin ya han confirmado su participación.", choices: [
+          { label: "Preparar una actuación espectacular", effects: { fama: 13, vinculo: 5 }, outcome: "El estadio entero acompaña el último movimiento de tu equipo.", career: { titles: "Estrella del Festival de Etruria" } },
+          { label: "Centrarte en la prueba de combate", effects: { equipo: 11, medallas: 4 }, outcome: "Tu precisión convierte el festival en una demostración competitiva." },
+          { label: "Improvisar junto a Shin y Serena", effects: { vinculo: 8, fama: 8 }, outcome: "La actuación no se parece a nada ensayado y por eso funciona." }
+        ]}
+      ],
+      eleven: [
+        { id: "galaxia-arrival", available: s => s.flags.transfer, title: "El primer día en Galaxia", text: "El vestuario se queda en silencio cuando entras. Para ellos no eres una estrella: eres quien abandonó a su antiguo equipo.", choices: [
+          { label: "Demostrar tu nivel en el primer entrenamiento", effects: { talento: 12, fama: 5, equipo: -3 }, outcome: "Después de tu supertécnica nadie cuestiona tu calidad, aunque todavía no confían en ti.", career: { teams: "Galaxia" } },
+          { label: "Empezar desde abajo y ganarte a todos", effects: { equipo: 12, coraje: 4 }, outcome: "Recoges balones, ayudas a los suplentes y terminas entrenando el último. El vestuario empieza a abrirse.", career: { teams: "Galaxia" } },
+          { label: "Pedir un amistoso inmediato contra Raimon", effects: { fama: 9, coraje: 8 }, outcome: "Tu pasado y tu presente se encuentran antes de lo esperado.", career: { teams: "Galaxia" } }
+        ]},
+        { id: "captain", available: s => s.stats.equipo >= 50, title: "El brazalete de capitán", text: "El entrenador deja el brazalete sobre tu asiento. No explica si es temporal o una prueba.", choices: [
+          { label: "Ponértelo sin decir nada", effects: { equipo: 9, coraje: 7, fama: 4 }, outcome: "El equipo entiende la respuesta cuando eres el primero en entrar al campo.", career: { titles: "Capitán del equipo" } },
+          { label: "Pedir una votación en el vestuario", effects: { equipo: 13, fama: -2 }, outcome: "La votación es unánime. El brazalete ahora pesa mucho más.", career: { titles: "Capitán elegido por el vestuario" } },
+          { label: "Entregárselo a un compañero veterano", effects: { equipo: 10, coraje: 4 }, outcome: "Rechazas el título, pero durante el partido todos siguen tus indicaciones igualmente." }
+        ]},
+        { id: "injury", available: () => true, title: "La lesión silenciosa", text: "Una molestia en la rodilla aparece antes de un partido decisivo. Los médicos recomiendan parar, pero la decisión es tuya.", choices: [
+          { label: "Jugar infiltrado y no decir nada", effects: { coraje: 12, fama: 5, talento: -7 }, outcome: "Terminas el partido, pero la recuperación será mucho más larga.", flag: "injury" },
+          { label: "Parar y ayudar desde el banquillo", effects: { equipo: 11, talento: 3 }, outcome: "Descubres el partido desde otra perspectiva y encuentras la jugada que decide el resultado." },
+          { label: "Pedir jugar solo la segunda parte", effects: { talento: 7, coraje: 7 }, outcome: "Entras con el tiempo justo y conviertes cada carrera en una decisión." }
+        ]},
+        { id: "sponsor", available: s => s.stats.fama >= 50, title: "El contrato de imagen", text: "Una marca quiere convertirte en el rostro del torneo. Exige tiempo, exclusividad y una personalidad perfecta.", choices: [
+          { label: "Firmar el contrato completo", effects: { fama: 14, talento: 3, equipo: -5 }, outcome: "Tu imagen aparece en toda la ciudad. El calendario también se llena fuera del campo.", career: { titles: "Rostro del torneo" } },
+          { label: "Negociar para incluir a todo el equipo", effects: { fama: 8, equipo: 9 }, outcome: "La campaña termina contando once historias, no una sola." },
+          { label: "Rechazarlo y concentrarte en jugar", effects: { talento: 9, coraje: 5, fama: -3 }, outcome: "Las cámaras se marchan. El campo sigue exactamente donde estaba." }
+        ]}
+      ]
+    };
+
     const existingSources = {
-      ki: (window.DRAGON_DEX_DATA?.characters || []).filter(x => x.status !== "Inactivo").map(x => ({ name: x.name, meta: `${x.role || "Guerrero/a"} · ${Number(x.basePower || 0).toLocaleString("es-ES")} poder` })),
-      monster: (window.ETRURIA_TRAINERS || []).filter(x => x.status !== "Inactivo").map(x => ({ name: x.name, meta: `${x.region || "Etruria"} · ${x.style || "Entrenador/a"}` })),
-      eleven: (window.INAZUMA_CENTER_DATA?.players || []).filter(x => x.status !== "Inactivo").map(x => ({ name: x.name, meta: `${x.team || "Sin equipo"} · ${x.positionGroup || x.position || "Jugador/a"}` }))
+      ki: (window.DRAGON_DEX_DATA?.characters || []).filter(x => x.status !== "Inactivo").map(x => ({ name: x.name, meta: `${x.role || "Guerrero/a"} · ${Number(x.basePower || 0).toLocaleString("es-ES")} poder`, raw: x })),
+      monster: (window.ETRURIA_TRAINERS || []).filter(x => x.status !== "Inactivo").map(x => ({ name: x.name, meta: `${x.region || "Etruria"} · ${x.style || "Entrenador/a"}`, raw: x })),
+      eleven: (window.INAZUMA_CENTER_DATA?.players || []).filter(x => x.status !== "Inactivo").map(x => ({ name: x.name, meta: `${x.team || "Sin equipo"} · ${x.positionGroup || x.position || "Jugador/a"}`, raw: x }))
     };
 
     const grid = document.getElementById("gameGrid");
     const bg = document.getElementById("modalBg");
     const modal = document.getElementById("modal");
     const content = document.getElementById("modalContent");
+    const resumeRun = document.getElementById("resumeRun");
+    const SAVE_KEY = "webrol-copero-save-v2";
+    const TOTAL_CHAPTERS = 10;
     let state = null;
 
     games.forEach((game, index) => {
@@ -329,32 +403,42 @@
         const stats = Object.fromEntries(Object.keys(game.statDefs).map(key => [key, 40]));
         let player;
         let origin;
+        let career = { teams: [], titles: [], techniques: [], companions: [], highlights: [] };
         if (mode === "custom") {
           player = nameInput.value.trim();
           const originIndex = Number(new FormData(event.target).get("origin"));
           const originData = game.origins[originIndex];
           origin = originData.name;
           applyEffects(stats, originData.bonus);
+          career.teams.push(originData.name);
         } else {
           const selected = existing[Number(document.getElementById("existingCharacter").value)];
           player = selected.name;
           origin = selected.meta;
-          stats[Object.keys(game.statDefs)[0]] += 7;
-          stats.fama += 5;
+          seedExistingProfile(game, selected.raw, stats, career);
         }
-        state = { game, mode, player, origin, stats, index: 0, flags: {}, decisions: [] };
+        state = {
+          game, mode, player, origin, stats, career,
+          step: 0,
+          currentEventId: "base-0",
+          completedIds: [],
+          flags: {},
+          decisions: []
+        };
+        saveState();
         renderEvent();
       });
     }
 
     function renderHud() {
-      const progress = ((state.index + 1) / state.game.events.length) * 100;
-      return `<div class="game-hud"><div class="hud-top"><span class="hud-player">${escapeText(state.player)}</span><span class="hud-chapter">CAPÍTULO ${state.index + 1} / ${state.game.events.length}</span></div><div class="progress"><i style="width:${progress}%"></i></div><div class="stat-row">${Object.entries(state.game.statDefs).map(([key, label]) => `<div class="stat-chip"><b>${state.stats[key]}</b><span>${label}</span></div>`).join("")}</div></div>`;
+      const progress = ((state.step + 1) / TOTAL_CHAPTERS) * 100;
+      return `<div class="game-hud"><div class="hud-top"><span class="hud-player">${escapeText(state.player)}</span><span class="hud-chapter">CAPÍTULO ${state.step + 1} / ${TOTAL_CHAPTERS}</span></div><div class="progress"><i style="width:${progress}%"></i></div><div class="stat-row">${Object.entries(state.game.statDefs).map(([key, label]) => `<div class="stat-chip"><b>${state.stats[key]}</b><span>${label}</span></div>`).join("")}</div></div>`;
     }
 
     function renderEvent() {
-      const event = state.game.events[state.index];
-      content.innerHTML = `${renderHud()}<span class="event-label">${state.game.universe}</span><h2 class="event-title" id="modalTitle">${event.title}</h2><p class="event-copy">${event.text}</p><div class="choices">${event.choices.map((choice, i) => `<button class="choice" type="button" data-choice="${i}"><span>${choice.label}</span><b>→</b></button>`).join("")}</div>`;
+      const event = getEvent(state.game, state.currentEventId);
+      if (!event) { clearSave(); openGame(state.game); return; }
+      content.innerHTML = `${renderHud()}<span class="event-label">${state.game.universe}${event.branch ? " · EVENTO DE RUTA" : ""}</span><h2 class="event-title" id="modalTitle">${personalize(event.title)}</h2><p class="event-copy">${personalize(event.text)}</p><div class="choices">${event.choices.map((choice, i) => `<button class="choice" type="button" data-choice="${i}"><span>${personalize(choice.label)}</span><b>→</b></button>`).join("")}</div>`;
       content.querySelectorAll(".choice").forEach(button => button.addEventListener("click", () => chooseOption(event, Number(button.dataset.choice))));
     }
 
@@ -363,11 +447,22 @@
       applyEffects(state.stats, choice.effects);
       if (choice.flag) state.flags[choice.flag] = true;
       state.decisions.push(choice.label);
+      state.completedIds.push(state.currentEventId);
+      state.career.highlights.push(personalize(event.title));
+      applyCareer(choice.career);
+      applyAutomaticCareer(state.game.id, event, choice);
       const delta = Object.entries(choice.effects).map(([key, value]) => `<span>${value > 0 ? "+" : ""}${value} ${state.game.statDefs[key]}</span>`).join("");
-      const last = state.index === state.game.events.length - 1;
-      content.innerHTML = `${renderHud()}<span class="event-label">DECISIÓN TOMADA</span><h2 class="event-title" id="modalTitle">${event.title}</h2><div class="outcome"><strong>Consecuencia</strong><p>${choice.outcome}</p><div class="delta">${delta}</div></div><button class="start" id="continueButton" type="button">${last ? "Ver mi leyenda" : "Continuar la historia"}<span>→</span></button>`;
+      const last = state.step === TOTAL_CHAPTERS - 1;
+      content.innerHTML = `${renderHud()}<span class="event-label">DECISIÓN TOMADA</span><h2 class="event-title" id="modalTitle">${personalize(event.title)}</h2><div class="outcome"><strong>Consecuencia</strong><p>${personalize(choice.outcome)}</p><div class="delta">${delta}</div></div><button class="start" id="continueButton" type="button">${last ? "Ver mi leyenda" : "Continuar la historia"}<span>→</span></button>`;
       document.getElementById("continueButton").addEventListener("click", () => {
-        if (last) finishGame(); else { state.index += 1; renderEvent(); }
+        if (last) {
+          finishGame();
+        } else {
+          state.step += 1;
+          state.currentEventId = chooseNextEvent(state.step);
+          saveState();
+          renderEvent();
+        }
       });
     }
 
@@ -377,12 +472,230 @@
       const entries = Object.entries(state.stats);
       const best = entries.sort((a, b) => b[1] - a[1])[0];
       const average = Math.round(entries.reduce((sum, [, value]) => sum + value, 0) / entries.length);
-      content.innerHTML = `<div class="result"><div class="result-icon">${game.icon}</div><span class="eyebrow">CARRERA COMPLETADA · ${game.universe}</span><h2 id="modalTitle">${escapeText(state.player)}</h2><div class="ending-title">${ending.title}</div><p>${ending.text}</p><div class="career-summary"><div class="summary-cell"><span>Origen</span><b>${escapeText(state.origin)}</b></div><div class="summary-cell"><span>Valoración</span><b>${average}/100</b></div><div class="summary-cell"><span>Mayor virtud</span><b>${game.statDefs[best[0]]} · ${best[1]}</b></div><div class="summary-cell"><span>Decisiones</span><b>${state.decisions.length}</b></div></div><div class="final-actions"><button class="ghost-button" id="copyResult" type="button">Copiar resultado</button><button class="start" id="retryGame" type="button">Jugar otra vez <span>↻</span></button></div></div>`;
+      const lists = [
+        ["Equipos y lugares", state.career.teams],
+        ["Títulos y logros", state.career.titles],
+        [game.id === "monster" ? "Compañeros" : "Técnicas y formas", game.id === "monster" ? state.career.companions : state.career.techniques]
+      ].filter(([, values]) => values.length);
+      clearSave();
+      content.innerHTML = `<div class="result"><div class="result-icon">${game.icon}</div><span class="eyebrow">CARRERA COMPLETADA · ${game.universe}</span><h2 id="modalTitle">${escapeText(state.player)}</h2><div class="ending-title">${ending.title}</div><p>${ending.text}</p><div class="career-summary"><div class="summary-cell"><span>Origen</span><b>${escapeText(state.origin)}</b></div><div class="summary-cell"><span>Valoración</span><b>${average}/100</b></div><div class="summary-cell"><span>Mayor virtud</span><b>${game.statDefs[best[0]]} · ${best[1]}</b></div><div class="summary-cell"><span>Capítulos</span><b>${state.decisions.length}</b></div></div><div class="career-lists">${lists.map(([label, values]) => `<div class="career-list"><b>${label}</b><span>${values.slice(0, 6).map(escapeText).join(" · ")}</span></div>`).join("")}</div><div class="final-actions"><button class="ghost-button" id="copyResult" type="button">Copiar</button><button class="ghost-button" id="downloadResult" type="button">Descargar tarjeta</button><button class="start" id="retryGame" type="button">Otra partida <span>↻</span></button></div></div>`;
       document.getElementById("retryGame").addEventListener("click", () => openGame(game));
       document.getElementById("copyResult").addEventListener("click", async event => {
         const text = `${state.player} — ${ending.title}\n${game.title}\nValoración: ${average}/100 · ${game.statDefs[best[0]]}: ${best[1]}`;
         try { await navigator.clipboard.writeText(text); event.target.textContent = "Resultado copiado"; } catch { event.target.textContent = "No se pudo copiar"; }
       });
+      document.getElementById("downloadResult").addEventListener("click", () => downloadCard({ ending, average, best }));
+    }
+
+    function seedExistingProfile(game, raw, stats, career) {
+      if (game.id === "ki") {
+        const basePower = Number(raw.basePower || 0);
+        stats.poder = Math.min(78, Math.max(42, Math.round(25 + Math.log10(Math.max(1, basePower)) * 6)));
+        stats.control = Math.min(65, 40 + (raw.transformations?.length || 0) * 4);
+        stats.honor = raw.role?.toLowerCase().includes("vill") ? 28 : 45;
+        stats.fama = Math.min(70, 42 + (raw.transformations?.length || 0) * 3 + (raw.seals?.length || 0) * 4);
+        addUnique(career.teams, raw.affiliation || "Dragon Dex");
+        if (raw.alias) addUnique(career.titles, raw.alias);
+        (raw.transformations || []).slice(0, 5).forEach(item => addUnique(career.techniques, item.name));
+        (raw.seals || []).slice(0, 3).forEach(item => addUnique(career.techniques, typeof item === "string" ? item : item.name));
+        (raw.family?.partners || []).slice(0, 3).forEach(item => addUnique(career.companions, item));
+      } else if (game.id === "monster") {
+        const team = raw.team || [];
+        const badges = raw.badges || [];
+        stats.equipo = Math.min(78, 40 + team.length * 6);
+        stats.vinculo = Math.min(75, 44 + team.length * 4);
+        stats.medallas = Math.min(82, 38 + badges.length * 10);
+        stats.fama = Math.min(75, 40 + (raw.achievements?.length || 0) * 7 + badges.length * 3);
+        addUnique(career.teams, raw.location || raw.region || "Etruria");
+        team.slice(0, 6).forEach(item => addUnique(career.companions, titleCase(item.name)));
+        badges.slice(0, 6).forEach(item => addUnique(career.titles, item.name));
+        (raw.achievements || []).slice(0, 4).forEach(item => addUnique(career.titles, item));
+      } else {
+        const techniques = raw.techniques || [];
+        stats.talento = Math.min(82, 42 + Number(raw.goals || 0) + Number(raw.assists || 0) + techniques.length * 2);
+        stats.equipo = Math.min(72, 44 + (raw.matches?.length || 0) * 5);
+        stats.coraje = 48 + (raw.spirit ? 8 : 0);
+        stats.fama = Math.min(80, 40 + Number(raw.goals || 0) + (raw.title ? 8 : 0));
+        addUnique(career.teams, raw.team || "Sin equipo");
+        if (raw.title) addUnique(career.titles, raw.title);
+        techniques.slice(0, 5).forEach(item => addUnique(career.techniques, item.name));
+        if (raw.spirit?.nombre) addUnique(career.techniques, raw.spirit.nombre);
+        if (raw.miximax?.nombre) addUnique(career.techniques, `Miximax: ${raw.miximax.nombre}`);
+      }
+    }
+
+    function getEvent(game, eventId) {
+      if (eventId.startsWith("base-")) {
+        const index = Number(eventId.split("-")[1]);
+        return game.events[index] ? { ...game.events[index], id: eventId, branch: false } : null;
+      }
+      const event = (bonusEvents[game.id] || []).find(item => item.id === eventId);
+      return event ? { ...event, branch: true } : null;
+    }
+
+    function chooseNextEvent(nextStep) {
+      const game = state.game;
+      if (nextStep === TOTAL_CHAPTERS - 1) return `base-${game.events.length - 1}`;
+      const used = new Set(state.completedIds);
+      const basePool = game.events.slice(1, -1).map((event, index) => ({ ...event, id: `base-${index + 1}` })).filter(event => !used.has(event.id));
+      const branchPool = (bonusEvents[game.id] || []).filter(event => !used.has(event.id) && (!event.available || event.available(state)));
+      const forceBranch = (nextStep === 3 || nextStep === 6) && branchPool.length;
+      const useBranch = forceBranch || (branchPool.length && Math.random() < 0.34);
+      const pool = useBranch ? branchPool : (basePool.length ? basePool : branchPool);
+      return pool[Math.floor(Math.random() * pool.length)].id;
+    }
+
+    function applyCareer(careerChanges) {
+      Object.entries(careerChanges || {}).forEach(([key, value]) => {
+        if (!state.career[key]) state.career[key] = [];
+        (Array.isArray(value) ? value : [value]).forEach(item => addUnique(state.career[key], item));
+      });
+    }
+
+    function applyAutomaticCareer(gameId, event, choice) {
+      if (/Medalla/.test(event.title)) addUnique(state.career.titles, event.title.replace("La ", ""));
+      if (/Liga|final|Torneo/i.test(event.title) && state.step >= 7) addUnique(state.career.titles, event.title);
+      if (/transformación|supertécnica/i.test(event.title)) addUnique(state.career.techniques, choice.label);
+      if (choice.flag === "transfer") addUnique(state.career.teams, "Galaxia");
+      if (gameId === "ki" && choice.flag === "forma") addUnique(state.career.techniques, "Transformación propia");
+    }
+
+    function personalize(text) {
+      const allies = existingSources[state.game.id].filter(item => item.name !== state.player);
+      const ally = allies.length ? allies[Math.abs(state.step + state.player.length) % allies.length].name : "un viejo aliado";
+      const team = state.career.teams[state.career.teams.length - 1] || state.origin;
+      return String(text).replaceAll("{player}", escapeText(state.player)).replaceAll("{ally}", escapeText(ally)).replaceAll("{team}", escapeText(team));
+    }
+
+    function saveState() {
+      if (!state) return;
+      const { game, ...plainState } = state;
+      localStorage.setItem(SAVE_KEY, JSON.stringify({ ...plainState, gameId: game.id, savedAt: Date.now() }));
+      updateResumeButton();
+    }
+
+    function clearSave() {
+      localStorage.removeItem(SAVE_KEY);
+      updateResumeButton();
+    }
+
+    function readSave() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+        if (!saved?.gameId || !saved.currentEventId) return null;
+        const game = games.find(item => item.id === saved.gameId);
+        return game ? { ...saved, game } : null;
+      } catch { return null; }
+    }
+
+    function updateResumeButton() {
+      const saved = readSave();
+      resumeRun.hidden = !saved;
+      if (saved) resumeRun.textContent = `Continuar con ${saved.player} · Capítulo ${saved.step + 1}`;
+    }
+
+    function restoreGame() {
+      const saved = readSave();
+      if (!saved) return;
+      state = saved;
+      modal.style.setProperty("--accent", state.game.a);
+      bg.classList.add("open");
+      document.body.style.overflow = "hidden";
+      renderEvent();
+    }
+
+    function downloadCard(result) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1200;
+      canvas.height = 630;
+      const ctx = canvas.getContext("2d");
+      const accent = state.game.a;
+      ctx.fillStyle = "#08080c";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = "rgba(255,255,255,.055)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= 1200; x += 60) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 630); ctx.stroke(); }
+      for (let y = 0; y <= 630; y += 60) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1200, y); ctx.stroke(); }
+      const glow = ctx.createRadialGradient(930, 170, 10, 930, 170, 420);
+      glow.addColorStop(0, hexToRgba(accent, .32));
+      glow.addColorStop(1, "rgba(8,8,12,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(500, 0, 700, 630);
+      ctx.fillStyle = accent;
+      ctx.fillRect(58, 55, 8, 520);
+      ctx.font = "900 28px Impact, Arial Narrow, sans-serif";
+      ctx.letterSpacing = "3px";
+      ctx.fillText("COPERO DEL ROL", 92, 92);
+      ctx.fillStyle = "#8d8c96";
+      ctx.font = "700 16px Arial, sans-serif";
+      ctx.fillText(state.game.universe, 92, 126);
+      ctx.fillStyle = "#f7f5ec";
+      ctx.font = "900 66px Impact, Arial Narrow, sans-serif";
+      drawWrappedText(ctx, state.player.toUpperCase(), 92, 215, 700, 68, 2);
+      ctx.fillStyle = accent;
+      ctx.font = "900 38px Impact, Arial Narrow, sans-serif";
+      drawWrappedText(ctx, result.ending.title.toUpperCase(), 92, 325, 720, 42, 2);
+      ctx.fillStyle = "#b0afb7";
+      ctx.font = "500 20px Arial, sans-serif";
+      drawWrappedText(ctx, result.ending.text, 92, 405, 680, 30, 3);
+      ctx.fillStyle = accent;
+      ctx.beginPath();
+      ctx.arc(995, 178, 92, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#09090d";
+      ctx.textAlign = "center";
+      ctx.font = "900 54px Impact, Arial Narrow, sans-serif";
+      ctx.fillText(state.game.icon, 995, 197);
+      ctx.fillStyle = "#f7f5ec";
+      ctx.font = "900 72px Impact, Arial Narrow, sans-serif";
+      ctx.fillText(String(result.average), 995, 360);
+      ctx.fillStyle = "#8d8c96";
+      ctx.font = "700 15px Arial, sans-serif";
+      ctx.fillText("VALORACIÓN / 100", 995, 390);
+      ctx.textAlign = "left";
+      const stats = Object.entries(state.game.statDefs);
+      stats.forEach(([key, label], index) => {
+        const x = 92 + index * 165;
+        ctx.fillStyle = "#777680";
+        ctx.font = "700 13px Arial, sans-serif";
+        ctx.fillText(label.toUpperCase(), x, 555);
+        ctx.fillStyle = "#f7f5ec";
+        ctx.font = "900 27px Impact, Arial Narrow, sans-serif";
+        ctx.fillText(String(state.stats[key]), x, 586);
+      });
+      const link = document.createElement("a");
+      link.download = `copero-${state.game.id}-${state.player.toLowerCase().replace(/[^a-z0-9]+/gi, "-")}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+      const words = String(text).split(/\s+/);
+      let line = "";
+      let lineNumber = 0;
+      for (let index = 0; index < words.length; index += 1) {
+        const test = line ? `${line} ${words[index]}` : words[index];
+        if (ctx.measureText(test).width > maxWidth && line) {
+          ctx.fillText(line, x, y + lineNumber * lineHeight);
+          line = words[index];
+          lineNumber += 1;
+          if (lineNumber >= maxLines - 1) break;
+        } else line = test;
+      }
+      if (lineNumber < maxLines) ctx.fillText(line, x, y + lineNumber * lineHeight);
+    }
+
+    function hexToRgba(hex, alpha) {
+      const value = parseInt(hex.slice(1), 16);
+      return `rgba(${value >> 16},${(value >> 8) & 255},${value & 255},${alpha})`;
+    }
+
+    function addUnique(list, value) {
+      if (value && !list.includes(value)) list.push(value);
+    }
+
+    function titleCase(value) {
+      return String(value || "").replace(/\b\w/g, letter => letter.toUpperCase());
     }
 
     function applyEffects(stats, effects) {
@@ -405,6 +718,8 @@
     document.getElementById("closeModal").addEventListener("click", closeModal);
     bg.addEventListener("mousedown", event => { if (event.target === bg) closeModal(); });
     document.addEventListener("keydown", event => { if (event.key === "Escape") closeModal(); });
+    resumeRun.addEventListener("click", restoreGame);
+    updateResumeButton();
   </script>
 </body>
 </html>

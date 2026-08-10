@@ -841,6 +841,14 @@ Así que ella conserva las...
                 lore: "Cuando la canción suene, prepárate para pelear contra alguien que está dispuesto a darlo todo."
             },
             {
+                songTitle: "You Say Run",
+                songDescription: "Aqui te das cuenta de cuando un verdadero héroe da un paso alante para cargar con todos.",
+                songCover: "img/Rin3Cover.png",
+                audio: "audio/You Say Run.mp3",
+                tags: ["battle", "epic", "bossbattle"],
+                lore: "Cuando la canción suene, sabes que has perdido, es un héroe capaz  de darlo todo para ganar."
+            },
+            {
                 songTitle: "A True Superhero",
                 songDescription: "La ascendencia de un verdadero superhéroe que, por todos los medios, busca la salvación de todos.",
                 songCover: "img/Rin2Cover.png",
