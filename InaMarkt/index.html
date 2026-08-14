@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <script>if(window.self===window.top)window.location.replace('../index.html#route=InaMarkt/index.html');</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07142f">
+  <meta name="description" content="InaMarkt: valores de mercado, jugadores, clubes y movimientos del universo Inazuma del RP.">
+  <meta property="og:title" content="InaMarkt — El mercado de Inazuma">
+  <meta property="og:description" content="Valores de mercado, jugadores, clubes y fichajes del universo Inazuma del RP.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="og-inamarkt.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="InaMarkt — El mercado de Inazuma">
+  <meta name="twitter:description" content="Valores, rankings y movimientos del fútbol Inazuma.">
+  <meta name="twitter:image" content="og-inamarkt.png">
+  <title>InaMarkt — El mercado de Inazuma</title>
+  <link rel="stylesheet" href="inamarkt.css?v=2">
+</head>
+<body>
+  <div class="energy-orb orb-one" aria-hidden="true"></div>
+  <div class="energy-orb orb-two" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="../index.html" aria-label="Volver al RP HUB">
+      <span class="brand-ball" aria-hidden="true">⚡</span>
+      <span class="brand-name"><b>INA</b><strong>MARKT</strong><small>EL MERCADO DE INAZUMA</small></span>
+    </a>
+    <nav class="desktop-nav" aria-label="Secciones de InaMarkt">
+      <button class="nav-link active" type="button" data-view="home">Inicio</button>
+      <button class="nav-link" type="button" data-view="players">Jugadores</button>
+      <button class="nav-link" type="button" data-view="clubs">Clubes</button>
+      <button class="nav-link" type="button" data-view="transfers">Fichajes</button>
+      <button class="nav-link" type="button" data-view="methodology">Metodología</button>
+      <button class="nav-link admin-nav" type="button" data-view="admin">Administrar</button>
+    </nav>
+    <a class="hub-button" href="../index.html"><span>←</span> RP HUB</a>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero" id="homeHero">
+      <div class="hero-copy">
+        <span class="season-pill"><i></i><span id="seasonName">Temporada actual</span> · Mercado abierto</span>
+        <h1>El fútbol cambia<br><em>en un instante.</em></h1>
+        <p>Consulta el valor, rendimiento y situación de todos los jugadores del universo Inazuma.</p>
+        <label class="hero-search">
+          <span aria-hidden="true">⌕</span>
+          <input id="globalSearch" type="search" placeholder="Buscar jugador, club o posición…" autocomplete="off">
+          <kbd>BUSCAR</kbd>
+        </label>
+        <div class="hero-stats" id="heroStats"></div>
+      </div>
+      <aside class="spotlight" id="spotlight" aria-label="Jugador más valioso"></aside>
+    </section>
+
+    <section class="market-ticker" aria-label="Estado del mercado">
+      <span class="ticker-label">EN DIRECTO</span>
+      <div class="ticker-track">
+        <span>⚡ Valores conectados con Inazuma Central</span>
+        <span>◆ Actualización de mercado: <b id="lastUpdate">—</b></span>
+        <span>● <b id="activeCount">0</b> jugadores activos</span>
+      </div>
+    </section>
+
+    <section class="view active" id="homeView" data-view-panel="home">
+      <div class="section-heading">
+        <div><span class="kicker">RADAR DEL MERCADO</span><h2>Jugadores al alza</h2></div>
+        <button class="text-action" type="button" data-view="players">Ver todos <span>→</span></button>
+      </div>
+      <div class="movers-grid" id="moversGrid"></div>
+
+      <div class="dashboard-grid">
+        <section class="panel value-panel">
+          <div class="panel-head"><div><span class="kicker">RANKING</span><h2>Los más valiosos</h2></div><span class="live-badge">● EN VIVO</span></div>
+          <div class="value-list" id="valueList"></div>
+        </section>
+
+        <aside class="side-stack">
+          <section class="panel club-leaderboard">
+            <div class="panel-head"><div><span class="kicker">PODER ECONÓMICO</span><h2>Clubes</h2></div><button class="mini-action" type="button" data-view="clubs">Todos</button></div>
+            <div id="clubLeaderboard"></div>
+          </section>
+          <section class="panel free-agents-card">
+            <div class="free-agent-icon" aria-hidden="true">◎</div>
+            <div><span class="kicker">OPORTUNIDAD</span><h2>Agentes libres</h2><p><strong id="freeAgentsCount">0</strong> jugadores disponibles sin club.</p></div>
+            <button type="button" data-filter-team="Agente Libre">Explorar <span>→</span></button>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" id="playersView" data-view-panel="players">
+      <div class="page-title"><div><span class="kicker">BASE DE DATOS</span><h1>Jugadores</h1><p id="playerCountLabel">Todos los futbolistas registrados.</p></div></div>
+      <div class="filter-bar">
+        <label class="filter-search"><span>⌕</span><input id="playerSearch" type="search" placeholder="Buscar jugador…"></label>
+        <select id="teamFilter" aria-label="Filtrar por club"><option value="all">Todos los clubes</option></select>
+        <select id="positionFilter" aria-label="Filtrar por demarcación"><option value="all">Todas las posiciones</option></select>
+        <select id="sortFilter" aria-label="Ordenar jugadores"><option value="value-desc">Mayor valor</option><option value="value-asc">Menor valor</option><option value="change-desc">Mayor subida</option><option value="name">Nombre A–Z</option></select>
+      </div>
+      <div class="players-table-wrap">
+        <table class="players-table">
+          <thead><tr><th>#</th><th>Jugador</th><th>Club</th><th>Posición</th><th>Valor de mercado</th><th>Cambio</th><th></th></tr></thead>
+          <tbody id="playersTable"></tbody>
+        </table>
+        <div class="mobile-player-list" id="mobilePlayerList"></div>
+        <div class="empty-state" id="playersEmpty" hidden><span>⌕</span><h3>No hay coincidencias</h3><p>Prueba con otro nombre, club o posición.</p></div>
+      </div>
+    </section>
+
+    <section class="view" id="clubsView" data-view-panel="clubs">
+      <div class="page-title"><div><span class="kicker">MAPA DE CLUBES</span><h1>Equipos</h1><p>Plantillas y valor total estimado de cada entidad.</p></div></div>
+      <div class="clubs-grid" id="clubsGrid"></div>
+    </section>
+
+    <section class="view" id="transfersView" data-view-panel="transfers">
+      <div class="page-title"><div><span class="kicker">CENTRAL DE OPERACIONES</span><h1>Fichajes</h1><p>Altas, bajas, cesiones y rumores registrados por el administrador.</p></div></div>
+      <div class="transfer-summary" id="transferSummary"></div>
+      <section class="panel transfers-panel">
+        <div class="panel-head"><div><span class="kicker">ÚLTIMOS MOVIMIENTOS</span><h2>Historial de operaciones</h2></div></div>
+        <div id="transfersList"></div>
+      </section>
+    </section>
+
+    <section class="view" id="methodologyView" data-view-panel="methodology">
+      <div class="page-title"><div><span class="kicker">MODELO DE VALORACIÓN V2</span><h1>Metodología</h1><p>Así calcula InaMarkt el valor de cada jugador, sin cifras aleatorias ni reglas ocultas.</p></div></div>
+      <section class="method-intro panel">
+        <div><span class="kicker">FÓRMULA GENERAL</span><h2>Capacidad × contexto</h2><p>Primero se suma el valor de las capacidades futbolísticas y especiales. Después se aplican los factores deportivos, narrativos y de mercado.</p></div>
+        <code>Valor final = capacidades × contexto</code>
+        <p class="method-note">El multiplicador conjunto de contexto queda limitado entre <b>×0,45</b> y <b>×2,00</b>, para que los rumores o la narrativa no conviertan por sí solos a un jugador normal en una superestrella.</p>
+      </section>
+
+      <div class="method-grid">
+        <section class="method-card panel"><div class="method-icon">⚡</div><h2>SuperTécnicas</h2><p>Se suma el precio de cada ST registrada según su grado.</p><div class="scale-list"><span><b>G1</b><strong>+250.000 €</strong></span><span><b>G2</b><strong>+500.000 €</strong></span><span><b>G3</b><strong>+800.000 €</strong></span><span><b>G4</b><strong>+1.200.000 €</strong></span><span><b>G5</b><strong>+1.800.000 €</strong></span></div><small>Las técnicas del Espíritu y Miximax cuentan al 50 % para evitar valorar dos veces el mismo poder.</small></section>
+        <section class="method-card panel"><div class="method-icon">✦</div><h2>Talento</h2><p>Calidad, fiabilidad e impacto habitual del talento.</p><div class="scale-list"><span><b>Nivel 1</b><strong>+750.000 €</strong></span><span><b>Nivel 2</b><strong>+1.200.000 €</strong></span><span><b>Nivel 3</b><strong>+1.650.000 €</strong></span><span><b>Nivel 4</b><strong>+2.100.000 €</strong></span><span><b>Nivel 5</b><strong>+2.500.000 €</strong></span></div></section>
+        <section class="method-card panel"><div class="method-icon">♜</div><h2>Espíritu Guerrero</h2><p>Dominio y poder competitivo del Espíritu.</p><div class="scale-list"><span><b>Nivel 1</b><strong>+2 M€</strong></span><span><b>Nivel 2</b><strong>+2,75 M€</strong></span><span><b>Nivel 3</b><strong>+3,5 M€</strong></span><span><b>Nivel 4</b><strong>+4,25 M€</strong></span><span><b>Nivel 5</b><strong>+5 M€</strong></span></div></section>
+        <section class="method-card panel"><div class="method-icon">⬢</div><h2>Armadura</h2><p>Nivel de dominio de la Armadura del Espíritu.</p><div class="scale-list"><span><b>Inestable</b><strong>+1,5 M€</strong></span><span><b>Estable</b><strong>+2,25 M€</strong></span><span><b>Dominada</b><strong>+3 M€</strong></span></div></section>
+        <section class="method-card panel"><div class="method-icon">∞</div><h2>Miximax</h2><p>Compatibilidad, estabilidad e impacto de la fusión.</p><div class="scale-list"><span><b>Nivel 1</b><strong>+2,5 M€</strong></span><span><b>Nivel 2</b><strong>+3,1 M€</strong></span><span><b>Nivel 3</b><strong>+3,75 M€</strong></span><span><b>Nivel 4</b><strong>+4,4 M€</strong></span><span><b>Nivel 5</b><strong>+5 M€</strong></span></div></section>
+        <section class="method-card panel"><div class="method-icon">◎</div><h2>Base deportiva</h2><p>Evita que un jugador sin poderes tenga valor cero.</p><div class="scale-list"><span><b>Delantero</b><strong>850.000 €</strong></span><span><b>Mediocentro</b><strong>700.000 €</strong></span><span><b>Portero</b><strong>650.000 €</strong></span><span><b>Defensa</b><strong>600.000 €</strong></span><span><b>Otros</b><strong>350.000 €</strong></span></div></section>
+      </div>
+
+      <section class="method-table-card panel"><div class="panel-head"><div><span class="kicker">MULTIPLICADORES</span><h2>Contexto del jugador</h2></div></div><div class="method-tables">
+        <div><h3>Relevancia narrativa</h3><table><tr><td>0 · Fondo</td><th>×0,90</th></tr><tr><td>1 · Secundario menor</td><th>×0,95</th></tr><tr><td>2 · Secundario habitual</td><th>×1,00</th></tr><tr><td>3 · Relevante</td><th>×1,07</th></tr><tr><td>4 · Central en un arco</td><th>×1,14</th></tr><tr><td>5 · Eje protagonista</td><th>×1,20</th></tr></table><p>Se valora presencia (0–2), impacto (0–2) y proyección futura (0–1).</p></div>
+        <div><h3>Importancia en el club</h3><table><tr><td>Fuera de convocatorias</td><th>×0,80</th></tr><tr><td>Suplente</td><th>×0,85</th></tr><tr><td>Rotación</td><th>×0,95</th></tr><tr><td>Sin valorar</td><th>×1,00</th></tr><tr><td>Titular habitual</td><th>×1,05</th></tr><tr><td>Jugador clave</td><th>×1,15</th></tr><tr><td>Capitán o referente</td><th>×1,20</th></tr></table></div>
+        <div><h3>Rendimiento relativo</h3><table><tr><td>Muy por debajo</td><th>×0,85</th></tr><tr><td>Por debajo</td><th>×0,93</th></tr><tr><td>Normal / sin datos</td><th>×1,00</th></tr><tr><td>Bueno</td><th>×1,10</th></tr><tr><td>Excepcional</td><th>×1,25</th></tr></table><p>Debe compararse con jugadores de la misma posición y, cuando sea posible, mediante datos por partido.</p></div>
+        <div><h3>Lesiones</h3><table><tr><td>Sin lesión</td><th>×1,00</th></tr><tr><td>Menos de 2 semanas</td><th>×0,97</th></tr><tr><td>2–6 semanas</td><th>×0,93</th></tr><tr><td>2–3 meses</td><th>×0,85</th></tr><tr><td>4–6 meses</td><th>×0,75</th></tr><tr><td>Crónica / riesgo serio</td><th>×0,65</th></tr></table></div>
+        <div><h3>Contrato</h3><table><tr><td>Agente libre</td><th>×0,90</th></tr><tr><td>Menos de 6 meses</td><th>×0,80</th></tr><tr><td>6–12 meses</td><th>×0,90</th></tr><tr><td>1–2 años / sin valorar</td><th>×1,00</th></tr><tr><td>Más de 2 años</td><th>×1,05</th></tr></table><p>Un agente libre conserva valor de mercado aunque su coste de traspaso pueda ser cero.</p></div>
+        <div><h3>Demanda y rumores</h3><code>× (1 + demanda×2,5 % + rumor×1,5 %)</code><p>Ambos se puntúan de 0 a 5. El máximo conjunto es exactamente <b>×1,20</b>. Demanda 5 significa puja activa; rumor 5 significa oferta formal.</p></div>
+      </div></section>
+
+      <section class="method-example panel"><span class="kicker">EJEMPLO</span><h2>Una valoración paso a paso</h2><div class="example-equation"><span>10 M€ capacidades</span><b>×1,14 narrativa</b><b>×1,15 club</b><b>×1,10 rendimiento</b><b>×1,105 mercado</b><strong>= 15,93 M€</strong></div><p>InaMarkt redondea el resultado final a intervalos de 50.000 €. Un precio manual del administrador siempre tiene prioridad sobre el cálculo.</p></section>
+    </section>
+
+    <section class="view" id="adminView" data-view-panel="admin">
+      <div class="page-title admin-title"><div><span class="kicker">ZONA PRIVADA LOCAL</span><h1>Administrar</h1><p>Edita las variables de mercado y genera el archivo que utiliza InaMarkt.</p></div></div>
+      <section class="admin-login panel" id="adminLogin">
+        <div class="lock-icon">⌁</div><span class="kicker">ACCESO DEL ADMINISTRADOR</span><h2>Panel bloqueado</h2><p>Introduce la contraseña local de InaMarkt. Este bloqueo evita cambios accidentales, pero una web estática no puede ofrecer seguridad real de servidor.</p>
+        <form id="loginForm"><label><span>Contraseña</span><input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Contraseña de InaMarkt"></label><button type="submit">Entrar al panel</button></form><p class="login-error" id="loginError" role="alert" hidden>La contraseña no es correcta.</p>
+      </section>
+
+      <section class="admin-workspace" id="adminWorkspace" hidden>
+        <aside class="admin-sidebar panel"><div class="admin-side-head"><div><span class="kicker">JUGADORES</span><h2>Seleccionar ficha</h2></div><button id="adminLogout" type="button">Salir</button></div><label class="filter-search"><span>⌕</span><input id="adminSearch" type="search" placeholder="Buscar jugador…"></label><div class="admin-player-list" id="adminPlayerList"></div></aside>
+        <div class="admin-editor panel">
+          <div class="admin-editor-head" id="adminEditorHead"></div>
+          <form id="marketProfileForm">
+            <input id="adminPlayerId" type="hidden">
+            <div class="admin-form-grid">
+              <fieldset><legend>Capacidades especiales</legend><label>Talento<select id="talentTier"></select></label><label>Espíritu Guerrero<select id="spiritTier"></select></label><label>Armadura<select id="armorTier"></select></label><label>Miximax<select id="miximaxTier"></select></label></fieldset>
+              <fieldset><legend>Contexto deportivo</legend><label>Importancia en el club<select id="clubRole"></select></label><label>Rendimiento relativo<select id="performance"></select></label><label>Lesión<select id="injury"></select></label><label>Contrato<select id="contract"></select></label></fieldset>
+              <fieldset><legend>Narrativa</legend><label>Relevancia narrativa<select id="narrativeScore"></select></label><label class="wide">Justificación<textarea id="narrativeReason" rows="3" placeholder="Por qué tiene esta relevancia…"></textarea></label></fieldset>
+              <fieldset><legend>Mercado</legend><label>Demanda (0–5)<input id="demand" type="number" min="0" max="5" step="1"></label><label>Fiabilidad del rumor (0–5)<input id="rumor" type="number" min="0" max="5" step="1"></label><label>Subida o bajada (€)<input id="marketChange" type="number" step="50000"></label><label>Precio manual opcional (€)<input id="manualValue" type="number" min="0" step="50000" placeholder="Vacío = automático"></label></fieldset>
+            </div>
+            <div class="calculation-preview" id="calculationPreview"></div>
+            <div class="admin-form-actions"><button class="quiet-action" id="resetProfile" type="button">Restaurar valores</button><button class="primary-action" type="submit">Guardar ficha</button></div>
+          </form>
+        </div>
+        <section class="admin-savebar panel"><div><span class="save-indicator" id="adminSaveIndicator">Cambios guardados en este navegador</span><p>Para convertirlos en cambios permanentes, guarda el archivo actualizado en la carpeta <b>InaMarkt</b>.</p></div><button id="downloadMarketData" type="button">Descargar copia</button><button class="primary-action" id="saveMarketCode" type="button">Guardar en el código</button></section>
+      </section>
+    </section>
+  </main>
+
+  <nav class="mobile-nav" aria-label="Navegación móvil">
+    <button class="active" type="button" data-view="home"><span>⌂</span>Inicio</button>
+    <button type="button" data-view="players"><span>♙</span>Jugadores</button>
+    <button type="button" data-view="clubs"><span>⬟</span>Clubes</button>
+    <button type="button" data-view="transfers"><span>⇄</span>Fichajes</button>
+    <button type="button" data-view="methodology"><span>≋</span>Método</button>
+    <button type="button" data-view="admin"><span>⌁</span>Admin</button>
+  </nav>
+
+  <dialog id="playerDialog">
+    <button class="dialog-close" type="button" data-close-dialog aria-label="Cerrar">×</button>
+    <div id="playerDialogBody"></div>
+  </dialog>
+
+  <script src="../centro-inazuma-datos.js"></script>
+  <script src="inamarkt-datos.js"></script>
+  <script src="inamarkt.js?v=2"></script>
+</body>
+</html>

@@ -31,7 +31,8 @@
         { name: 'Alma Azkaban', img: 'fotos-poderes/Alma Azkaban.jpg' },
         { name: 'Exusiai', img: 'fotos-poderes/Exusiai.jpg' }
       ], children: [
-        { name: 'Kiriya Azkaban', img: 'Hijos/Alma y Exusiai/Kiriya Azkaban.jpg', gender: 'F', tag: 'Y', series: "Goddess' Dorm", meta: "Kiriya Sensho — Dorm Mother of the Goddess' Dorm", link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Kiriya Azkaban', img: 'Hijos/Alma y Exusiai/Kiriya Azkaban.jpg', gender: 'F', tag: 'Y', series: "Goddess' Dorm", meta: "Kiriya Sensho — Dorm Mother of the Goddess' Dorm", link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Liva Azkaban', img: 'Hijos/Alma y Exusiai/Liva Azkaban.jpg', gender: 'M', tag: 'S', series: "D-Gray Man", meta: "Liva Bookman — D-Gray Man", link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Lancelot y Tokishikko', parents: [
         { name: 'Lancelot Tsukue', img: "fotos-poderes/Lancelot Tsukue.jpg" },
