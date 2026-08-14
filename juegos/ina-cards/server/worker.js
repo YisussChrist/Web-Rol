@@ -1,3 +1,4 @@
+import { DurableObject } from "cloudflare:workers";
 import { addPlayer, applyAction, createRoom, publicView } from "../engine.js";
 
 const JSON_HEADERS = { "Content-Type": "application/json; charset=utf-8" };
@@ -66,34 +67,30 @@ export default {
   },
 };
 
-export class GameRoom {
-  constructor(ctx) {
-    this.ctx = ctx;
-    this.state = null;
-    this.ready = this.ctx.blockConcurrencyWhile(async () => {
-      this.state = (await this.ctx.storage.get("state")) || null;
-    });
+export class GameRoom extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
   }
 
   async fetch(request) {
-    await this.ready;
     const url = new URL(request.url);
+    const state = await this.loadState();
 
     if (url.pathname === "/create" && request.method === "POST") {
-      if (this.state) return json({ error: "La sala ya existe." }, 409);
+      if (state) return json({ error: "La sala ya existe." }, 409);
       const body = await readBody(request);
-      this.state = createRoom(body.code, { name: cleanName(body.name), token: body.token });
-      await this.persist();
+      const newState = createRoom(body.code, { name: cleanName(body.name), token: body.token });
+      await this.persist(newState);
       return json({ ok: true }, 201);
     }
 
     if (url.pathname === "/join" && request.method === "POST") {
-      if (!this.state) return json({ error: "La sala no existe o ha caducado." }, 404);
+      if (!state) return json({ error: "La sala no existe o ha caducado." }, 404);
       const body = await readBody(request);
       try {
-        addPlayer(this.state, { name: cleanName(body.name), token: body.token });
-        await this.persist();
-        this.broadcast();
+        addPlayer(state, { name: cleanName(body.name), token: body.token });
+        await this.persist(state);
+        this.broadcast(state);
         return json({ ok: true });
       } catch (error) {
         return json({ error: friendlyError(error) }, 409);
@@ -101,9 +98,9 @@ export class GameRoom {
     }
 
     if (url.pathname === "/connect" && request.method === "GET") {
-      if (!this.state) return json({ error: "La sala no existe o ha caducado." }, 404);
+      if (!state) return json({ error: "La sala no existe o ha caducado." }, 404);
       const token = url.searchParams.get("token") || "";
-      if (!this.state.players.some((player) => player.token === token)) {
+      if (!state.players.some((player) => player.token === token)) {
         return json({ error: "El acceso a esta sala no es válido." }, 403);
       }
 
@@ -111,7 +108,7 @@ export class GameRoom {
       const client = pair[0];
       const server = pair[1];
       this.ctx.acceptWebSocket(server, [token]);
-      server.send(JSON.stringify({ type: "state", state: publicView(this.state, token) }));
+      server.send(JSON.stringify({ type: "state", state: publicView(state, token) }));
       return new Response(null, { status: 101, webSocket: client });
     }
 
@@ -119,20 +116,17 @@ export class GameRoom {
   }
 
   async webSocketMessage(socket, message) {
-    await this.ready;
     const token = this.ctx.getTags(socket)[0];
     try {
+      const state = await this.loadState();
+      if (!state) throw new Error("La sala ya ha caducado.");
       const action = JSON.parse(typeof message === "string" ? message : new TextDecoder().decode(message));
-      applyAction(this.state, token, action);
-      await this.persist();
-      this.broadcast();
+      applyAction(state, token, action);
+      await this.persist(state);
+      this.broadcast(state);
     } catch (error) {
       socket.send(JSON.stringify({ type: "error", message: friendlyError(error) }));
     }
-  }
-
-  async webSocketClose(socket, code, reason) {
-    socket.close(code, reason);
   }
 
   async webSocketError(socket) {
@@ -143,11 +137,22 @@ export class GameRoom {
     }
   }
 
-  broadcast() {
+  async alarm() {
+    for (const socket of this.ctx.getWebSockets()) {
+      try {
+        socket.close(1001, "La sala ha caducado por inactividad");
+      } catch {
+        // El socket ya estaba cerrado.
+      }
+    }
+    await this.ctx.storage.deleteAll();
+  }
+
+  broadcast(state) {
     for (const socket of this.ctx.getWebSockets()) {
       try {
         const token = this.ctx.getTags(socket)[0];
-        socket.send(JSON.stringify({ type: "state", state: publicView(this.state, token) }));
+        socket.send(JSON.stringify({ type: "state", state: publicView(state, token) }));
       } catch {
         try {
           socket.close(1011, "No se ha podido sincronizar la partida");
@@ -158,8 +163,16 @@ export class GameRoom {
     }
   }
 
-  async persist() {
-    await this.ctx.storage.put("state", this.state);
+  async loadState() {
+    return (await this.ctx.storage.get("state")) || null;
+  }
+
+  async persist(state) {
+    const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+    await Promise.all([
+      this.ctx.storage.put("state", state),
+      this.ctx.storage.setAlarm(expiresAt),
+    ]);
   }
 }
 

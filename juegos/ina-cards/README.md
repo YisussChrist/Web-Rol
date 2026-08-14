@@ -20,5 +20,6 @@ Primera base jugable del juego de cartas para dos personas.
 
 ## Estado actual
 
-El modo local funciona sin configurar nada. Para crear salas online hay que publicar una vez el
-servidor de `server/` y pegar su dirección en `config.js`.
+El modo local y las salas online están operativos. El servidor está publicado en Cloudflare y su
+dirección ya está configurada en `config.js`. El juego continúa marcado como próximamente en el
+menú mientras se definen el lore, el equilibrio definitivo y el diseño visual.
