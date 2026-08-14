@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Prototipo del juego de cartas online de Inazuma para dos jugadores."
+      content="Beta del juego de cartas online de Inazuma para dos jugadores. Su historia continúa en construcción."
     />
     <title>Duelo de Resonancia | Web-Rol</title>
     <link rel="stylesheet" href="styles.css" />
@@ -13,25 +13,46 @@
   <body>
     <header class="site-header">
       <a class="back-link" href="../">← Volver a juegos</a>
-      <button class="text-button" id="open-rules" type="button">Cómo se juega</button>
+      <div class="header-actions">
+        <button class="notebook-header-button notebook-trigger" type="button">
+          <span aria-hidden="true">📓</span><strong>Cuaderno</strong>
+        </button>
+        <button class="guide-button rules-trigger" type="button">
+          <span class="guide-button-icon" aria-hidden="true">?</span>
+          <span><strong>Cómo jugar</strong><small>Academia Raimon</small></span>
+        </button>
+      </div>
     </header>
 
     <main>
       <section class="screen lobby-screen" id="lobby-screen" aria-labelledby="game-title">
         <div class="hero-copy">
-          <p class="eyebrow">Prototipo jugable · diseño provisional</p>
+          <p class="eyebrow">Beta abierta · reglas en evolución</p>
           <h1 id="game-title">Inazuma: Duelo de Resonancia</h1>
           <p class="lead">
-            Dos equipos compiten por mantener su moral. Juega personajes, encadena mejoras y usa
-            sus ventajas o debilidades para dejar la moral rival a cero.
+            Los futbolistas del rol llegan al terreno de juego. Combina jugadores, recibe el apoyo
+            de tus gerentes y aprovecha al entrenador que te toque para dejar la moral rival a cero.
+            Esta primera Beta ya es jugable, aunque su historia todavía está en construcción.
           </p>
+
+          <aside class="academy-callout" id="first-time-guide" aria-label="Ayuda para nuevos jugadores">
+            <div class="academy-ball" aria-hidden="true">⚽</div>
+            <div>
+              <span class="academy-label">¿Es tu primer partido?</span>
+              <h2>Aprende las reglas en dos minutos</h2>
+              <p>Objetivo, turnos, tipos de carta y un ejemplo de ataque explicado paso a paso.</p>
+            </div>
+            <button class="academy-button rules-trigger" type="button">Ver guía visual</button>
+          </aside>
+
           <div class="lore-note">
-            <strong>Lore provisional:</strong> una fractura en las líneas temporales ha reunido
-            distintas versiones de los mismos futbolistas en la Copa de Resonancia.
+            <strong>Beta 0.2:</strong> comienza con seis cartas, completa desafíos para descubrir
+            otras diecinueve y construye tu equipo entre veintidós futbolistas y tres gerentes.
           </div>
         </div>
 
         <div class="lobby-panel" aria-label="Acceso a la partida">
+          <p class="panel-step">1 · Identifícate</p>
           <label for="player-name">Tu nombre</label>
           <input id="player-name" maxlength="24" autocomplete="nickname" placeholder="Por ejemplo, Jesús" />
 
@@ -55,10 +76,75 @@
           <small id="room-help">Tu amigo te enviará un código de seis caracteres.</small>
 
           <button class="demo-button" id="local-demo" type="button">
-            Probar las reglas en este dispositivo
+            Probar una partida en este dispositivo
+          </button>
+          <button class="notebook-lobby-button notebook-trigger" type="button">
+            <span aria-hidden="true">📓</span>
+            <span><strong>Abrir el Cuaderno Secreto de Zuolos</strong><small>Descubre cartas y prepara tu mazo</small></span>
           </button>
           <p class="connection-note" id="connection-note" role="status" aria-live="polite"></p>
         </div>
+      </section>
+
+      <section class="screen notebook-screen" id="notebook-screen" hidden aria-labelledby="notebook-title">
+        <div class="notebook-topbar">
+          <button class="text-button" id="close-notebook" type="button">← Volver</button>
+          <div>
+            <p class="eyebrow">Archivo privado del club</p>
+            <h1 id="notebook-title">Cuaderno Secreto de Zuolos</h1>
+            <p>Investiga las cartas, supera desafíos y forma un mazo con afinidades que encajen con tu estilo. La historia del torneo sigue en construcción.</p>
+          </div>
+          <div class="collection-progress" aria-live="polite">
+            <strong id="collection-count">6/25</strong>
+            <span>cartas descubiertas</span>
+            <div><i id="collection-progress-bar"></i></div>
+          </div>
+        </div>
+
+        <nav class="notebook-tabs" aria-label="Secciones del Cuaderno">
+          <button class="active" id="collection-tab" type="button" aria-controls="collection-panel">Enciclopedia</button>
+          <button id="deck-tab" type="button" aria-controls="deck-panel">Mi mazo <span id="deck-tab-count">12/12</span></button>
+        </nav>
+
+        <section class="notebook-panel" id="collection-panel" aria-labelledby="collection-tab">
+          <div class="notebook-section-heading">
+            <div><span class="board-kicker">Expedientes del rol</span><h2>Cartas conocidas</h2></div>
+            <p>Las cartas bloqueadas muestran la pista exacta para conseguirlas.</p>
+          </div>
+          <div class="notebook-grid" id="notebook-grid"></div>
+          <div class="coach-collection-heading">
+            <div><span class="board-kicker">Licencias de entrenador</span><h2>Fuera del mazo</h2></div>
+            <p>Al comenzar la partida, cada equipo recibe uno al azar. Nunca se repiten entre rivales.</p>
+          </div>
+          <div class="coach-collection-grid" id="coach-collection-grid"></div>
+        </section>
+
+        <section class="notebook-panel" id="deck-panel" hidden aria-labelledby="deck-tab">
+          <div class="deck-builder-heading">
+            <div>
+              <span class="board-kicker">Alineación activa</span>
+              <h2>Constructor de mazos</h2>
+              <p>Elige 12 cartas, con un máximo de 2 copias, al menos 6 personajes diferentes y 4 cartas ofensivas.</p>
+            </div>
+            <div class="deck-rules" id="deck-rules" aria-live="polite"></div>
+          </div>
+
+          <div class="deck-builder-layout">
+            <aside class="selected-deck-panel">
+              <div class="selected-deck-title"><h3>Tu mazo</h3><strong id="deck-count">12/12</strong></div>
+              <div class="selected-deck-list" id="selected-deck-list"></div>
+              <div class="deck-actions">
+                <button class="secondary-button" id="reset-deck" type="button">Mazo inicial</button>
+                <button class="primary-button" id="save-deck" type="button">Guardar mazo</button>
+              </div>
+              <p class="deck-message" id="deck-message" role="status" aria-live="polite"></p>
+            </aside>
+            <div>
+              <h3 class="available-title">Cartas disponibles</h3>
+              <div class="deck-card-grid" id="deck-card-grid"></div>
+            </div>
+          </div>
+        </section>
       </section>
 
       <section class="screen waiting-screen" id="waiting-screen" hidden aria-labelledby="waiting-title">
@@ -72,6 +158,13 @@
           </div>
           <ul class="player-list" id="player-list" aria-label="Jugadores de la sala"></ul>
           <button class="primary-button" id="ready-button" type="button">Estoy preparado</button>
+
+          <aside class="waiting-guide">
+            <span aria-hidden="true">📋</span>
+            <p><strong>Mientras esperas:</strong> repasa cómo funcionan los turnos y las cartas.</p>
+            <button class="secondary-button rules-trigger" type="button">Abrir Cómo jugar</button>
+          </aside>
+
           <button class="text-button danger" id="leave-room" type="button">Salir de la sala</button>
           <p class="connection-note" id="waiting-note" role="status" aria-live="polite"></p>
         </div>
@@ -82,46 +175,99 @@
 
         <div class="match-toolbar">
           <button class="text-button" id="leave-match" type="button">← Salir</button>
-          <span>Sala <strong id="match-room-code">------</strong></span>
-          <span class="turn-pill" id="turn-label">Preparando partida…</span>
+          <span class="room-indicator">Sala <strong id="match-room-code">------</strong></span>
+          <button class="match-guide-button rules-trigger" type="button">
+            <span aria-hidden="true">?</span> Cómo jugar
+          </button>
         </div>
 
+        <section class="turn-callout" id="turn-callout" aria-live="polite">
+          <span class="turn-symbol" id="turn-symbol" aria-hidden="true">⚡</span>
+          <div>
+            <span class="turn-pill" id="turn-label">Preparando partida…</span>
+            <p id="turn-guidance">Espera mientras se preparan los equipos.</p>
+          </div>
+        </section>
+
+        <div class="battle-overview">
         <section class="player-board opponent-board" aria-label="Estado del rival">
           <div>
-            <span class="board-kicker">Rival</span>
+            <span class="board-kicker">Equipo rival</span>
             <h3 id="opponent-name">Esperando rival</h3>
           </div>
           <div class="board-stats">
-            <span>❤️ <strong id="opponent-morale">20</strong> moral</span>
-            <span>🛡️ <strong id="opponent-guard">0</strong> defensa</span>
-            <span>🃏 <strong id="opponent-hand">0</strong> cartas</span>
+            <button class="stat-chip morale" type="button" data-help="La moral es la vida de tu equipo. Si llega a cero, pierdes.">
+              <span aria-hidden="true">❤️</span><span><strong id="opponent-morale">20</strong> moral</span>
+            </button>
+            <button class="stat-chip guard" type="button" data-help="La defensa absorbe los ataques antes de que reduzcan la moral.">
+              <span aria-hidden="true">🛡️</span><span><strong id="opponent-guard">0</strong> defensa</span>
+            </button>
+            <button class="stat-chip cards" type="button" data-help="Puedes conocer cuántas cartas conserva el rival, pero no cuáles son.">
+              <span aria-hidden="true">🃏</span><span><strong id="opponent-hand">0</strong> cartas</span>
+            </button>
           </div>
         </section>
 
         <section class="match-center" aria-label="Sucesos de la partida">
-          <div class="effect-strip" id="effect-strip"></div>
-          <ol class="match-log" id="match-log" aria-live="polite"></ol>
+          <div class="match-panel">
+            <div class="match-panel-heading">
+              <span aria-hidden="true">⚡</span>
+              <div><small>Estado táctico</small><h3>Efectos activos</h3></div>
+            </div>
+            <div class="effect-strip" id="effect-strip"></div>
+          </div>
+          <div class="match-panel">
+            <div class="match-panel-heading">
+              <span aria-hidden="true">📣</span>
+              <div><small>Minuto a minuto</small><h3>Últimas jugadas</h3></div>
+            </div>
+            <ol class="match-log" id="match-log" aria-live="polite"></ol>
+          </div>
         </section>
 
+        <div class="my-match-status">
         <section class="player-board my-board" aria-label="Tu estado">
           <div>
             <span class="board-kicker">Tu equipo</span>
             <h3 id="my-name">Jugador</h3>
           </div>
           <div class="board-stats">
-            <span>❤️ <strong id="my-morale">20</strong> moral</span>
-            <span>🛡️ <strong id="my-guard">0</strong> defensa</span>
-            <span>⚡ <strong id="my-energy">3/3</strong> energía</span>
+            <button class="stat-chip morale" type="button" data-help="La moral es la vida de tu equipo. Protégela: si llega a cero, pierdes.">
+              <span aria-hidden="true">❤️</span><span><strong id="my-morale">20</strong> moral</span>
+            </button>
+            <button class="stat-chip guard" type="button" data-help="Tu defensa recibe primero el daño de los ataques rivales.">
+              <span aria-hidden="true">🛡️</span><span><strong id="my-guard">0</strong> defensa</span>
+            </button>
+            <button class="stat-chip energy" type="button" data-help="La energía paga el coste de tus cartas. Se recupera al comenzar tu turno.">
+              <span aria-hidden="true">⚡</span><span><strong id="my-energy">3/3</strong> energía</span>
+            </button>
           </div>
         </section>
+
+        <section class="coach-panel" id="coach-panel" aria-labelledby="coach-name">
+          <img id="coach-image" src="../../Hijos Inazuma/pjs/Jugadores !/Kurumi Tokisaki.jpg" alt="Entrenador asignado" />
+          <div class="coach-copy">
+            <span class="board-kicker" id="coach-kicker">Tu míster · habilidad única</span>
+            <h3 id="coach-name">Kurumi Tokisaki</h3>
+            <p id="coach-description"><strong>Zafkiel — Rebobinar:</strong> recupera una carta del descarte una vez por partida.</p>
+          </div>
+          <button class="coach-ability-button" id="use-leader" type="button">
+            <span>Usar Zafkiel — Rebobinar</span>
+            <small>Devuelve una carta de tu descarte a tu mano.</small>
+          </button>
+          <span class="coach-status" id="leader-status">Disponible</span>
+        </section>
+        </div>
+        </div>
 
         <section class="hand-section" aria-labelledby="hand-title">
           <div class="hand-heading">
             <div>
               <span class="board-kicker">Tu mano</span>
               <h3 id="hand-title">Elige una carta</h3>
+              <p>Consulta su resultado actual o abre los detalles antes de jugarla.</p>
             </div>
-            <button class="secondary-button" id="end-turn" type="button">Terminar turno</button>
+            <button class="secondary-button end-turn-button" id="end-turn" type="button">Terminar turno →</button>
           </div>
           <div class="card-hand" id="card-hand"></div>
           <p class="hand-message" id="hand-message" role="status" aria-live="polite"></p>
@@ -129,24 +275,234 @@
       </section>
     </main>
 
-    <dialog id="rules-dialog">
+    <dialog class="rules-dialog" id="rules-dialog" aria-labelledby="rules-title">
+      <div class="dialog-heading sticky-heading">
+        <div>
+          <p class="eyebrow">Academia Raimon</p>
+          <h2 id="rules-title">Cómo jugar</h2>
+          <p>Todo lo necesario para disputar tu primer Duelo de Resonancia.</p>
+        </div>
+        <button class="icon-button" id="close-rules" type="button" aria-label="Cerrar Cómo jugar">×</button>
+      </div>
+
+      <nav class="guide-nav" aria-label="Secciones de la guía">
+        <a href="#guide-objective">Objetivo</a>
+        <a href="#guide-turn">Tu turno</a>
+        <a href="#guide-cards">Cartas</a>
+        <a href="#guide-combat">Combate</a>
+        <a href="#guide-affinity">Afinidad</a>
+        <a href="#guide-talents">Talentos</a>
+        <a href="#guide-support">Apoyos</a>
+        <a href="#guide-evolution">Mejoras futuras</a>
+        <a href="#guide-collection">Cuaderno</a>
+      </nav>
+
+      <div class="guide-content">
+        <section class="guide-section" id="guide-objective">
+          <span class="guide-step">01</span>
+          <div>
+            <p class="guide-kicker">El objetivo</p>
+            <h3>Protege la moral de tu equipo</h3>
+            <p>Cada equipo empieza con <strong>20 de moral</strong>. Ganas cuando la moral rival llega a cero.</p>
+            <div class="morale-demo" aria-label="Ejemplo visual de moral">
+              <div><span>Tu equipo</span><div class="demo-bar"><i style="width: 100%"></i></div><strong>20</strong></div>
+              <span class="versus">VS</span>
+              <div><span>Rival</span><div class="demo-bar danger-bar"><i style="width: 30%"></i></div><strong>6</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="guide-section" id="guide-turn">
+          <span class="guide-step">02</span>
+          <div>
+            <p class="guide-kicker">Cómo funciona un turno</p>
+            <h3>Roba, decide y juega</h3>
+            <div class="turn-flow" aria-label="Fases de un turno">
+              <div><span>1</span><strong>Recupera</strong><small>energía y roba 1 carta</small></div>
+              <b aria-hidden="true">→</b>
+              <div><span>2</span><strong>Juega</strong><small>las cartas que puedas pagar</small></div>
+              <b aria-hidden="true">→</b>
+              <div><span>3</span><strong>Termina</strong><small>y cede el turno al rival</small></div>
+            </div>
+            <p class="guide-note">Puedes jugar varias cartas en el mismo turno mientras tengas energía suficiente.</p>
+          </div>
+        </section>
+
+        <section class="guide-section" id="guide-cards">
+          <span class="guide-step">03</span>
+          <div>
+            <p class="guide-kicker">Cómo leer una carta</p>
+            <h3>Toda la información está a la vista</h3>
+            <div class="card-anatomy">
+              <div class="anatomy-card rarity-special">
+                <span class="anatomy-rarity">Especial</span>
+                <span class="anatomy-cost">⚡ 2</span>
+                <div class="anatomy-art">LI</div>
+                <strong>Leii Ishikawa</strong>
+                <small>Gerente · Galaxia</small>
+                <p>🔎 Mira 3 cartas del mazo.<br />🃏 Elige 1 para tu mano.</p>
+              </div>
+              <ol class="anatomy-labels">
+                <li><b>Coste:</b> energía necesaria para jugarla.</li>
+                <li><b>Categoría:</b> normal, especial o despertada.</li>
+                <li><b>Función:</b> ataque, defensa, táctica o debilitación.</li>
+                <li><b>Efecto:</b> qué sucederá exactamente al jugarla.</li>
+              </ol>
+            </div>
+            <div class="rarity-legend">
+              <span class="rarity-badge rarity-normal">Normal</span>
+              <span class="rarity-badge rarity-special">Especial</span>
+              <span class="rarity-badge rarity-awakened">Despertada</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="guide-section" id="guide-combat">
+          <span class="guide-step">04</span>
+          <div>
+            <p class="guide-kicker">Ataque y defensa</p>
+            <h3>La defensa recibe el golpe primero</h3>
+            <div class="damage-demo" aria-label="Ejemplo: ataque seis menos defensa dos causa cuatro de daño">
+              <div><span>⚔️</span><strong>6</strong><small>ataque</small></div>
+              <b>−</b>
+              <div><span>🛡️</span><strong>2</strong><small>defensa</small></div>
+              <b>=</b>
+              <div class="damage-result"><span>❤️</span><strong>4</strong><small>daño a moral</small></div>
+            </div>
+            <div class="effect-legend">
+              <span>⚔️ Ataque</span><span>🛡️ Defensa</span><span>⚡ Potenciación</span>
+              <span>⛓️ Debilitación</span><span>💚 Recuperación</span><span>🃏 Robo</span>
+            </div>
+            <p class="guide-note">Los aumentos y debilitaciones se consumen cuando se realiza el siguiente ataque.</p>
+          </div>
+        </section>
+
+        <section class="guide-section" id="guide-affinity">
+          <span class="guide-step">05</span>
+          <div>
+            <p class="guide-kicker">Beneficio por Afinidad</p>
+            <h3>Encadena tres futbolistas de la misma afinidad</h3>
+            <div class="affinity-flow" aria-label="Ejemplo de una cadena de afinidad de Fuego">
+              <div><span>🔥</span><strong>Natsu</strong><small>Fuego ×1</small></div>
+              <b aria-hidden="true">→</b>
+              <div class="resonance"><span>🔥</span><strong>Pan</strong><small>×2 · +1 principal</small></div>
+              <b aria-hidden="true">→</b>
+              <div class="affinity-total"><span>🔥</span><strong>Victor</strong><small>×3 · beneficio propio</small></div>
+            </div>
+            <ul class="rules-list">
+              <li>La <strong>segunda carta</strong> activa Resonancia y recibe +1 en su valor principal: ataque o defensa.</li>
+              <li>La <strong>tercera carta</strong> activa el beneficio de Afinidad Total escrito en esa carta y reinicia la cadena.</li>
+              <li>Un futbolista de otra afinidad reinicia la cuenta. Las gerentes y el entrenador <strong>no suman ni rompen</strong> la cadena.</li>
+            </ul>
+            <p class="guide-note">Ejemplo: Natsu → Wang Qing → Pan → Victor sí completa Fuego ×3, porque Wang es una carta de apoyo.</p>
+          </div>
+        </section>
+
+        <section class="guide-section" id="guide-talents">
+          <span class="guide-step">06</span>
+          <div>
+            <p class="guide-kicker">Pasivas de personaje</p>
+            <h3>Un talento despierta desde el descarte</h3>
+            <div class="talent-flow" aria-label="Funcionamiento visual de un talento">
+              <div><span>1</span><strong>Juega la carta</strong><small>resuelve su técnica normal</small></div>
+              <b aria-hidden="true">→</b>
+              <div><span>2</span><strong>Va al descarte</strong><small>el talento queda activo</small></div>
+              <b aria-hidden="true">→</b>
+              <div><span>3</span><strong>Construye alrededor</strong><small>aprovecha su condición</small></div>
+            </div>
+            <p>Los talentos no se acumulan aunque haya dos copias del mismo personaje. Cuando el descarte se baraja para reconstruir el mazo, sus talentos dejan de estar activos hasta que vuelvas a jugar esas cartas.</p>
+            <div class="staff-guide-grid">
+              <article><span aria-hidden="true">✦</span><div><strong>Talento</strong><p>Permanece activo desde el descarte y modifica decisiones futuras.</p></div></article>
+              <article><span aria-hidden="true">🔗</span><div><strong>Combo</strong><p>Se cumple en el momento de jugar la carta: orden, defensa, afinidad o personajes concretos.</p></div></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="guide-section" id="guide-support">
+          <span class="guide-step">07</span>
+          <div>
+            <p class="guide-kicker">Gerentes y entrenadores</p>
+            <h3>El cuerpo técnico también cambia el partido</h3>
+            <div class="staff-guide-grid">
+              <article><span aria-hidden="true">📋</span><div><strong>Gerentes</strong><p>Leii, Mikan y Wang son cartas de apoyo. No atacan, pero buscan cartas, curan o preparan combinaciones.</p></div></article>
+              <article><span aria-hidden="true">🎓</span><div><strong>Entrenador aleatorio</strong><p>Kurumi, Xavier, Code, Diamond, Waru o Dark dirigirán tu equipo. Cada uno posee una habilidad diferente.</p></div></article>
+            </div>
+            <p class="guide-note">Los entrenadores no entran en el mazo. Su habilidad no consume energía y solo puede utilizarse una vez durante tu turno.</p>
+          </div>
+        </section>
+
+        <section class="guide-section" id="guide-evolution">
+          <span class="guide-step">08</span>
+          <div>
+            <p class="guide-kicker">Función futura · en construcción</p>
+            <h3>Las versiones mejoradas llegarán después de la Beta</h3>
+            <div class="evolution-demo">
+              <div class="evolution-card base"><span>Normal</span><strong>Renzu Itō</strong><small>Orgullo Ígneo</small></div>
+              <span class="evolution-arrow" aria-hidden="true">＋ →</span>
+              <div class="evolution-card awakened"><span>Próximamente</span><strong>Renzu Itō</strong><small>Versión mejorada</small></div>
+            </div>
+            <p>Las cartas despertadas no forman parte de esta primera Beta. Cuando se incorporen, exigirán jugar antes su versión base.</p>
+          </div>
+        </section>
+
+        <section class="guide-section" id="guide-collection">
+          <span class="guide-step">09</span>
+          <div>
+            <p class="guide-kicker">Colección y mazos</p>
+            <h3>Tu equipo crece al jugar</h3>
+            <p>El <strong>Cuaderno Secreto de Zuolos</strong> reúne todas las cartas conocidas. Cumple los desafíos de las cartas ocultas para desbloquearlas.</p>
+            <div class="staff-guide-grid">
+              <article><span aria-hidden="true">📓</span><div><strong>Enciclopedia</strong><p>Consulta estadísticas, efectos y la pista de cada desbloqueo.</p></div></article>
+              <article><span aria-hidden="true">🃏</span><div><strong>Tu mazo</strong><p>Lleva 12 cartas, máximo 2 copias, al menos 6 diferentes y un mínimo de 4 ofensivas.</p></div></article>
+            </div>
+            <p class="guide-note">Si el mazo se vacía, el descarte se baraja de nuevo. Cada reorganización resta 1, luego 2, luego 3 de moral por agotamiento.</p>
+          </div>
+        </section>
+
+        <section class="quick-summary">
+          <span aria-hidden="true">🏆</span>
+          <div><strong>En resumen</strong><p>Combina futbolistas y gerentes, supera desafíos, aprovecha a tu entrenador y recuerda que la historia del torneo sigue en construcción.</p></div>
+        </section>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="primary-button" id="finish-rules" type="button">Entendido, ¡a jugar!</button>
+      </div>
+    </dialog>
+
+    <dialog class="card-detail-dialog" id="card-detail-dialog" aria-labelledby="card-detail-title">
       <div class="dialog-heading">
         <div>
-          <p class="eyebrow">Reglas iniciales</p>
-          <h2>Cómo se juega</h2>
+          <p class="eyebrow" id="card-detail-rarity">Carta</p>
+          <h2 id="card-detail-title">Detalles de la carta</h2>
         </div>
-        <button class="icon-button" id="close-rules" type="button" aria-label="Cerrar reglas">×</button>
+        <button class="icon-button" id="close-card-detail" type="button" aria-label="Cerrar detalles">×</button>
       </div>
-      <ol class="rules-list">
-        <li>Cada jugador comienza con <strong>20 de moral</strong> y cinco cartas.</li>
-        <li>Las cartas consumen energía. Al comenzar tus turnos tendrás cada vez un poco más, hasta ocho.</li>
-        <li>El ataque rompe primero la defensa rival; el resto reduce su moral.</li>
-        <li>Los buffs mejoran tu próximo ataque y los debuffs reducen el próximo del rival.</li>
-        <li>Una versión mejorada solo se puede jugar después de usar la versión base de ese personaje.</li>
-        <li>Gana quien deje la moral del rival a cero.</li>
-      </ol>
-      <p class="rules-footnote">Nombres, cifras, mazo y lore son una base editable para probar el sistema.</p>
+      <div id="card-detail-content"></div>
+      <div class="card-detail-actions">
+        <p id="card-detail-status"></p>
+        <button class="primary-button" id="play-detailed-card" type="button">Jugar carta</button>
+      </div>
     </dialog>
+
+    <dialog class="choice-dialog" id="choice-dialog" aria-labelledby="choice-title">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow" id="choice-eyebrow">Decisión táctica</p>
+          <h2 id="choice-title">Elige una carta</h2>
+          <p id="choice-description">Selecciona la carta que quieres añadir a tu mano.</p>
+        </div>
+        <button class="icon-button" id="close-choice" type="button" aria-label="Cancelar elección">×</button>
+      </div>
+      <div class="choice-grid" id="choice-grid"></div>
+      <p class="choice-note" id="choice-note"></p>
+    </dialog>
+
+    <aside class="unlock-toast" id="unlock-toast" hidden aria-live="assertive">
+      <span aria-hidden="true">🔓</span>
+      <div><small>Nuevo expediente desbloqueado</small><strong id="unlock-toast-name">Carta descubierta</strong></div>
+      <button class="notebook-trigger" type="button">Ver en el Cuaderno</button>
+    </aside>
 
     <script type="module" src="game.js"></script>
   </body>

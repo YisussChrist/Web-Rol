@@ -3,6 +3,7 @@
       { title: "Posiciones", category: "Inazuma Eleven", emoji: "📍", url: "posiciones.html", description: "Organiza jugadores, roles, puestos y estructura de equipos.", status: "" },
       { title: "Team Builder", category: "Inazuma Eleven", emoji: "⚽", url: "plantillas_inazuma/plantillas-inazuma.html?v=7", description: "Centro táctico para crear alineaciones, analizar química, preparar partidos y exportar equipos.", status: "Renovado"},
       { title: "Inazuma Central", category: "Inazuma Eleven", emoji: "🏟️", url: "centro-inazuma.html?v=5", description: "Centro deportivo de jugadores, equipos, técnicas, estadísticas y temporada.", status: "Nuevo" },
+      { title: "InaMarkt", category: "Inazuma Eleven", emoji: "📈", url: "InaMarkt/index.html", description: "Valores de mercado, rankings de jugadores, clubes y operaciones del fútbol Inazuma.", status: "Nuevo" },
       { title: "Raimon.com", category: "Inazuma Eleven", emoji: "📋", url: "estadísticas Inazuma/estadisticas.html", description: "La página donde se verán las stats de cada jugador.", status: "" },
       { title: "Inventario", category: "Inazuma Eleven", emoji: "📦", url: "sts/sts.html", description: "Aquí podrás ver toda la info en cuanto a STs, EGs y Mimiximax de todos los personajes.", status: ""},
       { title: "Calculadora de Precios", category: "Inazuma Eleven", emoji: "💶", url: "calculadora-precios.html", description: "Calculadora para determinar los precios de los artículos en el universo Inazuma.", status: ""},
@@ -35,6 +36,7 @@
       { title: "Relaciones 2.0", category: "General", emoji: "💖", url: "relaciones.html", description: "Mapa narrativo de personajes, vínculos, estados y evolución de relaciones.", status: "Nuevo" },
       { title: "Series", category: "General", emoji: "🎥", url: "Series/series.html", description: "Cantidad de series que hemos visto y/o tenemos a medias.", status: "" },
 
+      { title: "Juegos", category: "Minijuegos", emoji: "🎮", url: "juegos/index.html", description: "Centro de juegos de Web-Rol, con Duelo de Resonancia disponible como primera Beta.", status: "Beta" },
       { title: "Copero del Rol", category: "Minijuegos", emoji: "🏆", url: "juegos/copero/index.html", description: "Tres carreras narrativas inspiradas en Dragon Ball, Pokémon e Inazuma, conectadas con el lore de los servidores.", status: "Nuevo" },
       { title: "Equipo Ideal", category: "Minijuegos", emoji: "⚽", url: "juegos/equipo.html", description: "Construye un once con personajes del RP, asigna posiciones y guarda tu alineación.", status: "Nuevo" },
 ];
@@ -82,7 +84,7 @@
       { title: "Tema 3", src: "music/Chill PKM 1h.mp3" }
     ];
 
-    const QUICK_LINK_TITLES = ["Dragon Dex", "Inazuma Central", "Calendario Conectado", "Inventario", "Personajes", "Árbol Familiar"];
+    const QUICK_LINK_TITLES = ["Dragon Dex", "Inazuma Central", "InaMarkt", "Calendario Conectado", "Inventario", "Personajes", "Árbol Familiar"];
 
     const quotes = [
         { text: "El fútbol no se juega solo con los pies. También se juega con lo que eres.", author: "RP Inazuma" },

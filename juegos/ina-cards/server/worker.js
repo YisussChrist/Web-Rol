@@ -26,7 +26,7 @@ export default {
           const response = await room.fetch("https://room.internal/create", {
             method: "POST",
             headers: JSON_HEADERS,
-            body: JSON.stringify({ name, token, code }),
+            body: JSON.stringify({ name, token, code, deck: body.deck }),
           });
           if (response.status === 201) return json({ code, token }, 201);
         }
@@ -42,7 +42,7 @@ export default {
         const response = await room.fetch("https://room.internal/join", {
           method: "POST",
           headers: JSON_HEADERS,
-          body: JSON.stringify({ name: cleanName(body.name), token }),
+          body: JSON.stringify({ name: cleanName(body.name), token, deck: body.deck }),
         });
         if (!response.ok) return withCors(response);
         return json({ code, token });
@@ -79,7 +79,11 @@ export class GameRoom extends DurableObject {
     if (url.pathname === "/create" && request.method === "POST") {
       if (state) return json({ error: "La sala ya existe." }, 409);
       const body = await readBody(request);
-      const newState = createRoom(body.code, { name: cleanName(body.name), token: body.token });
+      const newState = createRoom(body.code, {
+        name: cleanName(body.name),
+        token: body.token,
+        deck: body.deck,
+      });
       await this.persist(newState);
       return json({ ok: true }, 201);
     }
@@ -88,7 +92,7 @@ export class GameRoom extends DurableObject {
       if (!state) return json({ error: "La sala no existe o ha caducado." }, 404);
       const body = await readBody(request);
       try {
-        addPlayer(state, { name: cleanName(body.name), token: body.token });
+        addPlayer(state, { name: cleanName(body.name), token: body.token, deck: body.deck });
         await this.persist(state);
         this.broadcast(state);
         return json({ ok: true });

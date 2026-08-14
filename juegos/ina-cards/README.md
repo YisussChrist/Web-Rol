@@ -7,7 +7,8 @@ Primera base jugable del juego de cartas para dos personas.
 - Salas privadas mediante un código de seis caracteres.
 - Partidas sincronizadas y validadas por un servidor de Cloudflare.
 - Modo de prueba local para jugar los dos turnos en un mismo dispositivo.
-- Doce cartas iniciales, con buffs, debuffs y cuatro versiones mejoradas.
+- Veinticinco cartas: seis iniciales y diecinueve desbloqueables mediante desafíos.
+- Afinidades, talentos de descarte, buffs, debuffs y entrenadores aleatorios.
 - Reglas, cartas y apariencia separadas para poder modificarlas sin rehacer todo.
 
 ## Dónde cambiar cada parte
@@ -21,5 +22,5 @@ Primera base jugable del juego de cartas para dos personas.
 ## Estado actual
 
 El modo local y las salas online están operativos. El servidor está publicado en Cloudflare y su
-dirección ya está configurada en `config.js`. El juego continúa marcado como próximamente en el
-menú mientras se definen el lore, el equilibrio definitivo y el diseño visual.
+dirección ya está configurada en `config.js`. El juego está abierto como primera Beta; la historia,
+las versiones despertadas, el equilibrio definitivo y el diseño visual continúan en construcción.
