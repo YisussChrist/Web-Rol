@@ -23,6 +23,31 @@
       <div class="boot-progress"><span></span></div>
     </section>
 
+    <section class="identity-screen" id="identityScreen" aria-labelledby="identityTitle" hidden>
+      <div class="identity-panel">
+        <div class="identity-heading">
+          <div>
+            <span class="kicker">Identificación de usuario</span>
+            <h1 id="identityTitle">¿Quién está usando el Evolink?</h1>
+            <p>Selecciona tu entrenador para sincronizar su equipo, sus medallas y su progreso regional.</p>
+          </div>
+          <span class="identity-symbol" aria-hidden="true">∞</span>
+        </div>
+
+        <label class="trainer-search" for="trainerSearch">
+          <span>Buscar entrenador</span>
+          <input id="trainerSearch" type="search" placeholder="Nombre, región o estilo…" autocomplete="off" />
+        </label>
+
+        <div class="trainer-picker-grid" id="trainerPickerGrid"></div>
+
+        <div class="identity-actions">
+          <p id="selectedTrainerText">Elige un entrenador para continuar.</p>
+          <button class="primary-action" id="confirmTrainer" type="button" disabled>Sincronizar Evolink</button>
+        </div>
+      </div>
+    </section>
+
     <section class="screen-shell" id="app" aria-live="polite">
       <header class="hud-header">
         <div>
@@ -31,6 +56,7 @@
         </div>
         <div class="hud-status">
           <span id="clock">--:--</span>
+          <button class="profile-switch" id="changeTrainer" type="button">Cambiar entrenador</button>
           <button class="pill-button" id="notifyButton">2 avisos</button>
         </div>
       </header>
@@ -52,7 +78,7 @@
 
         <div class="home-grid">
           <article class="trainer-summary card-soft">
-            <img id="trainerAvatar" alt="Avatar del entrenador" />
+            <div class="trainer-avatar-shell" id="trainerAvatar" aria-hidden="true"></div>
             <div>
               <span class="kicker">Entrenador activo</span>
               <h3 id="trainerName">Link</h3>
@@ -64,8 +90,8 @@
             <span class="y-mark">Y</span>
             <div>
               <span class="kicker">Infinity Y Institute</span>
-              <h3>Invitación pendiente</h3>
-              <p>Compatible con tu progreso actual.</p>
+              <h3 id="infinityHomeTitle">Invitación pendiente</h3>
+              <p id="infinityHomeCopy">Compatible con tu progreso actual.</p>
             </div>
           </article>
         </div>
@@ -103,7 +129,7 @@
       </section>
 
       <section class="view" id="view-infinity">
-        <article class="infinity-panel">
+        <article class="infinity-panel" id="infinityPanel">
           <span class="redacted">████████████████</span>
           <span class="y-mark large">Y</span>
           <h3>INFINITY Y INSTITUTE</h3>
@@ -137,6 +163,7 @@
     </section>
   </main>
 
+  <script src="../Pokemon/entrenadores-datos.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

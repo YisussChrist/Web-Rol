@@ -904,6 +904,116 @@ header p{
   }
 }
 
+/* =========================
+   CONTROLES INTERACTIVOS
+========================= */
+
+.map-controls{
+  position:absolute;
+  z-index:28;
+  top:28px;
+  left:28px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:7px;
+  border:3px solid var(--border);
+  border-radius:18px;
+  background:rgba(239,253,255,.94);
+  color:var(--ink);
+  box-shadow:5px 5px 0 rgba(0,0,0,.23);
+  backdrop-filter:blur(8px);
+}
+
+.map-controls button{
+  width:38px;
+  height:38px;
+  border:2px solid var(--border);
+  border-radius:11px;
+  color:#fff;
+  background:linear-gradient(145deg,var(--blue),#2450bc);
+  cursor:pointer;
+  font:900 1.25rem/1 'Poppins',sans-serif;
+  box-shadow:2px 2px 0 rgba(0,0,0,.2);
+}
+
+.map-controls button:hover:not(:disabled){transform:translateY(-2px)}
+.map-controls button:disabled{cursor:not-allowed;filter:grayscale(1);opacity:.45}
+.map-controls output{min-width:52px;text-align:center;font-size:.78rem;font-weight:900}
+
+.map-stage{
+  transform-origin:center;
+  cursor:grab;
+  touch-action:none;
+  will-change:transform;
+  transition:transform .22s ease;
+}
+
+.map-stage.dragging{cursor:grabbing;transition:none}
+
+.pin.seleccionada{
+  z-index:14;
+  outline:5px solid rgba(255,217,74,.92);
+  outline-offset:4px;
+}
+
+.city-search{display:grid;gap:6px;margin:10px 0 9px;color:#59677e;font-size:.74rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+.city-search input{width:100%;border:3px solid var(--border);border-radius:13px;padding:10px 12px;color:var(--ink);background:#f6fcff;font:600 .86rem 'Poppins',sans-serif;outline:0}
+.city-search input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(58,124,255,.16)}
+.city-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.city-filters button{border:2px solid var(--border);border-radius:999px;padding:6px 9px;color:var(--ink);background:#fff;cursor:pointer;font:800 .72rem 'Poppins',sans-serif}
+.city-filters button.active{color:#fff;background:linear-gradient(135deg,var(--blue),#244fc0)}
+.city-row{width:100%;text-align:left}
+.city-row strong,.city-row small{display:block}
+.city-row small{margin-top:3px;color:#67738a;font-size:.72rem}
+.city-row.locked small{color:#777}
+.city-row.selected{border-color:var(--blue);box-shadow:0 0 0 3px rgba(58,124,255,.18),5px 5px 0 rgba(0,0,0,.16)}
+.city-empty{padding:14px;border:2px dashed #7a8798;border-radius:13px;color:#58667d;text-align:center;font-size:.8rem;font-weight:700}
+
+@media (max-width:680px){
+  .map-controls{top:18px;left:18px;gap:4px;padding:5px;border-width:2px}
+  .map-controls button{width:32px;height:32px;border-width:2px;font-size:1rem}
+  .map-controls output{min-width:43px;font-size:.67rem}
+  .map-toolbar{right:18px;left:18px;bottom:18px}
+  .badge{padding:6px 9px;font-size:.7rem}
+}
+
+/* =========================
+   EXPEDIENTE DE CIUDAD
+========================= */
+
+.city-modal{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:24px}
+.city-modal[hidden]{display:none}
+.city-modal-backdrop{position:absolute;inset:0;border:0;background:rgba(4,8,18,.82);backdrop-filter:blur(12px);cursor:pointer}
+.city-dossier{position:relative;width:min(1060px,96vw);max-height:min(880px,94vh);overflow:auto;border:6px solid var(--border);border-radius:30px;color:var(--ink);background:linear-gradient(180deg,#f7fdff,#dff4fa);box-shadow:0 28px 80px rgba(0,0,0,.55),inset 0 0 0 5px rgba(255,255,255,.7)}
+.city-modal-close{position:sticky;float:right;top:16px;right:16px;z-index:8;width:46px;height:46px;margin:16px 16px -62px 0;border:3px solid var(--border);border-radius:50%;color:#fff;background:linear-gradient(145deg,var(--red),#a70d24);cursor:pointer;font:900 1.7rem/1 'Poppins',sans-serif;box-shadow:4px 4px 0 rgba(0,0,0,.25)}
+.city-dossier-hero{position:relative;min-height:330px;overflow:hidden;background:#12223d}
+.city-hero-photo{position:absolute;inset:0;background-color:#18324e;background-repeat:no-repeat;background-position:center;background-size:cover;transition:background-size .3s ease,background-position .3s ease}
+.city-hero-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 18%,rgba(3,9,20,.88) 100%)}
+.city-hero-copy{position:absolute;z-index:2;right:0;bottom:0;left:0;padding:34px;color:#fff;text-shadow:2px 2px 0 #000}
+.city-hero-copy span{display:inline-flex;padding:7px 11px;border:2px solid rgba(255,255,255,.72);border-radius:999px;background:rgba(5,13,28,.62);font-size:.75rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.city-hero-copy h2{margin:8px 0 2px;font-family:'Bangers',cursive;font-size:clamp(3rem,8vw,5.4rem);letter-spacing:2px}
+.city-hero-copy p{margin:0;color:#dff8ff;font-weight:800}
+.city-dossier-body{display:grid;grid-template-columns:1.3fr .7fr;gap:18px;padding:24px}
+.city-story,.city-places,.city-gallery-section{border:4px solid var(--border);border-radius:22px;padding:20px;background:#fff;box-shadow:6px 6px 0 rgba(0,0,0,.13)}
+.city-story h3,.city-places h3,.city-gallery-section h3{margin:0 0 10px;font-family:'Bangers',cursive;font-size:2rem;letter-spacing:1px;color:#202a44}
+.city-story>p{margin:0;color:#41506a;line-height:1.7;font-weight:600}
+.city-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:16px}
+.city-fact{padding:11px;border:2px solid #c9d9e4;border-radius:14px;background:#effaff}
+.city-fact span,.city-fact strong{display:block}.city-fact span{color:#67758b;font-size:.7rem;font-weight:900;text-transform:uppercase}.city-fact strong{margin-top:3px;color:#162039;font-size:.86rem}
+.place-list{display:grid;gap:9px}.place-item{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:10px;border:2px solid #cfdae4;border-radius:14px;background:#f4fbff}.place-item i{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(145deg,var(--yellow),#fff1a4);font-style:normal}.place-item strong,.place-item small{display:block}.place-item small{margin-top:2px;color:#667289}
+.city-gallery-section{grid-column:1/-1}
+.city-gallery-heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:13px}.city-gallery-heading span{color:var(--blue);font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.city-gallery-heading h3{margin:2px 0 0}.city-gallery-heading small{color:#637087;font-weight:800}
+.city-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.city-gallery button{position:relative;min-height:145px;overflow:hidden;border:4px solid var(--border);border-radius:17px;background:#1a3753 center/cover no-repeat;cursor:pointer;box-shadow:4px 4px 0 rgba(0,0,0,.18)}
+.city-gallery button::after{content:attr(data-caption);position:absolute;right:0;bottom:0;left:0;padding:24px 10px 9px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.88));text-align:left;font:800 .78rem 'Poppins',sans-serif}
+.city-gallery button.active{border-color:var(--yellow);outline:3px solid rgba(255,217,74,.38)}
+body.city-modal-open{overflow:hidden}
+
+@media(max-width:760px){
+  .city-modal{padding:0}.city-dossier{width:100%;max-height:100vh;border-width:0;border-radius:0}.city-dossier-hero{min-height:270px}.city-hero-copy{padding:24px 18px}.city-dossier-body{grid-template-columns:1fr;padding:14px}.city-facts{grid-template-columns:1fr 1fr}.city-gallery-section{grid-column:auto}.city-gallery{grid-template-columns:1fr}.city-gallery button{min-height:180px}.city-gallery-heading{align-items:start;flex-direction:column}.city-modal-close{top:10px;right:10px;margin:10px 10px -56px 0}
+}
+
   </style>
 </head>
 <body>
@@ -935,6 +1045,14 @@ header p{
         <div class="badge" id="currentBadge">Ubicación actual: —</div>
       </div>
 
+      <div class="map-controls" aria-label="Controles del mapa">
+        <button id="zoomOut" type="button" aria-label="Alejar mapa">−</button>
+        <output id="zoomLevel" aria-live="polite">100%</output>
+        <button id="zoomIn" type="button" aria-label="Acercar mapa">+</button>
+        <button id="centerCurrent" type="button" aria-label="Centrar ubicación actual" title="Centrar ubicación actual">⌖</button>
+        <button id="resetMap" type="button" aria-label="Restablecer mapa" title="Restablecer mapa">↺</button>
+      </div>
+
       <div class="map-stage" id="mapStage">
         <div class="tooltip" id="tooltip">???</div>
       </div>
@@ -956,6 +1074,15 @@ header p{
 
       <div class="status-card">
         <h3>Ciudades</h3>
+        <label class="city-search" for="citySearch">
+          <span>Buscar localización</span>
+          <input id="citySearch" type="search" placeholder="Nombre, gimnasio o descripción…" autocomplete="off" />
+        </label>
+        <div class="city-filters" aria-label="Filtros de localizaciones">
+          <button class="active" type="button" data-city-filter="all">Todas</button>
+          <button type="button" data-city-filter="visited">Descubiertas</button>
+          <button type="button" data-city-filter="locked">Ocultas</button>
+        </div>
         <div class="city-list" id="cityList"></div>
       </div>
 
@@ -968,7 +1095,47 @@ header p{
   </main>
   </div>
 
+  <section class="city-modal" id="cityModal" hidden aria-labelledby="cityModalTitle">
+    <button class="city-modal-backdrop" type="button" data-close-city aria-label="Cerrar expediente"></button>
+    <article class="city-dossier" role="dialog" aria-modal="true">
+      <button class="city-modal-close" type="button" data-close-city aria-label="Cerrar expediente">×</button>
+      <div class="city-dossier-hero">
+        <div class="city-hero-photo" id="cityHeroPhoto" role="img"></div>
+        <div class="city-hero-copy">
+          <span id="cityModalEyebrow">Localización descubierta</span>
+          <h2 id="cityModalTitle">Ciudad de Etruria</h2>
+          <p id="cityModalSubtitle">Expediente regional</p>
+        </div>
+      </div>
+      <div class="city-dossier-body">
+        <section class="city-story">
+          <h3>Información</h3>
+          <p id="cityModalDescription"></p>
+          <div class="city-facts" id="cityFacts"></div>
+        </section>
+        <section class="city-places">
+          <h3>Lugares de interés</h3>
+          <div class="place-list" id="cityPlaces"></div>
+        </section>
+        <section class="city-gallery-section">
+          <div class="city-gallery-heading">
+            <div><span>Archivo visual</span><h3>Galería de la ciudad</h3></div>
+            <small id="cityGalleryCaption">Vista cartográfica</small>
+          </div>
+          <div class="city-gallery" id="cityGallery"></div>
+        </section>
+      </div>
+    </article>
+  </section>
+
   <script>
+    /*
+      Para añadir fotografías reales a una ciudad, rellena su array `fotos`:
+      fotos: [
+        { src: 'Fotos/Olivilia/academia.jpg', caption: 'Academia Pokémon', alt: 'Fachada de la academia de Olivilia' }
+      ]
+      Si el array está vacío, la galería utiliza acercamientos del mapa regional.
+    */
     const ciudades = [
       {
         id: 'olivilia',
@@ -978,7 +1145,17 @@ header p{
         visitada: true,
         actual: false,
         descripcion: 'Ciudad inicial de nuestros héroes, hogar de la academia Pokémon y punto de partida del viaje. Sus calles están llenas de entrenadores novatos y tiendas de objetos.',
-        gimnasio: 'Laboratorio Pokémon'
+        gimnasio: 'Laboratorio Pokémon',
+        subtitulo: 'La puerta de entrada a la aventura de Etruria',
+        zona: 'Costa oriental',
+        clima: 'Templado costero',
+        funcion: 'Academia Pokémon',
+        lugares: [
+          { icono: '🎓', nombre: 'Academia Pokémon', descripcion: 'Centro de formación de los nuevos entrenadores.' },
+          { icono: '🧪', nombre: 'Laboratorio regional', descripcion: 'Punto de entrega de compañeros y registro de expediciones.' },
+          { icono: '🛍️', nombre: 'Plaza de los Novatos', descripcion: 'Tiendas, suministros y lugar habitual de reunión.' }
+        ],
+        fotos: []
       },
       {
         id: 'vesubria',
@@ -988,7 +1165,17 @@ header p{
         visitada: true,
         actual: false,
         descripcion: 'Ciudad conocida por su cercanía al volcán y a la mitología del legendario Vulcarion',
-        gimnasio: 'Gimnasio Tipo Fuego'
+        gimnasio: 'Gimnasio Tipo Fuego',
+        subtitulo: 'Una ciudad forjada bajo la sombra del volcán',
+        zona: 'Cordillera volcánica',
+        clima: 'Cálido y seco',
+        funcion: 'Investigación volcánica',
+        lugares: [
+          { icono: '🌋', nombre: 'Volcán Vesubrio', descripcion: 'Origen de leyendas y fenómenos de energía ígnea.' },
+          { icono: '🔥', nombre: 'Gimnasio de Fuego', descripcion: 'Un desafío centrado en la presión y la resistencia.' },
+          { icono: '🛕', nombre: 'Santuario de Vulcarion', descripcion: 'Templo dedicado al legendario de la región.' }
+        ],
+        fotos: []
       },
       {
         id: 'napolisia',
@@ -998,7 +1185,17 @@ header p{
         visitada: true,
         actual: false,
         descripcion: 'Puerto comercial de Etruria. Sus muelles conectan con rutas marítimas y el lugar con más tipo Bicho de la región.',
-        gimnasio: 'Gimnasio Tipo Bicho'
+        gimnasio: 'Gimnasio Tipo Bicho',
+        subtitulo: 'El gran puerto comercial de la región',
+        zona: 'Bahía central',
+        clima: 'Húmedo marítimo',
+        funcion: 'Puerto y comercio',
+        lugares: [
+          { icono: '⚓', nombre: 'Puerto de Napolisia', descripcion: 'Conecta Etruria con numerosas rutas marítimas.' },
+          { icono: '🐛', nombre: 'Gimnasio de Bicho', descripcion: 'Combates que premian la adaptación y el trabajo en equipo.' },
+          { icono: '🏪', nombre: 'Mercado del Escarabajo', descripcion: 'El mayor intercambio de objetos de la costa.' }
+        ],
+        fotos: []
       },
       {
         id: 'colisea',
@@ -1008,7 +1205,17 @@ header p{
         visitada: true,
         actual: false,
         descripcion: 'Capital de la región y centro político de Etruria. Alberga la sede de la Liga Pokémon y el famoso Coliseo, donde se celebran torneos y eventos multitudinarios además de ser el Gimnasio Pokémon de la ciudad.',
-        gimnasio: 'Gimnasio Tipo Roca'
+        gimnasio: 'Gimnasio Tipo Roca',
+        subtitulo: 'Capital política y competitiva de Etruria',
+        zona: 'Centro regional',
+        clima: 'Continental',
+        funcion: 'Liga y grandes torneos',
+        lugares: [
+          { icono: '🏟️', nombre: 'Gran Coliseo', descripcion: 'Escenario de torneos y acontecimientos multitudinarios.' },
+          { icono: '🏆', nombre: 'Sede de la Liga', descripcion: 'Centro administrativo del circuito competitivo.' },
+          { icono: '🪨', nombre: 'Gimnasio de Roca', descripcion: 'Una prueba de paciencia, firmeza y estrategia.' }
+        ],
+        fotos: []
       },
       {
         id: 'civitas-aeterna',
@@ -1028,7 +1235,17 @@ header p{
         visitada: true,
         actual: true,
         descripcion: 'Zona rural y soporte eléctrico de la región, dicen que el bosque cercano a él esconde fantasmas.',
-        gimnasio: 'Gimnasio de Tipo Eléctrico'
+        gimnasio: 'Gimnasio de Tipo Eléctrico',
+        subtitulo: 'Tecnología, campos rurales y secretos espectrales',
+        zona: 'Meseta interior',
+        clima: 'Variable y tormentoso',
+        funcion: 'Suministro eléctrico',
+        lugares: [
+          { icono: '⚡', nombre: 'Central Arcanum', descripcion: 'Principal soporte energético de la región.' },
+          { icono: '👻', nombre: 'Bosque Espectral', descripcion: 'Una arboleda rodeada de rumores y apariciones.' },
+          { icono: '💡', nombre: 'Gimnasio Eléctrico', descripcion: 'Desafío basado en velocidad, circuitos y precisión.' }
+        ],
+        fotos: []
       },
       {
         id: '',
@@ -1141,16 +1358,168 @@ header p{
     const progressBadge = document.getElementById('progressBadge');
     const currentBadge = document.getElementById('currentBadge');
     const currentText = document.getElementById('currentText');
+    const citySearch = document.getElementById('citySearch');
+    const filterButtons = [...document.querySelectorAll('[data-city-filter]')];
+    const zoomOut = document.getElementById('zoomOut');
+    const zoomIn = document.getElementById('zoomIn');
+    const zoomLevel = document.getElementById('zoomLevel');
+    const centerCurrent = document.getElementById('centerCurrent');
+    const resetMap = document.getElementById('resetMap');
+    const cityModal = document.getElementById('cityModal');
+    const cityHeroPhoto = document.getElementById('cityHeroPhoto');
+    const cityModalTitle = document.getElementById('cityModalTitle');
+    const cityModalSubtitle = document.getElementById('cityModalSubtitle');
+    const cityModalDescription = document.getElementById('cityModalDescription');
+    const cityFacts = document.getElementById('cityFacts');
+    const cityPlaces = document.getElementById('cityPlaces');
+    const cityGallery = document.getElementById('cityGallery');
+    const cityGalleryCaption = document.getElementById('cityGalleryCaption');
+    let cityVisuals = [];
+    const mapView = {
+      zoom: 1,
+      panX: 0,
+      panY: 0,
+      minZoom: 1,
+      maxZoom: 2.5,
+      selectedIndex: -1,
+      filter: 'all',
+      dragging: false,
+      pointerX: 0,
+      pointerY: 0,
+    };
+
+    function normalizarTexto(value) {
+      return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+    }
+
+    function escaparHTML(value) {
+      return String(value || '').replace(/[&<>'"]/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      })[character]);
+    }
+
+    function visualesDeCiudad(ciudad) {
+      const fotos = (ciudad.fotos || []).map((foto, index) => {
+        const item = typeof foto === 'string' ? { src: foto } : foto;
+        return {
+          src: item.src,
+          caption: item.caption || `Fotografía ${index + 1}`,
+          alt: item.alt || `${ciudad.nombre}, fotografía ${index + 1}`,
+          size: 'cover',
+          position: item.position || 'center',
+        };
+      }).filter(item => item.src);
+
+      return [
+        ...fotos,
+        { src: 'Mapa/Etruria.png', caption: 'Vista regional', alt: `Ubicación regional de ${ciudad.nombre}`, size: '180%', position: `${ciudad.x}% ${ciudad.y}%` },
+        { src: 'Mapa/Etruria.png', caption: 'Alrededores', alt: `Alrededores de ${ciudad.nombre}`, size: '320%', position: `${ciudad.x}% ${ciudad.y}%` },
+        { src: 'Mapa/Etruria.png', caption: 'Centro de la zona', alt: `Centro cartográfico de ${ciudad.nombre}`, size: '500%', position: `${ciudad.x}% ${ciudad.y}%` },
+      ];
+    }
+
+    function mostrarVisualCiudad(index) {
+      const visual = cityVisuals[index];
+      if (!visual) return;
+      cityHeroPhoto.style.backgroundImage = `url(${JSON.stringify(visual.src)})`;
+      cityHeroPhoto.style.backgroundSize = visual.size;
+      cityHeroPhoto.style.backgroundPosition = visual.position;
+      cityHeroPhoto.setAttribute('aria-label', visual.alt);
+      cityGalleryCaption.textContent = visual.caption;
+      cityGallery.querySelectorAll('[data-city-visual]').forEach((button, buttonIndex) => {
+        button.classList.toggle('active', buttonIndex === index);
+      });
+    }
+
+    function abrirExpediente(ciudad) {
+      if (!ciudad.visitada) return;
+      cityModalTitle.textContent = ciudad.nombre;
+      cityModalSubtitle.textContent = ciudad.subtitulo || ciudad.gimnasio || 'Expediente regional de Etruria';
+      cityModalDescription.textContent = ciudad.descripcion;
+      cityFacts.innerHTML = [
+        ['Zona', ciudad.zona || 'Por registrar'],
+        ['Clima', ciudad.clima || 'Por registrar'],
+        ['Función', ciudad.funcion || ciudad.gimnasio || 'Por registrar'],
+      ].map(([label, value]) => `<div class="city-fact"><span>${escaparHTML(label)}</span><strong>${escaparHTML(value)}</strong></div>`).join('');
+      cityPlaces.innerHTML = (ciudad.lugares || []).length
+        ? ciudad.lugares.map(lugar => `<article class="place-item"><i>${escaparHTML(lugar.icono || '📌')}</i><div><strong>${escaparHTML(lugar.nombre)}</strong><small>${escaparHTML(lugar.descripcion || '')}</small></div></article>`).join('')
+        : '<div class="city-empty">Los lugares de interés todavía no han sido registrados.</div>';
+
+      cityVisuals = visualesDeCiudad(ciudad);
+      cityGallery.innerHTML = cityVisuals.map((visual, index) => `<button type="button" data-city-visual="${index}" data-caption="${escaparHTML(visual.caption)}" aria-label="Ver ${escaparHTML(visual.caption)}" style="background-image:url('${escaparHTML(visual.src)}');background-size:${escaparHTML(visual.size)};background-position:${escaparHTML(visual.position)}"></button>`).join('');
+      mostrarVisualCiudad(0);
+      cityModal.hidden = false;
+      document.body.classList.add('city-modal-open');
+      cityModal.querySelector('.city-modal-close').focus();
+    }
+
+    function cerrarExpediente() {
+      cityModal.hidden = true;
+      document.body.classList.remove('city-modal-open');
+    }
+
+    function limitarDesplazamiento() {
+      if (mapView.zoom <= 1) {
+        mapView.panX = 0;
+        mapView.panY = 0;
+        return;
+      }
+      const maxX = mapStage.clientWidth * (mapView.zoom - 1) / 2;
+      const maxY = mapStage.clientHeight * (mapView.zoom - 1) / 2;
+      mapView.panX = Math.max(-maxX, Math.min(maxX, mapView.panX));
+      mapView.panY = Math.max(-maxY, Math.min(maxY, mapView.panY));
+    }
+
+    function actualizarVistaMapa() {
+      limitarDesplazamiento();
+      mapStage.style.transform = `translate3d(${mapView.panX}px, ${mapView.panY}px, 0) scale(${mapView.zoom})`;
+      zoomLevel.value = `${Math.round(mapView.zoom * 100)}%`;
+      zoomLevel.textContent = zoomLevel.value;
+      zoomOut.disabled = mapView.zoom <= mapView.minZoom;
+      zoomIn.disabled = mapView.zoom >= mapView.maxZoom;
+    }
+
+    function cambiarZoom(nextZoom) {
+      mapView.zoom = Math.max(mapView.minZoom, Math.min(mapView.maxZoom, nextZoom));
+      actualizarVistaMapa();
+    }
+
+    function restablecerMapa() {
+      mapView.zoom = 1;
+      mapView.panX = 0;
+      mapView.panY = 0;
+      actualizarVistaMapa();
+    }
+
+    function enfocarCiudad(ciudad) {
+      if (!ciudad) return;
+      mapView.zoom = Math.max(mapView.zoom, 1.55);
+      mapView.panX = (50 - ciudad.x) / 100 * mapStage.clientWidth * mapView.zoom;
+      mapView.panY = (50 - ciudad.y) / 100 * mapStage.clientHeight * mapView.zoom;
+      actualizarVistaMapa();
+    }
 
     function nombreVisible(ciudad) {
       return ciudad.visitada ? ciudad.nombre : '???';
     }
 
-    function mostrarInfo(ciudad) {
+    function mostrarInfo(ciudad, enfocar = false, abrir = false) {
+      mapView.selectedIndex = ciudades.indexOf(ciudad);
+      document.querySelectorAll('.pin').forEach((pin, index) => {
+        pin.classList.toggle('seleccionada', index === mapView.selectedIndex);
+      });
+      document.querySelectorAll('.city-row').forEach(row => {
+        row.classList.toggle('selected', Number(row.dataset.cityIndex) === mapView.selectedIndex);
+      });
+
       if (!ciudad.visitada) {
         panelTitle.textContent = '???';
         panelDescription.textContent = 'Esta localización aún no ha sido descubierta in rol.';
         gymPill.style.display = 'none';
+        if (enfocar) enfocarCiudad(ciudad);
         return;
       }
 
@@ -1163,16 +1532,20 @@ header p{
       } else {
         gymPill.style.display = 'none';
       }
+
+      if (enfocar) enfocarCiudad(ciudad);
+      if (abrir) abrirExpediente(ciudad);
     }
 
     function renderMapa() {
       document.querySelectorAll('.pin').forEach(pin => pin.remove());
 
-      ciudades.forEach(ciudad => {
+      ciudades.forEach((ciudad, index) => {
         const pin = document.createElement('button');
-        pin.className = `pin ${ciudad.visitada ? 'visitada' : 'bloqueada'} ${ciudad.actual ? 'actual' : ''}`;
+        pin.className = `pin ${ciudad.visitada ? 'visitada' : 'bloqueada'} ${ciudad.actual ? 'actual' : ''} ${index === mapView.selectedIndex ? 'seleccionada' : ''}`;
         pin.style.left = ciudad.x + '%';
         pin.style.top = ciudad.y + '%';
+        pin.dataset.cityIndex = index;
         pin.setAttribute('aria-label', nombreVisible(ciudad));
 
         pin.addEventListener('mouseenter', () => {
@@ -1186,7 +1559,7 @@ header p{
           tooltip.classList.remove('visible');
         });
 
-        pin.addEventListener('click', () => mostrarInfo(ciudad));
+        pin.addEventListener('click', () => mostrarInfo(ciudad, true, true));
 
         mapStage.appendChild(pin);
       });
@@ -1194,17 +1567,29 @@ header p{
 
     function renderLista() {
       cityList.innerHTML = '';
+      const query = normalizarTexto(citySearch.value);
+      let visibles = 0;
 
-      ciudades.forEach(ciudad => {
+      ciudades.forEach((ciudad, index) => {
+        const coincideFiltro = mapView.filter === 'all'
+          || (mapView.filter === 'visited' && ciudad.visitada)
+          || (mapView.filter === 'locked' && !ciudad.visitada);
+        const searchable = ciudad.visitada
+          ? normalizarTexto([ciudad.nombre, ciudad.descripcion, ciudad.gimnasio].join(' '))
+          : 'zona oculta bloqueada';
+        if (!coincideFiltro || (query && !searchable.includes(query))) return;
+
         const row = document.createElement('button');
-        row.className = `city-row ${ciudad.visitada ? '' : 'locked'} ${ciudad.actual ? 'now' : ''}`;
-        row.textContent = ciudad.actual
-          ? `📍 ${nombreVisible(ciudad)}`
-          : nombreVisible(ciudad);
+        row.className = `city-row ${ciudad.visitada ? '' : 'locked'} ${ciudad.actual ? 'now' : ''} ${index === mapView.selectedIndex ? 'selected' : ''}`;
+        row.dataset.cityIndex = index;
+        row.innerHTML = `<strong>${ciudad.actual ? '📍 ' : ''}${nombreVisible(ciudad)}</strong><small>${ciudad.visitada ? (ciudad.gimnasio || 'Localización descubierta') : 'Información bloqueada'}</small>`;
 
-        row.addEventListener('click', () => mostrarInfo(ciudad));
+        row.addEventListener('click', () => mostrarInfo(ciudad, true, true));
         cityList.appendChild(row);
+        visibles += 1;
       });
+
+      if (!visibles) cityList.innerHTML = '<div class="city-empty">No hay localizaciones que coincidan con esta búsqueda.</div>';
     }
 
     function renderEstado() {
@@ -1218,10 +1603,82 @@ header p{
         : 'Todavía no hay ninguna ciudad marcada como ubicación actual.';
     }
 
+    zoomIn.addEventListener('click', () => cambiarZoom(mapView.zoom + .25));
+    zoomOut.addEventListener('click', () => cambiarZoom(mapView.zoom - .25));
+    resetMap.addEventListener('click', restablecerMapa);
+    centerCurrent.addEventListener('click', () => {
+      const actual = ciudades.find(ciudad => ciudad.actual);
+      if (actual) mostrarInfo(actual, true);
+    });
+
+    citySearch.addEventListener('input', renderLista);
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        mapView.filter = button.dataset.cityFilter;
+        filterButtons.forEach(entry => entry.classList.toggle('active', entry === button));
+        renderLista();
+      });
+    });
+
+    document.querySelectorAll('[data-close-city]').forEach(button => {
+      button.addEventListener('click', cerrarExpediente);
+    });
+
+    cityGallery.addEventListener('click', event => {
+      const button = event.target.closest('[data-city-visual]');
+      if (button) mostrarVisualCiudad(Number(button.dataset.cityVisual));
+    });
+
+    mapStage.addEventListener('wheel', event => {
+      event.preventDefault();
+      cambiarZoom(mapView.zoom + (event.deltaY < 0 ? .2 : -.2));
+    }, { passive: false });
+
+    mapStage.addEventListener('pointerdown', event => {
+      if (mapView.zoom <= 1 || event.target.closest('.pin')) return;
+      mapView.dragging = true;
+      mapView.pointerX = event.clientX;
+      mapView.pointerY = event.clientY;
+      mapStage.classList.add('dragging');
+      mapStage.setPointerCapture(event.pointerId);
+    });
+
+    mapStage.addEventListener('pointermove', event => {
+      if (!mapView.dragging) return;
+      mapView.panX += event.clientX - mapView.pointerX;
+      mapView.panY += event.clientY - mapView.pointerY;
+      mapView.pointerX = event.clientX;
+      mapView.pointerY = event.clientY;
+      actualizarVistaMapa();
+    });
+
+    function terminarArrastre() {
+      mapView.dragging = false;
+      mapStage.classList.remove('dragging');
+    }
+
+    mapStage.addEventListener('pointerup', terminarArrastre);
+    mapStage.addEventListener('pointercancel', terminarArrastre);
+    mapStage.addEventListener('lostpointercapture', terminarArrastre);
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !cityModal.hidden) {
+        cerrarExpediente();
+        return;
+      }
+      if (event.target.matches('input, textarea, select')) return;
+      if (event.key === '+') cambiarZoom(mapView.zoom + .25);
+      if (event.key === '-') cambiarZoom(mapView.zoom - .25);
+      if (event.key === '0') restablecerMapa();
+    });
+
+    window.addEventListener('resize', actualizarVistaMapa);
+
     function iniciarMapa() {
       renderMapa();
       renderLista();
       renderEstado();
+      actualizarVistaMapa();
 
       const actual = ciudades.find(c => c.actual);
       if (actual) mostrarInfo(actual);

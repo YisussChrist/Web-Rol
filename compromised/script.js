@@ -1,43 +1,64 @@
 const MAP_URL = '../Pokemon/mapa etruria.html';
+const TRAINER_STORAGE_KEY = 'evolink-active-trainer-v1';
+const POKEMON_ART_URL = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork';
+const trainers = Array.isArray(window.ETRURIA_TRAINERS) ? window.ETRURIA_TRAINERS : [];
+
+const fallbackTrainer = {
+  id: 'evolink-guest',
+  name: 'Entrenador invitado',
+  title: 'Usuario de Evolink',
+  region: 'Etruria',
+  style: 'Por registrar',
+  status: 'Activo',
+  location: 'Villa Arcanum',
+  goal: 'Comenzar una nueva aventura',
+  colors: ['#3aa6ff', '#102842'],
+  summary: 'La Red Regional todavía no ha recibido su expediente.',
+  team: [],
+  reserves: [],
+  badges: [],
+  achievements: [],
+};
+
+const savedTrainerId = localStorage.getItem(TRAINER_STORAGE_KEY);
+const initialTrainer = trainers.find(trainer => trainer.id === savedTrainerId) || trainers[0] || fallbackTrainer;
 
 const state = {
   activeView: 'home',
   selectedMessage: 0,
   selectedContact: null,
-  trainer: {
-    id: 'ETR-024',
-    name: 'Link',
-    avatar: 'https://api.dicebear.com/8.x/adventurer/svg?seed=Link',
-    rank: 'Alumno de Romaine',
-    status: '2 medallas · En ruta',
-    location: 'Ruta posterior a la segunda medalla',
-    medals: ['Medalla 1', 'Medalla 2'],
-    team: ['Sprigatito', 'Riolu', 'Rookidee', 'Shinx'],
-    note: 'Evolink recibido correctamente. Perfil sincronizado con la Red Regional de Etruria.'
-  }
+  selectedTrainerId: initialTrainer.id,
+  trainer: initialTrainer,
 };
 
-const messages = [
-  {
-    from: 'Profesora Romaine',
-    title: 'Evolink activado',
-    time: 'Ahora',
-    body: 'He enviado el dispositivo a todos mis alumnos. Desde aquí podrás consultar el mapa, mantener tu ficha actualizada y recibir avisos importantes durante tu viaje.'
-  },
-  {
-    from: 'Infinity Y Institute',
-    title: 'Invitación pendiente',
-    time: 'Hace 12 min',
-    body: 'El instituto abre sus puertas a entrenadores con dos medallas o más. Tu progreso actual cumple los requisitos mínimos para solicitar acceso.',
-    action: 'infinity'
-  },
-  {
-    from: 'Sistema',
-    title: 'Mapa regional conectado',
-    time: 'Hoy',
-    body: 'El módulo de mapa está enlazado con el archivo regional de Etruria. Pulsa la tarjeta principal del inicio para abrirlo.'
-  }
-];
+function messagesForTrainer() {
+  const trainer = state.trainer;
+  const badgeCount = (trainer.badges || []).length;
+  const firstName = String(trainer.name || 'Entrenador').split(' ')[0];
+  return [
+    {
+      from: 'Profesora Romaine',
+      title: 'Evolink sincronizado',
+      time: 'Ahora',
+      body: `Hola, ${firstName}. Tu expediente ya está enlazado con la Red Regional de Etruria. Desde aquí podrás consultar tu equipo, tus medallas y los avisos importantes del viaje.`,
+    },
+    {
+      from: 'Infinity Y Institute',
+      title: badgeCount >= 2 ? 'Invitación disponible' : 'Expediente en observación',
+      time: 'Hace 12 min',
+      body: badgeCount >= 2
+        ? `Hemos verificado tus ${badgeCount} medallas. Tu progreso cumple los requisitos mínimos para solicitar acceso al instituto.`
+        : `Tu expediente está siendo observado. Consigue al menos 2 medallas para poder solicitar acceso al instituto. Progreso actual: ${badgeCount}/2.`,
+      action: 'infinity',
+    },
+    {
+      from: 'Sistema',
+      title: 'Mapa regional conectado',
+      time: 'Hoy',
+      body: `Ubicación registrada: ${trainer.location || 'sin determinar'}. El módulo de mapa está enlazado con el archivo regional de Etruria.`,
+    },
+  ];
+}
 
 const contacts = [
   { name: 'Profesora Romaine', role: 'Profesora Pokémon', icon: '🧪', line: 'Me alegra verte usando el Evolink. No olvides registrar cualquier fenómeno extraño que encuentres en ruta.' },
@@ -57,6 +78,65 @@ const research = [
   { title: 'Proyecto 05', progress: 0, unlocked: false, text: 'Archivo clasificado.' }
 ];
 
+function escapeHtml(value = '') {
+  return String(value).replace(/[&<>'"]/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
+  })[character]);
+}
+
+function titleCase(value = '') {
+  return String(value)
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\p{L}/gu, letter => letter.toUpperCase());
+}
+
+function initials(name = '') {
+  return String(name)
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(part => part.charAt(0))
+    .join('')
+    .toUpperCase() || 'ET';
+}
+
+function safeColor(value, fallback) {
+  return /^#[0-9a-f]{3,8}$/i.test(String(value || '')) ? value : fallback;
+}
+
+function trainerColors(trainer) {
+  return [
+    safeColor(trainer?.colors?.[0], '#3aa6ff'),
+    safeColor(trainer?.colors?.[1], '#102842'),
+  ];
+}
+
+function trainerGlyph(trainer) {
+  const [primary, secondary] = trainerColors(trainer);
+  if (trainer?.portrait) {
+    return `<div class="trainer-glyph" style="--avatar-a:${primary};--avatar-b:${secondary}"><img src="${escapeHtml(trainer.portrait)}" alt="Retrato de ${escapeHtml(trainer.name)}"></div>`;
+  }
+  return `<div class="trainer-glyph" style="--avatar-a:${primary};--avatar-b:${secondary}"><span>${escapeHtml(initials(trainer?.name))}</span></div>`;
+}
+
+function pokemonImage(pokemon = {}) {
+  if (pokemon.image) {
+    const source = String(pokemon.image);
+    if (/^(?:https?:|data:|\/)/i.test(source)) return source;
+    return `../Pokemon/${source.replace(/^\.\//, '')}`;
+  }
+  const id = pokemon.spriteId || pokemon.formId || pokemon.apiId || pokemon.id;
+  return id ? `${POKEMON_ART_URL}/${id}.png` : '';
+}
+
+function pokemonRoster(team = []) {
+  if (!team.length) return '<p class="profile-note">Todavía no hay Pokémon registrados en este equipo.</p>';
+  return `<div class="team-roster">${team.map(pokemon => {
+    const image = pokemonImage(pokemon);
+    return `<div class="team-member">${image ? `<img src="${escapeHtml(image)}" alt="" loading="lazy" onerror="this.hidden=true">` : ''}<span>${escapeHtml(titleCase(pokemon.name || 'Pokémon'))}</span></div>`;
+  }).join('')}</div>`;
+}
+
 const views = [...document.querySelectorAll('.view')];
 const navButtons = [...document.querySelectorAll('[data-view]')];
 const viewTitle = document.getElementById('viewTitle');
@@ -65,12 +145,92 @@ const titles = { home: 'Inicio', messages: 'Mensajes', calls: 'Llamadas', profil
 function boot() {
   setTimeout(() => {
     document.getElementById('bootScreen').classList.add('done');
-    toast('Bienvenido al Evolink.');
+    openIdentityPicker();
   }, 2600);
 }
 
 function tickClock() {
   document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+}
+
+function openIdentityPicker() {
+  const screen = document.getElementById('identityScreen');
+  const search = document.getElementById('trainerSearch');
+  state.selectedTrainerId = state.trainer?.id || savedTrainerId || trainers[0]?.id || '';
+  search.value = '';
+  screen.hidden = false;
+  screen.scrollTop = 0;
+  screen.scrollLeft = 0;
+  renderTrainerPicker();
+  window.setTimeout(() => search.focus(), 80);
+}
+
+function renderTrainerPicker(query = '') {
+  const grid = document.getElementById('trainerPickerGrid');
+  const normalizedQuery = String(query).trim().toLocaleLowerCase('es');
+  const filtered = trainers.filter(trainer => [
+    trainer.name,
+    trainer.title,
+    trainer.region,
+    trainer.style,
+    (trainer.team || []).map(pokemon => pokemon.name).join(' '),
+  ].join(' ').toLocaleLowerCase('es').includes(normalizedQuery));
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="identity-empty">${trainers.length ? 'No hay entrenadores que coincidan con la búsqueda.' : 'No se han encontrado entrenadores en el registro de Etruria.'}</div>`;
+  } else {
+    grid.innerHTML = filtered.map(trainer => {
+      const selected = trainer.id === state.selectedTrainerId;
+      const team = (trainer.team || []).slice(0, 6);
+      return `
+        <button class="trainer-choice${selected ? ' selected' : ''}" type="button" data-trainer-id="${escapeHtml(trainer.id)}" aria-pressed="${selected}">
+          ${trainerGlyph(trainer)}
+          <span class="trainer-choice-copy">
+            <strong>${escapeHtml(trainer.name)}</strong>
+            <small>${escapeHtml(trainer.title || trainer.style || 'Entrenador')}</small>
+            <em>${escapeHtml(trainer.region || 'Etruria')} · ${(trainer.badges || []).length} medallas</em>
+          </span>
+          <span class="trainer-mon-preview">${team.map(pokemon => {
+            const image = pokemonImage(pokemon);
+            return image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(titleCase(pokemon.name))}" loading="lazy" onerror="this.hidden=true">` : '';
+          }).join('')}</span>
+        </button>`;
+    }).join('');
+  }
+
+  updateTrainerSelectionText();
+}
+
+function updateTrainerSelectionText() {
+  const trainer = trainers.find(entry => entry.id === state.selectedTrainerId);
+  const label = document.getElementById('selectedTrainerText');
+  const confirm = document.getElementById('confirmTrainer');
+  confirm.disabled = !trainer;
+  label.innerHTML = trainer
+    ? `Seleccionado: <strong>${escapeHtml(trainer.name)}</strong>`
+    : 'Elige un entrenador para continuar.';
+}
+
+function confirmTrainerSelection() {
+  const trainer = trainers.find(entry => entry.id === state.selectedTrainerId);
+  if (!trainer) return;
+  state.trainer = trainer;
+  state.selectedMessage = 0;
+  state.selectedContact = null;
+  localStorage.setItem(TRAINER_STORAGE_KEY, trainer.id);
+  document.getElementById('identityScreen').hidden = true;
+  applyTrainerTheme();
+  renderAll();
+  openView('home');
+  toast(`Evolink sincronizado con ${trainer.name}.`);
+}
+
+function applyTrainerTheme() {
+  const [primary, secondary] = trainerColors(state.trainer);
+  const device = document.getElementById('device');
+  device.style.setProperty('--trainer-a', primary);
+  device.style.setProperty('--trainer-b', secondary);
+  document.title = `Evolink · ${state.trainer.name}`;
 }
 
 function openView(name) {
@@ -92,14 +252,25 @@ function toast(text) {
 
 function renderHome() {
   const t = state.trainer;
-  document.getElementById('trainerAvatar').src = t.avatar;
+  const badgeCount = (t.badges || []).length;
+  const eligible = badgeCount >= 2;
+  document.getElementById('trainerAvatar').innerHTML = trainerGlyph(t);
   document.getElementById('trainerName').textContent = t.name;
-  document.getElementById('trainerStatus').textContent = t.status;
+  document.getElementById('trainerStatus').textContent = `${badgeCount} medalla${badgeCount === 1 ? '' : 's'} · ${t.status || 'Estado por registrar'}`;
+  document.querySelector('.map-info p').textContent = `${t.location || 'Ubicación por registrar'}. Pulsa para abrir el mapa completo.`;
+  document.getElementById('infinityHomeTitle').textContent = eligible ? 'Invitación disponible' : 'Acceso en observación';
+  document.getElementById('infinityHomeCopy').textContent = eligible
+    ? `${badgeCount} medallas verificadas. Puedes solicitar acceso.`
+    : `Necesitas 2 medallas. Progreso actual: ${badgeCount}/2.`;
+  document.getElementById('messageCount').textContent = `${messagesForTrainer().length} avisos`;
+  document.getElementById('notifyButton').textContent = `${messagesForTrainer().length} avisos`;
 }
 
 function renderMessages() {
   const list = document.getElementById('messageList');
   const detail = document.getElementById('messageDetail');
+  const messages = messagesForTrainer();
+  if (state.selectedMessage >= messages.length) state.selectedMessage = 0;
   list.innerHTML = messages.map((msg, index) => `
     <button class="list-row ${index === state.selectedMessage ? 'active' : ''}" data-message="${index}">
       <small>${msg.time}</small>
@@ -181,25 +352,50 @@ function endCall() {
 
 function renderProfile() {
   const t = state.trainer;
+  const badges = t.badges || [];
+  const reserves = t.reserves || [];
   document.getElementById('profileCard').innerHTML = `
     <div class="profile-hero">
-      <img src="${t.avatar}" alt="${t.name}" />
+      <div class="profile-avatar" aria-hidden="true">${trainerGlyph(t)}</div>
       <div>
-        <span class="kicker">${t.id}</span>
-        <h3>${t.name}</h3>
-        <p>${t.rank}</p>
+        <span class="kicker">${escapeHtml(String(t.id || 'ETR').toUpperCase())}</span>
+        <h3>${escapeHtml(t.name)}</h3>
+        <p>${escapeHtml(t.title || t.style || 'Entrenador de Etruria')}</p>
+        <button class="ghost-action" type="button" data-action="change-trainer">Cambiar entrenador</button>
       </div>
     </div>
     <div class="profile-data">
-      <div><span>Estado</span><strong>${t.status}</strong></div>
-      <div><span>Ubicación</span><strong>${t.location}</strong></div>
-      <div><span>Medallas</span><strong>${t.medals.length}</strong></div>
-      <div><span>Red</span><strong>Conectado</strong></div>
+      <div><span>Estado</span><strong>${escapeHtml(t.status || 'Por registrar')}</strong></div>
+      <div><span>Ubicación</span><strong>${escapeHtml(t.location || 'Por registrar')}</strong></div>
+      <div><span>Medallas</span><strong>${badges.length}</strong></div>
+      <div><span>Región</span><strong>${escapeHtml(t.region || 'Etruria')}</strong></div>
     </div>
     <h4>Equipo actual</h4>
-    <div class="chip-row">${t.team.map(p => `<span>${p}</span>`).join('')}</div>
-    <h4>Nota de Romaine</h4>
-    <p>${t.note}</p>
+    ${pokemonRoster(t.team || [])}
+    ${reserves.length ? `<h4>Pokémon en reserva</h4>${pokemonRoster(reserves)}` : ''}
+    <h4>Objetivo</h4>
+    <p class="profile-note">${escapeHtml(t.goal || t.summary || 'Objetivo todavía por registrar.')}</p>
+    ${badges.length ? `<h4>Medallas verificadas</h4><div class="chip-row">${badges.map(badge => `<span>${escapeHtml(badge.name || 'Medalla')}</span>`).join('')}</div>` : ''}
+  `;
+}
+
+function renderInfinity() {
+  const trainer = state.trainer;
+  const badgeCount = (trainer.badges || []).length;
+  const eligible = badgeCount >= 2;
+  const panel = document.getElementById('infinityPanel');
+  panel.innerHTML = `
+    <span class="redacted">████████████████</span>
+    <span class="y-mark large">Y</span>
+    <h3>INFINITY Y INSTITUTE</h3>
+    <p>${eligible
+      ? `${escapeHtml(trainer.name)} es compatible. Nivel de autorización provisional: III.`
+      : `El expediente de ${escapeHtml(trainer.name)} todavía no alcanza el nivel de autorización requerido.`}</p>
+    <div class="access-box">
+      <span>Estado</span><strong>${eligible ? 'Invitación disponible' : 'Expediente en observación'}</strong>
+      <span>Progreso</span><strong>${badgeCount}/2 medallas</strong>
+    </div>
+    <button class="primary-action" id="requestAccess" type="button" ${eligible ? '' : 'disabled'}>${eligible ? 'Solicitar acceso' : 'Acceso bloqueado'}</button>
   `;
 }
 
@@ -240,6 +436,24 @@ function openRawView(name) {
 
 function bindEvents() {
   document.addEventListener('click', event => {
+    const trainerChoice = event.target.closest('[data-trainer-id]');
+    if (trainerChoice) {
+      state.selectedTrainerId = trainerChoice.dataset.trainerId;
+      renderTrainerPicker(document.getElementById('trainerSearch').value);
+      return;
+    }
+
+    if (event.target.closest('[data-action="change-trainer"]')) {
+      openIdentityPicker();
+      return;
+    }
+
+    if (event.target.closest('#requestAccess')) {
+      const badgeCount = (state.trainer.badges || []).length;
+      if (badgeCount >= 2) toast(`Solicitud de ${state.trainer.name} enviada al Infinity Y Institute.`);
+      return;
+    }
+
     const button = event.target.closest('[data-view]');
     if (button) openView(button.dataset.view);
   });
@@ -247,7 +461,10 @@ function bindEvents() {
   document.getElementById('openMap').onclick = () => openView('mapload');
   document.getElementById('infinityShortcut').onclick = () => openView('infinity');
   document.getElementById('notifyButton').onclick = () => openView('messages');
-  document.getElementById('requestAccess').onclick = () => toast('Solicitud enviada al Infinity Y Institute.');
+  document.getElementById('changeTrainer').onclick = openIdentityPicker;
+  document.querySelector('.trainer-summary').onclick = () => openView('profile');
+  document.getElementById('trainerSearch').oninput = event => renderTrainerPicker(event.target.value);
+  document.getElementById('confirmTrainer').onclick = confirmTrainerSelection;
 }
 
 function renderAll() {
@@ -256,10 +473,12 @@ function renderAll() {
   renderCalls();
   renderProfile();
   renderResearch();
+  renderInfinity();
 }
 
 setInterval(tickClock, 1000);
 tickClock();
+applyTrainerTheme();
 renderAll();
 bindEvents();
 boot();
