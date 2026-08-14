@@ -16,12 +16,18 @@
       challenge,
       cover: track.songCover || track.cover || "",
       description: track.songDescription || track.description || track.lore || "",
-      station: track.station || "route"
+      station: track.station || "battle"
     };
   });
 
   const $ = (id) => document.getElementById(id);
-  const audio = $("radioAudio");
+  const sharedShell = (() => {
+    try { return window.parent !== window ? (window.parent.GlobalAudioShell || window.parent.ResonanceShell || null) : null; }
+    catch (error) { return null; }
+  })();
+  const localAudio = $("radioAudio");
+  const audio = sharedShell?.audio || localAudio;
+  let sharedState = sharedShell?.getState() || null;
   const nodes = {
     clock: $("clock"), day: $("dayLabel"), stationLine: $("stationLine"), title: $("trackTitle"),
     artist: $("trackArtist"), message: $("broadcastMessage"), status: $("radioStatus"), live: $("liveLabel"),
@@ -36,10 +42,10 @@
   const savedTrack = Number(localStorage.getItem("etruriaRadioTrack"));
   const savedVolume = Number(localStorage.getItem("etruriaRadioVolume"));
   const state = {
-    station: stations.some((item) => item.id === savedStation) ? savedStation : (stations[0]?.id || "route"),
+    station: stations.some((item) => item.id === savedStation) ? savedStation : (stations[0]?.id || "battle"),
     current: Number.isInteger(savedTrack) && tracks[savedTrack] ? savedTrack : -1,
     shuffle: localStorage.getItem("etruriaRadioShuffle") === "true",
-    volume: Number.isFinite(savedVolume) && savedVolume >= 0 && savedVolume <= 1 ? savedVolume : .68,
+    volume: sharedShell ? sharedState.volume : (Number.isFinite(savedVolume) && savedVolume >= 0 && savedVolume <= 1 ? savedVolume : .68),
     error: ""
   };
 
@@ -54,7 +60,7 @@
 
   function currentStation() {
     return stations.find((item) => item.id === state.station) || stations[0] || {
-      id: "route", short: "RUTA", name: "Etruria Radio", frequency: "--.-", host: "", show: "Sin señal", description: "", color: "#e3a83a", angle: -135
+      id: "battle", short: "BATALLA", name: "Etruria Radio", frequency: "--.-", host: "", show: "Sin señal", description: "", color: "#e3a83a", angle: -135
     };
   }
 
@@ -64,6 +70,32 @@
 
   function currentTrack() {
     return tracks[state.current] || null;
+  }
+
+  function sourceId(stationId = state.station) {
+    return `etruria:${stationId}`;
+  }
+
+  function radioIsPlaying(stationId = state.station) {
+    if (!sharedShell) return !audio.paused && Boolean(audio.src);
+    return sharedState?.sourceId === sourceId(stationId) && sharedState.playing;
+  }
+
+  function sourceDefinition(station, pool) {
+    return {
+      id: sourceId(station.id),
+      label: `ETRURIA RADIO · ${station.frequency} FM`,
+      queueLabel: `Cola de ${station.name}`,
+      route: "Pokemon/EtruriaRadio/index.html",
+      album: station.name,
+      tracks: pool.map((track) => ({
+        sourceTrackId: track.index,
+        songTitle: track.title,
+        character: track.artist,
+        songCover: track.cover ? new URL(track.cover, location.href).href : "",
+        audio: new URL(track.audio, location.href).href
+      }))
+    };
   }
 
   function updateClock() {
@@ -82,9 +114,11 @@
     if (chooseFirst && !pool.some((track) => track.index === state.current)) {
       if (pool.length) setTrack(pool[0].index, wasPlaying);
       else {
-        audio.pause();
-        audio.removeAttribute("src");
-        audio.load();
+        if (!sharedShell) {
+          audio.pause();
+          audio.removeAttribute("src");
+          audio.load();
+        }
         state.current = -1;
         localStorage.removeItem("etruriaRadioTrack");
       }
@@ -100,6 +134,14 @@
     state.error = "";
     localStorage.setItem("etruriaRadioTrack", String(index));
     localStorage.setItem("etruriaRadioStation", state.station);
+    if (sharedShell) {
+      const station = currentStation();
+      const pool = stationTracks();
+      const position = pool.findIndex((item) => item.index === index);
+      sharedShell.setSource(sourceDefinition(station, pool), Math.max(0, position), autoplay);
+      render();
+      return;
+    }
     const target = new URL(track.audio, location.href).href;
     if (audio.src !== target) {
       audio.src = track.audio;
@@ -121,6 +163,17 @@
       }
       setTrack(track.index, false);
     }
+    if (sharedShell) {
+      if (sharedState?.sourceId !== sourceId(track.station) || sharedState?.sourceTrackId !== track.index) setTrack(track.index, false);
+      try {
+        await sharedShell.play();
+        state.error = "";
+      } catch (error) {
+        state.error = "No se pudo iniciar la emisión.";
+        render();
+      }
+      return;
+    }
     if (!audio.src) audio.src = track.audio;
     try {
       await audio.play();
@@ -132,7 +185,7 @@
   }
 
   function togglePlay() {
-    audio.paused ? play() : audio.pause();
+    radioIsPlaying() ? (sharedShell ? sharedShell.pause() : audio.pause()) : play();
   }
 
   function changeTrack(direction) {
@@ -150,6 +203,7 @@
   }
 
   function updateMediaSession(track) {
+    if (sharedShell) return;
     if (!("mediaSession" in navigator) || typeof MediaMetadata === "undefined") return;
     navigator.mediaSession.metadata = new MediaMetadata({
       title: track.title,
@@ -170,13 +224,13 @@
         <span class="track-cover">${track.cover ? `<img src="${escapeHTML(track.cover)}" alt="">` : "♪"}</span>
         <span class="track-copy"><strong>${escapeHTML(track.title)}</strong><span>${escapeHTML(track.artist)}</span></span>
         <span class="track-station">${escapeHTML(currentStation().frequency)} FM</span>
-        <b class="track-action">${track.index === state.current && !audio.paused ? "Ⅱ" : "▶"}</b>
+        <b class="track-action">${track.index === state.current && radioIsPlaying(track.station) ? "Ⅱ" : "▶"}</b>
       </button>
     `).join("");
     nodes.list.querySelectorAll("[data-track]").forEach((button) => {
       button.addEventListener("click", () => {
         const index = Number(button.dataset.track);
-        if (index === state.current && !audio.paused) audio.pause();
+        if (index === state.current && radioIsPlaying()) sharedShell ? sharedShell.pause() : audio.pause();
         else setTrack(index, true);
       });
     });
@@ -186,7 +240,7 @@
     const station = currentStation();
     const track = currentTrack();
     const trackIsTuned = track && track.station === station.id;
-    const playing = trackIsTuned && !audio.paused;
+    const playing = trackIsTuned && radioIsPlaying(station.id);
 
     document.documentElement.style.setProperty("--active-station", station.color);
     nodes.avatar.style.setProperty("--station-color", station.color);
@@ -232,20 +286,26 @@
   nodes.shuffle.addEventListener("click", () => {
     state.shuffle = !state.shuffle;
     localStorage.setItem("etruriaRadioShuffle", String(state.shuffle));
+    if (sharedShell) sharedShell.setShuffle(state.shuffle);
     render();
   });
   nodes.progress.addEventListener("input", () => {
     if (audio.duration) audio.currentTime = audio.duration * Number(nodes.progress.value) / 100;
   });
   nodes.volume.value = String(state.volume);
-  audio.volume = state.volume;
+  if (!sharedShell) audio.volume = state.volume;
   nodes.volume.addEventListener("input", () => {
-    audio.volume = Number(nodes.volume.value);
+    if (sharedShell) sharedShell.setVolume(nodes.volume.value);
+    else audio.volume = Number(nodes.volume.value);
     localStorage.setItem("etruriaRadioVolume", String(audio.volume));
   });
   audio.addEventListener("play", render);
   audio.addEventListener("pause", render);
-  audio.addEventListener("ended", () => changeTrack(1));
+  if (!sharedShell) audio.addEventListener("ended", () => changeTrack(1));
+  audio.addEventListener("volumechange", () => {
+    state.volume = audio.volume;
+    nodes.volume.value = String(audio.volume);
+  });
   audio.addEventListener("loadedmetadata", () => {
     nodes.duration.textContent = formatTime(audio.duration);
   });
@@ -257,12 +317,13 @@
     nodes.progress.style.setProperty("--fill", `${percent}%`);
   });
   audio.addEventListener("error", () => {
+    if (sharedShell && !String(sharedState?.sourceId || "").startsWith("etruria:")) return;
     if (!audio.getAttribute("src")) return;
     state.error = "No se encuentra el audio. Comprueba el nombre y la ruta en data.js.";
     render();
   });
 
-  if ("mediaSession" in navigator) {
+  if (!sharedShell && "mediaSession" in navigator) {
     navigator.mediaSession.setActionHandler("play", play);
     navigator.mediaSession.setActionHandler("pause", () => audio.pause());
     navigator.mediaSession.setActionHandler("previoustrack", () => changeTrack(-1));
@@ -274,10 +335,25 @@
 
   updateClock();
   setInterval(updateClock, 1000);
-  if (state.current >= 0 && tracks[state.current]) {
+  if (!sharedShell && state.current >= 0 && tracks[state.current]) {
     state.station = tracks[state.current].station;
     audio.src = tracks[state.current].audio;
     updateMediaSession(tracks[state.current]);
   }
+  if (sharedShell) sharedShell.subscribe((snapshot) => {
+    sharedState = snapshot;
+    state.shuffle = snapshot.shuffle;
+    state.volume = snapshot.volume;
+    if (String(snapshot.sourceId || "").startsWith("etruria:")) {
+      const selected = tracks.find((track) => track.index === snapshot.sourceTrackId);
+      if (selected) {
+        state.current = selected.index;
+        state.station = selected.station;
+        localStorage.setItem("etruriaRadioTrack", String(selected.index));
+        localStorage.setItem("etruriaRadioStation", selected.station);
+      }
+    }
+    render();
+  });
   render();
 })();

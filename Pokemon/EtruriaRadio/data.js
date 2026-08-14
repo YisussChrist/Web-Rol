@@ -3,7 +3,7 @@
  *
  * 1. Guarda las canciones en audio/ y las portadas en img/.
  * 2. Copia el bloque de ejemplo que aparece más abajo.
- * 3. Usa una de estas emisoras: route, city, league o mystery.
+ * 3. Usa una de estas emisoras: battle, city, league o mystery.
  *
  * El formato es compatible con la organización del Resonance original:
  * personaje -> canciones. La página crea la lista completa automáticamente.
@@ -95,7 +95,7 @@ const characters = [
         songDescription: "Texto corto que aparecerá en la radio.",
         songCover: "img/portada.png",
         audio: "audio/cancion.mp3",
-        station: "route",
+        station: "battle",
         challengeText: "Entrenador {character} te desafía.",
         tags: ["aventura", "ruta"],
         lore: "Descripción larga opcional de la canción."

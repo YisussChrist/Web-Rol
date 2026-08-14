@@ -11,11 +11,23 @@
   Pokémon normal:
   { id: 448, name: "lucario", types: ["fighting", "steel"] }
 
+  Moveset y habilidad elegidos (usa los identificadores ingleses de PokéAPI):
+  { id: 25, name: "pikachu", types: ["electric"], ability: "static", moves: ["thunderbolt", "quick-attack"] }
+
   Forma alternativa de PokéAPI:
   { id: 706, spriteId: 10242, name: "goodra de hisui", form: "Hisui", types: ["dragon", "steel"] }
 
-  Imagen propia:
-  { id: 1150, name: "aegislash de hyrule", image: "Pokemon Custom/Aegislash de Hyrule.png", types: ["fairy", "steel"] }
+  Pokémon custom (sus datos no se comparan con una especie oficial):
+  {
+    id: 1150,
+    name: "aegislash de hyrule",
+    image: "Pokemon Custom/Aegislash de Hyrule.png",
+    types: ["fairy", "steel"],
+    ability: { name: "Habilidad propia", description: "Escribe aquí su efecto." },
+    moves: [
+      { name: "Movimiento propio", type: "fairy", power: 80, accuracy: 100, description: "Escribe aquí su efecto." }
+    ]
+  }
 
   Medalla:
   { name: "Nombre de la medalla", gym: "Ciudad o gimnasio", icon: "🔥", date: "" }

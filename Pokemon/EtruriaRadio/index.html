@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#092f32">
+  <meta name="theme-color" content="#3048ef">
   <meta name="description" content="Etruria Radio: música, rutas, combates y señales de la región de Etruria.">
   <title>Etruria Radio</title>
-  <link rel="stylesheet" href="styles.css?v=1">
+  <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
   <main class="radio-page">
@@ -23,7 +23,7 @@
 
     <section class="intro" aria-labelledby="pageTitle">
       <div>
-        <p class="eyebrow">POKÉGEAR · TARJETA DE RADIO</p>
+        <p class="eyebrow">POKÉGEAR · FRECUENCIA REGIONAL</p>
         <h1 id="pageTitle">La región entera,<br><em>en tu frecuencia.</em></h1>
       </div>
       <p class="intro-copy">Sintoniza canciones, historias, combates y señales que quizá no deberían estar ahí. Una PokeRadio creada para Etruria.</p>
@@ -33,7 +33,7 @@
       <div class="device-shadow" aria-hidden="true"></div>
       <div class="device">
         <div class="device-topbar">
-          <span class="device-logo"><i></i> ETRURIA GEAR</span>
+          <span class="device-logo"><i></i> POKÉGEAR ETRURIA</span>
           <div class="speaker-slots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
           <span class="power-light" title="Encendido"></span>
         </div>
@@ -63,7 +63,7 @@
           </section>
 
           <section class="tuner-screen">
-            <div class="tuner-head"><span>RADIO</span><small>TOCA UNA FRECUENCIA</small></div>
+            <div class="tuner-head"><span>ETRURIA NET</span><small>TOCA UNA FRECUENCIA</small></div>
             <div class="dial-zone">
               <div class="frequency-ring">
                 <div class="ring-ticks" aria-hidden="true"></div>
@@ -72,13 +72,13 @@
                   <span id="dialPlayIcon">▶</span>
                   <small id="dialFrequency">--.-</small>
                 </button>
-                <button class="station-node node-0" data-station="route" type="button"><b>RUTA</b><span>101.3</span></button>
+                <button class="station-node node-0" data-station="battle" type="button"><b>BATALLA</b><span>101.3</span></button>
                 <button class="station-node node-1" data-station="city" type="button"><b>CITY</b><span>88.7</span></button>
                 <button class="station-node node-2" data-station="league" type="button"><b>LIGA</b><span>94.6</span></button>
                 <button class="station-node node-3" data-station="mystery" type="button"><b>???</b><span>77.9</span></button>
               </div>
               <div class="side-presets" aria-label="Emisoras favoritas">
-                <button data-station="route" type="button"><span>1</span><b>RUTA</b></button>
+                <button data-station="battle" type="button"><span>1</span><b>BATALLA</b></button>
                 <button data-station="city" type="button"><span>2</span><b>CITY</b></button>
                 <button data-station="league" type="button"><span>3</span><b>LIGA</b></button>
                 <button data-station="mystery" type="button"><span>4</span><b>???</b></button>
@@ -123,6 +123,6 @@
     <audio id="radioAudio" preload="metadata"></audio>
   </main>
   <script src="data.js?v=2"></script>
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>

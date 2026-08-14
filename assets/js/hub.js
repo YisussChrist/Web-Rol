@@ -18,11 +18,14 @@
       { title: "Fusiones", category: "Dragon Ball", emoji: "🔀", url: "fusiones.html", description: "Generador de nombres para fusiones con combinaciones aleatorias y personalizadas.", status: "" },
       { title: "Sellos de Tao", category: "Dragon Ball", emoji: "🌀", url: "sellos tao.html?v=2", description: "Expediente de los quince sellos, sus capacidades, riesgos y combinaciones.", status: "Renovado" },
 
-      { title: "Entrenadores", category: "Pokémon", "emoji": "🪪", url: "Pokemon/index.html", description: "Expedientes de entrenadores, equipos actuales, medallas y progreso en la Liga.", status: "" },
+      { title: "Pokémon Center", category: "Pokémon", emoji: "🏥", url: "Pokemon/center.html", description: "Centro regional con entrenadores, equipos, especies, medallas, mapa y herramientas de Etruria.", status: "Nuevo" },
+      { title: "Entrenadores", category: "Pokémon", emoji: "🪪", url: "Pokemon/index.html", description: "Expedientes de entrenadores, equipos actuales, medallas y progreso en la Liga.", status: "" },
+      { title: "Pokédex de Etruria", category: "Pokémon", emoji: "◉", url: "Pokemon/pokedex.html", description: "Registro regional de especies, habilidades, estadísticas y movimientos.", status: "Nuevo" },
       { title: "Mapa", category: "Pokémon", emoji: "🗺️", url: "Pokemon/mapa etruria.html", description: "Mapa interactivo de la región de Etruria.", status: "" },
       { title: "Datos", category: "Pokémon", emoji: "📊", url: "Pokemon/datos.html", description: "Buscador para conocer las stats y ataques Pokémon.", status: "" },
       { title: "Evolink", category: "Pokémon", emoji: "📱", url: "compromised/index.html", description: "Sistema Operativo desarrollado por el Instituto Infinte Y para los entrenadores de la Profesora Romaine.", status: "", disabled:true },
       { title: "PokéDamage Calculator", category: "Pokémon", emoji: "🧮", url: "Pokemon/dsadsa/index.html", description: "Una calculadora en construcción para calcular los daños de los Pokémon en competitivo", status: ""},
+      { title: "Radio Etruria", category: "Pokémon", emoji: "📻", url: "Pokemon/EtruriaRadio/index.html", description: "Emisora de radio con música, noticias y anuncios de la región.", status: "" },
 
       { title: "Crónicas del Rol", category: "General", emoji: "⌛", url: "cronica.html", description: "Tres archivos narrativos con estilos propios para Inazuma, Dragon Ball y Pokémon.", status: "Restaurado" },
       { title: "Personajes", category: "General", emoji: "👤", url: "personajes.html", description: "Entrada general para fichas de personajes y datos de rol.", status: "" },

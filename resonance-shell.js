@@ -12,7 +12,7 @@
     cover: $('globalCover'), title: $('globalTitle'), artist: $('globalArtist'), pageLabel: $('pageLabel'), play: $('globalPlay'),
     previous: $('globalPrevious'), next: $('globalNext'), shuffle: $('globalShuffle'), current: $('globalCurrent'),
     duration: $('globalDuration'), progress: $('globalProgress'), volume: $('globalVolume'), mute: $('globalMute'),
-    queueButton: $('queueButton'), queue: $('globalQueue'), closeQueue: $('closeQueue'), queueList: $('globalQueueList'),
+    queueButton: $('queueButton'), queue: $('globalQueue'), queueTitle: $('globalQueueTitle'), closeQueue: $('closeQueue'), queueList: $('globalQueueList'),
     collapse: $('collapsePlayer'), miniPlayer: $('miniPlayer'), miniIcon: $('miniIcon'), miniTitle: $('miniTitle'),
     resumeNotice: $('resumeNotice'), resumeButton: $('resumeButton'),
     loadingTitle: $('loadingTitle'), loadingHelp: $('loadingHelp'), retryRoute: $('retryRoute'), loadingBackHome: $('loadingBackHome'),
@@ -32,6 +32,12 @@
     route: '', collapsed: localStorage.getItem('resonancePlayerCollapsed') === 'true', restoreTime: Number(localStorage.getItem('resonanceCurrentTime') || 0),
     resumeWanted: localStorage.getItem('resonanceWasPlaying') === 'true'
   };
+  const sources = new Map();
+  let activeSource = createSource({
+    id: 'resonance', label: 'RESONANCE · REPRODUCTOR GLOBAL', queueLabel: 'Cola de Resonance',
+    route: 'OST/index.html', album: 'Resonance', basePath: 'OST/', tracks
+  });
+  sources.set(activeSource.id, activeSource);
   let lastSavedSecond = -1;
   let loadWarningTimer = 0;
   let diagnosticToastTimer = 0;
@@ -143,8 +149,43 @@
     return new URL(source.startsWith('OST/') ? source : `OST/${source.replace(/^\.\//, '')}`, baseURL).href;
   }
 
+  function sourceURL(source, value = '') {
+    if (!value) return '';
+    if (/^(?:https?:|data:|blob:)/i.test(value)) return value;
+    return new URL(`${source.basePath || ''}${String(value).replace(/^\.\//, '')}`, baseURL).href;
+  }
+
+  function createSource(definition = {}) {
+    const source = {
+      id: String(definition.id || 'external'),
+      label: String(definition.label || 'REPRODUCTOR GLOBAL'),
+      queueLabel: String(definition.queueLabel || 'Cola de reproducción'),
+      route: cleanRoute(definition.route || 'hub.html'),
+      album: String(definition.album || definition.label || 'RP HUB'),
+      basePath: String(definition.basePath || ''),
+      tracks: []
+    };
+    source.tracks = (Array.isArray(definition.tracks) ? definition.tracks : []).map((track, index) => ({
+      ...track,
+      sourceTrackId: track.sourceTrackId ?? track.index ?? index,
+      songTitle: track.songTitle || track.title || `Canción ${index + 1}`,
+      character: track.character || track.artist || source.label,
+      songCover: sourceURL(source, track.songCover || track.cover || ''),
+      audio: sourceURL(source, track.audio || '')
+    }));
+    return source;
+  }
+
+  function currentTracks() {
+    return activeSource.tracks;
+  }
+
+  function currentTrack() {
+    return currentTracks()[state.current] || null;
+  }
+
   function audioURL(index) {
-    return assetURL(tracks[index]?.audio || '');
+    return currentTracks()[index]?.audio || '';
   }
 
   function sameURL(a, b) {
@@ -159,19 +200,20 @@
   function updateMetadata(track) {
     if (!track || !('mediaSession' in navigator) || typeof MediaMetadata === 'undefined') return;
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: track.songTitle, artist: track.character, album: 'Resonance',
-      artwork: [{ src: assetURL(track.songCover) }]
+      title: track.songTitle, artist: track.character, album: activeSource.album,
+      artwork: track.songCover ? [{ src: track.songCover }] : []
     });
   }
 
-  function setTrack(index, autoplay = true) {
-    index = Math.max(0, Math.min(tracks.length - 1, Number(index)));
-    const track = tracks[index];
+  function selectActiveTrack(index, autoplay = true) {
+    const sourceTracks = currentTracks();
+    index = Math.max(0, Math.min(sourceTracks.length - 1, Number(index)));
+    const track = sourceTracks[index];
     if (!track) return;
     const nextSource = audioURL(index);
     const changed = state.current !== index || !sameURL(audio.src, nextSource);
     state.current = index;
-    localStorage.setItem('resonanceTrack', String(index));
+    if (activeSource.id === 'resonance') localStorage.setItem('resonanceTrack', String(index));
     if (changed) {
       state.restoreTime = 0;
       audio.src = nextSource;
@@ -184,9 +226,26 @@
     if (autoplay) play();
   }
 
+  function setSource(definition, index = 0, autoplay = true) {
+    const nextSource = createSource(definition);
+    if (!nextSource.tracks.length) return;
+    const sourceChanged = activeSource.id !== nextSource.id;
+    sources.set(nextSource.id, nextSource);
+    activeSource = nextSource;
+    if (sourceChanged) state.restoreTime = 0;
+    selectActiveTrack(index, autoplay);
+  }
+
+  function setTrack(index, autoplay = true) {
+    const resonanceSource = sources.get('resonance');
+    if (!resonanceSource) return;
+    activeSource = resonanceSource;
+    selectActiveTrack(index, autoplay);
+  }
+
   async function play() {
-    if (!tracks.length) return;
-    if (!audio.src) setTrack(state.current, false);
+    if (!currentTracks().length) return;
+    if (!audio.src) selectActiveTrack(state.current, false);
     try {
       await audio.play();
       localStorage.setItem('resonanceWasPlaying', 'true');
@@ -206,12 +265,13 @@
   }
 
   function next(direction = 1) {
-    if (!tracks.length) return;
+    const sourceTracks = currentTracks();
+    if (!sourceTracks.length) return;
     let index;
-    if (state.shuffle && tracks.length > 1) {
-      do index = Math.floor(Math.random() * tracks.length); while (index === state.current);
-    } else index = (state.current + direction + tracks.length) % tracks.length;
-    setTrack(index, true);
+    if (state.shuffle && sourceTracks.length > 1) {
+      do index = Math.floor(Math.random() * sourceTracks.length); while (index === state.current);
+    } else index = (state.current + direction + sourceTracks.length) % sourceTracks.length;
+    selectActiveTrack(index, true);
   }
 
   function setShuffle(value) {
@@ -236,13 +296,15 @@
   }
 
   function renderPlayer() {
-    const track = tracks[state.current];
+    const track = currentTrack();
     if (!track) return;
     const playing = !audio.paused;
-    nodes.cover.src = assetURL(track.songCover);
+    nodes.cover.src = track.songCover || 'OST/ResonanceLogo.png';
     nodes.cover.alt = `Portada de ${track.songTitle}`;
     nodes.title.textContent = track.songTitle;
     nodes.artist.textContent = track.character;
+    nodes.pageLabel.textContent = activeSource.label;
+    nodes.openResonance.setAttribute('aria-label', `Abrir ${activeSource.label.toLowerCase()}`);
     nodes.play.textContent = playing ? '❚❚' : '▶';
     nodes.play.setAttribute('aria-label', playing ? 'Pausar' : 'Reproducir');
     nodes.bar.classList.toggle('playing', playing);
@@ -261,17 +323,20 @@
   }
 
   function renderQueue() {
-    if (!tracks.length) return;
-    const ordered = [...tracks.keys()].slice(state.current).concat([...tracks.keys()].slice(0, state.current));
+    const sourceTracks = currentTracks();
+    if (!sourceTracks.length) return;
+    const ordered = [...sourceTracks.keys()].slice(state.current).concat([...sourceTracks.keys()].slice(0, state.current));
+    if (nodes.queueTitle) nodes.queueTitle.textContent = activeSource.queueLabel;
     nodes.queueList.innerHTML = ordered.map(index => {
-      const track = tracks[index];
-      return `<button class="queue-item ${index === state.current ? 'active' : ''}" data-track="${index}" type="button"><img src="${escapeHTML(assetURL(track.songCover))}" alt=""><span><strong>${escapeHTML(track.songTitle)}</strong><span>${escapeHTML(track.character)}</span></span>${index === state.current ? '<b>SONANDO</b>' : '<b>▶</b>'}</button>`;
+      const track = sourceTracks[index];
+      return `<button class="queue-item ${index === state.current ? 'active' : ''}" data-track="${index}" type="button"><img src="${escapeHTML(track.songCover || 'OST/ResonanceLogo.png')}" alt=""><span><strong>${escapeHTML(track.songTitle)}</strong><span>${escapeHTML(track.character)}</span></span>${index === state.current ? '<b>SONANDO</b>' : '<b>▶</b>'}</button>`;
     }).join('');
-    nodes.queueList.querySelectorAll('[data-track]').forEach(button => button.addEventListener('click', () => { setTrack(Number(button.dataset.track), true); closeQueue(); }));
+    nodes.queueList.querySelectorAll('[data-track]').forEach(button => button.addEventListener('click', () => { selectActiveTrack(Number(button.dataset.track), true); closeQueue(); }));
   }
 
   function getState() {
-    return { current: state.current, playing: !audio.paused, shuffle: state.shuffle, volume: audio.volume, currentTime: audio.currentTime, duration: audio.duration, track: tracks[state.current] || null };
+    const track = currentTrack();
+    return { current: state.current, sourceId: activeSource.id, sourceLabel: activeSource.label, sourceTrackId: track?.sourceTrackId ?? null, playing: !audio.paused, shuffle: state.shuffle, volume: audio.volume, currentTime: audio.currentTime, duration: audio.duration, track };
   }
 
   function subscribe(callback) {
@@ -280,7 +345,8 @@
     return () => subscribers.delete(callback);
   }
 
-  window.ResonanceShell = { audio, tracks, setTrack, play, pause, toggle, setShuffle, next: () => next(1), previous: () => next(-1), getState, subscribe, assetURL };
+  window.ResonanceShell = { audio, tracks, setTrack, setSource, play, pause, toggle, setShuffle, setVolume, next: () => next(1), previous: () => next(-1), getState, subscribe, assetURL };
+  window.GlobalAudioShell = window.ResonanceShell;
 
   function cleanRoute(route = '') {
     route = decodeURIComponent(String(route).replace(/^#?\/?/, '')) || 'hub.html';
@@ -362,10 +428,10 @@
       const musicPanel = childDocument.getElementById('musicPanel');
       if (musicPanel) musicPanel.style.display = 'none';
       const title = childDocument.title?.replace(/\s*[—·|-].*$/, '') || 'RP HUB';
-      nodes.pageLabel.textContent = `${title.toUpperCase()} · RESONANCE GLOBAL`;
       document.title = `${title} · RP HUB`;
+      renderPlayer();
     } catch (error) {
-      nodes.pageLabel.textContent = 'RP HUB · RESONANCE GLOBAL';
+      renderPlayer();
     }
   });
 
@@ -377,7 +443,7 @@
 
   function closeQueue() { nodes.queue.classList.remove('open'); nodes.queue.setAttribute('aria-hidden', 'true'); }
   nodes.home.addEventListener('click', () => loadRoute('hub.html'));
-  nodes.openResonance.addEventListener('click', () => loadRoute('OST/index.html'));
+  nodes.openResonance.addEventListener('click', () => loadRoute(activeSource.route));
   nodes.play.addEventListener('click', toggle);
   nodes.previous.addEventListener('click', () => next(-1));
   nodes.next.addEventListener('click', () => next(1));
@@ -465,7 +531,7 @@
   });
   audio.addEventListener('volumechange', () => setVolume(audio.volume, false));
   audio.addEventListener('error', () => {
-    const title = tracks[state.current]?.songTitle || 'la canción seleccionada';
+    const title = currentTrack()?.songTitle || 'la canción seleccionada';
     addDiagnostic('error', 'Audio no disponible', `No se ha podido cargar ${title}. Comprueba que el archivo existe y vuelve a intentarlo.`, true);
   });
 

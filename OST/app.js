@@ -30,8 +30,10 @@
   const audio = sharedShell?.audio || new Audio();
   if (sharedShell) {
     const sharedState = sharedShell.getState();
-    state.current = sharedState.current;
-    state.playing = sharedState.playing;
+    if (sharedState.sourceId === 'resonance') {
+      state.current = sharedState.current;
+      state.playing = sharedState.playing;
+    }
     state.shuffle = sharedState.shuffle;
     state.volume = sharedState.volume;
   }
@@ -361,8 +363,10 @@
   $('#chooseNewDesign').focus();
 
   if (sharedShell) sharedShell.subscribe(sharedState => {
-    state.current = sharedState.current;
-    state.playing = sharedState.playing;
+    if (sharedState.sourceId === 'resonance') {
+      state.current = sharedState.current;
+      state.playing = sharedState.playing;
+    } else state.playing = false;
     state.shuffle = sharedState.shuffle;
     state.volume = sharedState.volume;
     render();

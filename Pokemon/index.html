@@ -402,6 +402,12 @@
       *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
     }
   </style>
+  <style>
+    a.pokemon-entry { color: inherit; text-decoration: none; cursor: pointer; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+    a.pokemon-entry:hover { transform: translateY(-3px); border-color: rgba(255,212,79,.48); background: rgba(78,167,255,.1); }
+    a.pokemon-entry:focus-visible { outline: 3px solid rgba(255,212,79,.75); outline-offset: 3px; }
+    .pokemon-open { display: block; margin-top: 7px; color: var(--yellow); font-size: .68rem; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+  </style>
 </head>
 <body>
   <main class="page-shell">
@@ -415,8 +421,11 @@
       </div>
       <div class="nav-links">
         <a class="nav-link" href="../hub.html"><span>⌂</span> Volver al HUB</a>
+        <a class="nav-link" href="center.html"><span>🏥</span> Pokémon Center</a>
         <a class="nav-link" href="mapa etruria.html"><span>🗺️</span> Mapa</a>
+        <a class="nav-link" href="pokedex.html"><span>◉</span> Pokédex</a>
         <a class="nav-link" href="datos.html"><span>📊</span> Datos Pokémon</a>
+        <a class="nav-link" href="EtruriaRadio/index.html"><span>♪</span> EtruriaRadio</a>
       </div>
     </nav>
 
@@ -500,7 +509,7 @@
   colors: ["#2a75bb", "#174b7d"],
   summary: "Descripción breve.",
   team: [
-    { id: 25, name: "pikachu", types: ["electric"] }
+    { id: 25, name: "pikachu", types: ["electric"], ability: "static", moves: ["thunderbolt", "quick-attack"] }
   ],
   reserves: [],
   badges: [
@@ -525,7 +534,7 @@
   </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="entrenadores-datos.js"></script>
+  <script src="entrenadores-datos.js?v=2"></script>
   <script>
     const TRAINERS = Array.isArray(window.ETRURIA_TRAINERS) ? window.ETRURIA_TRAINERS : [];
     const SPRITES_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
@@ -630,16 +639,21 @@
         </article>`;
     }
 
+    function pokemonQuery(pokemon) {
+      return encodeURIComponent(pokemon.apiName || pokemon.name || pokemon.id || "");
+    }
+
     function pokemonEntries(team = []) {
       if (!team.length) return '<div class="blank-block">Todavía no hay Pokémon registrados en esta sección.</div>';
       return team.map(pokemon => `
-        <article class="pokemon-entry">
+        <a class="pokemon-entry" href="pokedex.html?pokemon=${pokemonQuery(pokemon)}" aria-label="Abrir la ficha de ${escapeHtml(formatName(pokemon.name))}">
           <div class="pokemon-art"><img src="${escapeHtml(pokemonImage(pokemon))}" alt="${escapeHtml(formatName(pokemon.name))}" loading="lazy" onerror="this.remove()"></div>
           <div class="pokemon-info">
             <strong>${escapeHtml(formatName(pokemon.name))}${pokemon.form ? ` · ${escapeHtml(pokemon.form)}` : ""}${pokemon.shiny ? " · Shiny" : ""}</strong>
             <div class="type-row">${typePills(pokemon.types)}</div>
+            <span class="pokemon-open">Habilidad y moveset →</span>
           </div>
-        </article>`).join("");
+        </a>`).join("");
     }
 
     function badgesMarkup(badges = []) {
@@ -718,7 +732,9 @@
                 <div class="dossier-heading"><h3>🔗 Accesos relacionados</h3></div>
                 <div class="profile-actions">
                   <a class="profile-action" href="mapa etruria.html">Mapa de Etruria</a>
+                  <a class="profile-action" href="pokedex.html">Abrir Pokédex</a>
                   <a class="profile-action" href="datos.html">Analizar Pokémon</a>
+                  <a class="profile-action" href="EtruriaRadio/index.html">Escuchar EtruriaRadio</a>
                   ${links.map(link => `<a class="profile-action" href="${escapeHtml(link.url)}">${escapeHtml(link.label)}</a>`).join("")}
                   <button class="profile-action copy-team" type="button" data-copy-team="${escapeHtml(trainer.id)}">Copiar equipo</button>
                 </div>
@@ -825,6 +841,8 @@
     populateRegions();
     updateStats();
     render();
+    const requestedTrainer = new URLSearchParams(location.search).get("trainer");
+    if (requestedTrainer && TRAINERS.some(trainer => trainer.id === requestedTrainer)) openProfile(requestedTrainer);
   </script>
 </body>
 </html>

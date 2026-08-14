@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#090715">
-  <meta name="description" content="RP HUB con reproductor persistente de Resonance.">
-  <title>RP HUB · Resonance</title>
+  <meta name="description" content="RP HUB con reproductor musical persistente para Resonance y Etruria Radio.">
+  <title>RP HUB · Reproductor global</title>
   <script>window.__RP_SHELL_NESTED__=window.self!==window.top;if(window.__RP_SHELL_NESTED__)window.parent.postMessage({type:'rp-shell-navigate',route:'hub.html'},'*');</script>
   <link rel="stylesheet" href="resonance-shell.css?v=3">
 </head>
@@ -27,7 +27,7 @@
     </div>
   </main>
 
-  <footer class="resonance-bar" id="resonanceBar" aria-label="Reproductor global de Resonance">
+  <footer class="resonance-bar" id="resonanceBar" aria-label="Reproductor global del RP HUB">
     <div class="shell-actions">
       <button class="shell-button home-button" id="homeButton" type="button" aria-label="Volver al HUB" title="Volver al HUB">RP</button>
       <button class="track-summary" id="openResonance" type="button" aria-label="Abrir Resonance">
@@ -57,7 +57,7 @@
   <button class="mini-player" id="miniPlayer" type="button" hidden><span id="miniIcon">▶</span><strong id="miniTitle">Resonance</strong><span>⌃</span></button>
 
   <aside class="queue-panel" id="globalQueue" aria-hidden="true">
-    <header><div><small>A CONTINUACIÓN</small><h2>Cola de Resonance</h2></div><button id="closeQueue" type="button" aria-label="Cerrar">×</button></header>
+    <header><div><small>A CONTINUACIÓN</small><h2 id="globalQueueTitle">Cola de Resonance</h2></div><button id="closeQueue" type="button" aria-label="Cerrar">×</button></header>
     <div id="globalQueueList" class="queue-list"></div>
   </aside>
 
