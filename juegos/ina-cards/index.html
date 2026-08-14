@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Prototipo del juego de cartas online de Inazuma para dos jugadores."
+    />
+    <title>Duelo de Resonancia | Web-Rol</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="back-link" href="../">← Volver a juegos</a>
+      <button class="text-button" id="open-rules" type="button">Cómo se juega</button>
+    </header>
+
+    <main>
+      <section class="screen lobby-screen" id="lobby-screen" aria-labelledby="game-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Prototipo jugable · diseño provisional</p>
+          <h1 id="game-title">Inazuma: Duelo de Resonancia</h1>
+          <p class="lead">
+            Dos equipos compiten por mantener su moral. Juega personajes, encadena mejoras y usa
+            sus ventajas o debilidades para dejar la moral rival a cero.
+          </p>
+          <div class="lore-note">
+            <strong>Lore provisional:</strong> una fractura en las líneas temporales ha reunido
+            distintas versiones de los mismos futbolistas en la Copa de Resonancia.
+          </div>
+        </div>
+
+        <div class="lobby-panel" aria-label="Acceso a la partida">
+          <label for="player-name">Tu nombre</label>
+          <input id="player-name" maxlength="24" autocomplete="nickname" placeholder="Por ejemplo, Jesús" />
+
+          <button class="primary-button" id="create-room" type="button">Crear una sala</button>
+
+          <div class="divider"><span>o únete a una</span></div>
+
+          <label for="room-code">Código de sala</label>
+          <div class="join-row">
+            <input
+              id="room-code"
+              maxlength="6"
+              inputmode="text"
+              autocapitalize="characters"
+              autocomplete="off"
+              placeholder="ABC123"
+              aria-describedby="room-help"
+            />
+            <button class="secondary-button" id="join-room" type="button">Unirme</button>
+          </div>
+          <small id="room-help">Tu amigo te enviará un código de seis caracteres.</small>
+
+          <button class="demo-button" id="local-demo" type="button">
+            Probar las reglas en este dispositivo
+          </button>
+          <p class="connection-note" id="connection-note" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="screen waiting-screen" id="waiting-screen" hidden aria-labelledby="waiting-title">
+        <div class="waiting-card">
+          <p class="eyebrow">Sala privada</p>
+          <h2 id="waiting-title">Esperando a los dos equipos</h2>
+          <p>Comparte este código con tu amigo:</p>
+          <div class="room-code-box">
+            <strong id="shown-room-code">------</strong>
+            <button class="secondary-button" id="copy-code" type="button">Copiar</button>
+          </div>
+          <ul class="player-list" id="player-list" aria-label="Jugadores de la sala"></ul>
+          <button class="primary-button" id="ready-button" type="button">Estoy preparado</button>
+          <button class="text-button danger" id="leave-room" type="button">Salir de la sala</button>
+          <p class="connection-note" id="waiting-note" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="game-screen" id="game-screen" hidden aria-labelledby="match-title">
+        <h2 class="sr-only" id="match-title">Partida en curso</h2>
+
+        <div class="match-toolbar">
+          <button class="text-button" id="leave-match" type="button">← Salir</button>
+          <span>Sala <strong id="match-room-code">------</strong></span>
+          <span class="turn-pill" id="turn-label">Preparando partida…</span>
+        </div>
+
+        <section class="player-board opponent-board" aria-label="Estado del rival">
+          <div>
+            <span class="board-kicker">Rival</span>
+            <h3 id="opponent-name">Esperando rival</h3>
+          </div>
+          <div class="board-stats">
+            <span>❤️ <strong id="opponent-morale">20</strong> moral</span>
+            <span>🛡️ <strong id="opponent-guard">0</strong> defensa</span>
+            <span>🃏 <strong id="opponent-hand">0</strong> cartas</span>
+          </div>
+        </section>
+
+        <section class="match-center" aria-label="Sucesos de la partida">
+          <div class="effect-strip" id="effect-strip"></div>
+          <ol class="match-log" id="match-log" aria-live="polite"></ol>
+        </section>
+
+        <section class="player-board my-board" aria-label="Tu estado">
+          <div>
+            <span class="board-kicker">Tu equipo</span>
+            <h3 id="my-name">Jugador</h3>
+          </div>
+          <div class="board-stats">
+            <span>❤️ <strong id="my-morale">20</strong> moral</span>
+            <span>🛡️ <strong id="my-guard">0</strong> defensa</span>
+            <span>⚡ <strong id="my-energy">3/3</strong> energía</span>
+          </div>
+        </section>
+
+        <section class="hand-section" aria-labelledby="hand-title">
+          <div class="hand-heading">
+            <div>
+              <span class="board-kicker">Tu mano</span>
+              <h3 id="hand-title">Elige una carta</h3>
+            </div>
+            <button class="secondary-button" id="end-turn" type="button">Terminar turno</button>
+          </div>
+          <div class="card-hand" id="card-hand"></div>
+          <p class="hand-message" id="hand-message" role="status" aria-live="polite"></p>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="rules-dialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">Reglas iniciales</p>
+          <h2>Cómo se juega</h2>
+        </div>
+        <button class="icon-button" id="close-rules" type="button" aria-label="Cerrar reglas">×</button>
+      </div>
+      <ol class="rules-list">
+        <li>Cada jugador comienza con <strong>20 de moral</strong> y cinco cartas.</li>
+        <li>Las cartas consumen energía. Al comenzar tus turnos tendrás cada vez un poco más, hasta ocho.</li>
+        <li>El ataque rompe primero la defensa rival; el resto reduce su moral.</li>
+        <li>Los buffs mejoran tu próximo ataque y los debuffs reducen el próximo del rival.</li>
+        <li>Una versión mejorada solo se puede jugar después de usar la versión base de ese personaje.</li>
+        <li>Gana quien deje la moral del rival a cero.</li>
+      </ol>
+      <p class="rules-footnote">Nombres, cifras, mazo y lore son una base editable para probar el sistema.</p>
+    </dialog>
+
+    <script type="module" src="game.js"></script>
+  </body>
+</html>

@@ -302,6 +302,56 @@
             text-shadow:0 1px 0 rgba(255,255,255,.35);
         }
 
+        .thumb.ina-cards{
+            color:#17120a;
+            background:
+                radial-gradient(circle at 20% 24%, rgba(255,255,255,.55), transparent 24%),
+                linear-gradient(135deg, #ffd83d, #ff8d35 48%, #5ba8ff);
+            text-shadow:0 1px 0 rgba(255,255,255,.35);
+        }
+
+        .card.card-hype{
+            border-color:rgba(255,204,102,.46);
+            box-shadow:
+                0 18px 40px rgba(0,0,0,.35),
+                0 0 36px rgba(255,155,54,.12);
+        }
+
+        .card.card-hype:hover{
+            border-color:rgba(255,204,102,.72);
+        }
+
+        .card.card-hype .thumb{
+            position:relative;
+            overflow:hidden;
+        }
+
+        .card.card-hype .thumb::after{
+            content:"";
+            position:absolute;
+            inset:-80% auto -80% -35%;
+            width:24%;
+            background:rgba(255,255,255,.34);
+            transform:rotate(18deg);
+            animation:hype-shine 3.4s ease-in-out infinite;
+        }
+
+        .status.hype{
+            color:#171005;
+            background:linear-gradient(135deg, #ffd65a, #ff963c);
+            border:1px solid rgba(255,255,255,.16);
+            box-shadow:0 0 18px rgba(255,170,54,.2);
+        }
+
+        .hype-copy{
+            color:#f6dba6 !important;
+        }
+
+        @keyframes hype-shine{
+            0%, 62%{ transform:translateX(-180%) rotate(18deg); }
+            82%, 100%{ transform:translateX(760%) rotate(18deg); }
+        }
+
         .card-body{
             padding: 18px;
             display: flex;
@@ -426,6 +476,12 @@
                 min-height: unset;
             }
         }
+
+        @media (prefers-reduced-motion: reduce){
+            .card.card-hype .thumb::after{
+                animation:none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -464,7 +520,7 @@
                         <span>En desarrollo</span>
                     </div>
                     <div class="stat">
-                        <strong>6</strong>
+                        <strong>7</strong>
                         <span>Próximamente</span>
                     </div>
                     <div class="stat">
@@ -488,6 +544,19 @@
                         <p>Elige entre Dragon Ball, Pokémon o Inazuma y empieza una carrera marcada por el lore del servidor.</p>
                         <div class="actions">
                             <a href="copero/" class="btn btn-primary">JUGAR</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card card-hype">
+                    <div class="thumb ina-cards">CARDS</div>
+                    <div class="card-body">
+                        <span class="status hype">⚡ Próximamente</span>
+                        <h3>Duelo de Resonancia</h3>
+                        <p class="hype-copy">Dos jugadores. Versiones despertadas. Buffs, debuffs y decisiones capaces de cambiar el partido. La primera baraja ya está entrando al campo.</p>
+                        <div class="actions">
+                            <a href="ina-cards/notas.html" class="btn btn-primary">VER EL AVANCE</a>
+                            <span class="btn btn-secondary">MUY PRONTO</span>
                         </div>
                     </div>
                 </article>
