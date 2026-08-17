@@ -5,6 +5,7 @@ import {
   DECK_SIZE,
   LEADER,
   MAX_COPIES,
+  MIN_DEFENSIVE_CARDS,
   MIN_OFFENSIVE_CARDS,
   MIN_UNIQUE_CARDS,
   STARTER_DECK,
@@ -47,7 +48,9 @@ export function applyAction(state, token, action) {
 
   if (state.phase !== "playing") throw new Error("La partida no está en curso.");
   if (state.turn !== playerIndex) throw new Error("Ahora juega tu rival.");
-  if (player.pendingChoice && action.type !== "choose-card") {
+  const resolvingPendingChoice = action.type === "choose-card"
+    || (action.type === "tactical-draw" && player.pendingChoice?.type === "tactical-role");
+  if (player.pendingChoice && !resolvingPendingChoice) {
     throw new Error("Completa primero la elección de cartas pendiente.");
   }
 
@@ -55,6 +58,10 @@ export function applyAction(state, token, action) {
     playCard(state, playerIndex, String(action.cardId || ""));
   } else if (action.type === "choose-card") {
     chooseScoutedCard(state, playerIndex, String(action.cardId || ""));
+  } else if (action.type === "tactical-draw") {
+    chooseTacticalDraw(state, playerIndex, String(action.role || ""));
+  } else if (action.type === "invent-card") {
+    useInvention(state, playerIndex, String(action.cardId || ""));
   } else if (action.type === "coach-ability" || action.type === "leader-rewind") {
     useCoachAbility(state, playerIndex, String(action.cardId || ""));
   } else if (action.type === "end-turn") {
@@ -109,6 +116,10 @@ export function validateDeck(deck) {
   if (offensiveCards < MIN_OFFENSIVE_CARDS) {
     throw new Error(`El mazo necesita al menos ${MIN_OFFENSIVE_CARDS} cartas ofensivas.`);
   }
+  const defensiveCards = deck.filter((cardId) => (CARDS_BY_ID[cardId]?.guard || 0) > 0).length;
+  if (defensiveCards < MIN_DEFENSIVE_CARDS) {
+    throw new Error(`El mazo necesita al menos ${MIN_DEFENSIVE_CARDS} cartas defensivas.`);
+  }
   return [...deck];
 }
 
@@ -133,6 +144,11 @@ function createPlayer(token, name, deck = STARTER_DECK) {
     affinityChain: "",
     affinityCount: 0,
     talentUses: {},
+    healingThisTurn: 0,
+    healingBlock: 0,
+    drawLock: 0,
+    talentSilenced: false,
+    coachLocked: false,
     leaderId: LEADER.id,
     leaderUsed: false,
     pendingChoice: null,
@@ -170,7 +186,7 @@ function startGame(state) {
     player.fatigue = 0;
     resetTurnTrackers(player);
     player.deck = shuffle([...(player.selectedDeck || STARTER_DECK)]);
-    drawCards(state, index, STARTING_HAND);
+    drawBalancedStartingHand(state, index);
   }
   state.log.push("Los entrenadores han sido asignados al azar y no se repiten.");
   state.log.push(`Empieza la partida. El primer turno es de ${state.players[state.turn].name}.`);
@@ -241,6 +257,9 @@ function playCard(state, playerIndex, cardId) {
   const attackBonus = conditionalBonus + talentAttack + resonanceAttack + (affinityReward.attack || 0);
   const guardGained = (card.guard || 0) + talentGuard + resonanceGuard + (affinityReward.guard || 0);
   const pierce = (card.pierce || 0) + (affinityReward.pierce || 0);
+  const guardBreak = (card.guardBreak || 0) + (affinityReward.guardBreak || 0);
+  const guardDestroyed = Math.min(rival.guard, guardBreak);
+  if (guardDestroyed) rival.guard -= guardDestroyed;
 
   let attack = card.attack || 0;
   if (attack > 0) {
@@ -251,7 +270,22 @@ function playCard(state, playerIndex, cardId) {
   }
 
   if (guardGained) player.guard += guardGained;
-  if (card.heal) player.morale = Math.min(MAX_MORALE, player.morale + card.heal);
+  let healingDone = 0;
+  let healingBlocked = false;
+  if (card.heal) {
+    if (player.healingBlock > 0) {
+      player.healingBlock -= 1;
+      healingBlocked = true;
+    } else {
+      const requestedHeal = player.morale <= (card.criticalHealThreshold ?? -1)
+        ? (card.criticalHeal || card.heal)
+        : card.heal;
+      const healCapRemaining = Math.max(0, 3 - (player.healingThisTurn || 0));
+      healingDone = Math.min(requestedHeal, healCapRemaining, MAX_MORALE - player.morale);
+      player.morale += healingDone;
+      player.healingThisTurn = (player.healingThisTurn || 0) + healingDone;
+    }
+  }
   if (card.cleanse) player.weakness = 0;
   const buffGained = (card.buff || 0) + (affinityReward.buff || 0);
   const debuffGiven = (card.debuff || 0) + (affinityReward.debuff || 0);
@@ -270,6 +304,14 @@ function playCard(state, playerIndex, cardId) {
   if (buffGained) player.attackBuff += buffGained;
   if (debuffGiven) rival.weakness += debuffGiven;
   if (card.removeOpponentBuff) rival.attackBuff = 0;
+  if (card.breakAffinity) {
+    rival.affinityChain = "";
+    rival.affinityCount = 0;
+  }
+  if (card.healingBlock) rival.healingBlock = Math.max(rival.healingBlock || 0, card.healingBlock);
+  if (card.drawLock) rival.drawLock = Math.max(rival.drawLock || 0, card.drawLock);
+  if (card.talentSilence) rival.talentSilenced = true;
+  if (card.coachLock) rival.coachLocked = true;
   if (card.nextCardDiscount || affinityReward.nextCardDiscount) {
     player.nextCardDiscount = (player.nextCardDiscount || 0) + (card.nextCardDiscount || 0) + (affinityReward.nextCardDiscount || 0);
   }
@@ -277,11 +319,25 @@ function playCard(state, playerIndex, cardId) {
     player.nextAffinityDiscount = { affinity: card.affinity, amount: affinityReward.nextAffinityDiscount };
   }
   if (energyGained) player.energy = Math.min(player.maxEnergy, player.energy + energyGained);
+  let drawBlocked = false;
+  if (cardsDrawn && player.drawLock > 0) {
+    player.drawLock -= 1;
+    cardsDrawn = 0;
+    drawBlocked = true;
+  }
   if (cardsDrawn) drawCards(state, playerIndex, cardsDrawn);
   const talentWasActive = card.talent ? getActiveTalentIds(player).has(card.talent.id) : false;
   player.discard.push(card.id);
   const talentActivated = Boolean(card.talent && !talentWasActive);
-  if (card.scout && state.phase === "playing") beginScout(state, playerIndex, card.scout, "scout");
+  let scoutBlocked = false;
+  if (card.scout && state.phase === "playing") {
+    if (player.drawLock > 0) {
+      player.drawLock -= 1;
+      scoutBlocked = true;
+    } else {
+      beginScout(state, playerIndex, card.scout, "scout");
+    }
+  }
 
   player.cardsPlayedThisTurn += 1;
   if ((card.attack || 0) > 0) player.attackCardsPlayedThisTurn += 1;
@@ -301,18 +357,26 @@ function playCard(state, playerIndex, cardId) {
   if (attack) details.push(`${attack} de ataque`);
   if (conditionalBonus) details.push(`bonificación de +${conditionalBonus}`);
   if (pierce) details.push(`hasta ${pierce} atraviesa defensa`);
+  if (guardDestroyed) details.push(`${guardDestroyed} de defensa rival destruida`);
   if (guardGained) details.push(`${guardGained} de defensa`);
-  if (card.heal) details.push(`${card.heal} de moral recuperada`);
+  if (healingDone) details.push(`${healingDone} de moral recuperada`);
+  if (healingBlocked) details.push("curación anulada por Anticuración");
   if (card.cleanse) details.push("debilitación eliminada");
   if (buffGained) details.push(`+${buffGained} al próximo ataque`);
   if (debuffGiven) details.push(`-${debuffGiven} al próximo ataque rival`);
   if (card.removeOpponentBuff) details.push("potenciación rival eliminada");
   if (cardsDrawn) details.push(`${cardsDrawn} carta${cardsDrawn === 1 ? "" : "s"} robada${cardsDrawn === 1 ? "" : "s"}`);
+  if (drawBlocked || scoutBlocked) details.push("búsqueda anulada por Interferencia");
   if (energyGained) details.push(`${energyGained} de energía recuperada`);
   if (costDetails.totalDiscount) details.push(`coste reducido en ${costDetails.totalDiscount}`);
   if (affinity.resonance) details.push(`Resonancia ${card.affinity} ×2`);
   if (affinity.total) details.push(`Afinidad Total ${card.affinity}: ${card.affinityTotal?.text || "beneficio activado"}`);
   if (talentActivated) details.push(`Talento activado — ${card.talent.name}: ${card.talent.text}`);
+  if (card.breakAffinity) details.push("cadena de afinidad rival rota");
+  if (card.healingBlock) details.push("próxima curación rival bloqueada");
+  if (card.drawLock) details.push("próximo robo adicional rival bloqueado");
+  if (card.talentSilence) details.push("talentos rivales silenciados durante su próximo turno");
+  if (card.coachLock) details.push("entrenador rival bloqueado durante su próximo turno");
   details.push(...talentMessages);
   if (card.scout && player.pendingChoice) details.push(`elige entre ${player.pendingChoice.cardIds.length} cartas`);
   state.log.push(`${player.name} juega ${card.name} — ${card.version}${details.length ? ` (${details.join(", ")})` : ""}.`);
@@ -334,7 +398,7 @@ function beginScout(state, playerIndex, count, type) {
 function chooseScoutedCard(state, playerIndex, cardId) {
   const player = state.players[playerIndex];
   const choice = player.pendingChoice;
-  if (!choice || !["scout", "coach-scout"].includes(choice.type)) {
+  if (!choice || !["scout", "coach-scout", "tactical-scout"].includes(choice.type)) {
     throw new Error("No tienes ninguna elección pendiente.");
   }
   if (!choice.cardIds.includes(cardId)) throw new Error("Esa carta no forma parte de la selección.");
@@ -345,14 +409,63 @@ function chooseScoutedCard(state, playerIndex, cardId) {
   player.deck.unshift(...remaining);
   player.pendingChoice = null;
   const card = CARDS_BY_ID[cardId];
-  const source = choice.type === "coach-scout" ? "la Lectura Shinobi de Code" : "Leii Ishikawa";
+  const source = choice.type === "coach-scout"
+    ? "la Lectura Shinobi de Code"
+    : choice.type === "tactical-scout"
+      ? "la Perspicacia de Leii"
+      : "Leii Ishikawa";
   state.log.push(`${player.name} elige ${card?.name || "una carta"} gracias a ${source}.`);
+}
+
+function chooseTacticalDraw(state, playerIndex, role) {
+  const player = state.players[playerIndex];
+  const choice = player.pendingChoice;
+  if (!choice || choice.type !== "tactical-role" || !choice.roles.includes(role)) {
+    throw new Error("Esa opción de Robo Táctico no está disponible.");
+  }
+  player.pendingChoice = null;
+  performTacticalDraw(state, playerIndex, role);
+}
+
+function useInvention(state, playerIndex, cardId) {
+  const player = state.players[playerIndex];
+  ensureTurnState(player);
+  if (!getActiveTalentIds(player).has("invencion")) throw new Error("Invención no está activa.");
+  if (player.talentUses.invencion) throw new Error("Ya has usado Invención este turno.");
+  const handIndex = player.hand.indexOf(cardId);
+  if (handIndex === -1) throw new Error("Esa carta no está en tu mano.");
+  const sourceCard = CARDS_BY_ID[cardId];
+  const sourceIsAttack = isOffensive(sourceCard) && !isDefensive(sourceCard);
+  const sourceIsDefense = isDefensive(sourceCard) && !isOffensive(sourceCard);
+  if (!sourceIsAttack && !sourceIsDefense) {
+    throw new Error("Invención necesita una carta puramente ofensiva o defensiva.");
+  }
+  const targetRole = sourceIsAttack ? "defense" : "attack";
+  const predicate = targetRole === "attack"
+    ? (candidate) => isOffensive(candidate) && !isDefensive(candidate)
+    : (candidate) => isDefensive(candidate) && !isOffensive(candidate);
+  const candidates = [];
+  for (const [zone, cardIds] of [["deck", player.deck], ["discard", player.discard]]) {
+    cardIds.forEach((candidateId, index) => {
+      if (predicate(CARDS_BY_ID[candidateId])) candidates.push({ zone, index, cardId: candidateId });
+    });
+  }
+  if (!candidates.length) throw new Error("No queda una carta de la función contraria para inventar.");
+  const picked = candidates[Math.floor(Math.random() * candidates.length)];
+  player.hand.splice(handIndex, 1);
+  player.discard.push(cardId);
+  const zone = picked.zone === "deck" ? player.deck : player.discard;
+  const [newCardId] = zone.splice(picked.index, 1);
+  player.hand.push(newCardId);
+  player.talentUses.invencion = true;
+  state.log.push(`${player.name} activa Invención: cambia ${sourceCard.name} por ${CARDS_BY_ID[newCardId]?.name || "una carta de función contraria"}.`);
 }
 
 function useCoachAbility(state, playerIndex, cardId) {
   const player = state.players[playerIndex];
   const coach = COACHES_BY_ID[player.leaderId] || LEADER;
   if (player.leaderUsed) throw new Error(`Ya has usado la habilidad de ${coach.name}.`);
+  if (player.coachLocked) throw new Error("La Presión al banquillo impide usar a tu entrenador este turno.");
 
   if (coach.abilityType === "rewind") {
     if (player.hand.length >= 8) throw new Error("Tu mano está llena.");
@@ -368,8 +481,13 @@ function useCoachAbility(state, playerIndex, cardId) {
   } else if (coach.abilityType === "ninja-scout") {
     if (player.hand.length >= 8) throw new Error("Tu mano está llena.");
     if (!player.deck.length && !player.discard.length) throw new Error("No quedan cartas que Code pueda localizar.");
-    beginScout(state, playerIndex, 5, "coach-scout");
-    state.log.push(`${player.name} activa ${coach.abilityName} y busca la jugada decisiva.`);
+    if (player.drawLock > 0) {
+      player.drawLock -= 1;
+      state.log.push(`${player.name} activa ${coach.abilityName}, pero Interferencia anula la búsqueda.`);
+    } else {
+      beginScout(state, playerIndex, 5, "coach-scout");
+      state.log.push(`${player.name} activa ${coach.abilityName} y busca la jugada decisiva.`);
+    }
   } else if (coach.abilityType === "explosive-drive") {
     player.energy = Math.min(player.maxEnergy, player.energy + 2);
     player.attackBuff += 2;
@@ -393,12 +511,14 @@ function endTurn(state, playerIndex) {
   if (player.pendingChoice) throw new Error("Completa primero la elección de cartas pendiente.");
   const nextIndex = (playerIndex + 1) % state.players.length;
   const next = state.players[nextIndex];
+  player.talentSilenced = false;
+  player.coachLocked = false;
   state.turn = nextIndex;
   next.maxEnergy = Math.min(MAX_ENERGY, next.maxEnergy + 1);
   next.energy = next.maxEnergy;
   resetTurnTrackers(player);
   state.log.push(`${player.name} termina su turno. Ahora juega ${next.name}.`);
-  drawCards(state, nextIndex, 1);
+  beginTurnDraw(state, nextIndex);
 }
 
 function getEnergyCostDetails(player, card, activeTalents = getActiveTalentIds(player)) {
@@ -437,6 +557,7 @@ function getAffinityTrigger(player, card) {
 
 function getActiveTalentIds(player) {
   const talents = new Set();
+  if (player.talentSilenced) return talents;
   for (const cardId of player.discard || []) {
     const talentId = CARDS_BY_ID[cardId]?.talent?.id;
     if (talentId) talents.add(talentId);
@@ -446,6 +567,7 @@ function getActiveTalentIds(player) {
 
 function getActiveTalents(player) {
   const talents = [];
+  if (player.talentSilenced) return talents;
   const seen = new Set();
   for (const cardId of player.discard || []) {
     const card = CARDS_BY_ID[cardId];
@@ -464,6 +586,9 @@ function ensureTurnState(player) {
   player.affinityChain ||= "";
   player.affinityCount ||= 0;
   player.nextCardDiscount ||= 0;
+  player.healingThisTurn ||= 0;
+  player.healingBlock ||= 0;
+  player.drawLock ||= 0;
   if (!player.nextAffinityDiscount) player.nextAffinityDiscount = null;
 }
 
@@ -475,6 +600,7 @@ function resetTurnTrackers(player) {
   player.affinityCount = 0;
   player.nextAffinityDiscount = null;
   player.talentUses = {};
+  player.healingThisTurn = 0;
 }
 
 function dealDamage(player, amount, pierce = 0) {
@@ -494,6 +620,105 @@ function drawCards(state, playerIndex, count) {
     if (state.phase === "finished" || !player.deck.length) return;
     player.hand.push(player.deck.pop());
   }
+}
+
+function drawBalancedStartingHand(state, playerIndex) {
+  const player = state.players[playerIndex];
+  const preferred = [isDirectOffensive, isDirectOffensive, isDefensive, isDefensive];
+  for (const predicate of preferred) {
+    const cardId = takeMatchingCard(player.deck, (candidateId) => predicate(CARDS_BY_ID[candidateId]));
+    if (cardId) player.hand.push(cardId);
+  }
+  drawCards(state, playerIndex, STARTING_HAND - player.hand.length);
+}
+
+function beginTurnDraw(state, playerIndex) {
+  const player = state.players[playerIndex];
+  if (player.hand.length >= 8) return;
+  const missingRoles = [];
+  if (!player.hand.some((cardId) => isOffensive(CARDS_BY_ID[cardId]))) missingRoles.push("attack");
+  if (!player.hand.some((cardId) => isDefensive(CARDS_BY_ID[cardId]))) missingRoles.push("defense");
+  const availableRoles = missingRoles.filter((role) => hasCardForRole(player, role));
+  if (!availableRoles.length) {
+    drawCards(state, playerIndex, 1);
+    return;
+  }
+  if (availableRoles.length === 1) {
+    performTacticalDraw(state, playerIndex, availableRoles[0]);
+    return;
+  }
+  player.pendingChoice = { type: "tactical-role", roles: availableRoles };
+  state.log.push(`${player.name} puede elegir un Robo Táctico de ataque o defensa.`);
+}
+
+function performTacticalDraw(state, playerIndex, role) {
+  const player = state.players[playerIndex];
+  const predicate = role === "attack" ? isOffensive : isDefensive;
+  if (!player.deck.some((cardId) => predicate(CARDS_BY_ID[cardId])) && player.discard.length) {
+    const matchingDiscard = player.discard.some((cardId) => predicate(CARDS_BY_ID[cardId]));
+    if (matchingDiscard) {
+      player.deck.push(...shuffle([...player.discard]));
+      player.discard = [];
+      player.fatigue = (player.fatigue || 0) + 1;
+      player.morale = Math.max(0, player.morale - player.fatigue);
+      state.log.push(`${player.name} reorganiza su descarte para el Robo Táctico y pierde ${player.fatigue} de moral.`);
+      if (player.morale <= 0) {
+        finishGame(state, (playerIndex + 1) % state.players.length);
+        return;
+      }
+    }
+  }
+  const hasPerspicacia = getActiveTalentIds(player).has("perspicacia");
+  const compatible = takeMatchingCards(player.deck, (cardId) => predicate(CARDS_BY_ID[cardId]), hasPerspicacia ? 3 : 1);
+  if (!compatible.length) {
+    drawCards(state, playerIndex, 1);
+    state.log.push(`El Robo Táctico de ${player.name} no encontró una carta compatible; roba una carta normal.`);
+    return;
+  }
+  const roleLabel = role === "attack" ? "ofensiva" : "defensiva";
+  if (hasPerspicacia && compatible.length > 1) {
+    player.pendingChoice = { type: "tactical-scout", role, cardIds: compatible };
+    state.log.push(`${player.name} activa Perspicacia y examina ${compatible.length} cartas ${roleLabel}s.`);
+    return;
+  }
+  const [picked, ...remaining] = compatible;
+  player.hand.push(picked);
+  player.deck.unshift(...remaining);
+  state.log.push(`${player.name} realiza un Robo Táctico y recibe una carta ${roleLabel}.`);
+}
+
+function hasCardForRole(player, role) {
+  const predicate = role === "attack" ? isOffensive : isDefensive;
+  return [...player.deck, ...player.discard].some((cardId) => predicate(CARDS_BY_ID[cardId]));
+}
+
+function takeMatchingCard(deck, predicate) {
+  for (let index = deck.length - 1; index >= 0; index -= 1) {
+    if (!predicate(deck[index])) continue;
+    return deck.splice(index, 1)[0];
+  }
+  return "";
+}
+
+function takeMatchingCards(deck, predicate, count) {
+  const picked = [];
+  for (let index = deck.length - 1; index >= 0 && picked.length < count; index -= 1) {
+    if (!predicate(deck[index])) continue;
+    picked.push(deck.splice(index, 1)[0]);
+  }
+  return picked;
+}
+
+function isOffensive(card) {
+  return Boolean((card?.attack || 0) > 0);
+}
+
+function isDirectOffensive(card) {
+  return isOffensive(card) && card?.role !== "balance";
+}
+
+function isDefensive(card) {
+  return Boolean((card?.guard || 0) > 0);
 }
 
 function recycleDiscard(state, playerIndex) {
@@ -538,11 +763,21 @@ function playerView(player, revealHand) {
     affinityChain: player.affinityChain || "",
     affinityCount: player.affinityCount || 0,
     talentUses: { ...(player.talentUses || {}) },
+    healingThisTurn: player.healingThisTurn || 0,
+    healingBlock: player.healingBlock || 0,
+    drawLock: player.drawLock || 0,
+    talentSilenced: Boolean(player.talentSilenced),
+    coachLocked: Boolean(player.coachLocked),
     activeTalents: getActiveTalents(player),
     leaderId: player.leaderId || LEADER.id,
     leaderUsed: Boolean(player.leaderUsed),
     pendingChoice: revealHand && player.pendingChoice
-      ? { type: player.pendingChoice.type, cardIds: [...player.pendingChoice.cardIds] }
+      ? {
+        type: player.pendingChoice.type,
+        cardIds: [...(player.pendingChoice.cardIds || [])],
+        roles: [...(player.pendingChoice.roles || [])],
+        role: player.pendingChoice.role || "",
+      }
       : null,
     hand: revealHand ? [...player.hand] : [],
     handCount: player.hand.length,

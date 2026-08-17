@@ -46,8 +46,8 @@
           </aside>
 
           <div class="lore-note">
-            <strong>Beta 0.2:</strong> comienza con seis cartas, completa desafíos para descubrir
-            otras diecinueve y construye tu equipo entre veintidós futbolistas y tres gerentes.
+            <strong>Beta 0.3:</strong> comienza con diez cartas —incluidos varios atacantes—, completa
+            desafíos para descubrir otras veintidós y construye tu equipo entre veintiocho futbolistas y cuatro gerentes.
           </div>
         </div>
 
@@ -95,7 +95,7 @@
             <p>Investiga las cartas, supera desafíos y forma un mazo con afinidades que encajen con tu estilo. La historia del torneo sigue en construcción.</p>
           </div>
           <div class="collection-progress" aria-live="polite">
-            <strong id="collection-count">6/25</strong>
+            <strong id="collection-count">10/32</strong>
             <span>cartas descubiertas</span>
             <div><i id="collection-progress-bar"></i></div>
           </div>
@@ -124,7 +124,7 @@
             <div>
               <span class="board-kicker">Alineación activa</span>
               <h2>Constructor de mazos</h2>
-              <p>Elige 12 cartas, con un máximo de 2 copias, al menos 6 personajes diferentes y 4 cartas ofensivas.</p>
+              <p>Elige 12 cartas, con un máximo de 2 copias, al menos 6 personajes diferentes, 4 ofensivas y 4 defensivas.</p>
             </div>
             <div class="deck-rules" id="deck-rules" aria-live="polite"></div>
           </div>
@@ -267,7 +267,10 @@
               <h3 id="hand-title">Elige una carta</h3>
               <p>Consulta su resultado actual o abre los detalles antes de jugarla.</p>
             </div>
-            <button class="secondary-button end-turn-button" id="end-turn" type="button">Terminar turno →</button>
+            <div class="hand-actions">
+              <button class="invention-button" id="use-invention" type="button" hidden>🔧 Usar Invención</button>
+              <button class="secondary-button end-turn-button" id="end-turn" type="button">Terminar turno →</button>
+            </div>
           </div>
           <div class="card-hand" id="card-hand"></div>
           <p class="hand-message" id="hand-message" role="status" aria-live="polite"></p>
@@ -325,6 +328,7 @@
               <div><span>3</span><strong>Termina</strong><small>y cede el turno al rival</small></div>
             </div>
             <p class="guide-note">Puedes jugar varias cartas en el mismo turno mientras tengas energía suficiente.</p>
+            <p class="guide-note"><strong>Robo Táctico:</strong> si no tienes ataque o defensa al comenzar, el robo normal busca automáticamente esa función. Si te faltan ambas, tú eliges cuál necesitas.</p>
           </div>
         </section>
 
@@ -374,6 +378,7 @@
               <span>⛓️ Debilitación</span><span>💚 Recuperación</span><span>🃏 Robo</span>
             </div>
             <p class="guide-note">Los aumentos y debilitaciones se consumen cuando se realiza el siguiente ataque.</p>
+            <p class="guide-note">La recuperación está limitada a <strong>3 de moral por turno</strong>. Las cartas counter pueden romper defensa, cortar afinidades o bloquear curación, robos, talentos y entrenadores.</p>
           </div>
         </section>
 
@@ -424,7 +429,7 @@
             <p class="guide-kicker">Gerentes y entrenadores</p>
             <h3>El cuerpo técnico también cambia el partido</h3>
             <div class="staff-guide-grid">
-              <article><span aria-hidden="true">📋</span><div><strong>Gerentes</strong><p>Leii, Mikan y Wang son cartas de apoyo. No atacan, pero buscan cartas, curan o preparan combinaciones.</p></div></article>
+              <article><span aria-hidden="true">📋</span><div><strong>Gerentes</strong><p>Leii, Mikan, Wang y Miu son cartas de apoyo. Buscan cartas, curan, preparan combinaciones o transforman la función de tu mano.</p></div></article>
               <article><span aria-hidden="true">🎓</span><div><strong>Entrenador aleatorio</strong><p>Kurumi, Xavier, Code, Diamond, Waru o Dark dirigirán tu equipo. Cada uno posee una habilidad diferente.</p></div></article>
             </div>
             <p class="guide-note">Los entrenadores no entran en el mazo. Su habilidad no consume energía y solo puede utilizarse una vez durante tu turno.</p>
@@ -453,7 +458,7 @@
             <p>El <strong>Cuaderno Secreto de Zuolos</strong> reúne todas las cartas conocidas. Cumple los desafíos de las cartas ocultas para desbloquearlas.</p>
             <div class="staff-guide-grid">
               <article><span aria-hidden="true">📓</span><div><strong>Enciclopedia</strong><p>Consulta estadísticas, efectos y la pista de cada desbloqueo.</p></div></article>
-              <article><span aria-hidden="true">🃏</span><div><strong>Tu mazo</strong><p>Lleva 12 cartas, máximo 2 copias, al menos 6 diferentes y un mínimo de 4 ofensivas.</p></div></article>
+              <article><span aria-hidden="true">🃏</span><div><strong>Tu mazo</strong><p>Lleva 12 cartas, máximo 2 copias, al menos 6 diferentes, 4 ofensivas y 4 defensivas.</p></div></article>
             </div>
             <p class="guide-note">Si el mazo se vacía, el descarte se baraja de nuevo. Cada reorganización resta 1, luego 2, luego 3 de moral por agotamiento.</p>
           </div>

@@ -6,6 +6,7 @@ import {
   DECK_SIZE,
   LEADER,
   MAX_COPIES,
+  MIN_DEFENSIVE_CARDS,
   MIN_OFFENSIVE_CARDS,
   MIN_UNIQUE_CARDS,
   STARTER_DECK,
@@ -19,6 +20,14 @@ const GUIDE_SEEN_KEY = "ina-card-guide-seen";
 const COLLECTION_KEY = "ina-card-unlocks-beta-v2";
 const DECK_KEY = "ina-card-active-deck-v1";
 const CHALLENGE_PROGRESS_KEY = "ina-card-challenge-progress-beta-v2";
+const LEGACY_STARTER_DECK = [
+  "irene-villa", "irene-villa",
+  "jeanne-darc", "jeanne-darc",
+  "riko-wingate", "riko-wingate",
+  "mavuika-heartless", "mavuika-heartless",
+  "mikan-tsumiki", "mikan-tsumiki",
+  "wang-qing", "wang-qing",
+];
 
 const UNLOCK_CHALLENGES = {
   "shiro-harukawa": {
@@ -154,6 +163,55 @@ const UNLOCK_CHALLENGES = {
     goal: 5,
     unit: "ataques contra defensa",
   },
+  "miu-iruma": {
+    title: "Ingeniería de campo",
+    description: "Juega 10 cartas de gerente o apoyo.",
+    metric: "supportPlayed",
+    goal: 10,
+    unit: "apoyos jugados",
+  },
+  "kazuichi-souda-counter": {
+    title: "Desmontar la muralla",
+    description: "Ataca 8 veces cuando el rival tenga defensa.",
+    metric: "guardBreakAttacks",
+    goal: 8,
+    unit: "ataques contra defensa",
+  },
+  "aika-wingate-counter": {
+    title: "Viento del norte",
+    description: "Juega 12 cartas de afinidad Hielo.",
+    metric: "iceCardsPlayed",
+    goal: 12,
+    unit: "cartas de Hielo",
+  },
+  "kyoko-kirigiri-counter": {
+    title: "Todas las pistas",
+    description: "Roba 15 cartas adicionales a lo largo de tus partidas.",
+    metric: "extraDraws",
+    goal: 15,
+    unit: "robos adicionales",
+  },
+  "akane-owari-counter": {
+    title: "Presión constante",
+    description: "Acumula 70 puntos de potencia de ataque.",
+    metric: "attackDealt",
+    goal: 70,
+    unit: "potencia de ataque",
+  },
+  "ishigami-senku-counter": {
+    title: "Diez mil millones por ciento",
+    description: "Juega 45 cartas en total.",
+    metric: "cardsPlayed",
+    goal: 45,
+    unit: "cartas jugadas",
+  },
+  "kokichi-oma-counter": {
+    title: "Engaño de campeonato",
+    description: "Completa 5 partidas, sin importar el resultado.",
+    metric: "gamesFinished",
+    goal: 5,
+    unit: "partidas completadas",
+  },
 };
 
 const RARITIES = {
@@ -229,6 +287,7 @@ const elements = {
   log: document.querySelector("#match-log"),
   hand: document.querySelector("#card-hand"),
   handMessage: document.querySelector("#hand-message"),
+  useInvention: document.querySelector("#use-invention"),
   endTurn: document.querySelector("#end-turn"),
   rules: document.querySelector("#rules-dialog"),
   rulesTriggers: document.querySelectorAll(".rules-trigger"),
@@ -304,6 +363,7 @@ elements.finishRules.addEventListener("click", finishRules);
 elements.closeCardDetail.addEventListener("click", closeCardDetail);
 elements.playDetailedCard.addEventListener("click", playSelectedCard);
 elements.useLeader.addEventListener("click", openLeaderChoice);
+elements.useInvention.addEventListener("click", openInventionChoice);
 elements.closeChoice.addEventListener("click", closeChoiceDialog);
 elements.statChips.forEach((chip) => chip.addEventListener("click", () => showContextHelp(chip.dataset.help)));
 elements.notebookTriggers.forEach((button) => button.addEventListener("click", openNotebook));
@@ -324,7 +384,7 @@ elements.code.addEventListener("keydown", (event) => {
 elements.rules.addEventListener("click", (event) => closeOnBackdrop(event, elements.rules));
 elements.cardDetail.addEventListener("click", (event) => closeOnBackdrop(event, elements.cardDetail));
 elements.choice.addEventListener("cancel", (event) => {
-  if (choiceMode === "scout") event.preventDefault();
+  if (choiceMode === "pending") event.preventDefault();
 });
 
 async function createOnlineRoom() {
@@ -513,6 +573,7 @@ function renderGame() {
   renderLog();
   renderHand();
   renderLeader();
+  renderInvention();
   renderPendingChoice();
   checkFinishedChallenges();
   elements.endTurn.disabled = !view.isMyTurn || view.phase !== "playing" || Boolean(view.me.pendingChoice);
@@ -539,8 +600,10 @@ function renderTurnState() {
 
   if (view.isMyTurn) {
     if (view.me.pendingChoice) {
-      elements.turn.textContent = "Decisión de Leii";
-      elements.turnGuidance.textContent = "Elige una de las cartas encontradas antes de continuar tu turno.";
+      elements.turn.textContent = view.me.pendingChoice.type === "tactical-role" ? "Robo Táctico" : "Decisión táctica";
+      elements.turnGuidance.textContent = view.me.pendingChoice.type === "tactical-role"
+        ? "Tu mano necesita una respuesta. Elige buscar ataque o defensa."
+        : "Elige una de las cartas encontradas antes de continuar tu turno.";
       elements.turnSymbol.textContent = "🔎";
       elements.turnCallout.classList.add("mine");
       return;
@@ -575,6 +638,10 @@ function renderEffects() {
   if (view.me.nextCardDiscount) effects.push(createTag(`Tu próxima carta cuesta ${view.me.nextCardDiscount} menos`, "good"));
   if (view.me.nextAffinityDiscount) effects.push(createTag(`${getAffinityIcon(view.me.nextAffinityDiscount.affinity)} Próxima ${view.me.nextAffinityDiscount.affinity}: −${view.me.nextAffinityDiscount.amount}`, "affinity"));
   if (view.me.fatigue) effects.push(createTag(`Próximo agotamiento: −${view.me.fatigue + 1} de moral`, "debuff"));
+  if (view.me.healingBlock) effects.push(createTag("Tu próxima curación será anulada", "debuff"));
+  if (view.me.drawLock) effects.push(createTag("Tu próximo robo adicional será anulado", "debuff"));
+  if (view.me.talentSilenced) effects.push(createTag("Tus talentos están silenciados este turno", "debuff"));
+  if (view.me.coachLocked) effects.push(createTag("Tu entrenador está bloqueado este turno", "debuff"));
   if (view.opponent?.attackBuff) effects.push(createTag(`El próximo ataque rival recibe +${view.opponent.attackBuff}`, "rival"));
   if (view.opponent?.weakness) effects.push(createTag(`El próximo ataque rival pierde ${view.opponent.weakness}`, "good"));
 
@@ -599,10 +666,30 @@ function renderLog() {
 
 function renderHand() {
   elements.hand.replaceChildren();
+  const lanes = [
+    { id: "attack", icon: "⚔️", title: "Ataque", hint: "Presiona la moral rival", cards: [] },
+    { id: "defense", icon: "🛡️", title: "Defensa", hint: "Protege tu equipo", cards: [] },
+    { id: "tactics", icon: "📋", title: "Táctica y apoyo", hint: "Combos, gerentes y equilibrio", cards: [] },
+  ];
   for (const cardId of view.me.hand) {
     const card = CARDS_BY_ID[cardId];
     if (!card) continue;
-    elements.hand.append(createCard(card));
+    const lane = getHandLane(card);
+    lanes.find((entry) => entry.id === lane)?.cards.push(card);
+  }
+  for (const lane of lanes) {
+    const section = document.createElement("section");
+    section.className = `hand-lane hand-lane-${lane.id}`;
+    section.innerHTML = `<header><span>${lane.icon}</span><div><strong>${lane.title}</strong><small>${lane.hint}</small></div><b>${lane.cards.length}</b></header><div class="hand-lane-track"></div>`;
+    const track = section.querySelector(".hand-lane-track");
+    for (const card of lane.cards) track.append(createCard(card));
+    if (!lane.cards.length) {
+      const empty = document.createElement("p");
+      empty.className = "empty-lane";
+      empty.textContent = lane.id === "attack" ? "Sin cartas ofensivas" : lane.id === "defense" ? "Sin cartas defensivas" : "Sin apoyos";
+      track.append(empty);
+    }
+    elements.hand.append(section);
   }
 
   if (!view.me.hand.length) {
@@ -617,6 +704,13 @@ function renderHand() {
   }
 }
 
+function getHandLane(card) {
+  const attacks = (card.attack || 0) > 0;
+  const defends = (card.guard || 0) > 0;
+  if (card.category === "support" || (attacks && defends) || (!attacks && !defends)) return "tactics";
+  return attacks ? "attack" : "defense";
+}
+
 function renderLeader() {
   const coach = COACHES_BY_ID[view.me.leaderId] || LEADER;
   const hasDiscard = view.me.discard.length > 0;
@@ -624,6 +718,7 @@ function renderLeader() {
   const baseCanUse = view.phase === "playing"
     && view.isMyTurn
     && !view.me.leaderUsed
+    && !view.me.coachLocked
     && !view.me.pendingChoice;
   const needsDiscard = coach.abilityType === "rewind";
   const needsScoutCards = coach.abilityType === "ninja-scout";
@@ -651,6 +746,9 @@ function renderLeader() {
   if (view.me.leaderUsed) {
     elements.leaderStatus.textContent = "Agotado";
     elements.leaderStatus.className = "coach-status used";
+  } else if (view.me.coachLocked) {
+    elements.leaderStatus.textContent = "Bloqueado por Presión al banquillo";
+    elements.leaderStatus.className = "coach-status waiting";
   } else if (needsDiscard && !hasDiscard) {
     elements.leaderStatus.textContent = "Necesitas una carta descartada";
     elements.leaderStatus.className = "coach-status waiting";
@@ -669,26 +767,100 @@ function renderLeader() {
   }
 }
 
+function renderInvention() {
+  const active = hasActiveTalent("miu-iruma");
+  const used = Boolean(view.me.talentUses?.invencion);
+  const hasEligibleCard = view.me.hand.some((cardId) => {
+    const card = CARDS_BY_ID[cardId];
+    const attacks = (card?.attack || 0) > 0;
+    const defends = (card?.guard || 0) > 0;
+    return attacks !== defends;
+  });
+  elements.useInvention.hidden = !active;
+  elements.useInvention.disabled = !view.isMyTurn || used || !hasEligibleCard || Boolean(view.me.pendingChoice);
+  elements.useInvention.innerHTML = used
+    ? "✓ Invención utilizada"
+    : "🔧 Usar Invención";
+  elements.useInvention.title = "Cambia una carta ofensiva por una defensiva, o al revés.";
+}
+
 function renderPendingChoice() {
   const pending = view.me.pendingChoice;
   if (!pending) {
-    if (choiceMode === "scout" && elements.choice.open) elements.choice.close();
-    if (choiceMode === "scout") choiceMode = "";
+    if (choiceMode === "pending" && elements.choice.open) elements.choice.close();
+    if (choiceMode === "pending") choiceMode = "";
     return;
   }
 
-  choiceMode = "scout";
+  choiceMode = "pending";
+  if (pending.type === "tactical-role") {
+    elements.choiceEyebrow.textContent = "Robo Táctico · inicio del turno";
+    elements.choiceTitle.textContent = "¿Qué necesita tu equipo?";
+    elements.choiceDescription.textContent = "Este robo sustituye al robo normal y evita que una mano desequilibrada te deje sin respuesta.";
+    elements.choiceNote.textContent = hasActiveTalent("leii-ishikawa")
+      ? "Perspicacia está activa: después podrás elegir entre hasta 3 cartas compatibles."
+      : "Recibirás una carta aleatoria de la función que elijas.";
+    elements.closeChoice.hidden = true;
+    renderTacticalRoleChoices(pending.roles || []);
+    if (!elements.choice.open) elements.choice.showModal();
+    return;
+  }
   const coachChoice = pending.type === "coach-scout";
+  const tacticalChoice = pending.type === "tactical-scout";
   elements.choiceEyebrow.textContent = coachChoice
     ? "Code · Lectura Shinobi"
-    : "Leii Ishikawa · Lectura desde la Banda";
+    : tacticalChoice
+      ? "Leii Ishikawa · Perspicacia"
+      : "Leii Ishikawa · Lectura desde la Banda";
   elements.choiceTitle.textContent = "Elige la próxima jugada";
   elements.choiceDescription.textContent = coachChoice
     ? "Code ha localizado estas opciones. Añade una a tu mano y devuelve las demás al fondo."
-    : "Añade una de estas cartas a tu mano. Las demás volverán al fondo del mazo.";
+    : tacticalChoice
+      ? `Perspicacia ha encontrado estas cartas ${pending.role === "attack" ? "ofensivas" : "defensivas"}. Elige una.`
+      : "Añade una de estas cartas a tu mano. Las demás volverán al fondo del mazo.";
   elements.choiceNote.textContent = "Debes realizar esta elección antes de continuar el turno.";
   elements.closeChoice.hidden = true;
   renderChoiceCards(pending.cardIds, (cardId) => sendAction({ type: "choose-card", cardId }));
+  if (!elements.choice.open) elements.choice.showModal();
+}
+
+function renderTacticalRoleChoices(roles) {
+  elements.choiceGrid.replaceChildren();
+  const choices = {
+    attack: { icon: "⚔️", title: "Buscar ataque", text: "Encuentra una carta capaz de dañar la moral rival." },
+    defense: { icon: "🛡️", title: "Buscar defensa", text: "Encuentra una carta capaz de levantar tu muralla." },
+  };
+  for (const role of roles) {
+    const option = choices[role];
+    if (!option) continue;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `tactical-role-choice tactical-role-${role}`;
+    button.innerHTML = `<span>${option.icon}</span><strong>${option.title}</strong><small>${option.text}</small>`;
+    button.addEventListener("click", () => sendAction({ type: "tactical-draw", role }));
+    elements.choiceGrid.append(button);
+  }
+}
+
+function openInventionChoice() {
+  if (!view?.isMyTurn || !hasActiveTalent("miu-iruma") || view.me.talentUses?.invencion || view.me.pendingChoice) return;
+  const eligible = [...new Set(view.me.hand)].filter((cardId) => {
+    const card = CARDS_BY_ID[cardId];
+    const attacks = (card?.attack || 0) > 0;
+    const defends = (card?.guard || 0) > 0;
+    return attacks !== defends;
+  });
+  if (!eligible.length) return;
+  choiceMode = "invention";
+  elements.choiceEyebrow.textContent = "Miu Iruma · Talento activo";
+  elements.choiceTitle.textContent = "Invención";
+  elements.choiceDescription.textContent = "Elige una carta ofensiva o defensiva. Miu la cambiará por una carta aleatoria de la función contraria.";
+  elements.choiceNote.textContent = "Puede utilizarse una vez por turno mientras Miu permanezca en el descarte.";
+  elements.closeChoice.hidden = false;
+  renderChoiceCards(eligible, (cardId) => {
+    closeChoiceDialog();
+    sendAction({ type: "invent-card", cardId });
+  });
   if (!elements.choice.open) elements.choice.showModal();
 }
 
@@ -736,7 +908,7 @@ function renderChoiceCards(cardIds, onChoose) {
 }
 
 function closeChoiceDialog() {
-  if (choiceMode === "scout") return;
+  if (choiceMode === "pending") return;
   if (elements.choice.open) elements.choice.close();
   choiceMode = "";
 }
@@ -823,6 +995,12 @@ function getEffectPills(card) {
   if (card.cleanse) pills.push(effectPill("cleanse", "✨", "✓", "Elimina tu debilitación"));
   if (card.energyGain) pills.push(effectPill("energy", "⚡", `+${card.energyGain}`, "Energía que recuperas"));
   if (card.pierce) pills.push(effectPill("pierce", "🗡️", card.pierce, "Ataque que atraviesa defensa"));
+  if (card.guardBreak) pills.push(effectPill("counter", "💥", card.guardBreak, "Defensa rival que destruye"));
+  if (card.breakAffinity) pills.push(effectPill("counter", "✂️", "Cadena", "Rompe la afinidad rival"));
+  if (card.healingBlock) pills.push(effectPill("counter", "🚫", "Cura", "Anula la próxima curación rival"));
+  if (card.drawLock) pills.push(effectPill("counter", "🔒", "Robo", "Anula el próximo robo adicional rival"));
+  if (card.talentSilence) pills.push(effectPill("counter", "🔇", "Talento", "Silencia los talentos rivales"));
+  if (card.coachLock) pills.push(effectPill("counter", "🚷", "Míster", "Bloquea al entrenador rival"));
   if (card.bonusIfBuff) pills.push(effectPill("condition", "🔥", `+${card.bonusIfBuff}`, "Extra si estaba potenciado"));
   if (card.bonusIfNoGuard) pills.push(effectPill("condition", "🎯", `+${card.bonusIfNoGuard}`, "Extra si el rival no tiene defensa"));
   if (card.affinity) pills.push(effectPill("affinity", getAffinityIcon(card.affinity), card.affinity, "Afinidad"));
@@ -853,10 +1031,12 @@ function getCurrentResult(card) {
   if (card.attack && hasActiveTalent("shinbad-ramirez") && !view.me.talentUses?.fuerzaDeTiro) conditionalBonus += 1;
   if (affinity.resonance && card.affinityPrimary === "attack") conditionalBonus += 1;
   conditionalBonus += reward.attack || 0;
+  const guardBreakPreview = Math.min((card.guardBreak || 0) + (reward.guardBreak || 0), view.opponent?.guard || 0);
+  const rivalGuardAfterCounter = Math.max(0, (view.opponent?.guard || 0) - guardBreakPreview);
   if (card.attack) {
     const attack = Math.max(0, card.attack + view.me.attackBuff - view.me.weakness + conditionalBonus);
     const pierce = Math.min(attack, (card.pierce || 0) + (reward.pierce || 0));
-    const blocked = Math.min(view.opponent?.guard || 0, attack - pierce);
+    const blocked = Math.min(rivalGuardAfterCounter, attack - pierce);
     const moraleDamage = Math.max(0, attack - blocked);
     if (blocked && moraleDamage) results.push(`rompe ${blocked} de defensa y quita ${moraleDamage} de moral`);
     else if (blocked) results.push(`rompe ${blocked} de defensa`);
@@ -868,7 +1048,13 @@ function getCurrentResult(card) {
   if (card.guard && hasActiveTalent("bronya-wingate") && ["Agua", "Hielo"].includes(card.affinity) && !view.me.talentUses?.defensaPlus) guard += 1;
   if (card.guard && hasActiveTalent("fubuki-sumiye") && /porter[oa]/i.test(card.position || "")) guard += 1;
   if (guard) results.push(`ganas ${guard} de defensa`);
-  if (card.heal) results.push(`recuperas ${Math.min(card.heal, MAX_MORALE - view.me.morale)} de moral`);
+  if (card.heal) {
+    const requested = view.me.morale <= (card.criticalHealThreshold ?? -1) ? (card.criticalHeal || card.heal) : card.heal;
+    const allowed = Math.max(0, 3 - (view.me.healingThisTurn || 0));
+    results.push(view.me.healingBlock
+      ? "tu curación será anulada"
+      : `recuperas ${Math.min(requested, allowed, MAX_MORALE - view.me.morale)} de moral`);
+  }
   const buff = (card.buff || 0) + (reward.buff || 0);
   const debuff = (card.debuff || 0) + (reward.debuff || 0);
   if (buff) results.push(`guardas +${buff} para tu próximo ataque`);
@@ -883,6 +1069,12 @@ function getCurrentResult(card) {
   if (hasActiveTalent("pan-walker") && view.me.cardsPlayedThisTurn === 2) energy += 1;
   if (energy) results.push(`recuperas hasta ${energy} de energía`);
   if (card.removeOpponentBuff) results.push(view.opponent?.attackBuff ? "eliminas la potenciación rival" : "el rival no tiene potenciación que eliminar");
+  if (card.guardBreak) results.push(guardBreakPreview ? `destruyes ${guardBreakPreview} de defensa rival antes de atacar` : "el rival no tiene defensa que desmontar");
+  if (card.breakAffinity) results.push("rompes la cadena de afinidad rival");
+  if (card.healingBlock) results.push("bloqueas su próxima curación");
+  if (card.drawLock) results.push("bloqueas su próximo robo adicional");
+  if (card.talentSilence) results.push("silencias sus talentos durante su próximo turno");
+  if (card.coachLock) results.push("bloqueas su entrenador durante su próximo turno");
   if (affinity.resonance) results.push(`activas Resonancia ${card.affinity} ×2`);
   if (affinity.total) results.push(`activas Afinidad Total: ${card.affinityTotal?.text || "beneficio especial"}`);
   return capitalize(results.join("; ")) || "Aplica su efecto";
@@ -1046,6 +1238,7 @@ function renderDeckBuilder() {
   const counts = countDeckCards(workingDeck);
   const uniqueCount = counts.size;
   const offensiveCount = workingDeck.filter((cardId) => (CARDS_BY_ID[cardId]?.attack || 0) > 0).length;
+  const defensiveCount = workingDeck.filter((cardId) => (CARDS_BY_ID[cardId]?.guard || 0) > 0).length;
 
   elements.deckCount.textContent = `${workingDeck.length}/${DECK_SIZE}`;
   elements.deckTabCount.textContent = `${workingDeck.length}/${DECK_SIZE}`;
@@ -1053,6 +1246,7 @@ function renderDeckBuilder() {
     <span class="${workingDeck.length === DECK_SIZE ? "complete" : "pending"}">${workingDeck.length === DECK_SIZE ? "✓" : "○"} ${DECK_SIZE} cartas</span>
     <span class="${uniqueCount >= MIN_UNIQUE_CARDS ? "complete" : "pending"}">${uniqueCount >= MIN_UNIQUE_CARDS ? "✓" : "○"} ${MIN_UNIQUE_CARDS} diferentes</span>
     <span class="${offensiveCount >= MIN_OFFENSIVE_CARDS ? "complete" : "pending"}">${offensiveCount >= MIN_OFFENSIVE_CARDS ? "✓" : "○"} ${offensiveCount}/${MIN_OFFENSIVE_CARDS} ofensivas</span>
+    <span class="${defensiveCount >= MIN_DEFENSIVE_CARDS ? "complete" : "pending"}">${defensiveCount >= MIN_DEFENSIVE_CARDS ? "✓" : "○"} ${defensiveCount}/${MIN_DEFENSIVE_CARDS} defensivas</span>
     <span class="${validation.copyLimitValid ? "complete" : "pending"}">${validation.copyLimitValid ? "✓" : "○"} Máx. ${MAX_COPIES} copias</span>
   `;
   elements.saveDeck.disabled = !validation.valid;
@@ -1131,6 +1325,10 @@ function saveWorkingDeck() {
 function getActiveDeck() {
   try {
     const saved = JSON.parse(localStorage.getItem(DECK_KEY) || "null");
+    if (hasSameCardCounts(saved, LEGACY_STARTER_DECK)) {
+      localStorage.setItem(DECK_KEY, JSON.stringify(STARTER_DECK));
+      return [...STARTER_DECK];
+    }
     if (getDeckValidation(saved).valid) return [...saved];
   } catch {
     // Se usa el mazo inicial si el guardado local se dañó.
@@ -1138,18 +1336,28 @@ function getActiveDeck() {
   return [...STARTER_DECK];
 }
 
+function hasSameCardCounts(first, second) {
+  if (!Array.isArray(first) || first.length !== second.length) return false;
+  const firstCounts = countDeckCards(first);
+  const secondCounts = countDeckCards(second);
+  return firstCounts.size === secondCounts.size
+    && [...firstCounts].every(([cardId, amount]) => secondCounts.get(cardId) === amount);
+}
+
 function getDeckValidation(deck) {
-  if (!Array.isArray(deck)) return { valid: false, copyLimitValid: false, offensiveValid: false, message: "El mazo no se puede leer." };
+  if (!Array.isArray(deck)) return { valid: false, copyLimitValid: false, offensiveValid: false, defensiveValid: false, message: "El mazo no se puede leer." };
   const counts = countDeckCards(deck);
   const known = deck.every((cardId) => CARDS_BY_ID[cardId] && unlockedCards.has(cardId));
   const copyLimitValid = [...counts.values()].every((amount) => amount <= MAX_COPIES);
   const offensiveValid = deck.filter((cardId) => (CARDS_BY_ID[cardId]?.attack || 0) > 0).length >= MIN_OFFENSIVE_CARDS;
-  if (deck.length !== DECK_SIZE) return { valid: false, copyLimitValid, offensiveValid, message: `Necesitas exactamente ${DECK_SIZE} cartas.` };
-  if (!known) return { valid: false, copyLimitValid, offensiveValid, message: "El mazo contiene una carta que aún no has desbloqueado." };
-  if (!copyLimitValid) return { valid: false, copyLimitValid, offensiveValid, message: `Solo puedes llevar ${MAX_COPIES} copias de cada carta.` };
-  if (counts.size < MIN_UNIQUE_CARDS) return { valid: false, copyLimitValid, offensiveValid, message: `Necesitas al menos ${MIN_UNIQUE_CARDS} cartas diferentes.` };
-  if (!offensiveValid) return { valid: false, copyLimitValid, offensiveValid, message: `Necesitas al menos ${MIN_OFFENSIVE_CARDS} cartas ofensivas.` };
-  return { valid: true, copyLimitValid: true, offensiveValid: true, message: "Mazo válido." };
+  const defensiveValid = deck.filter((cardId) => (CARDS_BY_ID[cardId]?.guard || 0) > 0).length >= MIN_DEFENSIVE_CARDS;
+  if (deck.length !== DECK_SIZE) return { valid: false, copyLimitValid, offensiveValid, defensiveValid, message: `Necesitas exactamente ${DECK_SIZE} cartas.` };
+  if (!known) return { valid: false, copyLimitValid, offensiveValid, defensiveValid, message: "El mazo contiene una carta que aún no has desbloqueado." };
+  if (!copyLimitValid) return { valid: false, copyLimitValid, offensiveValid, defensiveValid, message: `Solo puedes llevar ${MAX_COPIES} copias de cada carta.` };
+  if (counts.size < MIN_UNIQUE_CARDS) return { valid: false, copyLimitValid, offensiveValid, defensiveValid, message: `Necesitas al menos ${MIN_UNIQUE_CARDS} cartas diferentes.` };
+  if (!offensiveValid) return { valid: false, copyLimitValid, offensiveValid, defensiveValid, message: `Necesitas al menos ${MIN_OFFENSIVE_CARDS} cartas ofensivas.` };
+  if (!defensiveValid) return { valid: false, copyLimitValid, offensiveValid, defensiveValid, message: `Necesitas al menos ${MIN_DEFENSIVE_CARDS} cartas defensivas.` };
+  return { valid: true, copyLimitValid: true, offensiveValid: true, defensiveValid: true, message: "Mazo válido." };
 }
 
 function countDeckCards(deck) {
