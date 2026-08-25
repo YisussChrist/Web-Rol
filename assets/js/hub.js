@@ -21,6 +21,7 @@
       { title: "Pokémon Center", category: "Pokémon", emoji: "🏥", url: "Pokemon/center.html", description: "Centro regional con entrenadores, equipos, especies, medallas, mapa y herramientas de Etruria.", status: "Nuevo" },
       { title: "Entrenadores", category: "Pokémon", emoji: "🪪", url: "Pokemon/index.html", description: "Expedientes de entrenadores, equipos actuales, medallas y progreso en la Liga.", status: "" },
       { title: "Pokédex de Etruria", category: "Pokémon", emoji: "◉", url: "Pokemon/pokedex.html", description: "Registro regional de especies, habilidades, estadísticas y movimientos.", status: "Nuevo" },
+      { title: "Laboratorio de Equipo", category: "Pokémon", emoji: "⚗", url: "Pokemon/equipo.html", description: "Crea el equipo de un personaje y estudia evoluciones, potencial, movimientos y objetos antes de guardarlo.", status: "Nuevo" },
       { title: "Mapa", category: "Pokémon", emoji: "🗺️", url: "Pokemon/mapa etruria.html", description: "Mapa interactivo de la región de Etruria.", status: "" },
       { title: "Datos", category: "Pokémon", emoji: "📊", url: "Pokemon/datos.html", description: "Buscador para conocer las stats y ataques Pokémon.", status: "" },
       { title: "Evolink", category: "Pokémon", emoji: "📱", url: "compromised/index.html", description: "Sistema operativo personal de la Red Regional de Etruria para consultar equipo, medallas, avisos e investigaciones.", status: "Beta" },
@@ -42,6 +43,7 @@
       { title: "Juegos", category: "Minijuegos", emoji: "🎮", url: "juegos/index.html", description: "Centro de juegos de Web-Rol, con Duelo de Resonancia disponible como primera Beta.", status: "Beta" },
       { title: "Copero del Rol", category: "Minijuegos", emoji: "🏆", url: "juegos/copero/index.html", description: "Tres carreras narrativas inspiradas en Dragon Ball, Pokémon e Inazuma, conectadas con el lore de los servidores.", status: "Nuevo" },
       { title: "Equipo Ideal", category: "Minijuegos", emoji: "⚽", url: "juegos/equipo.html", description: "Construye un once con personajes del RP, asigna posiciones y guarda tu alineación.", status: "Nuevo" },
+      { title: "¿Quién es?", category: "Minijuegos", emoji: "🔎", url: "juegos/adivina-personaje/", description: "Descarta personajes del rol combinando universos, género, equipos, razas, poderes y otras pistas.", status: "Nuevo" },
 ];
 
     /*

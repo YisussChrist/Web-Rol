@@ -31,6 +31,7 @@ const RUTA_CALENDARIO = path.join(__dirname, "..", "calendario.html");
 const RUTA_DATOS_CALENDARIO = path.join(__dirname, "..", "calendario-datos.js");
 const RUTA_EMBARAZOS = path.join(__dirname, "..", "embarazos.html");
 const RUTA_PERSONAJES = path.join(__dirname, "..", "personajes.json");
+const RUTA_PERSONAJES_DATOS = path.join(__dirname, "..", "personajes-datos.js");
 const RUTA_PODER = path.join(__dirname, "..", "poder.html");
 const RUTA_ESTADO_BOT = path.join(__dirname, ".bot-state.json");
 
@@ -64,6 +65,7 @@ const COMANDOS = new Map([
     ["nacimientos", { nombre: "nacimientos", aliases: [] }],
     ["embarazos", { nombre: "embarazos", aliases: [] }],
     ["personaje", { nombre: "personaje", aliases: [] }],
+    ["track", { nombre: "track", aliases: ["trackpersonaje", "traquear"] }],
     ["ultimocambio", { nombre: "ultimocambio", aliases: [] }]
 ]);
 
@@ -400,6 +402,30 @@ function buscarPersonaje(nombreBuscado) {
     });
 }
 
+function extraerPersonajesDatos() {
+    if (!fs.existsSync(RUTA_PERSONAJES_DATOS)) return null;
+
+    try {
+        const contenido = fs.readFileSync(RUTA_PERSONAJES_DATOS, "utf8");
+        const asignacion = contenido.indexOf("window.RP_CHARACTERS");
+        const inicioArray = contenido.indexOf("[", asignacion);
+        const finArray = contenido.lastIndexOf("]");
+
+        if (asignacion === -1 || inicioArray === -1 || finArray <= inicioArray) return undefined;
+
+        const personajes = Function(
+            `"use strict"; return (${contenido.slice(inicioArray, finArray + 1)});`
+        )();
+
+        return Array.isArray(personajes)
+            ? personajes.filter(personaje => personaje && personaje.name)
+            : [];
+    } catch (error) {
+        console.error("No se ha podido leer personajes-datos.js:", error);
+        return undefined;
+    }
+}
+
 async function buscarWiki(nombrePagina) {
 
     // Intentar búsqueda exacta primero
@@ -699,7 +725,7 @@ function crearPaginaAyuda(indice) {
             titulo: "📚 Personajes y utilidades",
             descripcion: "Información, cálculos y enlaces relacionados con Web-Rol.",
             campos: [
-                ["Personajes", "`-personaje Freyja` · `-poder Freyja Kane`\n`-podercalc Freyja Kane * 100` · `-wiki Nara Midori`"],
+                ["Personajes", "`-personaje Freyja` · `-track Mio Naruse`\n`-poder Freyja Kane` · `-podercalc Freyja Kane * 100` · `-wiki Nara Midori`"],
                 ["Cálculos", "`-calc 1500 * 2 + 300`\n`-multi 51000000 50`"],
                 ["Web y proyecto", "`-bolos` · `-roadmap` · `-ultimocambio`"]
             ]
@@ -1082,6 +1108,8 @@ if (!pagina) {
                     value:
                         "`-personaje Freyja`\n" +
                         "Busca un personaje en `personajes.json`.\n\n" +
+                        "`-track Mio Naruse`\n" +
+                        "Comprueba si está registrado en `personajes-datos.js`.\n\n" +
                         "`-wiki Nara Midori`\n" +
                         "Busca una página en la wiki de Fandom.\n\n" +
                         "`-poder Freyja Kane`\n" +
@@ -2074,6 +2102,65 @@ const descripcion = embarazosOrdenados
             if (imagen) {
                 embed.setThumbnail(imagen);
 }
+        return message.channel.send({ embeds: [embed] });
+    }
+
+    if (solicitud?.nombre === "track") {
+        const nombre = solicitud.argumentos;
+
+        if (!nombre) {
+            return message.reply({ embeds: [crearEmbedError(
+                "❌ Falta el nombre",
+                "Indica qué personaje quieres comprobar. Ejemplo:\n`-track Mio Naruse`"
+            )] });
+        }
+
+        const personajes = extraerPersonajesDatos();
+
+        if (personajes === null) {
+            return message.reply({ embeds: [crearEmbedError(
+                "❌ No encuentro personajes-datos.js",
+                "Comprueba que el archivo esté en la carpeta principal de Web-Rol."
+            )] });
+        }
+
+        if (personajes === undefined) {
+            return message.reply({ embeds: [crearEmbedError(
+                "❌ No puedo leer los personajes",
+                "El archivo `personajes-datos.js` no tiene el formato esperado o contiene un error."
+            )] });
+        }
+
+        const termino = normalizarBusqueda(nombre);
+        const coincidencias = personajes.filter(personaje =>
+            normalizarBusqueda(personaje.name) === termino
+        );
+
+        if (coincidencias.length === 0) {
+            const sugerencias = sugerirNombres(nombre, personajes.map(personaje => personaje.name));
+            const ayuda = sugerencias.length
+                ? `\n\n¿Quizá querías decir ${sugerencias.map(sugerencia => `**${sugerencia}**`).join(", ")}?`
+                : "";
+
+            return message.reply({ embeds: [crearEmbedVacio(
+                "❌ No está registrado",
+                `**${nombre}** no aparece en \`personajes-datos.js\`.${ayuda}`
+            )] });
+        }
+
+        const descripcion = coincidencias.map(personaje => {
+            const obra = personaje.anime || "No especificada";
+            const dueno = personaje.owner || "Sin dueño registrado";
+            return `### ${personaje.name}\n📺 **Obra:** ${obra}\n👤 **Dueño:** ${dueno}`;
+        }).join("\n\n");
+
+        const embed = crearEmbedBase({
+            color: ESTILO_EMBEDS.colores.exito,
+            titulo: "✅ Personaje registrado",
+            descripcion: limitarTexto(descripcion),
+            pie: `personajes-datos.js · ${coincidencias.length} coincidencia${coincidencias.length === 1 ? "" : "s"}`
+        });
+
         return message.channel.send({ embeds: [embed] });
     }
 

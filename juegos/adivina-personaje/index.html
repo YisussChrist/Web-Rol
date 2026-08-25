@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Buscador deductivo para encontrar personajes del rol combinando filtros." />
+  <title>¿Quién es? | Web-Rol</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="back-link" href="../">← Volver a juegos</a>
+    <div class="brand"><span aria-hidden="true">◈</span><strong>Archivo Deductivo</strong><small>Resonance Intelligence</small></div>
+    <button class="help-button" id="open-help" type="button"><span>?</span> Cómo funciona</button>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Minijuego de deducción · Tres archivos conectados</p>
+        <h1 id="page-title">¿Quién es?</h1>
+        <p class="hero-copy">Piensa en un personaje y ve añadiendo características. Cada filtro descarta expedientes hasta dejar únicamente tu respuesta.</p>
+      </div>
+      <div class="hero-stats" aria-live="polite">
+        <article><strong id="total-count">0</strong><span>expedientes</span></article>
+        <article><strong id="remaining-count">0</strong><span>candidatos</span></article>
+        <article><strong id="active-count">0</strong><span>filtros activos</span></article>
+      </div>
+    </section>
+
+    <section class="game-layout">
+      <aside class="filter-panel" aria-label="Panel de filtros">
+        <div class="filter-panel-heading">
+          <div><span class="panel-kicker">Paso 1</span><h2>Añade pistas</h2></div>
+          <button id="collapse-filters" type="button" aria-expanded="true">Ocultar</button>
+        </div>
+
+        <label class="character-search" for="character-search">
+          <span>Buscar por nombre</span>
+          <div><span aria-hidden="true">⌕</span><input id="character-search" type="search" placeholder="Escribe una parte del nombre…" autocomplete="off" /></div>
+        </label>
+
+        <div class="filter-actions">
+          <button id="undo-filter" type="button" disabled>↶ Deshacer</button>
+          <button id="reset-filters" type="button" disabled>Reiniciar</button>
+        </div>
+
+        <div class="filter-groups" id="filter-groups"></div>
+      </aside>
+
+      <section class="results-panel" aria-labelledby="results-title">
+        <div class="results-toolbar">
+          <div>
+            <span class="panel-kicker">Paso 2</span>
+            <h2 id="results-title"><span id="result-count">0</span> candidatos en pie</h2>
+          </div>
+          <div class="result-actions">
+            <button id="suggest-filter" type="button">✦ Sugerir pista</button>
+            <button id="toggle-identities" type="button" aria-pressed="false">◉ Ocultar identidades</button>
+          </div>
+        </div>
+
+        <div class="active-filters" id="active-filters" aria-live="polite"></div>
+        <div class="suggestion" id="suggestion" hidden></div>
+        <div class="final-reveal" id="final-reveal" hidden></div>
+        <div class="candidate-grid" id="candidate-grid"></div>
+        <button class="load-more" id="load-more" type="button" hidden>Mostrar más candidatos</button>
+      </section>
+    </section>
+  </main>
+
+  <dialog class="info-dialog" id="help-dialog" aria-labelledby="help-title">
+    <div class="dialog-heading">
+      <div><span class="panel-kicker">Guía rápida</span><h2 id="help-title">Cómo encontrar al personaje</h2></div>
+      <button class="dialog-close" id="close-help" type="button" aria-label="Cerrar">×</button>
+    </div>
+    <div class="help-content">
+      <article><span>1</span><div><strong>Piensa en alguien</strong><p>Debe tener expediente en Inazuma Center, Dragon Dex o Pokémon Center.</p></div></article>
+      <article><span>2</span><div><strong>Pulsa características</strong><p>Masculino y Dragon Ball significa masculino <em>y además</em> perteneciente a Dragon Ball.</p></div></article>
+      <article><span>3</span><div><strong>Combina alternativas</strong><p>Dos opciones de la misma sección funcionan como “o”: Raimon o Galaxia.</p></div></article>
+      <article><span>4</span><div><strong>Revela la respuesta</strong><p>Cuando quede un expediente, el sistema mostrará automáticamente el resultado.</p></div></article>
+      <p class="data-note">“Sin clasificar” significa que ese dato todavía no está escrito en la base. No se inventan géneros, razas ni relaciones.</p>
+    </div>
+  </dialog>
+
+  <dialog class="character-dialog" id="character-dialog" aria-labelledby="character-dialog-title">
+    <button class="dialog-close floating" id="close-character" type="button" aria-label="Cerrar expediente">×</button>
+    <div id="character-dialog-content"></div>
+  </dialog>
+
+  <script src="../../centro-inazuma-datos.js"></script>
+  <script src="../../dragon-dex-datos.js"></script>
+  <script src="../../Hijos Inazuma/hijos-inazuma-datos.js"></script>
+  <script src="../../Pokemon/entrenadores-datos.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
