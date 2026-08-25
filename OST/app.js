@@ -52,8 +52,6 @@
     muteButton: $('#muteButton'),
     queue: $('#queueDrawer'), queueList: $('#queueList'), modal: $('#detailModal'), modalContent: $('#modalContent')
   };
-  const gateway = $('#designGateway');
-
   const normalize = value => String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const trackTags = track => (track.tags || []).map(tag => normalize(tag).replace(/\s+/g, ''));
   const formatTime = seconds => Number.isFinite(seconds) ? `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}` : '0:00';
@@ -61,6 +59,21 @@
   const lyricsText = track => Array.isArray(track?.lyrics) ? track.lyrics.join('\n').trim() : String(track?.lyrics || '').trim();
   const lyricsTranslationText = track => Array.isArray(track?.lyricsTranslation) ? track.lyricsTranslation.join('\n').trim() : String(track?.lyricsTranslation || '').trim();
   const hasLyrics = track => lyricsText(track).length > 0;
+  const trackBelongsToCharacter = (track, index) => Array.isArray(track.characterIndices)
+    ? track.characterIndices.includes(index)
+    : track.characterIndex === index;
+  const characterTrackCount = index => soundtracks.filter(track => trackBelongsToCharacter(track, index)).length;
+  const characterButtons = (track, className) => {
+    const profiles = Array.isArray(track.characterProfiles) && track.characterProfiles.length
+      ? track.characterProfiles
+      : [{ name: track.character, face: track.characterFace, index: track.characterIndex }];
+    return profiles.filter(profile => Number.isInteger(profile.index)).map(profile => {
+      const label = className === 'detail-character'
+        ? `<div><strong>${escapeHTML(profile.name)}</strong><span>Ver expediente del personaje</span></div>`
+        : escapeHTML(profile.name);
+      return `<button class="${className}" data-character="${profile.index}" type="button"><img src="${escapeHTML(profile.face)}" alt="Retrato de ${escapeHTML(profile.name)}">${label}</button>`;
+    }).join('');
+  };
 
   function lyricsMarkup(track) {
     const original = lyricsText(track).split('\n');
@@ -98,7 +111,7 @@
         <div class="hero-copy">
           <p class="eyebrow">Resonancia seleccionada</p>
           <h2>${escapeHTML(track.songTitle)}</h2>
-          <button class="hero-character" data-character="${track.characterIndex}"><img src="${escapeHTML(track.characterFace)}" alt="">${escapeHTML(track.character)}</button>
+          <div class="hero-characters" aria-label="Personajes vinculados">${characterButtons(track, 'hero-character')}</div>
           <p class="hero-description">${escapeHTML(track.songDescription)}</p>
           <div class="hero-actions">
             <button class="primary-button" data-play="${state.current}">${state.playing ? 'Pausar' : 'Reproducir'}</button>
@@ -141,7 +154,7 @@
     nodes.sectionEyebrow.textContent = 'Expedientes';
     nodes.sectionTitle.textContent = 'Personajes';
     nodes.resultCount.textContent = `${characters.length} personajes`;
-    nodes.catalog.innerHTML = `<div class="character-grid">${characters.map((character, index) => `<button class="character-card" data-character="${index}"><img src="${escapeHTML(character.characterFace)}" alt="Retrato de ${escapeHTML(character.character)}" loading="lazy"><strong>${escapeHTML(character.character)}</strong><span>${character.tracks.length} ${character.tracks.length === 1 ? 'tema' : 'temas'}</span></button>`).join('')}</div>`;
+    nodes.catalog.innerHTML = `<div class="character-grid">${characters.map((character, index) => `<button class="character-card" data-character="${index}"><img src="${escapeHTML(character.characterFace)}" alt="Retrato de ${escapeHTML(character.character)}" loading="lazy"><strong>${escapeHTML(character.character)}</strong><span>${characterTrackCount(index)} ${characterTrackCount(index) === 1 ? 'tema' : 'temas'}</span></button>`).join('')}</div>`;
   }
 
   function render() {
@@ -267,7 +280,7 @@
     const track = soundtracks[index];
     lastFocus = document.activeElement;
     nodes.modalContent.className = 'modal-card';
-    nodes.modalContent.innerHTML = `<button class="icon-button modal-close" data-close-modal aria-label="Cerrar">×</button><div class="detail-head"><img src="${escapeHTML(track.songCover)}" alt="Portada de ${escapeHTML(track.songTitle)}"><div><p class="eyebrow">Soundtrack</p><h2 id="modalTitle">${escapeHTML(track.songTitle)}</h2></div></div><button class="detail-character" data-character="${track.characterIndex}"><img src="${escapeHTML(track.characterFace)}" alt="Retrato de ${escapeHTML(track.character)}"><div><strong>${escapeHTML(track.character)}</strong><span>Ver expediente del personaje</span></div></button><p class="detail-copy">${escapeHTML(track.lore || track.characterLore || track.songDescription)}</p><div class="hero-actions"><button class="primary-button" data-play="${index}">Reproducir</button>${hasLyrics(track) ? `<button class="secondary-button lyrics-button" data-lyrics="${index}">Ver letra</button>` : ''}<button class="secondary-button" data-cover="${index}">Ver portada</button></div>`;
+    nodes.modalContent.innerHTML = `<button class="icon-button modal-close" data-close-modal aria-label="Cerrar">×</button><div class="detail-head"><img src="${escapeHTML(track.songCover)}" alt="Portada de ${escapeHTML(track.songTitle)}"><div><p class="eyebrow">Soundtrack</p><h2 id="modalTitle">${escapeHTML(track.songTitle)}</h2></div></div><div class="detail-characters" aria-label="Personajes vinculados">${characterButtons(track, 'detail-character')}</div><p class="detail-copy">${escapeHTML(track.lore || track.characterLore || track.songDescription)}</p><div class="hero-actions"><button class="primary-button" data-play="${index}">Reproducir</button>${hasLyrics(track) ? `<button class="secondary-button lyrics-button" data-lyrics="${index}">Ver letra</button>` : ''}<button class="secondary-button" data-cover="${index}">Ver portada</button></div>`;
     openModal();
   }
 
@@ -291,7 +304,7 @@
 
   function openCharacter(index) {
     const character = characters[index];
-    const tracks = soundtracks.map((track, trackIndex) => ({ track, index: trackIndex })).filter(item => item.track.characterIndex === index);
+    const tracks = soundtracks.map((track, trackIndex) => ({ track, index: trackIndex })).filter(item => trackBelongsToCharacter(item.track, index));
     lastFocus = document.activeElement;
     nodes.modalContent.className = 'modal-card';
     nodes.modalContent.innerHTML = `<button class="icon-button modal-close" data-close-modal aria-label="Cerrar">×</button><div class="detail-head"><img src="${escapeHTML(character.characterFace)}" alt="Retrato de ${escapeHTML(character.character)}"><div><p class="eyebrow">Expediente de personaje</p><h2 id="modalTitle">${escapeHTML(character.character)}</h2></div></div><p class="detail-copy">${escapeHTML(character.lore)}</p><div class="detail-list">${tracks.map(({ track, index: trackIndex }) => `<div class="detail-track"><img src="${escapeHTML(track.songCover)}" alt=""><div><strong>${escapeHTML(track.songTitle)}</strong><p>${escapeHTML((track.tags || []).join(' · '))}</p></div><button data-play="${trackIndex}" aria-label="Reproducir ${escapeHTML(track.songTitle)}">▶</button></div>`).join('')}</div>`;
@@ -352,15 +365,7 @@
     navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack(1));
   }
 
-  document.body.style.overflow = 'hidden';
   updateVolume(state.volume, false);
-  $('#chooseNewDesign').addEventListener('click', () => {
-    gateway.classList.add('closed');
-    document.body.style.overflow = '';
-    setTimeout(() => gateway.remove(), 400);
-    document.querySelector('.brand').focus();
-  });
-  $('#chooseNewDesign').focus();
 
   if (sharedShell) sharedShell.subscribe(sharedState => {
     if (sharedState.sourceId === 'resonance') {

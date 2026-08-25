@@ -31,12 +31,17 @@
   const nodes = {
     clock: $("clock"), day: $("dayLabel"), stationLine: $("stationLine"), title: $("trackTitle"),
     artist: $("trackArtist"), message: $("broadcastMessage"), status: $("radioStatus"), live: $("liveLabel"),
+    challenge: $("challengeBanner"), challengeText: $("challengeText"),
     avatar: $("stationAvatar"), cover: $("stationCover"), initial: $("stationInitial"), pulse: $("playingPulse"),
     pointer: $("dialPointer"), frequency: $("dialFrequency"), dialPlay: $("dialPlay"), dialPlayIcon: $("dialPlayIcon"),
     play: $("playButton"), previous: $("previousButton"), next: $("nextButton"), progress: $("progressInput"),
     current: $("currentTime"), duration: $("duration"), progressLabel: $("progressLabel"), volume: $("volumeInput"),
-    shuffle: $("shuffleButton"), count: $("trackCount"), list: $("trackList"), empty: $("emptyLibrary")
+    shuffle: $("shuffleButton"), count: $("trackCount"), list: $("trackList"), empty: $("emptyLibrary"),
+    coverDialog: $("coverDialog"), coverArt: $("coverDialogArt"), largeCover: $("largeCover"),
+    coverTitle: $("coverDialogTitle"), coverArtist: $("coverDialogArtist"), coverLore: $("coverDialogLore"),
+    closeCover: $("closeCoverDialog"), openArchive: $("openSongArchive")
   };
+  let coverLastFocus = null;
 
   const savedStation = localStorage.getItem("etruriaRadioStation");
   const savedTrack = Number(localStorage.getItem("etruriaRadioTrack"));
@@ -92,6 +97,7 @@
         sourceTrackId: track.index,
         songTitle: track.title,
         character: track.artist,
+        challengeText: track.challenge,
         songCover: track.cover ? new URL(track.cover, location.href).href : "",
         audio: new URL(track.audio, location.href).href
       }))
@@ -213,6 +219,32 @@
     });
   }
 
+  function openCover(track) {
+    if (!track) return;
+    coverLastFocus = document.activeElement;
+    if (track.cover) {
+      nodes.largeCover.src = track.cover;
+      nodes.largeCover.alt = `Portada ampliada de ${track.title}`;
+      nodes.largeCover.hidden = false;
+      nodes.coverArt.classList.remove("empty");
+    } else {
+      nodes.largeCover.removeAttribute("src");
+      nodes.largeCover.alt = "";
+      nodes.largeCover.hidden = true;
+      nodes.coverArt.classList.add("empty");
+    }
+    nodes.coverTitle.textContent = track.title;
+    nodes.coverArtist.textContent = track.artist;
+    nodes.coverLore.textContent = track.lore || "Esta canción todavía no tiene lore registrado.";
+    if (!nodes.coverDialog.open) nodes.coverDialog.showModal();
+    nodes.closeCover.focus();
+  }
+
+  function closeCover() {
+    if (nodes.coverDialog.open) nodes.coverDialog.close();
+    coverLastFocus?.focus();
+  }
+
   function renderLibrary() {
     const pool = stationTracks();
     nodes.count.textContent = `${pool.length} ${pool.length === 1 ? "CANCIÓN" : "CANCIONES"}`;
@@ -221,15 +253,20 @@
     nodes.list.innerHTML = pool.map((track, position) => `
       <button class="track-card ${track.index === state.current ? "active" : ""}" type="button" data-track="${track.index}">
         <span class="track-number">${String(position + 1).padStart(2, "0")}</span>
-        <span class="track-cover">${track.cover ? `<img src="${escapeHTML(track.cover)}" alt="">` : "♪"}</span>
+        <span class="track-cover" ${track.cover ? `data-cover="${track.index}" title="Ver portada en grande"` : ""}>${track.cover ? `<img src="${escapeHTML(track.cover)}" alt="">` : "♪"}</span>
         <span class="track-copy"><strong>${escapeHTML(track.title)}</strong><span>${escapeHTML(track.artist)}</span></span>
         <span class="track-station">${escapeHTML(currentStation().frequency)} FM</span>
         <b class="track-action">${track.index === state.current && radioIsPlaying(track.station) ? "Ⅱ" : "▶"}</b>
       </button>
     `).join("");
     nodes.list.querySelectorAll("[data-track]").forEach((button) => {
-      button.addEventListener("click", () => {
+      button.addEventListener("click", (event) => {
         const index = Number(button.dataset.track);
+        if (event.target.closest("[data-cover]")) {
+          event.stopPropagation();
+          openCover(tracks[index]);
+          return;
+        }
         if (index === state.current && radioIsPlaying()) sharedShell ? sharedShell.pause() : audio.pause();
         else setTrack(index, true);
       });
@@ -246,7 +283,11 @@
     nodes.avatar.style.setProperty("--station-color", station.color);
     nodes.stationLine.textContent = `${station.name} · ${station.frequency} FM`;
     nodes.title.textContent = trackIsTuned ? track.title : station.show;
-    nodes.artist.textContent = trackIsTuned ? (track.challenge || track.artist) : `CON ${station.host}`;
+    nodes.artist.textContent = trackIsTuned ? track.artist : `CON ${station.host}`;
+    const showChallenge = Boolean(playing && track?.challenge);
+    nodes.challenge.hidden = !showChallenge;
+    nodes.challengeText.textContent = showChallenge ? track.challenge : "";
+    nodes.openArchive.hidden = !(trackIsTuned && track?.lore);
     nodes.message.textContent = state.error || (trackIsTuned ? (track.description || station.description) : station.description);
     nodes.status.textContent = state.error ? "REVISAR ARCHIVO" : playing ? `RECIBIENDO · ${station.frequency} FM` : trackIsTuned ? "EMISIÓN EN PAUSA" : "EMISORA SINTONIZADA";
     nodes.live.textContent = playing ? "AL AIRE" : "PAUSA";
@@ -266,10 +307,14 @@
       nodes.cover.alt = `Portada de ${track.title}`;
       nodes.cover.hidden = false;
       nodes.initial.hidden = true;
+      nodes.avatar.disabled = false;
+      nodes.avatar.setAttribute("aria-label", `Ver portada ampliada de ${track.title}`);
     } else {
       nodes.cover.hidden = true;
       nodes.initial.hidden = false;
       nodes.initial.textContent = station.short.slice(0, 1);
+      nodes.avatar.disabled = true;
+      nodes.avatar.setAttribute("aria-label", "No hay portada disponible");
     }
 
     document.querySelectorAll("[data-station]").forEach((button) => {
@@ -289,6 +334,11 @@
     if (sharedShell) sharedShell.setShuffle(state.shuffle);
     render();
   });
+  nodes.avatar.addEventListener("click", () => openCover(currentTrack()));
+  nodes.openArchive.addEventListener("click", () => openCover(currentTrack()));
+  nodes.closeCover.addEventListener("click", closeCover);
+  nodes.coverDialog.addEventListener("click", (event) => { if (event.target === nodes.coverDialog) closeCover(); });
+  nodes.coverDialog.addEventListener("cancel", (event) => { event.preventDefault(); closeCover(); });
   nodes.progress.addEventListener("input", () => {
     if (audio.duration) audio.currentTime = audio.duration * Number(nodes.progress.value) / 100;
   });

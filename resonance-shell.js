@@ -3,12 +3,15 @@
   if (window.__RP_SHELL_NESTED__) return;
 
   const resonance = window.RESONANCE_DATA || { soundtracks: [] };
+  const etruriaRadio = window.ETRURIA_RADIO_DATA || { stations: [], soundtracks: [] };
   const tracks = resonance.soundtracks || [];
   const $ = id => document.getElementById(id);
   const frame = $('siteFrame');
   const audio = $('globalAudio');
   const nodes = {
     loading: $('pageLoading'), bar: $('resonanceBar'), home: $('homeButton'), openResonance: $('openResonance'),
+    sourcePickerButton: $('sourcePickerButton'), sourcePicker: $('sourcePicker'), sourcePickerList: $('sourcePickerList'),
+    sourcePickerCurrent: $('sourcePickerCurrent'), closeSourcePicker: $('closeSourcePicker'),
     cover: $('globalCover'), title: $('globalTitle'), artist: $('globalArtist'), pageLabel: $('pageLabel'), play: $('globalPlay'),
     previous: $('globalPrevious'), next: $('globalNext'), shuffle: $('globalShuffle'), current: $('globalCurrent'),
     duration: $('globalDuration'), progress: $('globalProgress'), volume: $('globalVolume'), mute: $('globalMute'),
@@ -38,6 +41,12 @@
     route: 'OST/index.html', album: 'Resonance', basePath: 'OST/', tracks
   });
   sources.set(activeSource.id, activeSource);
+  registerEtruriaSources();
+  const storedSourceId = localStorage.getItem('globalAudioSource') || 'resonance';
+  if (sources.get(storedSourceId)?.tracks.length) activeSource = sources.get(storedSourceId);
+  const storedSourceTrack = Number(localStorage.getItem(`globalAudioTrack:${activeSource.id}`) ?? (activeSource.id === 'resonance' ? storedTrack : 0));
+  state.current = Number.isFinite(storedSourceTrack) ? Math.max(0, Math.min(activeSource.tracks.length - 1, storedSourceTrack)) : 0;
+  state.restoreTime = Number(localStorage.getItem(`globalAudioTime:${activeSource.id}`) ?? (activeSource.id === 'resonance' ? state.restoreTime : 0));
   let lastSavedSecond = -1;
   let loadWarningTimer = 0;
   let diagnosticToastTimer = 0;
@@ -163,17 +172,93 @@
       route: cleanRoute(definition.route || 'hub.html'),
       album: String(definition.album || definition.label || 'RP HUB'),
       basePath: String(definition.basePath || ''),
+      short: String(definition.short || definition.label || 'RADIO'),
+      frequency: String(definition.frequency || ''),
+      color: String(definition.color || '#a882ff'),
+      kind: String(definition.kind || 'radio'),
       tracks: []
     };
     source.tracks = (Array.isArray(definition.tracks) ? definition.tracks : []).map((track, index) => ({
       ...track,
       sourceTrackId: track.sourceTrackId ?? track.index ?? index,
       songTitle: track.songTitle || track.title || `Canción ${index + 1}`,
-      character: track.character || track.artist || source.label,
+      character: track.character || (Array.isArray(track.characters) ? track.characters.join(' · ') : '') || track.artist || source.label,
       songCover: sourceURL(source, track.songCover || track.cover || ''),
       audio: sourceURL(source, track.audio || '')
     }));
     return source;
+  }
+
+  function registerEtruriaSources() {
+    const indexedTracks = (etruriaRadio.soundtracks || []).map((track, index) => ({ ...track, index }));
+    (etruriaRadio.stations || []).forEach(station => {
+      const stationTracks = indexedTracks.filter(track => (track.station || 'battle') === station.id);
+      const source = createSource({
+        id: `etruria:${station.id}`,
+        label: `ETRURIA RADIO · ${station.frequency} FM`,
+        queueLabel: `Cola de ${station.name}`,
+        route: 'Pokemon/EtruriaRadio/index.html',
+        album: station.name,
+        basePath: 'Pokemon/EtruriaRadio/',
+        short: station.short,
+        frequency: `${station.frequency} FM`,
+        color: station.color,
+        kind: 'etruria',
+        tracks: stationTracks
+      });
+      sources.set(source.id, source);
+    });
+  }
+
+  function sourceDisplayName(source) {
+    return source.id === 'resonance' ? 'Resonance' : `${source.album} · ${source.frequency}`;
+  }
+
+  function renderSourcePicker() {
+    if (!nodes.sourcePickerList) return;
+    const availableSources = [...sources.values()].filter(source => source.id === 'resonance' || source.id.startsWith('etruria:'));
+    nodes.sourcePickerCurrent.textContent = `${sourceDisplayName(activeSource)} está seleccionada`;
+    nodes.sourcePickerList.innerHTML = availableSources.map(source => {
+      const active = source.id === activeSource.id;
+      const available = source.tracks.length > 0;
+      const icon = source.id === 'resonance' ? 'R' : escapeHTML(source.short.slice(0, 3));
+      const subtitle = source.id === 'resonance'
+        ? `${source.tracks.length} canciones · Banda sonora general`
+        : `${source.tracks.length} canciones · ${escapeHTML(source.frequency)}`;
+      return `<button class="source-option ${active ? 'active' : ''}" type="button" data-source-id="${escapeHTML(source.id)}" aria-pressed="${active}" ${available ? '' : 'disabled'} style="--source-color:${escapeHTML(source.color)}"><span class="source-option-icon">${icon}</span><span class="source-option-copy"><strong>${escapeHTML(sourceDisplayName(source))}</strong><span>${subtitle}</span></span><span class="source-option-state">${active ? 'SONANDO' : available ? 'ELEGIR' : 'VACÍA'}</span></button>`;
+    }).join('');
+    nodes.sourcePickerList.querySelectorAll('[data-source-id]').forEach(button => button.addEventListener('click', () => {
+      switchSource(button.dataset.sourceId, true);
+      closeSourcePicker();
+    }));
+  }
+
+  function closeSourcePicker(returnFocus = false) {
+    if (!nodes.sourcePicker) return;
+    nodes.sourcePicker.classList.remove('open');
+    nodes.sourcePicker.setAttribute('aria-hidden', 'true');
+    nodes.sourcePickerButton.setAttribute('aria-expanded', 'false');
+    if (returnFocus) nodes.sourcePickerButton.focus();
+  }
+
+  function toggleSourcePicker() {
+    const willOpen = !nodes.sourcePicker.classList.contains('open');
+    closeQueue();
+    nodes.sourcePicker.classList.toggle('open', willOpen);
+    nodes.sourcePicker.setAttribute('aria-hidden', String(!willOpen));
+    nodes.sourcePickerButton.setAttribute('aria-expanded', String(willOpen));
+    if (willOpen) renderSourcePicker();
+  }
+
+  function switchSource(sourceId, autoplay = true) {
+    const nextSource = sources.get(sourceId);
+    if (!nextSource?.tracks.length) return;
+    const sourceChanged = activeSource.id !== nextSource.id;
+    activeSource = nextSource;
+    if (sourceChanged) state.restoreTime = 0;
+    const rememberedTrack = Number(localStorage.getItem(`globalAudioTrack:${activeSource.id}`) || 0);
+    const index = Number.isFinite(rememberedTrack) ? Math.max(0, Math.min(activeSource.tracks.length - 1, rememberedTrack)) : 0;
+    selectActiveTrack(index, autoplay);
   }
 
   function currentTracks() {
@@ -214,6 +299,8 @@
     const changed = state.current !== index || !sameURL(audio.src, nextSource);
     state.current = index;
     if (activeSource.id === 'resonance') localStorage.setItem('resonanceTrack', String(index));
+    localStorage.setItem('globalAudioSource', activeSource.id);
+    localStorage.setItem(`globalAudioTrack:${activeSource.id}`, String(index));
     if (changed) {
       state.restoreTime = 0;
       audio.src = nextSource;
@@ -222,12 +309,14 @@
     updateMetadata(track);
     renderPlayer();
     renderQueue();
+    renderSourcePicker();
     notify();
     if (autoplay) play();
   }
 
   function setSource(definition, index = 0, autoplay = true) {
-    const nextSource = createSource(definition);
+    const previousDefinition = sources.get(String(definition?.id || '')) || {};
+    const nextSource = createSource({ ...previousDefinition, ...definition });
     if (!nextSource.tracks.length) return;
     const sourceChanged = activeSource.id !== nextSource.id;
     sources.set(nextSource.id, nextSource);
@@ -305,6 +394,7 @@
     nodes.artist.textContent = track.character;
     nodes.pageLabel.textContent = activeSource.label;
     nodes.openResonance.setAttribute('aria-label', `Abrir ${activeSource.label.toLowerCase()}`);
+    nodes.sourcePickerButton.setAttribute('title', `Cambiar de radio · Ahora: ${sourceDisplayName(activeSource)}`);
     nodes.play.textContent = playing ? '❚❚' : '▶';
     nodes.play.setAttribute('aria-label', playing ? 'Pausar' : 'Reproducir');
     nodes.bar.classList.toggle('playing', playing);
@@ -444,6 +534,8 @@
   function closeQueue() { nodes.queue.classList.remove('open'); nodes.queue.setAttribute('aria-hidden', 'true'); }
   nodes.home.addEventListener('click', () => loadRoute('hub.html'));
   nodes.openResonance.addEventListener('click', () => loadRoute(activeSource.route));
+  nodes.sourcePickerButton.addEventListener('click', toggleSourcePicker);
+  nodes.closeSourcePicker.addEventListener('click', () => closeSourcePicker(true));
   nodes.play.addEventListener('click', toggle);
   nodes.previous.addEventListener('click', () => next(-1));
   nodes.next.addEventListener('click', () => next(1));
@@ -451,11 +543,15 @@
   nodes.progress.addEventListener('input', () => { if (audio.duration) audio.currentTime = audio.duration * Number(nodes.progress.value) / 100; });
   nodes.volume.addEventListener('input', () => setVolume(nodes.volume.value));
   nodes.mute.addEventListener('click', () => setVolume(audio.volume > 0 ? 0 : state.previousVolume, audio.volume === 0));
-  nodes.queueButton.addEventListener('click', () => { nodes.queue.classList.toggle('open'); nodes.queue.setAttribute('aria-hidden', String(!nodes.queue.classList.contains('open'))); });
+  nodes.queueButton.addEventListener('click', () => { closeSourcePicker(); nodes.queue.classList.toggle('open'); nodes.queue.setAttribute('aria-hidden', String(!nodes.queue.classList.contains('open'))); });
   nodes.closeQueue.addEventListener('click', closeQueue);
-  nodes.collapse.addEventListener('click', () => { state.collapsed = true; document.body.classList.add('player-collapsed'); localStorage.setItem('resonancePlayerCollapsed', 'true'); });
+  nodes.collapse.addEventListener('click', () => { closeSourcePicker(); closeQueue(); state.collapsed = true; document.body.classList.add('player-collapsed'); localStorage.setItem('resonancePlayerCollapsed', 'true'); });
   nodes.miniPlayer.addEventListener('click', () => { state.collapsed = false; document.body.classList.remove('player-collapsed'); localStorage.setItem('resonancePlayerCollapsed', 'false'); });
-  nodes.resumeButton.addEventListener('click', play);
+  nodes.resumeButton.addEventListener('click', () => {
+    state.resumeWanted = false;
+    nodes.resumeNotice.hidden = true;
+    play();
+  });
   nodes.retryRoute.addEventListener('click', () => {
     const route = state.route || routeFromHash();
     state.route = '';
@@ -507,6 +603,12 @@
       event.preventDefault();
       nodes.diagnosticPanel.classList.contains('open') ? closeDiagnostics() : openDiagnostics();
     } else if (event.key === 'Escape' && nodes.diagnosticPanel.classList.contains('open')) closeDiagnostics();
+    else if (event.key === 'Escape' && nodes.sourcePicker.classList.contains('open')) closeSourcePicker(true);
+  });
+  document.addEventListener('click', event => {
+    if (!nodes.sourcePicker.classList.contains('open')) return;
+    if (nodes.sourcePicker.contains(event.target) || nodes.sourcePickerButton.contains(event.target)) return;
+    closeSourcePicker();
   });
 
   window.addEventListener('offline', () => addDiagnostic('warning', 'Sin conexión', 'Se ha perdido la conexión a Internet. Mantén la página abierta y vuelve a intentarlo cuando regrese.', true));
@@ -516,7 +618,13 @@
   });
   window.addEventListener('unhandledrejection', event => addDiagnostic('error', 'Tarea global interrumpida', String(event.reason?.message || event.reason || 'Error desconocido'), true));
 
-  audio.addEventListener('play', () => { localStorage.setItem('resonanceWasPlaying', 'true'); renderPlayer(); notify(); });
+  audio.addEventListener('play', () => {
+    state.resumeWanted = false;
+    nodes.resumeNotice.hidden = true;
+    localStorage.setItem('resonanceWasPlaying', 'true');
+    renderPlayer();
+    notify();
+  });
   audio.addEventListener('pause', () => { renderPlayer(); notify(); });
   audio.addEventListener('ended', () => next(1));
   audio.addEventListener('loadedmetadata', () => {
@@ -527,7 +635,11 @@
   audio.addEventListener('timeupdate', () => {
     renderTimeline();
     const second = Math.floor(audio.currentTime);
-    if (second !== lastSavedSecond) { lastSavedSecond = second; localStorage.setItem('resonanceCurrentTime', String(audio.currentTime)); }
+    if (second !== lastSavedSecond) {
+      lastSavedSecond = second;
+      localStorage.setItem(`globalAudioTime:${activeSource.id}`, String(audio.currentTime));
+      if (activeSource.id === 'resonance') localStorage.setItem('resonanceCurrentTime', String(audio.currentTime));
+    }
   });
   audio.addEventListener('volumechange', () => setVolume(audio.volume, false));
   audio.addEventListener('error', () => {
@@ -545,11 +657,12 @@
 
   setVolume(storedVolume, false);
   document.body.classList.toggle('player-collapsed', state.collapsed);
-  if (tracks.length) setTrack(state.current, false);
+  if (activeSource.tracks.length) selectActiveTrack(state.current, false);
   nodes.resumeNotice.hidden = !state.resumeWanted;
   renderDiagnostics();
   if (!navigator.onLine) addDiagnostic('warning', 'Sin conexión al abrir la página', 'El navegador indica que no hay conexión a Internet.', true);
   if (!tracks.length) addDiagnostic('error', 'Datos de Resonance sin cargar', 'No se ha encontrado ninguna canción. Es posible que el archivo de datos no haya cargado.', true);
   renderQueue();
+  renderSourcePicker();
   loadRoute(routeFromHash(), true);
 })();

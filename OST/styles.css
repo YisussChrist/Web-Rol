@@ -19,6 +19,7 @@ main{padding-bottom:150px}.hero{max-width:var(--max);min-height:530px;margin:0 a
 .hero-card::after{background:linear-gradient(90deg,rgba(13,9,17,.08),rgba(18,11,23,.85) 63%,#160e1c)}
 .hero-character{display:inline-flex;align-items:center;gap:10px;margin:16px 0 0;padding:6px 11px 6px 6px;border:1px solid rgba(239,102,197,.22);border-radius:999px;color:#f6b5e5;background:rgba(17,10,22,.58);font-weight:700;cursor:pointer}
 .hero-character img{width:31px;height:31px;border-radius:50%;object-fit:cover}
+.hero-characters{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}.hero-characters .hero-character{margin:0}
 .primary-button{color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent));box-shadow:0 10px 28px rgba(174,72,195,.24)}
 .filter-chip:hover,.filter-chip.active{border-color:rgba(239,102,197,.46);color:#fff;background:linear-gradient(135deg,rgba(140,99,255,.2),rgba(239,102,197,.16))}
 .card-play{color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent))}
@@ -37,6 +38,7 @@ main{padding-bottom:150px}.hero{max-width:var(--max);min-height:530px;margin:0 a
 .cover-viewer-info h2{margin:0;font:700 1.05rem Manrope,sans-serif}.cover-viewer-info p{margin:3px 0 0;color:var(--muted);font-size:.86rem}
 .detail-character{display:flex;align-items:center;gap:12px;margin:20px 0 0;padding:12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025);cursor:pointer}
 .detail-character img{width:54px;height:54px;border-radius:50%;object-fit:cover}.detail-character span,.detail-character strong{display:block}.detail-character span{margin-top:3px;color:var(--muted);font-size:.8rem}
+.detail-characters{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin:20px 0 0}.detail-characters .detail-character{width:100%;margin:0;color:var(--text);text-align:left}
 @media(max-width:760px){.hero-card::after{background:linear-gradient(0deg,#160e1c 0,rgba(22,14,28,.58) 55%,transparent)}.player-cover-button{width:52px;height:52px}.player-cover-button span{opacity:1}}
 
 /* Entry design selector */

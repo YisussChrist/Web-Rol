@@ -7,7 +7,7 @@
   <meta name="description" content="RP HUB con reproductor musical persistente para Resonance y Etruria Radio.">
   <title>RP HUB · Reproductor global</title>
   <script>window.__RP_SHELL_NESTED__=window.self!==window.top;if(window.__RP_SHELL_NESTED__)window.parent.postMessage({type:'rp-shell-navigate',route:'hub.html'},'*');</script>
-  <link rel="stylesheet" href="resonance-shell.css?v=3">
+  <link rel="stylesheet" href="resonance-shell.css?v=4">
 </head>
 <body>
   <main class="page-stage" id="pageStage">
@@ -30,6 +30,7 @@
   <footer class="resonance-bar" id="resonanceBar" aria-label="Reproductor global del RP HUB">
     <div class="shell-actions">
       <button class="shell-button home-button" id="homeButton" type="button" aria-label="Volver al HUB" title="Volver al HUB">RP</button>
+      <button class="source-picker-button" id="sourcePickerButton" type="button" aria-label="Cambiar de radio" aria-expanded="false" aria-controls="sourcePicker" title="Cambiar de radio"><span class="source-picker-signal">◉</span><span>RADIOS</span><b>⌃</b></button>
       <button class="track-summary" id="openResonance" type="button" aria-label="Abrir Resonance">
         <span class="cover"><img id="globalCover" src="OST/ResonanceLogo.png" alt=""><i id="playingPulse"></i></span>
         <span class="track-copy"><small id="pageLabel">RESONANCE · REPRODUCTOR GLOBAL</small><strong id="globalTitle">Elige una canción</strong><span id="globalArtist">La música continuará al navegar</span></span>
@@ -55,6 +56,15 @@
   </footer>
 
   <button class="mini-player" id="miniPlayer" type="button" hidden><span id="miniIcon">▶</span><strong id="miniTitle">Resonance</strong><span>⌃</span></button>
+
+  <aside class="source-picker" id="sourcePicker" aria-hidden="true" aria-labelledby="sourcePickerTitle">
+    <header>
+      <div><small>EMISORA DEL REPRODUCTOR</small><h2 id="sourcePickerTitle">Cambiar de radio</h2></div>
+      <button id="closeSourcePicker" type="button" aria-label="Cerrar selector de radios">×</button>
+    </header>
+    <p class="source-picker-current" id="sourcePickerCurrent">Resonance está seleccionada</p>
+    <div class="source-picker-list" id="sourcePickerList"></div>
+  </aside>
 
   <aside class="queue-panel" id="globalQueue" aria-hidden="true">
     <header><div><small>A CONTINUACIÓN</small><h2 id="globalQueueTitle">Cola de Resonance</h2></div><button id="closeQueue" type="button" aria-label="Cerrar">×</button></header>
@@ -104,6 +114,7 @@
   <div class="resume-notice" id="resumeNotice" hidden><span>La canción estaba reproduciéndose antes de recargar.</span><button id="resumeButton" type="button">Continuar</button></div>
   <audio id="globalAudio" preload="metadata"></audio>
   <script src="OST/data.js?v=20260804-lyrics"></script>
-  <script src="resonance-shell.js?v=3"></script>
+  <script src="Pokemon/EtruriaRadio/data.js?v=3"></script>
+  <script src="resonance-shell.js?v=5"></script>
 </body>
 </html>

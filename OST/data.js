@@ -1,4 +1,12 @@
-/* Catálogo de Resonance. Separado de la interfaz para facilitar su mantenimiento. */
+/*
+ * Catálogo de Resonance. Separado de la interfaz para facilitar su mantenimiento.
+ *
+ * Para vincular una canción a más de un personaje, añade dentro de la canción:
+ * characters: ["Nombre del segundo personaje"]
+ *
+ * El personaje del bloque se incluye siempre. También puedes escribir los dos
+ * nombres en el array; Resonance elimina los duplicados automáticamente.
+ */
 const characters = [
     {
         character: "Freyja Kane",
@@ -487,8 +495,8 @@ const characters = [
         ]
     },
     {
-        character: "Aya Tademaru",
-        characterFace: "img/Aya.png",
+        character: "Aya Midori",
+        characterFace: "img/AyaMidori.webp",
         lore: "La hija adoptiva de la hija de Dios, nacida con la capacidad de curar las heridas, después de todo lo sufrido en su infancia, no quiere ver a nadie más sufrir",
         tracks: [
             {
@@ -764,7 +772,8 @@ Así que ella conserva las...
 [Estribillo]
 Chica Flor, Chica Flor
 Con las semillas en sus manos, aún sigue en pie
-Observando cada pequeño brote mientras puede
+Observando cada pequeño brote 
+mientras puede
 Allá arriba, en lo alto del cielo
 Con lágrimas en los ojos
 ¿No merece la pena esperar a la primavera... a las flores?
@@ -863,6 +872,15 @@ Así que ella conserva las...
                 audio: "audio/The Hero You Saw in Me.mp3",
                 tags: ["calm", "chill", "emotional"],
                 lore: "Si reconoces que todos necesitan tu ayuda, también reconoces que tú necesitas la ayuda de todos."
+            },
+            {
+                songTitle: "Fist Bump",
+                characters: ["Rin Drayton", "Aya Midori"],
+                songDescription: "Una canción que representa la amistad y el cariño de dos héroes que llevan luchando codo con codo toda la vida.",
+                songCover: "img/Fist Bump.png",
+                audio: "audio/Fist Bump.mp3",
+                tags: ["battle", "epic", "emotional", "friendship"],
+                lore: "El choque de puños de toda una generación dispuesta a darlo todo para salvar su planeta."
             }
         ]
     },  
@@ -898,15 +916,52 @@ Así que ella conserva las...
     },
 ];
 
+const normalizeCharacterName = value => String(value || "")
+    .trim()
+    .toLocaleLowerCase("es")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+const characterIndexByName = new Map(
+    characters.map((character, index) => [normalizeCharacterName(character.character), index])
+);
+
 const soundtracks = characters.flatMap((char, characterIndex) =>
-    char.tracks.map((track, trackIndex) => ({
-        ...track,
-        character: char.character,
-        characterFace: char.characterFace,
-        characterLore: char.lore,
-        characterIndex,
-        trackIndex
-    }))
+    char.tracks.map((track, trackIndex) => {
+        const extraCharacters = Array.isArray(track.characters)
+            ? track.characters
+            : track.characters ? [track.characters] : [];
+        const requestedNames = [char.character, ...extraCharacters].filter(Boolean);
+        const uniqueNames = requestedNames.filter((name, index, list) =>
+            list.findIndex(candidate => normalizeCharacterName(candidate) === normalizeCharacterName(name)) === index
+        );
+        const characterProfiles = uniqueNames.map(name => {
+            const linkedIndex = characterIndexByName.get(normalizeCharacterName(name));
+            const linkedCharacter = Number.isInteger(linkedIndex) ? characters[linkedIndex] : null;
+            return {
+                name: linkedCharacter?.character || String(name),
+                face: linkedCharacter?.characterFace || char.characterFace,
+                lore: linkedCharacter?.lore || "",
+                index: Number.isInteger(linkedIndex) ? linkedIndex : null
+            };
+        });
+        const characterNames = characterProfiles.map(profile => profile.name);
+        const characterIndices = characterProfiles
+            .map(profile => profile.index)
+            .filter(Number.isInteger);
+
+        return {
+            ...track,
+            characters: characterNames,
+            character: characterNames.join(" · "),
+            characterProfiles,
+            characterIndices,
+            characterFace: char.characterFace,
+            characterLore: char.lore,
+            characterIndex,
+            trackIndex
+        };
+    })
 );
 
 

@@ -9,6 +9,9 @@
  * personaje -> canciones. La página crea la lista completa automáticamente.
  */
 
+(() => {
+'use strict';
+
 const stations = [
   {
     id: "battle",
@@ -83,7 +86,186 @@ const characters = [
         lore: "¿Escuchas eso? Es la llamada de un pueblo pidiendo ayuda a su héroe."
       },
     ]
+  },
+  {
+    character: "Shin Haein",
+    characterFace: "img/Shin Haein.jpg",
+    lore: "Una jóven cantante con un talento innato para la música.",
+    tracks: [
+      {
+        songTitle: "Makin' Noise",
+        songDescription: "La energía de una joven cantante que llena el aire con su música.",
+        songCover: "img/ShinHaeinCover.png",
+        audio: "audio/Makin' Noise.mp3",
+        station: "battle",
+        challengeText: "Entrenadora {character} te desafía.",
+        tags: ["aventura", "batalla"],
+        lore: "El ruido solo se combate con más ruido."
+      },
+    ]
+  },
+  {
+    character: "Serena Vaniville",
+    characterFace: "img/Serena.jpg",
+    lore: "La precios figura de una coordinadora de batalla.",
+    tracks: [
+      {
+        songTitle: "Starlight Showdown",
+        songDescription: "Una intensa batalla bajo la luz de las estrellas.",
+        songCover: "img/SerenaCover.png",
+        audio: "audio/Starlight Showdown.mp3",
+        station: "battle",
+        challengeText: "Entrenadora {character} te desafía.",
+        tags: ["aventura", "batalla"],
+        lore: "Brilla tanto que es complicado de ignorar."
+      },
+      {
+        songTitle: "The Final Performance",
+        songDescription: "Ninguna concursante llega al estrellato sin una última actuación.",
+        songCover: "img/Serena2Cover.png",
+        audio: "audio/The Last Performance.mp3",
+        station: "battle",
+        challengeText: "Virtuosa {character} te desafía.",
+        tags: ["aventura", "batalla", "épico", "boss"],
+        lore: "Una última actuación para alcanzar las estrellas."
+      }
+    ]
+  },
+  {
+    character: "Matis Hugh",
+    characterFace: "img/MatisHugh.jpg",
+    lore: "El joven entrenador que lucha por la libertad de los Pokémon.",
+    tracks: [
+      {
+        songTitle: "Bond",
+        songDescription: "La libertad no tiene precio.",
+        songCover: "img/MatisCover.png",
+        audio: "audio/Bond.mp3",
+        station: "battle",
+        challengeText: "Entrenador {character} te desafía.",
+        tags: ["aventura", "batalla"],
+        lore: "No podemos impedir que la libertad se expanda."
+      },
+    ]
+  },
+  {
+    character: "Pyra Magnum",
+    characterFace: "img/Pyra.jpg",
+    lore: "Una joven exploradora que le encanta vivir aventuras.",
+    tracks: [
+      {
+        songTitle: "Smiling Fighter",
+        songDescription: "No puedes hacer nada contra alguien que nunca se rinde.",
+        songCover: "img/PyraCover.png",
+        audio: "audio/Smiling Fighter.mp3",
+        station: "battle",
+        challengeText: "Entrenadora {character} te desafía.",
+        tags: ["aventura", "batalla"],
+        lore: "Es la propia pasión de las aventuras."
+      },
+    ]
+  },
+  {
+    character: "Justin Kaido",
+    characterFace: "img/Justin.jpg",
+    lore: "El emperador de los Pokémon no dará tregua.",
+    tracks: [
+      {
+        songTitle: "The Emperor Pokemon",
+        songDescription: "Todo emperador vela por la gloria de su pueblo.",
+        songCover: "img/JustinCover.png",
+        audio: "audio/The Emperor Pokemon.mp3",
+        station: "battle",
+        challengeText: "Entrenadora {character} te desafía.",
+        tags: ["aventura", "batalla"],
+        lore: "No se detendrá hasta que la victoria esté asegurada."
+      },
+    ]
+  },
+  {
+    character: "Mencía Scarlet",
+    characterFace: "img/Mencia.jpg",
+    lore: "Una chica que AMA las batallas.",
+    tracks: [
+      {
+        songTitle: "Bond by Trust",
+        songDescription: "La unión hace la fuerza, nunca mejor dicho.",
+        songCover: "img/MenciaCover.png",
+        audio: "audio/Bond by Trust.mp3",
+        station: "battle",
+        challengeText: "Entrenadora {character} te desafía.",
+        tags: ["aventura", "batalla"],
+        lore: "Es indescriptible decir cuán fuerte es."
+      },
+      {
+        songTitle: "Unbreakable Bonds",
+        songDescription: "No hay vuelta atrás, está dispuesta a luchar hasta el final.",
+        songCover: "img/Mencia2Cover.png",
+        audio: "audio/Unbreakable Bonds.mp3",
+        station: "battle",
+        challengeText: "Aspirante {character} te desafía.",
+        tags: ["aventura", "batalla"],
+        lore: "No sabe qué pasará, lo que sí sabe es que lo va a dar todo."
+      }
+    ]
+  },
+  {
+    character: "Mogari Shishikuno",
+    characterFace: "img/Mogari.jpg",
+    lore: "El Heredero de una famosa cadena de ¿gastronomía?.",
+    tracks: [
+      {
+        songTitle: "Hidden in Plain Sight",
+        songDescription: "A simple vista no parece nada sospechoso.",
+        songCover: "img/MogariCover.png",
+        audio: "audio/Hidden in Plain Sight.mp3",
+        station: "battle",
+        challengeText: "Entrenador {character} te desafía.",
+        tags: ["aventura", "batalla"],
+        lore: "No sabemos que esconde, pero no parece sospechoso."
+      },
+      {
+        songTitle: "One Last Stand Together",
+        songDescription: "Texto corto que aparecerá en la radio.",
+        songCover: "img/Mogari2Cover.png",
+        audio: "audio/One Last Stand Together.mp3",
+        station: "battle",
+        challengeText: "Heredero {character} te desafía.",
+        tags: ["aventura", "ruta"],
+        lore: "Esto no debería haber sucedido así..."
+      }
+    ]
+  },
+  {
+    character: "Gama Sazare",
+    characterFace: "img/Gama.jpg",
+    lore: "La joven nómada que inmortaliza todo.",
+    tracks: [
+      {
+        songTitle: "Capured Memories",
+        songDescription: "Nada se pierde si lo inmortalizas en el tiempo.",
+        songCover: "img/GamaCover.png",
+        audio: "audio/Captured Memories.mp3",
+        station: "battle",
+        challengeText: "Entrenadora {character} te desafía.",
+        tags: ["aventura", "batalla"],
+        lore: "Quedarás inmortalizado en su sonrisa."
+      },
+      {
+        songTitle: "Forever in Our Hearts",
+        songDescription: "Nadie morirá mientras permanezcan en nuestros recuerdos.",
+        songCover: "img/Gama2Cover.png",
+        audio: "audio/Forever in Our Hearts.mp3",
+        station: "battle",
+        challengeText: "Cronista {character} te desafía.",
+        tags: ["aventura", "batalla", "boss"],
+        lore: "La necesidad imperativa de salvaguardar los recuerdos."
+      }
+
+    ]
   }
+
+
   /*
   {
     character: "Nombre del entrenador o personaje",
@@ -118,3 +300,4 @@ const soundtracks = characters.flatMap((character, characterIndex) =>
 );
 
 window.ETRURIA_RADIO_DATA = { stations, characters, soundtracks };
+})();

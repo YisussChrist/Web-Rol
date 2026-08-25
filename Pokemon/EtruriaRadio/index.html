@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#3048ef">
   <meta name="description" content="Etruria Radio: música, rutas, combates y señales de la región de Etruria.">
   <title>Etruria Radio</title>
-  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <main class="radio-page">
@@ -47,18 +47,23 @@
               <div class="signal-bars" aria-label="Señal fuerte"><i></i><i></i><i></i><i></i></div>
             </div>
             <div class="broadcast-content">
-              <div class="station-avatar" id="stationAvatar">
+              <button class="station-avatar" id="stationAvatar" type="button" aria-label="Ver portada ampliada" disabled>
                 <img id="stationCover" alt="" hidden>
                 <span id="stationInitial">E</span>
                 <i class="pulse" id="playingPulse"></i>
-              </div>
+              </button>
               <div class="broadcast-copy">
                 <p id="stationLine">ETRURIA RADIO</p>
                 <h2 id="trackTitle">Elige una emisora</h2>
                 <span id="trackArtist">LISTA PARA SINTONIZAR</span>
               </div>
             </div>
+            <div class="challenge-banner" id="challengeBanner" role="status" aria-live="polite" hidden>
+              <span>⚔ DESAFÍO EN CURSO</span>
+              <strong id="challengeText"></strong>
+            </div>
             <p class="broadcast-message" id="broadcastMessage">La programación aparecerá aquí.</p>
+            <div class="song-archive-actions"><button id="openSongArchive" type="button" hidden>▣ VER HISTORIA DE LA CANCIÓN</button></div>
             <div class="ticker"><span id="radioStatus">LISTA PARA SINTONIZAR</span><b id="liveLabel">PAUSA</b></div>
           </section>
 
@@ -122,7 +127,22 @@
 
     <audio id="radioAudio" preload="metadata"></audio>
   </main>
+  <dialog class="cover-dialog" id="coverDialog" aria-labelledby="coverDialogTitle">
+    <div class="cover-dialog-card">
+      <button class="cover-dialog-close" id="closeCoverDialog" type="button" aria-label="Cerrar portada">×</button>
+      <div class="cover-dialog-art" id="coverDialogArt"><img id="largeCover" alt=""></div>
+      <div class="cover-dialog-copy">
+        <span>ARCHIVO DE LA CANCIÓN</span>
+        <h2 id="coverDialogTitle"></h2>
+        <p class="cover-dialog-artist" id="coverDialogArtist"></p>
+        <div class="cover-dialog-lore">
+          <span>LORE · HISTORIA</span>
+          <p id="coverDialogLore"></p>
+        </div>
+      </div>
+    </div>
+  </dialog>
   <script src="data.js?v=2"></script>
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
