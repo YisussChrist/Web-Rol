@@ -2402,6 +2402,7 @@ function actualizarEstadoVisualFiltros() {
 
   chipsEspeciales.forEach(chip => {
     chip.classList.toggle("activo", estadoFiltros.especiales.has(chip.dataset.especial));
+    chip.setAttribute("aria-pressed", String(estadoFiltros.especiales.has(chip.dataset.especial)));
   });
 }
 
@@ -2485,7 +2486,7 @@ function renderSelector() {
     const iconoPosicion = iconosPosicion[posicion] || "";
 
     return `
-      <button class="slot-personaje ${activo} afinidad-${afinidadClase(elemento)}" data-index="${index}" style="--delay:${orden * 18}ms">
+      <button aria-pressed="${index === personajeActivo}" class="slot-personaje ${activo} afinidad-${afinidadClase(elemento)}" data-index="${index}" style="--delay:${orden * 18}ms">
         <div class="slot-foto">
           <img src="${pj.imagen}" alt="${pj.nombre}">
         </div>
@@ -2604,7 +2605,7 @@ function renderFicha(pj) {
 
         <div class="hero-info">
           <div class="numero-falso">${String(personajeActivo + 1).padStart(2, "0")}</div>
-          <p class="eyebrow">PLAYER FILE</p>
+          <p class="eyebrow">Ficha de jugador</p>
           <h2>${pj.nombre}</h2>
           ${pj.titulo ? `<h3>${pj.titulo}</h3>` : ""}
 
@@ -2650,6 +2651,43 @@ function renderFicha(pj) {
     </article>
   `;
 
+  const panels = [...ficha.querySelectorAll('.contenido-ficha > .bloque')];
+  const labels = ['Supertécnicas (' + (pj.tecnicas || []).length + ')', 'Talento', 'EG / Armadura', 'Miximax'];
+  const tabs = document.createElement('div');
+  tabs.className = 'ficha-tabs';
+  tabs.setAttribute('role', 'tablist');
+  tabs.setAttribute('aria-label', 'Habilidades del jugador');
+  panels.forEach((panel, i) => {
+    panel.id = 'habilidad-' + i;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', 'pestana-' + i);
+    const button = document.createElement('button');
+    button.id = 'pestana-' + i;
+    button.type = 'button';
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-controls', panel.id);
+    button.textContent = labels[i];
+    button.addEventListener('click', () => activate(i));
+    button.addEventListener('keydown', e => {
+      let next = i;
+      if(e.key === 'ArrowRight') next = (i + 1) % panels.length;
+      else if(e.key === 'ArrowLeft') next = (i + panels.length - 1) % panels.length;
+      else if(e.key === 'Home') next = 0;
+      else if(e.key === 'End') next = panels.length - 1;
+      else return;
+      e.preventDefault(); activate(next); tabs.children[next].focus();
+    });
+    tabs.append(button);
+  });
+  function activate(index) {
+    panels.forEach((panel, i) => {
+      panel.hidden = i !== index;
+      tabs.children[i].setAttribute('aria-selected', String(i === index));
+      tabs.children[i].tabIndex = i === index ? 0 : -1;
+    });
+  }
+  ficha.querySelector('.contenido-ficha').before(tabs);
+  activate(0);
   ficha.classList.remove("animar-ficha");
   void ficha.offsetWidth;
   ficha.classList.add("animar-ficha");
@@ -2728,6 +2766,9 @@ function conectarEventosFiltros() {
 }
 
 function iniciarPagina() {
+  const mostrarFiltros = window.matchMedia("(min-width: 721px)").matches;
+  filtrosPanel?.classList.toggle("abierto", mostrarFiltros);
+  toggleFiltrosBtn?.setAttribute("aria-expanded", String(mostrarFiltros));
   inicializarFiltros();
   conectarEventosFiltros();
   sincronizarEstadoDesdeHTML();

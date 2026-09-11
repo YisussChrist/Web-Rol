@@ -1,0 +1,22 @@
+{
+  "files": 1176,
+  "pages_and_styles_checked": 85,
+  "extensions": {
+    "(none)": 4,
+    ".css": 29,
+    ".html": 56,
+    ".jpeg": 1,
+    ".jpg": 528,
+    ".js": 52,
+    ".json": 12,
+    ".jsonc": 1,
+    ".md": 9,
+    ".mp3": 82,
+    ".png": 296,
+    ".py": 4,
+    ".txt": 5,
+    ".webp": 95,
+    ".yml": 2
+  },
+  "missing_static_references": []
+}

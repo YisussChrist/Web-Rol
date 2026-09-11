@@ -136,7 +136,7 @@ function runSearchAndFilter(){
     FILTERED.sort((a,b)=> a.name.localeCompare(b.name));
   } else {
     // strength desc, "???" at the end
-    FILTERED.sort((a,b)=> (b.strength==="???")-(a.strength==="???") || (b.strength||0) - (a.strength||0));
+    FILTERED.sort((a,b)=> (a.strength==="???")-(b.strength==="???") || (b.strength||0) - (a.strength||0));
   }
 
   shownCount = 20;
@@ -244,6 +244,7 @@ function renderList(){
   const ul = $("#character-list");
   ul.innerHTML = "";
 
+  if (!FILTERED.length) { const empty = document.createElement("li"); empty.className = "scale-note"; empty.textContent = "No hay combatientes con estos filtros. Prueba otra búsqueda o desactiva los filtros."; ul.append(empty); }
   FILTERED.slice(0, shownCount).forEach(character => {
     const li = document.createElement("li");
     const tier = getTier(character.strength);
@@ -268,6 +269,7 @@ function renderList(){
       const toggle = document.createElement("button");
       toggle.textContent = "Desbloquear formas";
       toggle.className = "toggle-button";
+      toggle.setAttribute("aria-expanded", "false");
 
       const tContainer = document.createElement("div");
       tContainer.className = "transformation hidden";
@@ -311,6 +313,7 @@ tMeta.innerHTML = `
 
       toggle.onclick = () => {
         tContainer.classList.toggle("hidden");
+        toggle.setAttribute("aria-expanded", String(!tContainer.classList.contains("hidden")));
         toggle.textContent = tContainer.classList.contains("hidden") ? "Desbloquear formas" : "Bloquear formas";
       };
 
@@ -333,47 +336,55 @@ tMeta.innerHTML = `
 
 // Render scale (top 20 by current order, ignoring strength "???")
 function renderScale() {
-  const rail = document.querySelector(".power-rail");
-  if (!rail) return;
-
-  rail.querySelectorAll(".power-node").forEach(n => n.remove());
-
-  const visible = FILTERED
-    .filter(c => typeof c.strength === "number" && c.strength > 0)
-    .slice(0, 20);
-
-  if (!visible.length) return;
-
-  // Escala logarítmica
-  const values = visible.map(c => c.strength);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-
-  const logMin = Math.log10(min);
-  const logMax = Math.log10(max);
-
+  const rail = $('.power-rail');
+  const visible = strongestKnown(FILTERED, 20);
+  rail.replaceChildren();
+  if (!visible.length) { rail.textContent = 'No hay lecturas conocidas con estos filtros.'; return; }
+  const max = Math.max(...visible.map(c => c.strength));
   visible.forEach(c => {
-    const logVal = Math.log10(c.strength);
-    const percent =
-      ((logVal - logMin) / (logMax - logMin)) * 100;
-
-    const node = document.createElement("div");
-    node.className = "power-node";
-    node.style.left = `${percent}%`;
-    node.title = `${c.name} — ${formatNumber(c.strength)}`;
-
-    const avatar = makeImageOrAvatar(c.photo, c.name, "power-avatar");
-
-    node.appendChild(avatar);
-    rail.appendChild(node);
+    const row = document.createElement('div'); row.className = 'scale-row';
+    const name = document.createElement('span'); name.textContent = c.name;
+    const track = document.createElement('div'); track.className = 'scale-track'; track.setAttribute('aria-hidden','true');
+    const bar = document.createElement('i'); bar.style.width = (max > 1 ? Math.log10(c.strength) / Math.log10(max) * 100 : 100) + '%';
+    track.append(bar);
+    const value = document.createElement('strong'); value.textContent = c.strength.toLocaleString('es-ES');
+    row.append(name, track, value); rail.append(row);
   });
 }
 
+// Comparison includes base readings and each recorded transformation.
+const readings = DATA.flatMap(c => [{...c, label:c.name + ' · Base'}, ...(c.transformations || []).map(t => ({...t,label:c.name + ' · ' + t.name}))]);
+const compareA = $('#compare-a'), compareB = $('#compare-b');
+[compareA,compareB].forEach(select => {
+  readings.forEach((reading,i) => { const option = document.createElement('option'); option.value = i; option.textContent = reading.label; select.append(option); });
+  select.addEventListener('change',renderComparison);
+});
+compareB.value = String(Math.min(1,readings.length - 1));
+function renderComparison(){
+  const a = readings[compareA.value], b = readings[compareB.value];
+  const result = $('#compare-result'); result.replaceChildren();
+  if(!a || !b) return;
+  const cards = document.createElement('div'); cards.className = 'comparison-readings';
+  [a,b].forEach(c => {
+    const card = document.createElement('div'); card.className = 'comparison-reading';
+    const info = document.createElement('div'); const name = document.createElement('span'); name.textContent = c.label;
+    const value = document.createElement('strong'); value.textContent = typeof c.strength === 'number' ? c.strength.toLocaleString('es-ES') : 'Sin lectura';
+    info.append(name,value); card.append(makeImageOrAvatar(c.photo,c.name,'avatar'),info); cards.append(card);
+  });
+  const note = document.createElement('p'); note.className = 'comparison-verdict';
+  if(typeof a.strength !== 'number' || typeof b.strength !== 'number') note.textContent = 'No se puede calcular la diferencia: falta una lectura de poder.';
+  else if(a.strength === b.strength) note.textContent = 'Lecturas iguales · Diferencia: 0';
+  else { const high = a.strength > b.strength ? a : b; const low = high === a ? b : a;
+    note.textContent = high.label + (low.strength > 0 ? ' tiene ' + (high.strength / low.strength).toLocaleString('es-ES',{maximumFractionDigits:2}) + ' veces la lectura de la otra selección.' : ' tiene la mayor lectura.') + ' Diferencia: ' + (high.strength-low.strength).toLocaleString('es-ES') + '.';
+  }
+  result.append(cards,note);
+}
+renderComparison();
 
 // Collapse-all transformations
 collapseAllBtn?.addEventListener("click", ()=>{
   $$(".transformation").forEach(t => t.classList.add("hidden"));
-  $$(".toggle-button").forEach(btn => btn.textContent = "Desbloquear formas");
+  $(".toggle-button").forEach(btn => { btn.textContent = "Desbloquear formas"; btn.setAttribute("aria-expanded", "false"); });
 });
 
 // Scroll-to-top

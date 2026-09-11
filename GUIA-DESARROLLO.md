@@ -1,5 +1,34 @@
 # Guía rápida de Web-Rol
 
+El [README](README.md) contiene el mapa completo de carpetas. Las herramientas
+locales están en `scripts/` y los informes de mantenimiento en `docs/`.
+Para comprobar referencias locales, ejecuta `python scripts/audit_site.py`.
+
+El catálogo `juegos/index.html` utiliza `assets/css/juegos.css` y
+`assets/js/juegos.js`. Cada tarjeta indica su estado con `data-status`
+(`live`, `dev` o `coming`); los contadores y filtros se calculan a partir de él.
+Al añadir una tarjeta, colócala también dentro de la sección de su estado.
+
+## Archivo de Makai
+
+- `makai.html`: centro de villanos, enlazado desde Dragon Ball en el HUB.
+- `makai-datos.js`: fichas base; `assets/css/makai.css` y `assets/js/makai.js`:
+  apariencia e interacción. Los retratos están en `assets/img/makai/`.
+- Permite crear y editar fichas, buscar, filtrar por estado y afiliación,
+  exportar/importar copias JSON y descargar el archivo de datos actualizado.
+- El guardado local usa `rp-makai-v1`. Las fichas locales prevalecen sobre las
+  fichas base con el mismo identificador. Las copias importadas se combinan
+  por identificador, con confirmación antes de actualizar registros existentes.
+- «Guardar archivo de datos» descarga `makai-datos.js`; sustituye el archivo del
+  proyecto para incorporar esos cambios a la web. Los retratos se referencian
+  por ruta o URL y no se incluyen en las copias JSON.
+- Los estados vitales son `Vivo`, `Muerto` y `Sin confirmar`. La afiliación y el
+  nivel de amenaza son campos independientes. No deduzcas pertenencia a la Liga
+  simplemente por figurar en Makai.
+- Las dos fichas iniciales proceden de «Diseñar don villano» y «Nombrar don de
+  recuerdos». Solo se incorporaron datos confirmados por el usuario; las ideas
+  propuestas sin aceptación están señaladas como pendientes.
+
 ## Dónde está cada cosa
 
 - `index.html`: contenedor principal y reproductor persistente.

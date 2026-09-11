@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#110d12">
+  <meta name="description" content="Makai, ciudad de los villanos del rol de Dragon Ball. Expedientes, dones, estados y archivo de la Liga de Villanos.">
+  <title>Makai · Liga de Villanos</title>
+  <link rel="stylesheet" href="assets/css/makai.css?v=20260911-2">
+  <script src="makai-datos.js?v=20260911-2" defer></script>
+  <script src="assets/js/makai.js?v=20260911-2" defer></script>
+</head>
+<body>
+  <a class="skip" href="#archivo">Saltar a los expedientes</a>
+  <header class="topbar">
+    <a class="brand" href="makai.html" aria-label="Makai, inicio"><span class="brand-symbol" aria-hidden="true">魔</span><span>MAKAI<small>ARCHIVO DE VILLANOS</small></span></a>
+    <nav aria-label="Navegación principal"><a href="#archivo">Expedientes</a><a href="#liga">La Liga</a><a href="index.html">← RP HUB</a></nav>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy"><p class="eyebrow"><span></span> DRAGON BALL · ARCHIVO DEL ROL</p><h1 id="hero-title">Bienvenido a<br><em>Makai.</em></h1><p class="hero-description">Una ciudad de villanos.<br>Cada nombre guarda una historia. Cada don, una amenaza.</p><a class="primary" href="#archivo">Explorar expedientes <span aria-hidden="true">↗</span></a><p class="hero-caption">CIUDAD DE MAKAI <span>/</span> LIGA DE VILLANOS</p></div>
+      <div class="hero-art" aria-hidden="true"><div class="moon"></div><div class="kanji">魔<br>界</div><div class="city"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="art-label">MAKAI / EL OTRO LADO DEL PODER</span></div>
+    </section>
+    <section class="stats" aria-label="Resumen del archivo"><div><strong id="total">0</strong><span>Expedientes</span></div><div><strong id="alive">0</strong><span>Con vida</span></div><div><strong id="dead">0</strong><span>Fallecidos</span></div><div><strong id="pending">0</strong><span>Estado sin confirmar</span></div></section>
+    <section id="archivo" class="archive" aria-labelledby="archive-title">
+      <div class="section-heading"><div><p class="eyebrow">01 / REGISTRO CENTRAL</p><h2 id="archive-title">Los nombres de Makai</h2></div><button class="primary" id="add" type="button">+ Nuevo villano</button></div>
+      <div class="tools"><label class="search">Buscar en el archivo<input id="search" type="search" placeholder="Nombre, don, habilidad…" autocomplete="off"></label><label>Estado vital<select id="status-filter"><option value="">Todos los estados</option><option>Vivo</option><option>Muerto</option><option>Sin confirmar</option></select></label><label>Afiliación<select id="affiliation-filter"><option value="">Todas las afiliaciones</option><option>Liga de Villanos</option><option>Independiente</option><option>Otra organización</option><option>Por confirmar</option></select></label></div>
+      <p id="results" class="results" role="status" aria-live="polite"></p>
+      <div class="dossiers"><div id="villain-list" class="villain-list" aria-label="Lista de villanos"></div><article id="detail" class="detail" aria-label="Expediente seleccionado"></article></div>
+      <div id="empty" class="empty" hidden><span aria-hidden="true">◇</span><h3>No hay expedientes con estos filtros</h3><p>Prueba otro nombre o vuelve a mostrar el archivo completo.</p><button id="clear-filters" type="button">Mostrar todos</button></div>
+    </section>
+    <section id="liga" class="league" aria-labelledby="league-title"><div class="league-seal" aria-hidden="true">魔界<small>LA LIGA</small></div><div><p class="eyebrow">02 / ORGANIZACIÓN</p><h2 id="league-title">Liga de Villanos</h2><p>La Liga tiene su lugar en Makai. Este registro distingue a sus miembros del resto de villanos de la ciudad.</p><p id="league-summary" class="muted"></p><button id="show-league" type="button">Consultar miembros <span aria-hidden="true">↗</span></button></div><div class="league-note"><span>SEDE</span><strong>Makai</strong><span>JEFA DE LOS VILLANOS</span><strong>Zoya</strong></div></section>
+    <section class="management" aria-labelledby="manage-title"><div><p class="eyebrow">03 / MANTENIMIENTO DEL ARCHIVO</p><h2 id="manage-title">Un registro que crece con el rol</h2><p>Las fichas que guardes se conservan en este navegador. Descarga una copia para llevarlas a otro equipo o guarda el archivo de datos para actualizar la web.</p></div><div class="management-actions"><button id="export" type="button">Descargar copia JSON</button><button id="import" type="button">Importar copia</button><button id="export-code" type="button">Guardar archivo de datos</button><input id="import-file" type="file" accept=".json,application/json" hidden></div></section>
+    <p id="notice" class="notice" role="status" aria-live="polite"></p>
+    <noscript><p class="notice">Activa JavaScript para consultar y editar el registro de Makai.</p></noscript>
+  </main>
+  <footer>MAKAI <span>Archivo del universo Dragon Ball · RP HUB</span><a href="#">Volver arriba ↑</a></footer>
+  <dialog id="editor" aria-labelledby="editor-title"><form id="edit-form"><header><div><p class="eyebrow">REGISTRO DE MAKAI</p><h2 id="editor-title">Editar expediente</h2></div><button id="close-editor" class="icon-button" type="button" aria-label="Cerrar editor">×</button></header><div class="form-grid">
+    <label>Nombre de villano<input name="name" required maxlength="100"></label><label>Nombre real<input name="realName" maxlength="100"></label><label>Título o apodo<input name="title" maxlength="140"></label><label>Imagen (ruta o URL)<input name="image" maxlength="1500" placeholder="assets/img/makai/personaje.png"></label>
+    <label>Estado vital<select name="status"><option>Sin confirmar</option><option>Vivo</option><option>Muerto</option></select></label><label>Afiliación<select name="affiliation"><option>Por confirmar</option><option>Liga de Villanos</option><option>Independiente</option><option>Otra organización</option></select></label><label>Nivel de amenaza<select name="threat"><option>Sin evaluar</option><option>Bajo</option><option>Medio</option><option>Alto</option><option>Crítico</option></select></label><label>Última ubicación<input name="location" maxlength="160"></label>
+    <label class="wide">Don<input name="gift" required maxlength="160"></label><label class="wide">Qué hace<textarea name="description" required maxlength="4000" rows="4"></textarea></label><label class="wide">Cómo se activa<textarea name="activation" maxlength="2000" rows="2"></textarea></label><label class="wide">Límites y debilidades<textarea name="limits" maxlength="4000" rows="3"></textarea></label><label class="wide">Historia, relaciones y notas<textarea name="notes" maxlength="6000" rows="4"></textarea></label><label class="wide">Procedencia de la información<textarea name="source" maxlength="2000" rows="2" placeholder="Escena, fecha o conversación donde se confirmó"></textarea></label>
+  </div><p id="form-error" role="alert"></p><div class="form-actions"><span>Guardado local en este navegador</span><button class="primary" type="submit">Guardar expediente</button></div></form></dialog>
+</body>
+</html>

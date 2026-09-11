@@ -9,7 +9,7 @@
 </head>
 <body class="dark-mode">
   <header class="appbar" role="banner">
-    <div class="brand">🟢 Scouter de Fuerza</div>
+    <div class="brand">Scouter de Fuerza</div>
     <div class="appbar-main">
       <div class="search-wrap">
         <input id="global-search" type="search" placeholder="Buscar personajes o transformaciones… (pulsa /)" aria-label="Buscar">
@@ -47,19 +47,14 @@
       <div id="top-threats" class="threat-grid"></div>
     </section>
 
-    <section class="scale-card">
-  <h2>Escala de poder</h2>
+    <section class="compare-card" aria-labelledby="compare-title">
+<h2 id="compare-title">Comparar lecturas</h2><p>Elige dos combatientes o transformaciones de toda la base de datos.</p>
+<div class="compare-selects"><label>Primera lectura<select id="compare-a"></select></label><span aria-hidden="true">VS</span><label>Segunda lectura<select id="compare-b"></select></label></div>
+<div id="compare-result" aria-live="polite"></div></section>
+<details class="scale-card"><summary>Escala de poder · 20 mayores lecturas</summary>
+  
 
-  <div class="power-rail">
-    <div class="rail"></div>
-    <div class="rail-label min">Humano con ganas</div>
-    <div class="rail-label max">Amenaza nivel dios</div>
-  </div>
-
-  <p class="scale-note">
-    Escala logarítmica basada en los personajes visibles. El scouter prioriza las 20 mayores lecturas actuales.
-  </p>
-</section>
+  <div class="power-rail"></div><p class="scale-note">Escala logarítmica desde 1 hasta la mayor lectura visible. Cada fila muestra un personaje; los valores exactos permiten comparar sin depender de la longitud de las barras.</p></details>
 
 
     <section id="characters-list">
