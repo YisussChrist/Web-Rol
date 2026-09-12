@@ -90,7 +90,8 @@
       ], children: [
         { name: 'Utena Vileborne', img: "Hijos/Add y Albedo/Utena Vileborne.jpg", gender: 'F', tag: 'S', series: 'Mahou Shoujo ni Akogarete', meta: 'Utena Hiiragi — Mahou Shoujo ni Akogarete', link: '#', born: true , age: '5 años', role: '', personality: '', powers: '', notes: ''},
         { name: 'Astharot Vileborne', img: "Hijos/Add y Albedo/Astharot Vileborne.png", gender: 'F', tag: 'Y', series: 'A Barbarian Adventure in a Fantasy World', meta: 'Astaroth - A Barbarian Adventure in a Fantasy World', born: true, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
-        { name: "Lilith Vileborne", img: "Hijos/Add y Albedo/Lilith Vileborne.jpg", gender: 'F', tag: 'Y', series: 'Rememento: White Shadows', meta: 'Alcyone — Rememento: White Shadows', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: false }
+        { name: "Lilith Vileborne", img: "Hijos/Add y Albedo/Lilith Vileborne.jpg", gender: 'F', tag: 'Y', series: 'Rememento: White Shadows', meta: 'Alcyone — Rememento: White Shadows', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: false },
+        { name: "Hela Vileborne", img: "Hijos/Add y Albedo/Hela Vileborne.png", gender: 'F', tag: 'Y', series: 'I Obtained a Mythic Item', meta: 'Hela — I Obtained a Mythic Item', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: false }
       ]},
       { family: 'Nara y Khrome', parents: [
         { name: 'Nara Midori', img: 'fotos-poderes/Nara Midori.jpg' },
@@ -102,7 +103,7 @@
       ]},
       { family: 'Plasma y Magilou', parents: [
         { name: 'Killua Zaoldyeck', img: 'fotos-poderes/Plasma.jpg' },
-        { name: '', img: 'fotos-poderes/Magilou Mayvin.jpg' }
+        { name: 'Magilou Mayvin', img: 'fotos-poderes/Magilou Mayvin.jpg' }
       ], children: [
         { name: 'Luna Zaoldyeck', img: "Hijos/Plasma y Magilou/Luna Zaoldyeck.jpg", gender: 'F', tag: 'L', series: "Li'l Miss Vampire Can't Suck Right", meta: "Luna Ishikawa — Li'l Miss Vampire Can't Suck Right", link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
@@ -150,7 +151,7 @@
         { name: 'Artemisa Kane', img: 'fotos-poderes/Artemisa Kane.jpg' },
         { name: 'Zeo Torzeus', img: 'fotos-poderes/Zeo Torzeus.jpg' }
       ], children: [
-        { name: 'Diana Kane', img: "Hijos/Zeo y Artemisa/Diana Kane.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Himeko — Honkai Star Rail', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Diana Kane', img: "Hijos/Zeo y Artemisa/Diana Kane.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Himeko — Honkai Star Rail', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true }
       ]},
       { family: 'Venus y Jade', parents: [
         { name: 'Venus Shintarou', img: 'fotos-poderes/Venus Shintarou.jpg' },
@@ -271,7 +272,8 @@
         { name: 'Arthur Boyle', img: 'fotos-poderes/Arthur Boyle.jpg' },
         { name: 'Momo Yaoyorozu', img: 'fotos-poderes/Momo Yaoyorozu.png' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Mei Boyle', img: "Hijos/Arthur y Momo/Mei Boyle.png", gender: 'F', tag: 'Y', series: 'Kinosaki Mei', meta: 'Kinosaki Mei — Marriagetoxin', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true},
+        { name: 'Kukaku Boyle', img: "Hijos/Arthur y Momo/Kukaku Boyle.jpg", gender: 'F', tag: 'L', series: 'Bleach', meta: 'Kukaku Shiba — Bleach', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: false}
       ]},
       { family: 'Kaedehara y Shiva', parents: [
         { name: 'Kaedehara Kazuha', img: 'fotos-poderes/Kazuha.jpg' },
