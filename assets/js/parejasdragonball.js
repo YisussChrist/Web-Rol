@@ -90,8 +90,8 @@
       ], children: [
         { name: 'Utena Vileborne', img: "Hijos/Add y Albedo/Utena Vileborne.jpg", gender: 'F', tag: 'S', series: 'Mahou Shoujo ni Akogarete', meta: 'Utena Hiiragi — Mahou Shoujo ni Akogarete', link: '#', born: true , age: '5 años', role: '', personality: '', powers: '', notes: ''},
         { name: 'Astharot Vileborne', img: "Hijos/Add y Albedo/Astharot Vileborne.png", gender: 'F', tag: 'Y', series: 'A Barbarian Adventure in a Fantasy World', meta: 'Astaroth - A Barbarian Adventure in a Fantasy World', born: true, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
-        { name: "Lilith Vileborne", img: "Hijos/Add y Albedo/Lilith Vileborne.jpg", gender: 'F', tag: 'Y', series: 'Rememento: White Shadows', meta: 'Alcyone — Rememento: White Shadows', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: false },
-        { name: "Hela Vileborne", img: "Hijos/Add y Albedo/Hela Vileborne.png", gender: 'F', tag: 'S', series: 'I Obtained a Mythic Item', meta: 'Hela — I Obtained a Mythic Item', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: false }
+        { name: "Lilith Vileborne", img: "Hijos/Add y Albedo/Lilith Vileborne.jpg", gender: 'F', tag: 'S', series: 'Rememento: White Shadows', meta: 'Alcyone — Rememento: White Shadows', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: false },
+        { name: "Hela Vileborne", img: "Hijos/Add y Albedo/Hela Vileborne.png", gender: 'F', tag: 'Y', series: 'I Obtained a Mythic Item', meta: 'Hela — I Obtained a Mythic Item', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: false }
       ]},
       { family: 'Nara y Khrome', parents: [
         { name: 'Nara Midori', img: 'fotos-poderes/Nara Midori.jpg' },
