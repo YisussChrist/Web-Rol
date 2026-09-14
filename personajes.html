@@ -1,77 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="description" content="Archivo de personajes del RP con búsqueda, filtros, estadísticas y fichas detalladas.">
-  <title>RP Characters · Rework</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explora el archivo de personajes del rol: busca por nombre, serie o dueño y consulta sus fichas.">
+  <title>Personajes · Archivo del rol</title>
   <link rel="stylesheet" href="assets/css/personajes.css">
 </head>
 <body>
-  <a href="index.html" class="back-menu">← Volver al menú</a>
-  <header>
-    <div class="row">
-      <h1>Personajes de Roleplay — Rework</h1>
-      <button class="btn" id="actBtn" title="Ver novedades">ACT</button>
-    </div>
+  <header class="archive-header">
+    <a href="index.html" class="back-menu">← Menú principal</a>
+    <div class="heading-row"><div><p class="eyebrow">ARCHIVO DEL ROL / PERSONAJES</p><h1>Archivo de personajes.</h1><p class="intro">Encuentra un personaje, consulta su serie y descubre quién lo lleva.</p></div><button id="actBtn" class="btn">Novedades</button></div>
+    <div class="archive-summary" aria-label="Resumen del archivo"><span><strong id="allCount">—</strong> personajes</span><span><strong id="allSeries">—</strong> series y obras</span><span><strong id="allFree">—</strong> sin asignar</span></div>
   </header>
-
-  <main>
-    <section class="toolbar" aria-label="Filtros">
-      <div class="search">
-        <input id="q" type="search" placeholder="Buscar por nombre, anime o dueño… (Ctrl/⌘+K)" autocomplete="off"/>
-        <div class="chips" id="ownerChips" aria-label="Filtro por dueño"></div>
-      </div>
-      <select id="animeSel" class="select" title="Filtrar por anime">
-        <option value="">Anime: todos</option>
-      </select>
-      <select id="sortSel" class="select" title="Ordenar">
-        <option value="name">Orden: Nombre (A–Z)</option>
-        <option value="anime">Orden: Anime (A–Z)</option>
-        <option value="owner">Orden: Dueño</option>
-        <option value="random">Orden: Aleatorio</option>
-      </select>
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button class="btn" id="exportCsv">Exportar CSV</button>
-        <button class="btn" id="resetBtn">Reset</button>
-      </div>
+  <main class="archive-layout">
+    <aside class="filters" aria-label="Filtros del archivo">
+      <div class="filter-heading"><h2>Explorar archivo</h2><button id="filterToggle" class="text-btn" aria-expanded="false" aria-controls="filterBody">Mostrar filtros</button><button class="text-btn" id="resetBtn">Limpiar</button></div>
+      <div id="filterBody"><fieldset><legend>Dueño <small>Puedes combinar varios</small></legend><div id="ownerChips" class="owner-options"></div><button id="allOwners" class="text-btn">Seleccionar todos</button></fieldset>
+      <label for="animeSel">Serie u obra</label><select id="animeSel"><option value="">Todas las series</option></select>
+      <details class="distribution"><summary>Distribución por dueño</summary><div id="ownerChart"></div></details>
+      <button class="btn export" id="exportCsv">↓ Exportar resultados CSV</button>
+      <p class="filter-hint">Los filtros se combinan. La exportación incluye todos los resultados, no solo esta página.</p></div>
+    </aside>
+    <section class="results" aria-labelledby="resultsTitle">
+      <div class="search-wrap"><label class="sr-only" for="q">Buscar por nombre, serie, dueño o nota</label><input id="q" type="search" placeholder="Buscar nombre, serie o dueño…" autocomplete="off"><button id="clearSearch" aria-label="Borrar búsqueda">×</button></div>
+      <div class="results-toolbar"><div><h2 id="resultsTitle">Personajes</h2><p id="resultCount" role="status"></p></div><div class="display-controls"><label class="sr-only" for="sortSel">Ordenar personajes</label><select id="sortSel"><option value="name">Nombre A–Z</option><option value="anime">Serie A–Z</option><option value="owner">Dueño</option><option value="random">Aleatorio</option></select><div class="view-switch" role="group" aria-label="Vista del listado"><button id="cardsView" aria-pressed="true" title="Vista de tarjetas">Tarjetas</button><button id="listView" aria-pressed="false" title="Vista compacta">Lista</button></div></div></div>
+      <div id="activeFilters" class="active-filters" aria-label="Filtros activos"></div>
+      <section id="grid" class="grid" aria-label="Resultados de personajes"></section>
+      <nav class="pagination" aria-label="Páginas de personajes"><button id="prevPage" class="btn">← Anterior</button><span id="pageInfo"></span><button id="nextPage" class="btn">Siguiente →</button></nav>
+      <p class="keyboard-tip">Atajo: Ctrl / ⌘ + K para buscar. Pulsa una ficha para ver sus detalles.</p>
     </section>
-
-    <section class="stats" id="statsWrap">
-      <div class="stat"><div class="big" id="totalCnt">0</div><div class="label">Total</div></div>
-      <div class="stat"><div class="big" id="uniqueAnime">0</div><div class="label">Animes únicos</div></div>
-      <div class="stat"><div class="big" id="ownerBreak">—</div><div class="label">L / S / Y</div></div>
-    </section>
-
-    <h3 class="section-title">Distribución por dueño</h3>
-    <canvas id="ownerChart" aria-label="Distribución por dueño" role="img"></canvas>
-
-    <h3 class="section-title">Listado</h3>
-    <section id="grid" class="grid" aria-live="polite"></section>
-
-    <div class="footer">
-      <div>
-        Consejos: <span class="kbd">Ctrl/⌘</span> + <span class="kbd">K</span> para enfocar búsqueda.
-      </div>
-      <div class="pill">Estado: sin backend • datos en memoria</div>
-    </div>
   </main>
-
-  <div class="modal-backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal">
-      <span class="close" id="closeModal">✕</span>
-      <h3 id="modalTitle">Novedades (ACT)</h3>
-      <ul>
-        <li>Cambiado el diseño de la interfaz.</li>
-        <li>Agregado un sistema de filtro de nombres en la sección "Anime", por tanto, ahora ya no se verán tantos animes repetidos en el selector.</li>
-      </ul>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <dialog id="characterDialog" aria-labelledby="characterTitle"><div class="dialog-top"><span class="eyebrow">FICHA DEL ARCHIVO</span><button class="close-dialog" aria-label="Cerrar ficha">×</button></div><div id="characterContent"></div></dialog>
+  <dialog id="updatesDialog" aria-labelledby="updatesTitle"><div class="dialog-top"><h2 id="updatesTitle">Novedades del archivo</h2><button class="close-dialog" aria-label="Cerrar novedades">×</button></div><ul class="updates-list"><li>Nuevo archivo con filtros por dueño y serie.</li><li>Tarjetas, vista compacta y paginación para recorrer la colección.</li><li>Fichas con información y notas registradas.</li><li>Búsqueda sin distinción de tildes y exportación de los resultados.</li><li>Limpiar los filtros conserva las preferencias del resto de la web.</li></ul></dialog>
   <script src="personajes-datos.js"></script>
   <script src="assets/js/personajes.js"></script>
 </body>
