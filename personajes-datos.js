@@ -199,7 +199,7 @@ window.RP_CHARACTERS = [
 { name: "Yelan", anime: "Genshin Impact", owner: "Sans" },
 { name: "Hu Tao", anime: "Genshin Impact", owner: "Sans" },
 { name: "Fischl", anime: "Genshin Impact", owner: "Sans" },
-{ name: "Xilonen", anime: "Genshin Impact", owner: "Sans" },
+{ name: "Xilonen", anime: "Genshin Impact", owner: "Lexy" },
 { name: "Fishcl", anime: "Genshin Impact", owner: "Sans" },
 { name: "Layla", anime: "Genshin Impact", owner: "Lexy" },
 { name: "Yunjin", anime: "Genshin Impact", owner: null },
