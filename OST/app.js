@@ -40,6 +40,7 @@
   audio.preload = 'metadata';
   audio.volume = state.volume;
   let lastFocus = null;
+  const shuffleCycle = window.createShuffleCycle();
 
   const nodes = {
     hero: $('#hero'), catalog: $('#catalog'), filterRow: $('#filterRow'), sectionTitle: $('#sectionTitle'),
@@ -223,10 +224,16 @@
   }
 
   function nextTrack(direction = 1) {
+    if (sharedShell) {
+      if (sharedShell.getState().sourceId !== 'resonance') sharedShell.setTrack(state.current, false);
+      direction < 0 ? sharedShell.previous() : sharedShell.next();
+      return;
+    }
     const visible = visibleTracks();
     const pool = visible.length ? visible.map(item => item.index) : soundtracks.map((_, index) => index);
     let next;
-    if (state.shuffle) next = pool[Math.floor(Math.random() * pool.length)];
+    if (!pool.length) return;
+    if (state.shuffle) next = shuffleCycle.next(pool, state.current);
     else {
       const position = Math.max(0, pool.indexOf(state.current));
       next = pool[(position + direction + pool.length) % pool.length];

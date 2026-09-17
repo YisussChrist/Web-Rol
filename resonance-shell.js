@@ -36,6 +36,7 @@
     resumeWanted: localStorage.getItem('resonanceWasPlaying') === 'true'
   };
   const sources = new Map();
+  const shuffleCycles = new Map();
   let activeSource = createSource({
     id: 'resonance', label: 'RESONANCE · REPRODUCTOR GLOBAL', queueLabel: 'Cola de Resonance',
     route: 'OST/index.html', album: 'Resonance', basePath: 'OST/', tracks
@@ -358,7 +359,8 @@
     if (!sourceTracks.length) return;
     let index;
     if (state.shuffle && sourceTracks.length > 1) {
-      do index = Math.floor(Math.random() * sourceTracks.length); while (index === state.current);
+      if (!shuffleCycles.has(activeSource.id)) shuffleCycles.set(activeSource.id, window.createShuffleCycle());
+      index = shuffleCycles.get(activeSource.id).next(sourceTracks.map((_, i) => i), state.current);
     } else index = (state.current + direction + sourceTracks.length) % sourceTracks.length;
     selectActiveTrack(index, true);
   }
