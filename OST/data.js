@@ -914,6 +914,29 @@ Así que ella conserva las...
             }
         ]
     },
+    {
+    character: "Sweetheart",
+    characterFace: "img/Sweetheart.jpg",
+    lore: "Una figura de cera que adquirió vida y una personalidad como una auténtica princesa caprichosa después de ser fotografiada en un museo.",
+    tracks: [
+        {
+            songTitle: "World's End Valentine",
+            songDescription: "Cuando aquella que siempre acostumbró a ser amada es rechazada, su personalidad colapsa, y su desequilibrio puede acabar con el mundo.",
+            songCover: "img/SweetheartCover.jpg",
+            audio: "audio/World's End Valentine.mp3",
+            tags: ["Battle", "Evil"],
+            lore: "Un cuerpo de cera no está pensado para albergar tantas emociones, por lo tanto colapsa ante el rechazo de aquellos que creen que le amarían"
+        },
+        {
+            songTitle: "Perfect Heart Collapse",
+            songDescription: "La perfección. La mejor creación de Dios. La mayor de las purezas. Superior a la frágil humanidad. Ella es PerfectHeart.",
+            songCover: "img/SweetheartCover2.jpg",
+            audio: "audio/Perfect Heart Collapse.mp3",
+            tags: ["Transformation", "EpicBattle", "Chaos"],
+            lore: "Cuando una simple muñeca de cera va más allá de su materialismo, la perfección en cuerpo y alma. La forma de vida definitiva, bendita por Dios."
+        }
+    ]
+},
 ];
 
 const normalizeCharacterName = value => String(value || "")

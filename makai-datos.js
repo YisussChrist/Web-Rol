@@ -290,7 +290,7 @@ window.MAKAI_DATA = {
       "limits": "La ficha no describe otras habilidades o limitaciones.",
       "notes": "",
       "source": "Ficha visual aportada por el usuario el 11 de septiembre de 2026. Estado vital confirmado por el usuario el 11 de septiembre de 2026."
-    }
+    },
   ],
   "statusRevision": "20260911-vitales"
 };
