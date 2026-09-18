@@ -218,7 +218,8 @@
         { name: 'Roxy Migurdia', img: 'fotos-poderes/Roxy Migurdia.jpg' }
       ], children: [
         { name: 'Adelaide Grinberryall', img: 'Hijos/Yuno y Eula/Adelaide Grinberryal.png', born:true, gender: 'F', tag: 'Y', series: 'Conquering the Academy with Just a Sashimi Knife', meta: 'Abel von Nibelung — Conquering the Academy with Just a Sashimi Knife — [Eula Lawrence]', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
-        { name: 'Charlotte Grinberryall', img: 'Hijos/Yuno y Eula/Charlotte Grynberryall.jpg', born:true, gender: 'F', tag: 'Y', series: 'Kanteiskill', meta: 'Charlotte - Kanteiskill — [Roxy Migurdia]', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Charlotte Grinberryall', img: 'Hijos/Yuno y Eula/Charlotte Grynberryall.jpg', born:true, gender: 'F', tag: 'Y', series: 'Kanteiskill', meta: 'Charlotte - Kanteiskill — [Roxy Migurdia]', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Cecilia Grinberryall', img: 'Hijos/Yuno y Eula/Cecilia Grinberryal.png', born:false, gender: 'F', tag: 'Y', series: 'There was a Cute Girl in the Heros Party so I tried to confessing to her', meta: 'Cecilia Aquarain - There was a Cute Girl in the Heros Party so I tried to confessing to her  — [Eula Lawrence]', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
 
       ]},
       { family: 'Toga, Toru y Hitoshi', parents: [
