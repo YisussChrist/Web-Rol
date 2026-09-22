@@ -18,15 +18,15 @@ window.RP_SERIES = [
       {
         title: "Dragon Ball Z Kai",
         poster: "fotos/dragonballzkai.jpg",
-        status: "Viendo",
+        status: "Completa",
         platform: "Netflix",
         genre: ["Acción", "Drama", "Shonen"],
         seasons: 2,
         episodes: 169,
-        watchedEpisodes: 133,
+        watchedEpisodes: 169,
         year: 2009,
         universe: "Anime",
-        ratings: { Y: 9.4, S: 9.5, L: 8 },
+        ratings: { Y: 9.8, S: 9.5, L: 8 },
         favorite: true,
         notes: "A medida que las fuerzas de los confines del universo descienden sobre la Tierra, Goku y sus aliados son los únicos que se interponen entre la paz y el fin de la humanidad."
       },
