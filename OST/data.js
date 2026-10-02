@@ -937,6 +937,21 @@ Así que ella conserva las...
         }
     ]
 },
+{
+    character: "Khrome Ryugu",
+    characterFace: "img/Khrome.png",
+    lore: "Un dragón que perdió anteriormente todo lo que tenía, fallando en proteger a la región que lo cuido, su poder latente lucha por seguir protegiendo lo poco que le queda y lo que está por conseguir",
+    tracks: [
+        {
+            songTitle: "Fate Of The Earth",
+            songDescription: "Khrome Ryuguu, el último dragón de cristal de la clase guerrera, usará todo su valor y fuerza en proteger a todos sin morir en el acto",
+            songCover: "img/KhromeCover.png",
+            audio: "audio/Fate Of The Earth.mp3",
+            tags: ["Batalla", "Épica", "Sentimental", "Héroe"],
+            lore: "En sus últimos alientos Khrome decide acumular energía para lanzar un ataque devastador para salvar al planeta tierra de la destrucción total"
+        }
+    ]
+},
 ];
 
 const normalizeCharacterName = value => String(value || "")
