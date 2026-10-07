@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <script>if(window.self===window.top)window.location.replace('index.html#route='+encodeURIComponent('ficha360.html'+location.search));</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Ficha unificada de los personajes oficiales de Inazuma, Dragon Ball y Pokémon.">
+  <meta name="theme-color" content="#090f21">
+  <title>Ficha 360 · Archivo conectado</title>
+  <link rel="stylesheet" href="assets/css/ficha360.css?v=20261003-editor">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="back-link" href="hub.html">← Volver al HUB</a>
+    <span class="header-mark" aria-hidden="true">360°</span>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="pageTitle">
+      <div>
+        <p class="eyebrow">ARCHIVO CONECTADO · TRES UNIVERSOS</p>
+        <h1 id="pageTitle">Ficha <span>360</span></h1>
+        <p>Una sola vista para consultar identidad, equipo, poder, familia, relaciones, fechas y crónicas sin duplicar información.</p>
+      </div>
+      <div class="archive-stats" aria-label="Resumen del archivo">
+        <article><strong id="characterCount">—</strong><span>personajes oficiales</span></article>
+        <article><strong id="childCount">—</strong><span>marcados como hijos</span></article>
+        <article><strong id="connectedCount">—</strong><span>con datos conectados</span></article>
+      </div>
+    </section>
+
+    <section class="editor-toolbar" aria-label="Guardar y trasladar datos">
+      <div><strong>Tu archivo de fichas</strong><p id="saveStatus" role="status">Los cambios se guardan en este navegador. Descarga una copia para conservarlos o llevarlos a otro dispositivo.</p></div>
+      <div class="editor-actions"><button type="button" id="export360">Descargar copia</button><button type="button" id="import360">Importar copia</button><button type="button" id="publish360">Descargar archivo de datos</button></div>
+      <input id="import360File" type="file" accept=".json,application/json" hidden>
+    </section>
+    <section class="workspace">
+      <aside class="finder" aria-labelledby="finderTitle">
+        <div class="finder-heading">
+          <div><p class="eyebrow">DIRECTORIO</p><h2 id="finderTitle">Elige personaje</h2></div>
+          <span id="resultCount" role="status"></span>
+        </div>
+        <label class="search-box" for="characterSearch">
+          <span aria-hidden="true">⌕</span>
+          <input id="characterSearch" type="search" placeholder="Buscar por nombre, equipo, raza…" autocomplete="off">
+        </label>
+        <div class="universe-filters" id="universeFilters" role="group" aria-label="Filtrar por universo">
+          <button type="button" data-universe="all" aria-pressed="true">Todos</button>
+          <button type="button" data-universe="inazuma" aria-pressed="false">⚽ Inazuma</button>
+          <button type="button" data-universe="dragonball" aria-pressed="false">🐉 Dragon Ball</button>
+          <button type="button" data-universe="pokemon" aria-pressed="false">◉ Pokémon</button>
+          <button type="button" data-universe="children" aria-pressed="false">✦ Hijos</button>
+        </div>
+        <label class="incomplete-filter"><input id="incompleteOnly" type="checkbox"> Solo fichas incompletas</label>
+        <div class="character-list" id="characterList" aria-label="Personajes encontrados"></div>
+        <p class="list-note" id="listNote">Escribe para localizar rápidamente una ficha.</p>
+      </aside>
+
+      <section class="profile" id="profile" aria-live="polite" aria-busy="false"></section>
+    </section>
+  </main>
+
+  <script src="centro-inazuma-datos.js"></script>
+  <script src="dragon-dex-datos.js"></script>
+  <script src="Pokemon/entrenadores-datos.js"></script>
+  <script src="Hijos Inazuma/hijos-inazuma-datos.js"></script>
+  <script src="relaciones-datos.js"></script>
+  <script src="calendario-datos.js"></script>
+  <script src="cronica-datos.js"></script>
+  <script src="ficha360-datos.js"></script>
+  <script src="assets/js/ficha360-editor.js?v=20261003-editor"></script>
+  <script src="assets/js/ficha360.js?v=20261003-editor"></script>
+</body>
+</html>

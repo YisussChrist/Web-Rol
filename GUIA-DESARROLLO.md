@@ -9,6 +9,13 @@ El catálogo `juegos/index.html` utiliza `assets/css/juegos.css` y
 (`live`, `dev` o `coming`); los contadores y filtros se calculan a partir de él.
 Al añadir una tarjeta, colócala también dentro de la sección de su estado.
 
+## Ficha 360
+
+Para completar o corregir los perfiles conectados desde la web, consulta
+[Ficha 360: edición y copias](docs/FICHA360.md). Los complementos publicados
+están en `ficha360-datos.js`; los borradores del navegador prevalecen sobre ellos.
+La lista extraoficial de `personajes.html` no se incorpora a Ficha 360.
+
 ## Archivo de Makai
 
 - `makai.html`: centro de villanos, enlazado desde Dragon Ball en el HUB.

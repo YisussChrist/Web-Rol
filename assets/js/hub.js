@@ -31,6 +31,7 @@
       { title: "Radio Etruria", category: "Pokémon", emoji: "📻", url: "Pokemon/EtruriaRadio/index.html", description: "Emisora de radio con música, noticias y anuncios de la región.", status: "" },
 
       { title: "Crónicas del Rol", category: "General", emoji: "⌛", url: "cronica.html", description: "Tres archivos narrativos con estilos propios para Inazuma, Dragon Ball y Pokémon.", status: "Restaurado" },
+      { title: "Ficha 360", category: "General", emoji: "◎", url: "ficha360.html", description: "Perfil conectado de los personajes oficiales de Inazuma, Dragon Ball y Pokémon.", status: "Nuevo" },
       { title: "Personajes", category: "General", emoji: "👤", url: "personajes.html", description: "Entrada general para fichas de personajes y datos de rol.", status: "" },
       { title: "Embarazos", category: "General", emoji: "🤰", url: "embarazos.html", description: "Seguimiento de embarazos, fechas y relaciones familiares.", status: "" },
       { title: "Códigos", category: "General", emoji: "💻", url: "Hub/index.html", description: "Hub para códigos..", status: "" },
@@ -91,7 +92,7 @@
       { title: "Tema 3", src: "music/Chill PKM 1h.mp3" }
     ];
 
-    const QUICK_LINK_TITLES = ["Dragon Dex", "Inazuma Central", "InaMarkt", "Calendario Conectado", "Inventario", "Personajes", "Árbol Familiar"];
+    const QUICK_LINK_TITLES = ["Ficha 360", "Dragon Dex", "Inazuma Central", "InaMarkt", "Calendario Conectado", "Inventario", "Árbol Familiar"];
 
     const quotes = [
         { text: "El fútbol no se juega solo con los pies. También se juega con lo que eres.", author: "RP Inazuma" },

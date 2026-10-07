@@ -151,7 +151,9 @@
         { name: 'Artemisa Kane', img: 'fotos-poderes/Artemisa Kane.jpg' },
         { name: 'Zeo Torzeus', img: 'fotos-poderes/Zeo Torzeus.jpg' }
       ], children: [
-        { name: 'Diana Kane', img: "Hijos/Zeo y Artemisa/Diana Kane.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Himeko — Honkai Star Rail', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true }
+        { name: 'Diana Kane', img: "Hijos/Zeo y Artemisa/Diana Kane.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Himeko — Honkai Star Rail', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true },
+        { name: 'Apoloº Kane', img: "Hijos/Zeo y Artemisa/Apolo Kane.jpg", gender: 'M', tag: 'L', series: 'Maou gakuin no futekigousha The Misfit of Demon King Academy', meta: 'Amur Veewither — Maou gakuin no futekigousha The Misfit of Demon King Academy', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true },
+
       ]},
       { family: 'Venus y Jade', parents: [
         { name: 'Venus Shintarou', img: 'fotos-poderes/Venus Shintarou.jpg' },
