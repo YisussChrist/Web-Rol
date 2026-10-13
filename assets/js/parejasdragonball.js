@@ -174,7 +174,8 @@
         { name: 'Freyja Kane', img: 'fotos-poderes/Freyja Kane.jpg' }
       ], children: [
         { name: 'Hera Mori', img: "Hijos/Jin y Freyja/Hera Mori.png", gender: 'F', tag: 'Y', series: 'Alchemy Star', meta: 'Regina — Alchemy Stars', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: false },
-        { name: 'Eris Mori', img: "Hijos/Jin y Freyja/Eris Mori.jpg", gender: 'F', tag: 'L', series: 'The Rising Of The Shield Hero', meta: 'Malty Melromac — The Rising Of The Shield Hero', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: "Eris Kane", img: "Hijos/Jin y Freyja/Eris Kane.jpg", gender: 'F', tag: 'Y', series: 'Mushoku Tensei', meta: 'Eris Boreas Greyrat — Mushoku Tensei', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Neith Mori', img: "Hijos/Jin y Freyja/Neith Mori.jpg", gender: 'F', tag: 'L', series: 'The Rising Of The Shield Hero', meta: 'Malty Melromac — The Rising Of The Shield Hero', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
 
       ]},
       { family: 'Hakuryuu y Velvet', parents: [

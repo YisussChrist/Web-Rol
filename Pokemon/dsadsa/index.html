@@ -3,29 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PokéDamage Advanced · Randomlocke</title>
+  <title>PokéDamage · Laboratorio de combate</title>
+  <meta name="description" content="Calculadora de daño Pokémon con objetos, habilidades, Tera, estadísticas editables y reglas de generación 9. Datos disponibles sin conexión." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <button id="backToMenu" class="menu-button">
-    ← Volver al menú
-</button>
-
-  <div class="site-warning" id="siteWarning" role="dialog" aria-modal="true" aria-labelledby="siteWarningTitle">
-    <div class="site-warning__backdrop" data-close-warning></div>
-    <article class="site-warning__box">
-      <span class="site-warning__tag">Aviso importante</span>
-      <h2 id="siteWarningTitle">Antes de usar la calculadora</h2>
-      <p>Esta herramienta sigue en desarrollo, así que puede haber algún error en cálculos, formas, habilidades u objetos concretos.</p>
-      <ul>
-        <li>Algunos objetos todavía no han sido añadidos o pueden estar simplificados.</li>
-        <li>Los nombres de Pokémon, formas y ataques deben escribirse en <strong>inglés</strong>.</li>
-        <li>Esto es especialmente importante con Pokémon Paradox y formas especiales.</li>
-        <li>Lo mismo aplica con las formas "Mega", cual el nombre deberá escribirse con guiones, ejemplo: mega-gardevoir</li>
-      </ul>
-      <button type="button" id="closeSiteWarning">Entendido</button>
-    </article>
-  </div>
+  <nav class="app-nav" aria-label="Navegación"><a href="../center.html">← Archivo Pokémon</a><span>ETRURIA / HERRAMIENTAS</span><a href="../datos.html">Consultar movimientos ↗</a></nav>
 
   <main class="app">
     <header class="hero pokedex-frame">
@@ -33,13 +16,14 @@
         <span class="light blue"></span><span class="light red"></span><span class="light yellow"></span><span class="light green"></span>
       </div>
       <div class="hero-content">
-        <p class="eyebrow">Randomlocke Tool · Gen 9 Advanced</p>
-        <h1>PokéDamage Calculator</h1>
-        <p class="subtitle">Calculadora avanzada para runs randomizadas: Pokémon reales, movimientos oficiales o manuales, formas especiales, Teracristalización, climas, campos, pantallas, estados, objetos, habilidades y edición completa de stats.</p>
+        <p class="eyebrow">Laboratorio de combate / Gen 9</p>
+        <h1>Prepara tu próximo <em>golpe.</em></h1>
+        <p class="subtitle">Explora el daño, prueba objetos y encuentra tu ventaja. Estadísticas oficiales o tu propia configuración para el randomlocke.</p>
       </div>
       <aside class="mini-help">
-        <strong>Tip rápido</strong>
-        <span>Usa nombres en inglés: <b>gardevoir</b>, <b>scizor-mega</b>, <b>flamethrower</b>. Si tu randomizer cambia algo, edítalo manualmente.</span>
+        <strong>PokéDamage <span class="online-dot">●</span></strong>
+        <span>Motor Smogon · datos locales<br>Catálogos de objetos, movimientos y habilidades. Elige los nombres en inglés del autocompletado.</span>
+        <button id="loadExample" class="ghost-button" type="button">↻ Cargar ejemplo</button>
       </aside>
     </header>
 
@@ -52,18 +36,22 @@
         <div class="form-tools"><label>Forma / variante<select id="attackerFormSelect" disabled><option value="">Carga un Pokémon</option></select></label><button id="applyAttackerForm" class="ghost-button" disabled>Cambiar forma</button></div>
         <div class="pokemon-preview empty" id="attackerPreview"><div class="sprite-placeholder">?</div><div><strong>Sin cargar</strong><p>Stats, tipos, habilidades y formas aparecerán aquí.</p></div></div>
 
-        <details class="advanced" open>
-          <summary>Stats ofensivos editables</summary>
           <div class="form-grid compact">
             <label>Nivel atacante<input id="level" type="number" value="50" min="1" max="100" /></label>
+            <label>Buscar objeto<input id="attackerItemSearch" type="search" placeholder="Vidasfera, baya, Choice…" /></label>
             <label>Objeto atacante<select id="attackerItem"></select></label>
             <label>Habilidad atacante<select id="attackerAbility"><option value="none">Ninguna</option></select></label>
             <label>Habilidad manual<input id="attackerAbilityCustom" type="text" placeholder="Ej: adaptability" /></label>
-            <label>Naturaleza ofensiva<select id="attackNature"><option value="1">Neutral</option><option value="1.1">Beneficia</option><option value="0.9">Perjudica</option></select></label>
-            <label>Boost ofensivo<select id="attackBoost"></select></label>
+            <label>Naturaleza<select id="attackNature"></select></label>
+            <label>Habilidad condicional activa<select id="attackerAbilityOn"><option value="no">No</option><option value="yes">Sí (p. ej. Absorbe Fuego)</option></select></label>
+            <label>Tipo primario<select id="attackerType1"></select></label>
+            <label>Tipo secundario<select id="attackerType2"></select></label>
+            <label>PS actuales (0 = máximos)<input id="attackerHp" type="number" value="0" min="0" /></label>
           </div>
+        <details class="advanced">
+          <summary>Editar estadísticas del atacante</summary>
           <div class="stat-table-wrap">
-            <div class="stat-table-title">Tabla completa de características</div>
+            <div class="stat-table-title">Características <span id="attackerEvTotal">EV: 0 / 510</span></div>
             <div class="stat-table">
               <div class="stat-row stat-head"><span>Stat</span><span>Base</span><span>IV</span><span>EV</span><span>Final</span><span>Boost</span></div>
               <div class="stat-row muted-row"><span>PS</span><input id="atkBaseHp" type="number" value="1" min="1"><input id="atkHpIV" type="number" value="31" min="0" max="31"><input id="atkHpEV" type="number" value="0" min="0" max="252" step="4"><output id="atkHpFinal">—</output><span class="dash">—</span></div>
@@ -86,15 +74,20 @@
           </label>
           <div class="move-preview empty" id="movePreview"><strong>Sin movimiento</strong><p>Carga uno oficial o edita los datos manualmente.</p></div>
           <div class="form-grid">
-            <label>Potencia<input id="movePower" type="number" value="90" min="1" /></label>
+            <label>Modo<select id="moveMode"><option value="official">Oficial (efectos automáticos)</option><option value="manual">Manual / randomizado</option></select></label>
+            <label>Potencia<input id="movePower" type="number" value="90" min="0" max="999" /></label>
             <label>Tipo<select id="moveType"></select></label>
-            <label>Categoría<select id="moveCategory"><option value="physical">Físico</option><option value="special" selected>Especial</option></select></label>
-            <label>STAB<select id="stabMode"><option value="auto">Automático</option><option value="yes">Sí</option><option value="no">No</option></select></label>
+            <label>Categoría<select id="moveCategory"><option value="physical">Físico</option><option value="special" selected>Especial</option><option value="status">Estado</option></select></label>
+            <label>Golpes (0 = automático)<input id="moveHits" type="number" value="0" min="0" max="10" /></label>
             <label>Ataque Z<select id="zMoveMode"><option value="off">No</option><option value="auto">Sí, potencia Z automática</option><option value="custom">Sí, potencia Z manual</option></select></label>
-            <label>Potencia Z manual<input id="zMovePower" type="number" value="175" min="1" /></label>
+            <label>Potencia Z manual<input id="zMovePower" type="number" value="175" min="1" max="999" /></label>
             <label>Contacto<select id="moveContact"><option value="no">No / desconocido</option><option value="yes">Sí</option></select></label>
-            <label>Etiqueta del movimiento<select id="moveTag"><option value="none">Normal</option><option value="punch">Puño</option><option value="bite">Mordisco</option><option value="sound">Sonido</option><option value="pulse">Pulso</option><option value="blade">Corte / cuchilla</option><option value="bomb">Bomba / esfera</option><option value="earthquake">Terremoto / Magnitud / Terratemblor</option></select></label>
+            <label>Etiqueta manual<select id="moveTag"><option value="none">Normal</option><option value="punch">Puño</option><option value="bite">Mordisco</option><option value="sound">Sonido</option><option value="pulse">Pulso</option><option value="blade">Corte / cuchilla</option><option value="bomb">Bomba / esfera</option></select></label>
+            <label>Efecto secundario (manual)<select id="moveSecondary"><option value="no">No</option><option value="yes">Sí (para Potencia Bruta)</option></select></label>
+            <label>Ataque de área (manual)<select id="spreadMove"><option value="no">No</option><option value="yes">Sí</option></select></label>
+            <label>Usos previos de Metrónomo<input id="metronomeTurns" type="number" value="0" min="0" max="5" /></label>
           </div>
+          <p class="field-help">STAB, contacto y efectos se detectan en modo oficial. Editar los datos activa el modo manual, donde defines tus propias reglas.</p>
         </article>
       </div>
 
@@ -106,20 +99,23 @@
         <div class="form-tools"><label>Forma / variante<select id="defenderFormSelect" disabled><option value="">Carga un Pokémon</option></select></label><button id="applyDefenderForm" class="ghost-button" disabled>Cambiar forma</button></div>
         <div class="pokemon-preview empty" id="defenderPreview"><div class="sprite-placeholder">?</div><div><strong>Sin cargar</strong><p>Stats, tipos, habilidades y formas aparecerán aquí.</p></div></div>
 
-        <details class="advanced" open>
-          <summary>Stats defensivos editables</summary>
           <div class="form-grid compact">
+            <label>Buscar objeto<input id="defenderItemSearch" type="search" placeholder="Mineral, chaleco, baya…" /></label>
             <label>Objeto defensivo<select id="defenderItem"></select></label>
             <label>Habilidad defensiva<select id="defenderAbility"><option value="none">Ninguna</option></select></label>
             <label>Habilidad manual<input id="defenderAbilityCustom" type="text" placeholder="Ej: fluffy" /></label>
-            <label>Naturaleza defensiva<select id="defenseNature"><option value="1">Neutral</option><option value="1.1">Beneficia</option><option value="0.9">Perjudica</option></select></label>
-            <label>Boost defensivo<select id="defenseBoost"></select></label>
+            <label>Naturaleza<select id="defenseNature"></select></label>
+            <label>Habilidad condicional activa<select id="defenderAbilityOn"><option value="no">No</option><option value="yes">Sí</option></select></label>
+            <label>Tipo primario<select id="defenderType1"></select></label>
+            <label>Tipo secundario<select id="defenderType2"></select></label>
             <label>Nivel defensor<input id="defenderLevel" type="number" value="50" min="1" max="100" /></label>
-            <label>Vida actual del defensor<input id="currentHp" type="number" value="0" min="0" /></label>
+            <label>PS actuales (0 = máximos)<input id="currentHp" type="number" value="0" min="0" /></label>
             <button type="button" id="setCurrentHpMax" class="ghost-button field-button">PS máximos</button>
           </div>
+        <details class="advanced">
+          <summary>Editar estadísticas del defensor</summary>
           <div class="stat-table-wrap">
-            <div class="stat-table-title">Tabla completa de características</div>
+            <div class="stat-table-title">Características <span id="defenderEvTotal">EV: 0 / 510</span></div>
             <div class="stat-table">
               <div class="stat-row stat-head"><span>Stat</span><span>Base</span><span>IV</span><span>EV</span><span>Final</span><span>Boost</span></div>
               <div class="stat-row"><span>PS</span><input id="baseHp" type="number" value="1" min="1"><input id="hpIV" type="number" value="31" min="0" max="31"><input id="hpEV" type="number" value="0" min="0" max="252" step="4"><output id="hpFinal">—</output><span class="dash">—</span></div>
@@ -135,19 +131,19 @@
     </section>
 
     <section class="card modifiers sticky-calc">
-      <div><h2>Modificadores de combate</h2><p class="soft-note">Todo lo que afecta al daño se aplica. Cosas como Viento Afín se muestran como aviso porque no cambian el daño directo.</p></div>
+      <div><h2>El terreno de juego</h2><p class="soft-note">Ajusta el escenario. Los tipos, habilidades y objetos determinan automáticamente quién toca el suelo.</p></div>
       <details class="advanced" open><summary>Clima, campo y sala</summary>
         <div class="form-grid wide">
           <label>Tiempo atmosférico<select id="weather"><option value="none">Ninguno</option><option value="sun">Sol</option><option value="rain">Lluvia</option><option value="sand">Tormenta de Arena</option><option value="snow">Nieve</option></select></label>
           <label>Campo<select id="terrain"><option value="none">Ninguno</option><option value="electric">Campo Eléctrico</option><option value="grassy">Campo de Hierba</option><option value="misty">Campo de Niebla</option><option value="psychic">Campo Psíquico</option></select></label>
-          <label>Atacante toca el suelo<select id="attackerGrounded"><option value="yes">Sí</option><option value="no">No</option></select></label>
-          <label>Defensor toca el suelo<select id="defenderGrounded"><option value="yes">Sí</option><option value="no">No</option></select></label>
+          <label>Refuerzo<select id="helpingHand"><option value="no">No</option><option value="yes">Sí</option></select></label>
+          <label>Protección defensor<select id="protect"><option value="no">No</option><option value="yes">Sí</option></select></label>
           <label>Gravedad<select id="gravity"><option value="no">No</option><option value="yes">Sí</option></select></label>
           <label>Zona Mágica<select id="magicRoom"><option value="no">No</option><option value="yes">Sí, anula objetos</option></select></label>
         </div>
       </details>
 
-      <details class="advanced" open><summary>Pantallas y combate</summary>
+      <details class="advanced"><summary>Pantallas y combate</summary>
         <div class="form-grid wide">
           <label>Formato<select id="battleFormat"><option value="singles">Individual</option><option value="doubles">Dobles</option></select></label>
           <label>Reflejo defensor<select id="reflect"><option value="no">No</option><option value="yes">Sí</option></select></label>
@@ -158,25 +154,21 @@
         </div>
       </details>
 
-      <details class="advanced" open><summary>Estados, tipos alterados y Tera</summary>
+      <details class="advanced"><summary>Estados y Teracristalización</summary>
         <div class="form-grid wide">
           <label>Estado atacante<select id="attackerStatus"><option value="none">Ninguno</option><option value="burn">Quemado</option><option value="freeze">Congelado</option><option value="sleep">Dormido</option><option value="poison">Envenenado</option><option value="paralysis">Paralizado</option></select></label>
           <label>Estado defensor<select id="defenderStatus"><option value="none">Ninguno</option><option value="burn">Quemado</option><option value="freeze">Congelado</option><option value="sleep">Dormido</option><option value="poison">Envenenado</option><option value="paralysis">Paralizado</option></select></label>
-          <label>Alquitranazo<select id="tarShot"><option value="no">No</option><option value="yes">Sí, fuego x2 extra</option></select></label>
           <label>Carga<select id="charge"><option value="no">No</option><option value="yes">Sí, eléctrico x2</option></select></label>
-          <label>Condena Silvana<select id="forestCurse"><option value="no">No</option><option value="yes">Sí, añade Planta</option></select></label>
-          <label>Halloween<select id="trickOrTreat"><option value="no">No</option><option value="yes">Sí, añade Fantasma</option></select></label>
-          <label>Respiro defensor<select id="roost"><option value="no">No</option><option value="yes">Sí, pierde Volador este turno</option></select></label>
           <label>Tera activo atacante<select id="attackerTeraActive"><option value="no">No</option><option value="yes">Sí</option></select></label>
           <label>Teratipo atacante<select id="attackerTeraType"></select></label>
           <label>Tera activo defensor<select id="defenderTeraActive"><option value="no">No</option><option value="yes">Sí</option></select></label>
           <label>Teratipo defensor<select id="defenderTeraType"></select></label>
         </div>
       </details>
-      <button class="calculate" id="calculateDamage">Calcular daño</button>
+      <div class="calculate-actions"><button class="calculate" id="calculateDamage">Calcular daño ↗</button><button class="ghost-button" id="copyResult" disabled>Copiar resultado</button><span id="resultStatus" role="status">Configura tu combate</span></div>
     </section>
 
-    <section class="result-card" id="result"><p>Carga atacante, movimiento y defensor para calcular.</p></section>
+    <section class="result-card" id="result" aria-live="polite" aria-label="Resultado de daño"><p>Carga atacante, movimiento y defensor para calcular.</p></section>
 
     <section class="quick-guide">
       <div class="guide-card"><b>1</b><span>Carga Pokémon y forma.</span></div>
@@ -184,10 +176,13 @@
       <div class="guide-card"><b>3</b><span>Ajusta Tera, clima, campo, objetos, habilidad y vida actual.</span></div>
       <div class="guide-card"><b>4</b><span>Calcula el roll contra vida máxima o vida restante.</span></div>
     </section>
+    <footer class="app-footer"><span>Tu configuración se guarda en este navegador. Los cálculos funcionan sin conexión; las imágenes necesitan internet.</span><a href="https://github.com/smogon/damage-calc" target="_blank" rel="noopener">Motor @smogon/calc 0.12.0 · MIT ↗</a></footer>
   </main>
 
   <datalist id="pokemonExamples"><option value="charizard"><option value="charizard-mega-x"><option value="charizard-mega-y"><option value="gardevoir"><option value="gardevoir-mega"><option value="scizor"><option value="scizor-mega"><option value="lucario"><option value="lucario-mega"><option value="greninja-ash"><option value="groudon-primal"><option value="kyogre-primal"><option value="mewtwo-mega-x"><option value="mewtwo-mega-y"><option value="garchomp"><option value="dragapult"><option value="meowscarada"><option value="skeledirge"><option value="quaquaval"><option value="kingambit"></datalist>
   <datalist id="moveExamples"><option value="flamethrower"><option value="earthquake"><option value="thunderbolt"><option value="ice-beam"><option value="shadow-ball"><option value="close-combat"><option value="moonblast"><option value="hydro-pump"><option value="psychic"><option value="draco-meteor"><option value="gigavolt-havoc"><option value="inferno-overdrive"><option value="tectonic-rage"></datalist>
-  <script src="script.js"></script>
+  <script src="vendor/data-0.12.0.min.js"></script>
+  <script src="vendor/calc-0.12.0.min.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
