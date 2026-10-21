@@ -118,7 +118,7 @@
             <button class="primary-button" data-play="${state.current}">${state.playing ? 'Pausar' : 'Reproducir'}</button>
             <button class="secondary-button" data-lore="${state.current}">Ver historia</button>
             ${hasLyrics(track) ? `<button class="secondary-button lyrics-button" data-lyrics="${state.current}">Ver letra</button>` : ''}
-            <button class="secondary-button" data-cover="${state.current}">Ver portada</button>
+            <button class="secondary-button" data-cover="${state.current}">Portada y compartir</button>
           </div>
         </div>
       </article>`;
@@ -287,7 +287,7 @@
     const track = soundtracks[index];
     lastFocus = document.activeElement;
     nodes.modalContent.className = 'modal-card';
-    nodes.modalContent.innerHTML = `<button class="icon-button modal-close" data-close-modal aria-label="Cerrar">×</button><div class="detail-head"><img src="${escapeHTML(track.songCover)}" alt="Portada de ${escapeHTML(track.songTitle)}"><div><p class="eyebrow">Soundtrack</p><h2 id="modalTitle">${escapeHTML(track.songTitle)}</h2></div></div><div class="detail-characters" aria-label="Personajes vinculados">${characterButtons(track, 'detail-character')}</div><p class="detail-copy">${escapeHTML(track.lore || track.characterLore || track.songDescription)}</p><div class="hero-actions"><button class="primary-button" data-play="${index}">Reproducir</button>${hasLyrics(track) ? `<button class="secondary-button lyrics-button" data-lyrics="${index}">Ver letra</button>` : ''}<button class="secondary-button" data-cover="${index}">Ver portada</button></div>`;
+    nodes.modalContent.innerHTML = `<button class="icon-button modal-close" data-close-modal aria-label="Cerrar">×</button><div class="detail-head"><img src="${escapeHTML(track.songCover)}" alt="Portada de ${escapeHTML(track.songTitle)}"><div><p class="eyebrow">Soundtrack</p><h2 id="modalTitle">${escapeHTML(track.songTitle)}</h2></div></div><div class="detail-characters" aria-label="Personajes vinculados">${characterButtons(track, 'detail-character')}</div><p class="detail-copy">${escapeHTML(track.lore || track.characterLore || track.songDescription)}</p><div class="hero-actions"><button class="primary-button" data-play="${index}">Reproducir</button>${hasLyrics(track) ? `<button class="secondary-button lyrics-button" data-lyrics="${index}">Ver letra</button>` : ''}<button class="secondary-button" data-cover="${index}">Portada y compartir</button></div>`;
     openModal();
   }
 
@@ -302,6 +302,7 @@
   }
 
   function openCover(index) {
+    if(sharedShell?.showTrackShare) { sharedShell.showTrackShare(index); return; }
     const track = soundtracks[index];
     lastFocus = document.activeElement;
     nodes.modalContent.className = 'modal-card cover-viewer';
@@ -384,4 +385,10 @@
     render();
   });
   render();
+  const linkedTrack = new URLSearchParams(location.search).get('track');
+  if(linkedTrack) {
+    const index=soundtracks.findIndex(track=>window.ResonanceSharing.key(track)===linkedTrack);
+    if(index>=0) { loadTrack(index,false); openCover(index); }
+    else { nodes.sectionTitle.textContent='Esta canción ya no está disponible'; nodes.resultCount.textContent='Puedes explorar el resto de la biblioteca.'; }
+  }
 })();

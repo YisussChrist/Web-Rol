@@ -400,6 +400,7 @@
     nodes.play.textContent = playing ? '❚❚' : '▶';
     nodes.play.setAttribute('aria-label', playing ? 'Pausar' : 'Reproducir');
     nodes.bar.classList.toggle('playing', playing);
+    $('globalShare').hidden = activeSource.id !== 'resonance';
     nodes.shuffle.classList.toggle('active', state.shuffle);
     nodes.shuffle.setAttribute('aria-pressed', String(state.shuffle));
     nodes.miniIcon.textContent = playing ? '❚❚' : '▶';
@@ -437,8 +438,34 @@
     return () => subscribers.delete(callback);
   }
 
-  window.ResonanceShell = { audio, tracks, setTrack, setSource, play, pause, toggle, setShuffle, setVolume, next: () => next(1), previous: () => next(-1), getState, subscribe, assetURL };
+  window.ResonanceShell = { showTrackShare, audio, tracks, setTrack, setSource, play, pause, toggle, setShuffle, setVolume, next: () => next(1), previous: () => next(-1), getState, subscribe, assetURL };
   window.GlobalAudioShell = window.ResonanceShell;
+
+  let sharedTrack = null;
+  let sharedTrackIndex = 0;
+  function showTrackShare(index = state.current) {
+    const track=tracks[index]; if(!track) return;
+    sharedTrack=track; sharedTrackIndex=index;
+    const cover=assetURL(track.songCover);
+    $('songShareCover').src=cover; $('songShareCover').alt='Portada de '+track.songTitle;
+    $('songShareTitle').textContent=track.songTitle; $('songShareArtist').textContent=track.character;
+    $('originalSongCover').href=cover;
+    $('songShareLink').value=window.ResonanceSharing.url(track,baseURL);
+    $('songShareStatus').textContent=location.protocol==='file:' ? 'Vista local: el enlace se podrá compartir cuando abras la web publicada.' : '';
+    $('nativeSongShare').hidden=!navigator.share || location.protocol==='file:';
+    $('songShareDialog').showModal();
+  }
+  $('globalShare').addEventListener('click',()=>{if(activeSource.id==='resonance')showTrackShare();});
+  $('playSharedSong').addEventListener('click',()=>setTrack(sharedTrackIndex,true));
+  $('closeSongShare').addEventListener('click',()=>$('songShareDialog').close());
+  $('copySongLink').addEventListener('click',async()=>{
+    try { await navigator.clipboard.writeText($('songShareLink').value); $('songShareStatus').textContent='Enlace copiado.'; }
+    catch { $('songShareLink').focus(); $('songShareLink').select(); $('songShareStatus').textContent='Selecciona y copia el enlace con Ctrl+C o manteniendo pulsado.'; }
+  });
+  $('nativeSongShare').addEventListener('click',async()=>{
+    try { await navigator.share({title:sharedTrack.songTitle,text:sharedTrack.character,url:$('songShareLink').value}); }
+    catch(error) { if(error.name!=='AbortError') $('songShareStatus').textContent='No se pudo abrir el menú. Puedes copiar el enlace.'; }
+  });
 
   function cleanRoute(route = '') {
     route = decodeURIComponent(String(route).replace(/^#?\/?/, '')) || 'hub.html';

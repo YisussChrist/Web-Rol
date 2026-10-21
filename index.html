@@ -7,7 +7,7 @@
   <meta name="description" content="RP HUB con reproductor musical persistente para Resonance y Etruria Radio.">
   <title>RP HUB · Reproductor global</title>
   <script>window.__RP_SHELL_NESTED__=window.self!==window.top;if(window.__RP_SHELL_NESTED__)window.parent.postMessage({type:'rp-shell-navigate',route:'hub.html'},'*');</script>
-  <link rel="stylesheet" href="resonance-shell.css?v=4">
+  <link rel="stylesheet" href="resonance-shell.css?v=20261021">
 </head>
 <body>
   <main class="page-stage" id="pageStage">
@@ -43,6 +43,7 @@
         <button class="control-button" id="globalPrevious" type="button" aria-label="Canción anterior">‹</button>
         <button class="play-button" id="globalPlay" type="button" aria-label="Reproducir">▶</button>
         <button class="control-button" id="globalNext" type="button" aria-label="Canción siguiente">›</button>
+        <button class="control-button" id="globalShare" type="button" aria-label="Portada grande y enlace de la canción" title="Portada y compartir">↗</button>
         <button class="control-button" id="queueButton" type="button" aria-label="Abrir cola" title="Cola">≡</button>
       </div>
       <div class="timeline"><span id="globalCurrent">0:00</span><input id="globalProgress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posición de reproducción"><span id="globalDuration">0:00</span></div>
@@ -112,10 +113,19 @@
   </div>
 
   <div class="resume-notice" id="resumeNotice" hidden><span>La canción estaba reproduciéndose antes de recargar.</span><button id="resumeButton" type="button">Continuar</button></div>
+  <dialog id="songShareDialog" aria-labelledby="songShareTitle">
+    <button id="closeSongShare" type="button" aria-label="Cerrar portada">×</button>
+    <img id="songShareCover" alt="">
+    <h2 id="songShareTitle"></h2><p id="songShareArtist"></p>
+    <div class="song-share-actions"><button id="playSharedSong" type="button">Reproducir</button><button id="copySongLink" type="button">Copiar enlace</button><button id="nativeSongShare" type="button">Compartir…</button><a id="originalSongCover" target="_blank" rel="noopener">Abrir imagen original ↗</a></div>
+    <label for="songShareLink">Enlace a esta canción</label><input id="songShareLink" readonly>
+    <p id="songShareStatus" role="status"></p>
+  </dialog>
   <audio id="globalAudio" preload="metadata"></audio>
   <script src="OST/data.js?v=20260804-lyrics"></script>
   <script src="Pokemon/EtruriaRadio/data.js?v=3"></script>
   <script src="assets/js/shuffle-cycle.js?v=20260917"></script>
-  <script src="resonance-shell.js?v=20260918-simplified"></script>
+  <script src="assets/js/resonance-sharing.js?v=20261021"></script>
+  <script src="resonance-shell.js?v=20261021-sharing"></script>
 </body>
 </html>
