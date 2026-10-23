@@ -78,9 +78,9 @@ for (const [clave, comando] of COMANDOS) {
 let ultimoComandoRepetible = null;
 
 const ESTILO_EMBEDS = {
-    nombre: "Web Updates Bot",
+    nombre: "Web-Rol · Tu compañero de aventuras",
     colores: {
-        principal: 0x5865F2,
+        principal: 0x8B5CF6,
         exito: 0x57F287,
         aviso: 0xFEE75C,
         error: 0xED4245,
@@ -93,7 +93,8 @@ class EmbedBuilder extends DiscordEmbedBuilder {
     constructor(data) {
         super(data);
         this.setAuthor({ name: ESTILO_EMBEDS.nombre })
-            .setFooter({ text: ESTILO_EMBEDS.nombre })
+            .setColor(ESTILO_EMBEDS.colores.principal)
+            .setFooter({ text: "Web-Rol · Escribe -ayuda para explorar" })
             .setTimestamp();
     }
 }
@@ -102,7 +103,7 @@ function crearEmbedBase({ color = ESTILO_EMBEDS.colores.principal, titulo, descr
     const embed = new EmbedBuilder()
         .setColor(color)
         .setAuthor({ name: ESTILO_EMBEDS.nombre })
-        .setFooter({ text: pie || ESTILO_EMBEDS.nombre })
+        .setFooter({ text: pie || "Web-Rol · Escribe -ayuda para explorar" })
         .setTimestamp();
 
     if (titulo) embed.setTitle(titulo);
@@ -709,7 +710,8 @@ function crearPaginaAyuda(indice) {
                 ["Duelo", "`-duelo Alma, Tao, Freyja`\nElige un ganador al azar."],
                 ["Supertécnicas", "`-st Ren 4, Mavuika eg`\nConsulta `-helpst` para ver grados y modificadores."],
                 ["Torneos", "`-torneo 2 Raimon, Zeus, Royal, Alius`\n`-brackets Raimon, Zeus, Royal, Alius`"],
-                ["Equipos y azar", "`-equipos Ren, Jeanne | Alma, Tao, Freyja, Goku`\n`-dado`, `-d6`, `-d20`, `-d100` · `-reroll`"]
+                ["Equipos y azar", "`-equipos Ren, Jeanne | Alma, Tao, Freyja, Goku`\n`-dado`, `-d6`, `-d20`, `-d100` · `-reroll`"],
+                ["Reglas del duelo", "`-explicacionduelo`\nDescubre cómo se resuelven los enfrentamientos."]
             ]
         },
         {
@@ -734,9 +736,10 @@ function crearPaginaAyuda(indice) {
 
     const pagina = paginas[indice];
     const embed = crearEmbedBase({
+        color: [ESTILO_EMBEDS.colores.principal, ESTILO_EMBEDS.colores.calendario, 0x38BDF8][indice],
         titulo: pagina.titulo,
-        descripcion: pagina.descripcion,
-        pie: `Ayuda · Página ${indice + 1} de ${paginas.length}`
+        descripcion: `${pagina.descripcion}\n\n**Prueba un comando**\nCopia uno de los ejemplos y cambia los nombres por los de tu aventura.`,
+        pie: `GUÍA DE WEB-ROL · ${indice + 1} / ${paginas.length} · Menú disponible durante 2 minutos`
     });
 
     embed.addFields(pagina.campos.map(([name, value]) => ({ name, value })));
@@ -746,27 +749,32 @@ function crearPaginaAyuda(indice) {
 async function enviarAyudaPaginada(message) {
     let paginaActual = 0;
     const crearFila = (desactivados = false) => new ActionRowBuilder().addComponents(
-        crearBotonAyuda("ayuda_anterior", "Anterior", "◀️").setDisabled(desactivados || paginaActual === 0),
-        crearBotonAyuda("ayuda_siguiente", "Siguiente", "▶️", ButtonStyle.Primary)
-            .setDisabled(desactivados || paginaActual === 2)
+        ...[["Rol y torneos", "🎲"], ["Calendario", "🎂"], ["Personajes", "📚"]].map(([etiqueta, emoji], indice) =>
+            crearBotonAyuda(`ayuda_${indice}`, etiqueta, emoji,
+                paginaActual === indice ? ButtonStyle.Primary : ButtonStyle.Secondary)
+                .setDisabled(desactivados || paginaActual === indice))
+    );
+    const filaWeb = new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setLabel("Explorar Web-Rol").setEmoji("🌐")
+            .setStyle(ButtonStyle.Link).setURL("https://yisusschrist.github.io/Web-Rol/")
     );
 
     const { embed } = crearPaginaAyuda(paginaActual);
-    const respuesta = await message.channel.send({ embeds: [embed], components: [crearFila()] });
+    const respuesta = await message.channel.send({ embeds: [embed], components: [crearFila(), filaWeb] });
     const collector = respuesta.createMessageComponentCollector({
         filter: interaction => interaction.user.id === message.author.id,
         time: 120000
     });
 
     collector.on("collect", async interaction => {
-        paginaActual += interaction.customId === "ayuda_siguiente" ? 1 : -1;
-        paginaActual = Math.max(0, Math.min(2, paginaActual));
+        paginaActual = Number(interaction.customId.replace("ayuda_", ""));
+        if (!Number.isInteger(paginaActual) || paginaActual < 0 || paginaActual > 2) return;
         const nuevaPagina = crearPaginaAyuda(paginaActual);
-        await interaction.update({ embeds: [nuevaPagina.embed], components: [crearFila()] });
+        await interaction.update({ embeds: [nuevaPagina.embed], components: [crearFila(), filaWeb] });
     });
 
     collector.on("end", () => {
-        respuesta.edit({ components: [crearFila(true)] }).catch(() => {});
+        respuesta.edit({ components: [crearFila(true), filaWeb] }).catch(() => {});
     });
 }
 
@@ -940,9 +948,9 @@ client.once("ready", async () => {
 
         const embed = new EmbedBuilder()
             .setColor(0x2ECC71)
-            .setTitle("🤖 Bot conectado")
-            .setDescription("Bot completamente operativo de nuevo.")
-            .setFooter({ text: "Web Updates Bot" })
+            .setTitle("✨ Todo listo para la próxima aventura")
+            .setDescription("Duelos, personajes y calendario, a un comando de distancia.\n\nEscribe **`-ayuda`** para abrir la guía de Web-Rol.")
+            .setFooter({ text: "Web-Rol · En línea" })
             .setTimestamp();
 
         await canal.send({ embeds: [embed] });

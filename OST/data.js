@@ -858,10 +858,10 @@ Así que ella conserva las...
                 lore: "Cuando la canción suene, sabes que has perdido, es un héroe capaz  de darlo todo para ganar."
             },
             {
-                songTitle: "A True Superhero",
+                songTitle: "HERO",
                 songDescription: "La ascendencia de un verdadero superhéroe que, por todos los medios, busca la salvación de todos.",
                 songCover: "img/Rin2Cover.png",
-                audio: "audio/A True Superhero.mp3",
+                audio: "audio/HERO.mp3",
                 tags: ["epic", "bossbattle"],
                 lore: "Si en su cabeza hay dos volutas, significa que ha duplicado sus ganas de vencer."
             },

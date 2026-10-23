@@ -1,0 +1,18 @@
+DS Game Menu 1.2
+
+Abre dist/DS Game Menu 1.2.exe. Conserva la configuración de la versión 1.1.
+El ejecutable original sigue intacto.
+
+Cambios:
+- Biblioteca ampliable con un botón para volver a la vista de consola.
+- Menos marcos y más espacio vertical para los juegos.
+- Nombres de juegos y atajos más grandes; mayor contraste del texto.
+- La X, Escape y Cancelar descartan los cambios de ajustes.
+- Solo Guardar y cerrar aplica los cambios. Los errores de escritura mantienen
+  el diálogo abierto y conservan la configuración anterior.
+- Los atajos de biblioteca no se ejecutan desde los diálogos ni los botones.
+- Un buscador sin resultados muestra un mensaje específico.
+
+Código fuente: ds_game_menu.py (Python 3.12, Pillow).
+Para crear el ejecutable, instala PyInstaller y Pillow y ejecuta desde esta carpeta:
+python -m PyInstaller --noconfirm --onefile --windowed --name "DS Game Menu 1.2" --icon "DS Game Menu Icon.ico" --add-data "DS Game Menu Icon.ico;." ds_game_menu.py
