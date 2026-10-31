@@ -952,6 +952,36 @@ Así que ella conserva las...
         }
     ]
 },
+{
+    character: "Femme Soule",
+    characterFace: "img/Femme.jpg",
+    lore: "Una caótica demonio rechazada por el mismísimo infierno por su indisciplina, únete a su ebriedad continua y que comience la fiesta.",
+    tracks: [
+        {
+            songTitle: "DEMON'S SHOT",
+            songDescription: "¡Que comience la fiesta! ¡Hay que disfrutar la vida a muerte! ¿Quién quiere vivir sobrio y remilgado cuando la vida de excesos es mucho más divertida?",
+            songCover: "img/FemmeCover.jpg",
+            audio: "audio/DEMON'S SHOT.mp3",
+            tags: ["Party", "J-Core", "Hip House", "Rap"],
+            lore: "La canción que escribió Femme hace más de 20 años, una oda a los excesos, el descontrol y a vivir la vida sin pensar en las consecuencias."
+        }
+    ]
+},
+{
+    character: "Rias Gremory",
+    characterFace: "img/Rias.jpg",
+    lore: "La heredera al trono de la familia Gremory, una familia altamente respetada en el infierno. Poseé un gran corazón, y el poder de La Ruina. A su lado todos parecen simples piezas de ajedrez.",
+    tracks: [
+        {
+            songTitle: "Crimson Beauty",
+            songDescription: "¿Quien es esa misteriosa mujer, de esbelto físico y larga cabellera carmesí? Es fascinante el poder abrumador de tan hermosa chica.",
+            songCover: "img/RiasCover.png",
+            audio: "audio/Crimson Beauty.mp3",
+            tags: ["Battle", "Emotional"],
+            lore: "El poder de la destrucción, heredado a lo largo de muchas generaciones Gremory, hasta llegar aquí, a la 'Princesa de la Ruina', con un poder que podría matar a cualquiera."
+        }
+    ]
+},
 ];
 
 const normalizeCharacterName = value => String(value || "")

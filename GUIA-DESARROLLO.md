@@ -38,6 +38,15 @@ La lista extraoficial de `personajes.html` no se incorpora a Ficha 360.
 
 ## Dónde está cada cosa
 
+### Libro de Hermes
+
+- `libro-hermes.html`: libro de Thalia Kane, accesible desde Dragon Ball en el HUB.
+- `libro-hermes-datos.js`: seis capítulos con 25 frases cada uno. Cada entrada tiene un `id` estable, `text` y `kind`: `literary` (48 citas verificadas), `shared` (las 16 frases iniciales) o `reflection` (textos del cuaderno de Thalia). Las citas incluyen `author`, `work`, `url` y, cuando corresponde, una nota de traducción.
+- `assets/css/libro-hermes.css` y `assets/js/libro-hermes.js`: aspecto de libro, dedicatoria, despedida, navegación, búsqueda y favoritas.
+- La página de lectura y las favoritas se guardan solo en este navegador con la clave `rp-libro-hermes-v1`. Conserva los IDs al mover una frase; asigna uno nuevo al sustituirla. Los IDs anteriores que siguen vigentes se conservan y los retirados se descartan, sin asignar una favorita antigua a una frase diferente.
+
+### Estructura general
+
 - `index.html`: contenedor principal y reproductor persistente.
 - `hub.html`: portada y buscador del RP HUB.
 - `assets/css/`: apariencia de las páginas principales.

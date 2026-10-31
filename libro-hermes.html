@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#142d29">
+  <meta name="description" content="Libro de Hermes, de Thalia Kane. Un regalo entre hermanos: 150 reflexiones sobre el amor, la vida y el valor de seguir adelante.">
+  <meta name="author" content="Thalia Kane">
+  <title>Libro de Hermes · Thalia Kane</title>
+  <link rel="stylesheet" href="assets/css/libro-hermes.css?v=2">
+  <script src="libro-hermes-datos.js?v=2" defer></script>
+  <script src="assets/js/libro-hermes.js?v=2" defer></script>
+</head>
+<body>
+  <div class="library">
+    <header class="topbar">
+      <a href="hub.html" class="home-link">← <span>Volver al HUB</span></a>
+      <span class="universe">✦ &nbsp; DRAGON BALL <span class="divider">/</span> BIBLIOTECA</span>
+      <span class="edition">VOLUMEN I</span>
+    </header>
+    <main>
+      <header class="heading">
+        <p class="eyebrow">PALABRAS PARA VOLVER A TI</p>
+        <h1>Libro de <em>Hermes</em></h1>
+        <p class="byline">Un libro de <span>Thalia Kane</span></p>
+        <div class="heading-rule" aria-hidden="true">✧</div>
+      </header>
+      <div class="reading-room">
+        <details class="contents" id="contents">
+          <summary>☷ &nbsp; Índice del libro <span>Seis capítulos · 150 frases</span></summary>
+          <div class="contents-list">
+          <button class="index-link dedication-link" id="dedication" type="button">Una nota para ti <span>↗</span></button>
+          <nav id="chapters" aria-label="Capítulos"></nav>
+          <button class="index-link end-link" id="ending" type="button">Con todo mi cariño <span>↗</span></button>
+          </div>
+        </details>
+        <section class="reader" aria-label="Lector del Libro de Hermes">
+          <div class="toolbar">
+            <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Busca una frase, autor u obra…" aria-label="Buscar frases, autores u obras" autocomplete="off"></label>
+            <button id="literary" type="button" aria-pressed="false" title="Mostrar solo las citas de escritores y poetas">✒ <span>Autores</span></button>
+            <button id="favorites" type="button" aria-pressed="false">♡ <span>Favoritas</span></button>
+            <button id="random" type="button">⤨ <span>Al azar</span></button>
+          </div>
+          <div class="selection-line"><span id="selection">El libro completo</span><button id="reset" type="button" hidden>Ver todo el libro ×</button></div>
+          <div class="book" id="book" aria-label="Páginas del libro">
+            <article class="paper left-paper" id="leftPage"></article>
+            <article class="paper right-paper" id="rightPage"></article>
+          </div>
+          <div id="empty" class="empty" hidden><span aria-hidden="true">❧</span><h2 id="emptyTitle">No hay frases con esa palabra</h2><p id="emptyText">Prueba otra búsqueda o vuelve al libro completo.</p><button id="emptyReset" type="button">Volver al libro</button></div>
+          <nav class="pagination" aria-label="Pasar páginas">
+            <button id="previous" type="button" aria-label="Página anterior">← <span>Anterior</span></button>
+            <label class="page-location" for="pageNumber"><span id="pageLabel">Páginas</span><span><input id="pageNumber" type="number" min="1" max="152" value="1" aria-label="Ir a la página"> <span id="pageTotal">de 152</span></span></label>
+            <button id="next" type="button" aria-label="Página siguiente"><span>Siguiente</span> →</button>
+          </nav>
+          <p class="reading-hint">Usa las flechas ← → o desliza para pasar las páginas.</p>
+          <p class="sr-only" id="announcement" role="status" aria-live="polite"></p>
+          <p class="save-notice" id="saveNotice" role="status" hidden>El navegador no permite guardar. Tu progreso y favoritas durarán esta visita.</p>
+        </section>
+      </div>
+      <footer class="footer"><span>THALIA KANE</span><span>Para Hermes, de tu hermanita.</span><span>✧</span></footer>
+      <p class="edition-note">Citas literarias y reflexiones reunidas por Thalia. Cada cita enlaza a su obra o fuente; las traducciones de esta edición se indican junto al texto.</p>
+    </main>
+    <noscript><p class="no-script">Activa JavaScript para abrir el libro y pasar sus páginas.</p></noscript>
+  </div>
+</body>
+</html>
