@@ -810,9 +810,17 @@ Así que ella conserva las...
 `.trim(),
                 tags: ["Battle", "Epic", "Emotional"],
                 lore: "La epicidad de la canción entra acorde al poder de la chica. Si le brilla el pelo, huye."
-            }
-        ]
-    },
+            },
+            {
+            songTitle: "I'll miss you all",
+            songDescription: "Una melancólica melodía de una despedida adelantada.",
+            songCover: "img/Thalia2Cover.png",
+            audio: "audio/OsEchareDeMenos.mp3",
+            tags: ["chill", "melancolica", "triste"],
+            lore: "Una hija que tiene que decir adiós al futuro que mereció tener."
+        }
+    ]
+},
     {
         character: "Kaedehara Kazuha",
         characterFace: "img/Kaedehara.jpg",
