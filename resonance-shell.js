@@ -13,7 +13,7 @@
     sourcePickerButton: $('sourcePickerButton'), sourcePicker: $('sourcePicker'), sourcePickerList: $('sourcePickerList'),
     sourcePickerCurrent: $('sourcePickerCurrent'), closeSourcePicker: $('closeSourcePicker'),
     cover: $('globalCover'), title: $('globalTitle'), artist: $('globalArtist'), pageLabel: $('pageLabel'), play: $('globalPlay'),
-    previous: $('globalPrevious'), next: $('globalNext'), shuffle: $('globalShuffle'), current: $('globalCurrent'),
+    previous: $('globalPrevious'), next: $('globalNext'), shuffle: $('globalShuffle'), repeat: $('globalRepeat'), current: $('globalCurrent'),
     duration: $('globalDuration'), progress: $('globalProgress'), volume: $('globalVolume'), mute: $('globalMute'),
     queueButton: $('queueButton'), queue: $('globalQueue'), queueTitle: $('globalQueueTitle'), closeQueue: $('closeQueue'), queueList: $('globalQueueList'),
     collapse: $('collapsePlayer'), miniPlayer: $('miniPlayer'), miniIcon: $('miniIcon'), miniTitle: $('miniTitle'),
@@ -30,11 +30,13 @@
   const storedVolume = Math.max(0, Math.min(1, Number(localStorage.getItem('resonanceVolume') ?? .85)));
   const state = {
     current: Number.isFinite(storedTrack) ? storedTrack : 0,
+    repeat: localStorage.getItem('resonanceRepeat') === 'true',
     shuffle: JSON.parse(localStorage.getItem('resonanceShuffle') || 'false'),
     previousVolume: Math.max(.01, Number(localStorage.getItem('resonancePreviousVolume') || storedVolume || .85)),
     route: '', collapsed: localStorage.getItem('resonancePlayerCollapsed') === 'true', restoreTime: Number(localStorage.getItem('resonanceCurrentTime') || 0),
     resumeWanted: localStorage.getItem('resonanceWasPlaying') === 'true'
   };
+  audio.loop = state.repeat;
   const sources = new Map();
   const shuffleCycles = new Map();
   let activeSource = createSource({
@@ -365,6 +367,14 @@
     selectActiveTrack(index, true);
   }
 
+  function setRepeat(value) {
+    state.repeat = Boolean(value);
+    audio.loop = state.repeat;
+    localStorage.setItem('resonanceRepeat', String(state.repeat));
+    renderPlayer();
+    notify();
+  }
+
   function setShuffle(value) {
     state.shuffle = Boolean(value);
     localStorage.setItem('resonanceShuffle', String(state.shuffle));
@@ -401,6 +411,10 @@
     nodes.play.setAttribute('aria-label', playing ? 'Pausar' : 'Reproducir');
     nodes.bar.classList.toggle('playing', playing);
     $('globalShare').hidden = activeSource.id !== 'resonance';
+    nodes.repeat.classList.toggle('active', state.repeat);
+    nodes.repeat.setAttribute('aria-pressed', String(state.repeat));
+    nodes.repeat.title = state.repeat ? 'Desactivar bucle de canción' : 'Activar bucle de canción';
+    nodes.repeat.setAttribute('aria-label', nodes.repeat.title);
     nodes.shuffle.classList.toggle('active', state.shuffle);
     nodes.shuffle.setAttribute('aria-pressed', String(state.shuffle));
     nodes.miniIcon.textContent = playing ? '❚❚' : '▶';
@@ -429,7 +443,7 @@
 
   function getState() {
     const track = currentTrack();
-    return { current: state.current, sourceId: activeSource.id, sourceLabel: activeSource.label, sourceTrackId: track?.sourceTrackId ?? null, playing: !audio.paused, shuffle: state.shuffle, volume: audio.volume, currentTime: audio.currentTime, duration: audio.duration, track };
+    return { current: state.current, sourceId: activeSource.id, sourceLabel: activeSource.label, sourceTrackId: track?.sourceTrackId ?? null, playing: !audio.paused, shuffle: state.shuffle, repeat: state.repeat, volume: audio.volume, currentTime: audio.currentTime, duration: audio.duration, track };
   }
 
   function subscribe(callback) {
@@ -438,7 +452,7 @@
     return () => subscribers.delete(callback);
   }
 
-  window.ResonanceShell = { showTrackShare, audio, tracks, setTrack, setSource, play, pause, toggle, setShuffle, setVolume, next: () => next(1), previous: () => next(-1), getState, subscribe, assetURL };
+  window.ResonanceShell = { showTrackShare, audio, tracks, setTrack, setSource, play, pause, toggle, setShuffle, setRepeat, setVolume, next: () => next(1), previous: () => next(-1), getState, subscribe, assetURL };
   window.GlobalAudioShell = window.ResonanceShell;
 
   let sharedTrack = null;
@@ -482,8 +496,16 @@
     return cleanRoute(match ? decodeURIComponent(match[1]) : 'hub.html');
   }
 
+  function updateRouteIcon(route) {
+    const isResonance = route.split(/[?#]/)[0] === 'OST/index.html';
+    const icon = $('siteFavicon');
+    icon.type = isResonance ? 'image/svg+xml' : 'image/png';
+    icon.href = new URL(isResonance ? 'OST/favicon.svg' : 'logo.png', baseURL).href;
+  }
+
   function loadRoute(route, replace = false) {
     route = cleanRoute(route);
+    updateRouteIcon(route);
     document.body.classList.toggle('route-hub', route.split(/[?#]/)[0] === 'hub.html');
     const hash = `#route=${encodeURIComponent(route)}`;
     if (replace) history.replaceState(null, '', hash);
@@ -541,6 +563,7 @@
         state.route = route;
         history.replaceState(null, '', `#route=${encodeURIComponent(route)}`);
       }
+      updateRouteIcon(state.route);
       interceptFrameNavigation(childDocument);
       const hubAudio = childDocument.getElementById('hubAudio');
       if (hubAudio) hubAudio.pause();
@@ -568,6 +591,7 @@
   nodes.play.addEventListener('click', toggle);
   nodes.previous.addEventListener('click', () => next(-1));
   nodes.next.addEventListener('click', () => next(1));
+  nodes.repeat.addEventListener('click', () => setRepeat(!state.repeat));
   nodes.shuffle.addEventListener('click', () => setShuffle(!state.shuffle));
   nodes.progress.addEventListener('input', () => { if (audio.duration) audio.currentTime = audio.duration * Number(nodes.progress.value) / 100; });
   nodes.volume.addEventListener('input', () => setVolume(nodes.volume.value));

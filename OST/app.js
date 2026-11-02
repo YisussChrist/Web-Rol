@@ -12,6 +12,7 @@
     query: '',
     current: Math.min(Number(localStorage.getItem('resonanceTrack') || 0), soundtracks.length - 1),
     favorites: JSON.parse(localStorage.getItem('resonanceFavorites') || '[]'),
+    repeat: localStorage.getItem('resonanceRepeat') === 'true',
     shuffle: JSON.parse(localStorage.getItem('resonanceShuffle') || 'false'),
     volume: localStorage.getItem('resonanceVolume') === null ? .85 : storedLevel('resonanceVolume', .85),
     previousVolume: localStorage.getItem('resonancePreviousVolume') === null ? .85 : storedLevel('resonancePreviousVolume', .85, .01),
@@ -35,8 +36,10 @@
       state.playing = sharedState.playing;
     }
     state.shuffle = sharedState.shuffle;
+    state.repeat = sharedState.repeat;
     state.volume = sharedState.volume;
   }
+  if (!sharedShell) audio.loop = state.repeat;
   audio.preload = 'metadata';
   audio.volume = state.volume;
   let lastFocus = null;
@@ -47,6 +50,7 @@
     sectionEyebrow: $('#sectionEyebrow'), resultCount: $('#resultCount'), search: $('#searchInput'),
     favoritesButton: $('#favoritesButton'), player: $('#player'), playerCover: $('#playerCover'),
     headerShuffle: $('#headerShuffleButton'),
+    repeat: $('#repeatButton'), headerRepeat: $('#headerRepeatButton'),
     playerTitle: $('#playerTitle'), playerArtist: $('#playerArtist'), playerFavorite: $('#playerFavorite'),
     playButton: $('#playButton'), shuffleButton: $('#shuffleButton'), progress: $('#progressInput'),
     currentTime: $('#currentTime'), duration: $('#duration'), volume: $('#volumeInput'),
@@ -106,11 +110,11 @@
   function renderHero() {
     const track = soundtracks[state.current] || soundtracks[0];
     nodes.hero.innerHTML = `
-      <article class="hero-card">
+      <article class="hero-card ${state.playing ? 'is-playing' : ''}">
         <img class="hero-backdrop" src="${escapeHTML(track.songCover)}" alt="">
         <img class="hero-cover" src="${escapeHTML(track.songCover)}" alt="Portada de ${escapeHTML(track.songTitle)}">
         <div class="hero-copy">
-          <p class="eyebrow">Resonancia seleccionada</p>
+          <p class="hero-status"><span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>${state.playing ? 'Sonando ahora' : 'Tu próxima resonancia'}</p>
           <h2>${escapeHTML(track.songTitle)}</h2>
           <div class="hero-characters" aria-label="Personajes vinculados">${characterButtons(track, 'hero-character')}</div>
           <p class="hero-description">${escapeHTML(track.songDescription)}</p>
@@ -137,9 +141,9 @@
         <img src="${escapeHTML(track.songCover)}" alt="Portada de ${escapeHTML(track.songTitle)}" loading="lazy">
         ${hasLyrics(track) ? `<button class="card-lyrics" data-lyrics="${index}" aria-label="Ver letra de ${escapeHTML(track.songTitle)}">♫ Letra</button>` : ''}
         <button class="card-favorite ${favorite ? 'active' : ''}" data-favorite="${index}" aria-label="${favorite ? 'Quitar de' : 'Añadir a'} favoritos" aria-pressed="${favorite}">${favorite ? '♥' : '♡'}</button>
-        <button class="card-play" data-play="${index}" aria-label="Reproducir ${escapeHTML(track.songTitle)}">${state.current === index && state.playing ? '❚❚' : '▶'}</button>
+        <button class="card-play" data-play="${index}" aria-label="${state.current === index && state.playing ? 'Pausar' : 'Reproducir'} ${escapeHTML(track.songTitle)}">${state.current === index && state.playing ? '❚❚' : '▶'}</button>
       </div>
-      <h3>${escapeHTML(track.songTitle)}</h3><p>${escapeHTML(track.character)}</p>
+      <div class="track-caption"><span class="track-number">${String(index + 1).padStart(2, '0')}</span><div><h3 title="${escapeHTML(track.songTitle)}">${escapeHTML(track.songTitle)}</h3><p>${escapeHTML(track.character)}</p></div>${state.current === index && state.playing ? '<span class="track-live" aria-label="Sonando"><span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></span>' : ''}</div>
     </article>`;
   }
 
@@ -205,6 +209,12 @@
   }
 
   function renderPlayer() {
+    for (const button of [nodes.repeat, nodes.headerRepeat]) {
+      button.classList.toggle('active', state.repeat);
+      button.setAttribute('aria-pressed', String(state.repeat));
+      button.title = state.repeat ? 'Desactivar bucle de canción' : 'Activar bucle de canción';
+      button.setAttribute('aria-label', button.title);
+    }
     const track = soundtracks[state.current];
     nodes.player.hidden = sharedShell ? true : !audio.src;
     nodes.playerCover.src = track.songCover;
@@ -245,6 +255,16 @@
     state.favorites = state.favorites.includes(index) ? state.favorites.filter(item => item !== index) : [...state.favorites, index];
     localStorage.setItem('resonanceFavorites', JSON.stringify(state.favorites));
     render();
+  }
+
+  function toggleRepeat() {
+    state.repeat = !state.repeat;
+    if (sharedShell) sharedShell.setRepeat(state.repeat);
+    else {
+      audio.loop = state.repeat;
+      localStorage.setItem('resonanceRepeat', String(state.repeat));
+    }
+    renderPlayer();
   }
 
   function toggleShuffle() {
@@ -351,6 +371,8 @@
   $('#playerCoverButton').addEventListener('click', () => openCover(state.current));
   $('#previousButton').addEventListener('click', () => nextTrack(-1));
   $('#nextButton').addEventListener('click', () => nextTrack(1));
+  nodes.repeat.addEventListener('click', toggleRepeat);
+  nodes.headerRepeat.addEventListener('click', toggleRepeat);
   nodes.shuffleButton.addEventListener('click', toggleShuffle);
   nodes.headerShuffle.addEventListener('click', toggleShuffle);
   $('#queueButton').addEventListener('click', () => { nodes.queue.classList.add('open'); nodes.queue.setAttribute('aria-hidden', 'false'); });
@@ -381,6 +403,7 @@
       state.playing = sharedState.playing;
     } else state.playing = false;
     state.shuffle = sharedState.shuffle;
+    state.repeat = sharedState.repeat;
     state.volume = sharedState.volume;
     render();
   });

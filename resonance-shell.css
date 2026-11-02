@@ -43,3 +43,12 @@ body.player-collapsed .resonance-bar{transform:translateY(110%)}body.player-coll
 #songShareDialog :focus-visible{outline:3px solid #e6b1ff;outline-offset:3px}#songShareDialog [hidden],#globalShare[hidden]{display:none!important}
 @media(max-width:600px){#songShareDialog{padding:14px}#songShareCover{height:48vh}.song-share-actions button,.song-share-actions a{flex:1 1 auto;text-align:center}}
 @media(max-width:840px){.timeline{padding-right:228px}}
+/* Shared visual language and a separate control row on narrow screens. */
+html,body{font-family:"Plus Jakarta Sans","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.resonance-bar{background:linear-gradient(110deg,#100e1c,#1d162c);grid-template-columns:minmax(0,1fr) minmax(300px,1.2fr) minmax(120px,.6fr)}
+.track-summary,.player-main{min-width:0}.track-summary{flex:1}.track-copy{min-width:0}
+.repeat-control.active{color:#f5c9ed;background:#413052;border-color:#c49ee5}
+.timeline{grid-template-columns:36px minmax(0,1fr) 36px}.timeline input{min-width:0;width:100%}
+@media(max-width:1000px){:root{--shell-h:146px}.resonance-bar{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:10px 12px}.shell-actions{grid-column:1;grid-row:1}.volume-controls{grid-column:2;grid-row:1}.player-main{grid-column:1/-1;grid-row:2;display:grid;gap:5px}.player-controls{position:static;justify-content:center}.timeline{padding-right:0}.control-button{width:32px;height:32px}.play-button{width:38px;height:38px}.track-copy small{display:none}.cover{width:42px;height:42px}.track-summary{grid-template-columns:42px minmax(0,1fr)}}
+@media(max-width:540px){.player-controls .shuffle,.player-controls #queueButton{display:grid}.player-controls{gap:10px}.home-button{width:32px;height:36px}.shell-actions{gap:6px}.source-picker-button{width:32px}.track-copy strong{font-size:.76rem}.volume-controls{gap:4px}.timeline{padding-right:0}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}

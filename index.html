@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#090715">
   <meta name="description" content="RP HUB con reproductor musical persistente para Resonance y Etruria Radio.">
+  <link id="siteFavicon" rel="icon" type="image/png" href="logo.png">
   <title>RP HUB · Reproductor global</title>
   <script>window.__RP_SHELL_NESTED__=window.self!==window.top;if(window.__RP_SHELL_NESTED__)window.parent.postMessage({type:'rp-shell-navigate',route:'hub.html'},'*');</script>
-  <link rel="stylesheet" href="resonance-shell.css?v=20261021">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="resonance-shell.css?v=20261102">
 </head>
 <body>
   <main class="page-stage" id="pageStage">
@@ -43,6 +47,7 @@
         <button class="control-button" id="globalPrevious" type="button" aria-label="Canción anterior">‹</button>
         <button class="play-button" id="globalPlay" type="button" aria-label="Reproducir">▶</button>
         <button class="control-button" id="globalNext" type="button" aria-label="Canción siguiente">›</button>
+      <button class="control-button repeat-control" id="globalRepeat" type="button" aria-label="Activar bucle de canción" aria-pressed="false" title="Repetir canción"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4M4 11V9a2 2 0 0 1 2-2h14M8 21l-4-4 4-4m12 0v2a2 2 0 0 1-2 2H4"/><text x="12" y="14" text-anchor="middle" stroke="none" fill="currentColor" font-size="8">1</text></svg></button>
         <button class="control-button" id="globalShare" type="button" aria-label="Portada grande y enlace de la canción" title="Portada y compartir">↗</button>
         <button class="control-button" id="queueButton" type="button" aria-label="Abrir cola" title="Cola">≡</button>
       </div>
@@ -126,6 +131,6 @@
   <script src="Pokemon/EtruriaRadio/data.js?v=3"></script>
   <script src="assets/js/shuffle-cycle.js?v=20260917"></script>
   <script src="assets/js/resonance-sharing.js?v=20261021"></script>
-  <script src="resonance-shell.js?v=20261021-sharing"></script>
+  <script src="resonance-shell.js?v=20261102-identity"></script>
 </body>
 </html>

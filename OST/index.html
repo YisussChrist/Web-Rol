@@ -5,16 +5,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Resonance — archivo musical de personajes, escenas e historias.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="theme-color" content="#141020">
   <title>Resonance — Soundtrack Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261021-sharing">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20261102-identity">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="#top" aria-label="Resonance, inicio">
-      <img src="ResonanceLogo.png" alt="">
+      <img src="favicon.svg" alt="">
       <span>Resonance</span>
     </a>
     <nav class="main-nav" aria-label="Navegación principal">
@@ -25,9 +27,10 @@
       <label class="search-field">
         <span aria-hidden="true">⌕</span>
         <span class="sr-only">Buscar</span>
-        <input id="searchInput" type="search" placeholder="Buscar">
+        <input id="searchInput" type="search" placeholder="Buscar canciones, personajes…">
       </label>
       <button class="icon-button header-shuffle" id="headerShuffleButton" aria-label="Activar reproducción aleatoria" aria-pressed="false" title="Reproducción aleatoria">⤨</button>
+      <button class="icon-button repeat-control" id="headerRepeatButton" type="button" aria-label="Activar bucle de canción" aria-pressed="false" title="Repetir canción"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4M4 11V9a2 2 0 0 1 2-2h14M8 21l-4-4 4-4m12 0v2a2 2 0 0 1-2 2H4"/><text x="12" y="14" text-anchor="middle" stroke="none" fill="currentColor" font-size="8">1</text></svg></button>
       <button class="icon-button" id="favoritesButton" aria-label="Mostrar favoritos" aria-pressed="false">♡</button>
     </div>
   </header>
@@ -70,6 +73,7 @@
         <button class="control" id="previousButton" aria-label="Anterior" title="Anterior">‹</button>
         <button class="play-control" id="playButton" aria-label="Reproducir">▶</button>
         <button class="control" id="nextButton" aria-label="Siguiente" title="Siguiente">›</button>
+        <button class="control repeat-control" id="repeatButton" aria-label="Activar bucle de canción" aria-pressed="false" title="Repetir canción"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4M4 11V9a2 2 0 0 1 2-2h14M8 21l-4-4 4-4m12 0v2a2 2 0 0 1-2 2H4"/><text x="12" y="14" text-anchor="middle" stroke="none" fill="currentColor" font-size="8">1</text></svg></button>
         <button class="control" id="queueButton" aria-label="Abrir cola" title="Cola de reproducción">≡</button>
       </div>
       <div class="timeline"><span id="currentTime">0:00</span><input id="progressInput" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posición de reproducción"><span id="duration">0:00</span></div>
@@ -80,6 +84,6 @@
   <script src="data.js?v=20260804-lyrics"></script>
   <script src="../assets/js/shuffle-cycle.js?v=20260917"></script>
   <script src="../assets/js/resonance-sharing.js?v=20261021"></script>
-  <script src="app.js?v=20260918-simplified"></script>
+  <script src="app.js?v=20261102-identity"></script>
 </body>
 </html>
