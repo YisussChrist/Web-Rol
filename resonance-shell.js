@@ -420,6 +420,13 @@
     nodes.play.setAttribute('aria-label', playing ? 'Pausar' : 'Reproducir');
     nodes.bar.classList.toggle('playing', playing);
     $('globalShare').hidden = activeSource.id !== 'resonance';
+    const favorite = getFavorites().includes(state.current);
+    $('globalFavorite').hidden = activeSource.id !== 'resonance';
+    $('globalFavorite').innerHTML = icon(favorite ? 'heartFilled' : 'heart');
+    $('globalFavorite').classList.toggle('active', favorite);
+    $('globalFavorite').setAttribute('aria-pressed', String(favorite));
+    $('globalFavorite').setAttribute('aria-label', favorite ? 'Quitar de favoritos' : 'Añadir a favoritos');
+    $('globalArtwork').setAttribute('aria-label', activeSource.id === 'resonance' ? 'Ver portada en grande' : `Abrir ${activeSource.album}`);
     nodes.repeat.classList.toggle('active', state.repeat);
     nodes.repeat.setAttribute('aria-pressed', String(state.repeat));
     nodes.repeat.title = state.repeat ? 'Desactivar bucle de canción' : 'Activar bucle de canción';
@@ -452,7 +459,22 @@
 
   function getState() {
     const track = currentTrack();
-    return { current: state.current, sourceId: activeSource.id, sourceLabel: activeSource.label, sourceTrackId: track?.sourceTrackId ?? null, playing: !audio.paused, shuffle: state.shuffle, repeat: state.repeat, volume: audio.volume, currentTime: audio.currentTime, duration: audio.duration, track };
+    return { current: state.current, sourceId: activeSource.id, sourceLabel: activeSource.label, sourceTrackId: track?.sourceTrackId ?? null, playing: !audio.paused, shuffle: state.shuffle, repeat: state.repeat, favorites: getFavorites(), volume: audio.volume, currentTime: audio.currentTime, duration: audio.duration, track };
+  }
+
+  function getFavorites() {
+    try {
+      const favorites = JSON.parse(localStorage.getItem('resonanceFavorites') || '[]');
+      return Array.isArray(favorites) ? favorites : [];
+    } catch { return []; }
+  }
+
+  function toggleFavorite(index = state.current) {
+    if (!Number.isInteger(index) || !tracks[index]) return;
+    const favorites = getFavorites();
+    localStorage.setItem('resonanceFavorites', JSON.stringify(favorites.includes(index) ? favorites.filter(item => item !== index) : [...favorites, index]));
+    renderPlayer();
+    notify();
   }
 
   function subscribe(callback) {
@@ -461,8 +483,9 @@
     return () => subscribers.delete(callback);
   }
 
-  window.ResonanceShell = { showTrackShare, audio, tracks, setTrack, setSource, play, pause, toggle, setShuffle, setRepeat, setVolume, next: () => next(1), previous: () => next(-1), getState, getNavigation, subscribe, assetURL };
+  window.ResonanceShell = { showTrackShare, audio, tracks, setTrack, setSource, play, pause, toggle, toggleFavorite, setShuffle, setRepeat, setVolume, next: () => next(1), previous: () => next(-1), getState, getNavigation, subscribe, assetURL };
   window.GlobalAudioShell = window.ResonanceShell;
+  window.ResonanceBridge.host(window.ResonanceShell, frame);
 
   let sharedTrack = null;
   let sharedTrackIndex = 0;
@@ -602,6 +625,8 @@
   function closeQueue() { nodes.queue.classList.remove('open'); nodes.queue.setAttribute('aria-hidden', 'true'); }
   nodes.home.addEventListener('click', () => loadRoute('hub.html'));
   nodes.openResonance.addEventListener('click', () => loadRoute(activeSource.route));
+  $('globalArtwork').addEventListener('click', () => activeSource.id === 'resonance' ? showTrackShare() : loadRoute(activeSource.route));
+  $('globalFavorite').addEventListener('click', () => { if (activeSource.id === 'resonance') toggleFavorite(); });
   nodes.sourcePickerButton.addEventListener('click', toggleSourcePicker);
   nodes.closeSourcePicker.addEventListener('click', () => closeSourcePicker(true));
   nodes.play.addEventListener('click', toggle);

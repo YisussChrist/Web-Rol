@@ -1,12 +1,8 @@
-(() => {
+(async () => {
   'use strict';
 
   const icon = window.resonanceIcon;
   const { characters, soundtracks } = window.RESONANCE_DATA;
-  const storedLevel = (key, fallback, minimum = 0) => {
-    const value = Number(localStorage.getItem(key));
-    return Number.isFinite(value) ? Math.min(1, Math.max(minimum, value)) : fallback;
-  };
   const state = {
     view: 'library',
     filter: 'all',
@@ -15,8 +11,6 @@
     favorites: JSON.parse(localStorage.getItem('resonanceFavorites') || '[]'),
     repeat: localStorage.getItem('resonanceRepeat') === 'true',
     shuffle: JSON.parse(localStorage.getItem('resonanceShuffle') || 'false'),
-    volume: localStorage.getItem('resonanceVolume') === null ? .85 : storedLevel('resonanceVolume', .85),
-    previousVolume: localStorage.getItem('resonancePreviousVolume') === null ? .85 : storedLevel('resonancePreviousVolume', .85, .01),
     playing: false
   };
 
@@ -25,42 +19,21 @@
   ];
 
   const $ = selector => document.querySelector(selector);
-  const sharedShell = (() => {
-    try { return window.parent !== window ? window.parent.ResonanceShell || null : null; }
-    catch (error) { return null; }
-  })();
-  const audio = sharedShell?.audio || new Audio();
-  if (sharedShell) {
-    const sharedState = sharedShell.getState();
-    if (sharedState.sourceId === 'resonance') {
-      state.current = sharedState.current;
-      state.playing = sharedState.playing;
-    }
-    state.shuffle = sharedState.shuffle;
-    state.repeat = sharedState.repeat;
-    state.volume = sharedState.volume;
+  const sharedShell = await window.ResonanceBridge.connect();
+  // Resonance is a library view. The persistent shell owns the only player.
+  if (!sharedShell) {
+    $('#hero').innerHTML = '<div class="empty-state"><h2>Abre el reproductor global</h2><p><a href="../index.html#route=OST%2Findex.html" target="_top">Entrar en Resonance</a></p></div>';
+    return;
   }
-  if (!sharedShell) audio.loop = state.repeat;
-  audio.preload = 'metadata';
-  audio.volume = state.volume;
   let lastFocus = null;
-  const trackNavigator = window.createTrackNavigation();
-
   const nodes = {
     hero: $('#hero'), catalog: $('#catalog'), filterRow: $('#filterRow'), sectionTitle: $('#sectionTitle'),
     sectionEyebrow: $('#sectionEyebrow'), resultCount: $('#resultCount'), search: $('#searchInput'),
-    favoritesButton: $('#favoritesButton'), player: $('#player'), playerCover: $('#playerCover'),
-    headerShuffle: $('#headerShuffleButton'),
-    repeat: $('#repeatButton'), headerRepeat: $('#headerRepeatButton'),
-    playerTitle: $('#playerTitle'), playerArtist: $('#playerArtist'), playerFavorite: $('#playerFavorite'),
-    playButton: $('#playButton'), shuffleButton: $('#shuffleButton'), progress: $('#progressInput'),
-    currentTime: $('#currentTime'), duration: $('#duration'), volume: $('#volumeInput'),
-    muteButton: $('#muteButton'),
-    queue: $('#queueDrawer'), queueList: $('#queueList'), modal: $('#detailModal'), modalContent: $('#modalContent')
+    favoritesButton: $('#favoritesButton'), headerShuffle: $('#headerShuffleButton'), headerRepeat: $('#headerRepeatButton'),
+    modal: $('#detailModal'), modalContent: $('#modalContent')
   };
   const normalize = value => String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const trackTags = track => (track.tags || []).map(tag => normalize(tag).replace(/\s+/g, ''));
-  const formatTime = seconds => Number.isFinite(seconds) ? `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}` : '0:00';
   const escapeHTML = value => String(value || '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
   const lyricsText = track => Array.isArray(track?.lyrics) ? track.lyrics.join('\n').trim() : String(track?.lyrics || '').trim();
   const lyricsTranslationText = track => Array.isArray(track?.lyricsTranslation) ? track.lyricsTranslation.join('\n').trim() : String(track?.lyricsTranslation || '').trim();
@@ -110,8 +83,7 @@
 
   function renderHero() {
     const track = soundtracks[state.current] || soundtracks[0];
-    const adjacent = sharedShell ? sharedShell.getNavigation('resonance', state.current)
-      : trackNavigator.preview(navigationPool(), state.current, state.shuffle);
+    const adjacent = sharedShell.getNavigation('resonance', state.current);
     const preview = (index, direction, label) => {
       const neighbor = soundtracks[index];
       if (!neighbor || index === state.current) return '<div class="hero-neighbor-spacer" aria-hidden="true"></div>';
@@ -200,137 +172,45 @@
     if (state.view === 'library') renderLibrary();
     if (state.view === 'characters') renderCharacters();
     renderPlayer();
-    renderQueue();
   }
 
   function loadTrack(index, autoplay = true) {
-    const track = soundtracks[index];
-    if (!track) return;
-    if (sharedShell) {
-      state.current = index;
-      localStorage.setItem('resonanceTrack', String(index));
-      sharedShell.setTrack(index, autoplay);
-      render();
-      return;
-    }
-    const changed = state.current !== index || !audio.src;
-    trackNavigator.select(index);
-    state.current = index;
-    localStorage.setItem('resonanceTrack', String(index));
-    if (changed) audio.src = track.audio;
-    if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: track.songTitle, artist: track.character, album: 'Resonance', artwork: [{ src: track.songCover }] });
-    if (autoplay) togglePlayback(true);
-    else render();
+    if (soundtracks[index]) sharedShell.setTrack(index, autoplay);
   }
 
-  async function togglePlayback(forcePlay = false) {
-    if (sharedShell) {
-      if (forcePlay) await sharedShell.play();
-      else sharedShell.toggle();
-      return;
-    }
-    if (!audio.src) audio.src = soundtracks[state.current].audio;
-    if (state.playing && !forcePlay) audio.pause();
-    else {
-      try { await audio.play(); }
-      catch { state.playing = false; }
-    }
-    render();
+  function togglePlayback() {
+    if (sharedShell.getState().sourceId !== 'resonance') sharedShell.setTrack(state.current, true);
+    else sharedShell.toggle();
   }
 
   function renderPlayer() {
-    for (const button of [nodes.repeat, nodes.headerRepeat]) {
-      button.classList.toggle('active', state.repeat);
-      button.setAttribute('aria-pressed', String(state.repeat));
-      button.title = state.repeat ? 'Desactivar bucle de canción' : 'Activar bucle de canción';
-      button.setAttribute('aria-label', button.title);
-    }
-    const track = soundtracks[state.current];
-    nodes.player.hidden = sharedShell ? true : !audio.src;
-    nodes.playerCover.src = track.songCover;
-    nodes.playerCover.alt = `Portada de ${track.songTitle}`;
-    nodes.playerTitle.textContent = track.songTitle;
-    nodes.playerArtist.textContent = track.character;
-    nodes.playButton.innerHTML = icon(state.playing ? 'pause' : 'play');
-    nodes.playButton.setAttribute('aria-label', state.playing ? 'Pausar' : 'Reproducir');
-    const favorite = state.favorites.includes(state.current);
-    nodes.playerFavorite.innerHTML = icon(favorite ? 'heartFilled' : 'heart');
-    nodes.playerFavorite.classList.toggle('active', favorite);
-    nodes.shuffleButton.classList.toggle('active', state.shuffle);
-    nodes.shuffleButton.setAttribute('aria-pressed', String(state.shuffle));
+    const button = nodes.headerRepeat;
+    button.classList.toggle('active', state.repeat);
+    button.setAttribute('aria-pressed', String(state.repeat));
+    button.title = state.repeat ? 'Desactivar bucle de canción' : 'Activar bucle de canción';
+    button.setAttribute('aria-label', button.title);
     nodes.headerShuffle.classList.toggle('active', state.shuffle);
     nodes.headerShuffle.setAttribute('aria-pressed', String(state.shuffle));
     nodes.headerShuffle.setAttribute('aria-label', state.shuffle ? 'Desactivar reproducción aleatoria' : 'Activar reproducción aleatoria');
   }
 
-  function navigationPool() {
-    const visible = visibleTracks();
-    return visible.length ? visible.map(item => item.index) : soundtracks.map((_, index) => index);
-  }
-
   function nextTrack(direction = 1) {
-    if (sharedShell) {
-      if (sharedShell.getState().sourceId !== 'resonance') sharedShell.setTrack(state.current, false);
-      direction < 0 ? sharedShell.previous() : sharedShell.next();
-      return;
-    }
-    const pool = navigationPool();
-    if (!pool.length) return;
-    const next = trackNavigator.step(direction, pool, state.current, state.shuffle);
-    loadTrack(next);
+    if (sharedShell.getState().sourceId !== 'resonance') sharedShell.setTrack(state.current, false);
+    direction < 0 ? sharedShell.previous() : sharedShell.next();
   }
 
   function toggleFavorite(index) {
-    state.favorites = state.favorites.includes(index) ? state.favorites.filter(item => item !== index) : [...state.favorites, index];
-    localStorage.setItem('resonanceFavorites', JSON.stringify(state.favorites));
-    render();
+    sharedShell.toggleFavorite(index);
   }
 
   function toggleRepeat() {
     state.repeat = !state.repeat;
-    if (sharedShell) sharedShell.setRepeat(state.repeat);
-    else {
-      audio.loop = state.repeat;
-      localStorage.setItem('resonanceRepeat', String(state.repeat));
-    }
+    sharedShell.setRepeat(state.repeat);
     renderPlayer();
   }
 
   function toggleShuffle() {
-    state.shuffle = !state.shuffle;
-    localStorage.setItem('resonanceShuffle', JSON.stringify(state.shuffle));
-    if (sharedShell) sharedShell.setShuffle(state.shuffle);
-    renderHero();
-    renderPlayer();
-  }
-
-  function updateVolume(value, remember = true) {
-    state.volume = Math.min(1, Math.max(0, Number(value)));
-    audio.volume = state.volume;
-    nodes.volume.value = String(state.volume);
-    nodes.volume.style.setProperty('--fill', `${state.volume * 100}%`);
-    localStorage.setItem('resonanceVolume', String(state.volume));
-    if (remember && state.volume > 0) {
-      state.previousVolume = state.volume;
-      localStorage.setItem('resonancePreviousVolume', String(state.previousVolume));
-    }
-    const muted = state.volume === 0;
-    nodes.muteButton.innerHTML = icon(muted ? 'muted' : state.volume < .45 ? 'quiet' : 'volume');
-    nodes.muteButton.classList.toggle('muted', muted);
-    nodes.muteButton.setAttribute('aria-label', muted ? 'Restaurar volumen' : 'Silenciar');
-    nodes.muteButton.title = muted ? 'Restaurar volumen' : 'Silenciar';
-  }
-
-  function toggleMute() {
-    if (state.volume > 0) updateVolume(0, false);
-    else updateVolume(state.previousVolume || .85);
-  }
-
-  function renderQueue() {
-    const pool = visibleTracks();
-    const position = Math.max(0, pool.findIndex(item => item.index === state.current));
-    const ordered = pool.slice(position).concat(pool.slice(0, position));
-    nodes.queueList.innerHTML = ordered.map(({ track, index }) => `<div class="queue-item ${index === state.current ? 'active' : ''}" data-play="${index}"><img src="${escapeHTML(track.songCover)}" alt=""><div><strong>${escapeHTML(track.songTitle)}</strong><span>${escapeHTML(track.character)}</span></div><button data-play="${index}" aria-label="Reproducir">${icon('play')}</button></div>`).join('');
+    sharedShell.setShuffle(!state.shuffle);
   }
 
   function openTrackDetail(index) {
@@ -403,48 +283,26 @@
 
   nodes.search.addEventListener('input', () => { state.query = nodes.search.value; state.view = 'library'; render(); });
   nodes.favoritesButton.addEventListener('click', () => { state.view = 'library'; state.filter = state.filter === 'favorites' ? 'all' : 'favorites'; render(); });
-  nodes.playButton.addEventListener('click', () => togglePlayback());
-  nodes.playerFavorite.addEventListener('click', () => toggleFavorite(state.current));
-  $('#playerCoverButton').addEventListener('click', () => openCover(state.current));
-  $('#previousButton').addEventListener('click', () => nextTrack(-1));
-  $('#nextButton').addEventListener('click', () => nextTrack(1));
-  nodes.repeat.addEventListener('click', toggleRepeat);
   nodes.headerRepeat.addEventListener('click', toggleRepeat);
-  nodes.shuffleButton.addEventListener('click', toggleShuffle);
   nodes.headerShuffle.addEventListener('click', toggleShuffle);
-  $('#queueButton').addEventListener('click', () => { nodes.queue.classList.add('open'); nodes.queue.setAttribute('aria-hidden', 'false'); });
-  $('#closeQueue').addEventListener('click', () => { nodes.queue.classList.remove('open'); nodes.queue.setAttribute('aria-hidden', 'true'); });
-  nodes.volume.addEventListener('input', () => updateVolume(nodes.volume.value));
-  nodes.muteButton.addEventListener('click', toggleMute);
-  nodes.progress.addEventListener('input', () => { if (audio.duration) audio.currentTime = audio.duration * Number(nodes.progress.value) / 100; });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeModal();
+    if (event.code === 'Space' && !['INPUT', 'BUTTON', 'TEXTAREA', 'SELECT', 'A'].includes(document.activeElement.tagName)) {
+      event.preventDefault(); togglePlayback();
+    }
+  });
 
-  audio.addEventListener('play', () => { state.playing = true; render(); });
-  audio.addEventListener('pause', () => { state.playing = false; render(); });
-  if (!sharedShell) audio.addEventListener('ended', () => nextTrack(1));
-  audio.addEventListener('loadedmetadata', () => { nodes.duration.textContent = formatTime(audio.duration); });
-  audio.addEventListener('timeupdate', () => { const percent = audio.duration ? audio.currentTime / audio.duration * 100 : 0; nodes.currentTime.textContent = formatTime(audio.currentTime); nodes.progress.value = percent; nodes.progress.style.setProperty('--fill', `${percent}%`); });
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') { closeModal(); nodes.queue.classList.remove('open'); } if (event.code === 'Space' && !['INPUT','BUTTON'].includes(document.activeElement.tagName)) { event.preventDefault(); togglePlayback(); } });
-
-  if (!sharedShell && 'mediaSession' in navigator) {
-    navigator.mediaSession.setActionHandler('play', () => togglePlayback(true));
-    navigator.mediaSession.setActionHandler('pause', () => togglePlayback());
-    navigator.mediaSession.setActionHandler('previoustrack', () => nextTrack(-1));
-    navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack(1));
-  }
-
-  updateVolume(state.volume, false);
-
-  if (sharedShell) sharedShell.subscribe(sharedState => {
+  const unsubscribe = sharedShell.subscribe(sharedState => {
     if (sharedState.sourceId === 'resonance') {
       state.current = sharedState.current;
       state.playing = sharedState.playing;
     } else state.playing = false;
     state.shuffle = sharedState.shuffle;
     state.repeat = sharedState.repeat;
-    state.volume = sharedState.volume;
+    state.favorites = sharedState.favorites;
     render();
   });
-  render();
+  window.addEventListener('pagehide', unsubscribe, { once: true });
   const linkedTrack = new URLSearchParams(location.search).get('track');
   if(linkedTrack) {
     const index=soundtracks.findIndex(track=>window.ResonanceSharing.key(track)===linkedTrack);

@@ -1,3 +1,4 @@
+    const hubIcon = window.hubIcon;
     const PAGES = [
       { title: "Árbol Familiar", category: "Inazuma Eleven", emoji: "🌳", url: "Hijos Inazuma/index.html", description: "Linajes, hijos, familias y relaciones del universo Inazuma." },
       { title: "Posiciones", category: "Inazuma Eleven", emoji: "📍", url: "posiciones.html", description: "Organiza jugadores, roles, puestos y estructura de equipos.", status: "" },
@@ -57,11 +58,11 @@
       - La música ahora va TODA junta en HUB_PLAYLIST, no por página ni por categoría.
     */
     const CATEGORY_CONFIG = {
-      "General": { color: "#a855f7", accent2: "#ec4899", background: "backgrounds/general.webp" },
-      "Inazuma Eleven": { color: "#3b82f6", accent2: "#22d3ee", background: "backgrounds/inazuma.webp" },
-      "Dragon Ball": { color: "#f97316", accent2: "#facc15", background: "backgrounds/dragonball.webp" },
-      "Pokémon": { color: "#22c55e", accent2: "#38bdf8", background: "backgrounds/pokemon.webp" },
-      "Minijuegos": { color: "#facc15", accent2: "#fb7185", background: "backgrounds/minijuegos.webp" }
+      "General": { color: "#dfbc74", accent2: "#ed9857", background: "" },
+      "Inazuma Eleven": { color: "#3b82f6", accent2: "#22d3ee", background: "backgrounds/IEW.jpg" },
+      "Dragon Ball": { color: "#f97316", accent2: "#facc15", background: "backgrounds/namek.png" },
+      "Pokémon": { color: "#22c55e", accent2: "#38bdf8", background: "Pokemon/Mapa/Etruria.png" },
+      "Minijuegos": { color: "#facc15", accent2: "#fb7185", background: "" }
     };
 
     /*
@@ -72,9 +73,9 @@
     */
     const PAGE_EXTRAS = {
       "Poder": { background: "backgrounds/namek.png", color: "#ff9800", accent2: "#ffd54f" },
-      "Mapa": { background: "backgrounds/etruria.webp", color: "#22c55e", accent2: "#38bdf8" },
+      "Mapa": { background: "Pokemon/Mapa/Etruria.png", color: "#22c55e", accent2: "#38bdf8" },
       "Team Builder": { background: "backgrounds/IEW.jpg", color: "#3b82f6", accent2: "#22d3ee" },
-      "Inventario": { background: "backgrounds/inventario.webp" },
+      "Inventario": { background: "backgrounds/IEW.jpg" },
       "Héroes": { background: "backgrounds/heroes.jpg", color: "#facc15", accent2: "#fb923c" }
     };
 
@@ -553,24 +554,24 @@
       const days = daysUntil(next.date);
       const month = formatHubDate(next.date,{month:"short"}).replace(".","");
       const countdown = days===0 ? "Hoy" : days===1 ? "Mañana" : `${days} días`;
-      nextEventCard.innerHTML = `<div class="next-date"><div class="date-tile"><strong>${next.date.getDate()}</strong><span>${escapeHTML(month)}</span></div><div class="next-copy"><small>${icon} ${escapeHTML(type)}</small><h3>${escapeHTML(next.item.title)}</h3><p>${escapeHTML(next.item.note || "Próxima fecha del rol")}${next.item.time ? ` · ${escapeHTML(next.item.time)}` : ""}</p></div></div><div class="countdown">${escapeHTML(countdown)}<span>${formatHubDate(next.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</span></div>`;
+      nextEventCard.innerHTML = `<div class="next-date"><div class="date-tile"><strong>${next.date.getDate()}</strong><span>${escapeHTML(month)}</span></div><div class="next-copy"><small>${hubIcon(icon)} ${escapeHTML(type)}</small><h3>${escapeHTML(next.item.title)}</h3><p>${escapeHTML(next.item.note || "Próxima fecha del rol")}${next.item.time ? ` · ${escapeHTML(next.item.time)}` : ""}</p></div></div><div class="countdown">${escapeHTML(countdown)}<span>${formatHubDate(next.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</span></div>`;
     }
 
     function renderUpcoming(entries) {
       const soon = entries.filter(entry => daysUntil(entry.date) <= 7).slice(0,4);
-      upcomingFeed.innerHTML = soon.length ? soon.map(({item,date}) => { const [icon,type]=calendarMeta(item); return `<a class="feed-row" href="${escapeHTML(item.link || "calendario.html")}" data-open-page="calendario-conectado"><span class="feed-icon">${icon}</span><span><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(type)}</small></span><time>${daysUntil(date)===0 ? "Hoy" : formatHubDate(date)}</time></a>`; }).join("") : `<div class="mini-row"><span>Semana tranquila</span><span>Sin fechas</span></div>`;
+      upcomingFeed.innerHTML = soon.length ? soon.map(({item,date}) => { const [icon,type]=calendarMeta(item); return `<a class="feed-row" href="${escapeHTML(item.link || "calendario.html")}" data-open-page="calendario-conectado"><span class="feed-icon">${hubIcon(icon)}</span><span><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(type)}</small></span><time>${daysUntil(date)===0 ? "Hoy" : formatHubDate(date)}</time></a>`; }).join("") : `<div class="mini-row"><span>Semana tranquila</span><span>Sin fechas</span></div>`;
     }
 
     function renderChronicles() {
       const entries = [...chroniclesData()].sort((a,b) => String(b.date || "").localeCompare(String(a.date || "")) || Number(b.createdAt || 0)-Number(a.createdAt || 0)).slice(0,4);
-      chronicleFeed.innerHTML = entries.length ? entries.map(item => `<a class="feed-row" href="${escapeHTML(chronicleHref(item.universe))}" data-open-page="cronicas-del-rol"><span class="feed-icon">${item.universe==="Inazuma Eleven"?"⚽":item.universe==="Dragon Ball"?"🐉":item.universe==="Pokémon"?"🧭":"⌛"}</span><span><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.arc || item.type || "Crónica")}</small></span><time>${item.date ? escapeHTML(item.date.slice(5).split("-").reverse().join("/")) : "—"}</time></a>`).join("") : `<div class="mini-row"><span>Aún no hay crónicas</span><span>Vacío</span></div>`;
+      chronicleFeed.innerHTML = entries.length ? entries.map(item => `<a class="feed-row" href="${escapeHTML(chronicleHref(item.universe))}" data-open-page="cronicas-del-rol"><span class="feed-icon">${hubIcon(item.universe==="Inazuma Eleven"?"ball":item.universe==="Dragon Ball"?"orbit":item.universe==="Pokémon"?"compass":"book")}</span><span><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.arc || item.type || "Crónica")}</small></span><time>${item.date ? escapeHTML(item.date.slice(5).split("-").reverse().join("/")) : "—"}</time></a>`).join("") : `<div class="mini-row"><span>Aún no hay crónicas</span><span>Vacío</span></div>`;
     }
 
     function renderRelationships() {
       const data = relationshipsData();
       const names = Object.fromEntries(data.characters.map(item => [item.id,item.name]));
       const entries = [...data.relationships].slice(-4).reverse();
-      relationshipFeed.innerHTML = entries.length ? entries.map(item => `<a class="feed-row" href="relaciones.html" data-open-page="relaciones-2-0"><span class="feed-icon">${RELATION_TYPE_META[item.type] || "🔗"}</span><span><strong>${escapeHTML(item.title || "Vínculo")}</strong><small>${escapeHTML(names[item.from] || item.from)} · ${escapeHTML(names[item.to] || item.to)}</small></span><span>${Number(item.intensity || 0)}/5</span></a>`).join("") : `<div class="mini-row"><span>Aún no hay relaciones</span><span>Vacío</span></div>`;
+      relationshipFeed.innerHTML = entries.length ? entries.map(item => `<a class="feed-row" href="relaciones.html" data-open-page="relaciones-2-0"><span class="feed-icon">${hubIcon("heart")}</span><span><strong>${escapeHTML(item.title || "Vínculo")}</strong><small>${escapeHTML(names[item.from] || item.from)} · ${escapeHTML(names[item.to] || item.to)}</small></span><span>${Number(item.intensity || 0)}/5</span></a>`).join("") : `<div class="mini-row"><span>Aún no hay relaciones</span><span>Vacío</span></div>`;
     }
 
     function renderDraftAlert() {
@@ -590,7 +591,7 @@
         const chronicleCount = chronicles.filter(item => item.universe===server.chronicle).length;
         const dateCount = calendar.filter(item => normalize(item.universe)===server.key).length;
         const characterCount = relations.characters.filter(item => normalize(item.universe)===server.key).length;
-        return `<a class="server-summary" data-server="${server.key}" href="cronica.html#${server.hash}" data-open-page="cronicas-del-rol"><div class="server-top"><strong>${escapeHTML(server.name)}</strong><span>${server.icon}</span></div><div class="server-numbers"><div class="server-number"><strong>${chronicleCount}</strong><small>Crónicas</small></div><div class="server-number"><strong>${dateCount}</strong><small>Fechas</small></div><div class="server-number"><strong>${characterCount}</strong><small>Personajes</small></div></div></a>`;
+        return `<a class="server-summary" data-server="${server.key}" href="cronica.html#${server.hash}" data-open-page="cronicas-del-rol"><div class="server-top"><strong>${escapeHTML(server.name)}</strong><span>${hubIcon(server.icon)}</span></div><div class="server-numbers"><div class="server-number"><strong>${chronicleCount}</strong><small>Crónicas</small></div><div class="server-number"><strong>${dateCount}</strong><small>Fechas</small></div><div class="server-number"><strong>${characterCount}</strong><small>Personajes</small></div></div></a>`;
       }).join("");
     }
 
@@ -620,7 +621,7 @@
       if(query.length<2){globalResults.hidden=true;globalResults.innerHTML="";return;}
       const results=globalSearchItems(query);
       globalResults.hidden=false;
-      globalResults.innerHTML=`<div class="result-head"><h2>Resultados en toda la web</h2><span>${results.length}${results.length===15?"+":""} coincidencias</span></div>${results.length?`<div class="result-grid">${results.map(item=>`<a class="result-item" href="${escapeHTML(item.href)}" data-open-page="${escapeHTML(item.pageId)}"><span>${item.icon}</span><span><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.meta)}</small></span><span class="result-kind">${escapeHTML(item.kind)}</span></a>`).join("")}</div>`:`<div class="empty">No aparece nada con “${escapeHTML(query)}”.</div>`}`;
+      globalResults.innerHTML=`<div class="result-head"><h2>Resultados en toda la web</h2><span>${results.length}${results.length===15?"+":""} coincidencias</span></div>${results.length?`<div class="result-grid">${results.map(item=>`<a class="result-item" href="${escapeHTML(item.href)}" data-open-page="${escapeHTML(item.pageId)}"><span>${hubIcon(item.icon)}</span><span><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.meta)}</small></span><span class="result-kind">${escapeHTML(item.kind)}</span></a>`).join("")}</div>`:`<div class="empty">No aparece nada con “${escapeHTML(query)}”.</div>`}`;
     }
 
     function renderStats() {
@@ -630,23 +631,29 @@
     }
 
     function renderTabs() {
-      tabs.innerHTML = getCategories().map(category => `<button class="tab ${category === state.category ? "active" : ""}" data-category="${escapeHTML(category)}">${escapeHTML(category)}</button>`).join("");
+      tabs.innerHTML = getCategories().map(category => `<button class="tab ${category === state.category ? "active" : ""}" data-category="${escapeHTML(category)}">${category === "⭐ Favoritos" ? hubIcon("heart") + " Favoritos" : escapeHTML(category)}</button>`).join("");
     }
 
     function renderCategoryLauncher() {
-      const icons = { "Inazuma Eleven":"⚽", "Dragon Ball":"🐉", "Pokémon":"🧭", "General":"✨", "Minijuegos":"🎮" };
-      const categories = ["Inazuma Eleven", "Dragon Ball", "Pokémon", "General", "Minijuegos"];
-      const visits = getVisits();
-      categoryGrid.innerHTML = categories.map(category => {
-        const pages = ENRICHED_PAGES.filter(page => page.category === category && !page.disabled);
-        const visited = pages.reduce((total, page) => total + (visits[page.id] || 0), 0);
-        return `<button class="category-card ${state.category === category ? "active" : ""}" type="button" data-launch-category="${escapeHTML(category)}"><span class="category-icon">${icons[category]}</span><strong>${escapeHTML(category)}</strong><small>${pages.length} páginas · ${visited} accesos</small></button>`;
+      const worlds = [
+        { name: "Dragon Ball", id: "dragonball", icon: "orbit", subtitle: "El poder de tu historia", description: "Guerreros, linajes y leyendas por escribir.", image: "backgrounds/namek.png" },
+        { name: "Inazuma Eleven", id: "inazuma", icon: "bolt", subtitle: "El próximo partido empieza aquí", description: "Equipos, técnicas y sueños sobre el campo.", image: "backgrounds/IEW.jpg" },
+        { name: "Pokémon", id: "pokemon", icon: "compass", subtitle: "Etruria te espera", description: "Entrenadores, compañeros y nuevos caminos.", image: "Pokemon/Mapa/Etruria.png" }
+      ];
+      categoryGrid.innerHTML = worlds.map((world, index) => {
+        const count = ENRICHED_PAGES.filter(page => page.category === world.name && !page.disabled).length;
+        return `<button class="category-card world-card ${state.category === world.name ? "active" : ""}" type="button" data-world="${world.id}" data-launch-category="${world.name}" aria-pressed="${state.category === world.name}">
+          <img class="world-image" src="${world.image}" alt="" fetchpriority="high">
+          <span class="world-top"><span class="world-symbol">${hubIcon(world.icon)}</span><span>0${index + 1} / UNIVERSO</span></span>
+          <span class="world-copy"><small>${world.subtitle}</small><strong>${world.name}</strong><span class="world-description">${world.description}</span></span>
+          <span class="world-bottom"><span>${count} páginas para explorar</span><span class="world-arrow">${hubIcon('arrow')}</span></span>
+        </button>`;
       }).join("");
     }
 
     function renderQuickLinks() {
       quickLinks.innerHTML = QUICK_LINK_TITLES.map(title => ENRICHED_PAGES.find(page => page.title === title)).filter(Boolean).map(page => `
-        <a class="quick-link" href="${escapeHTML(page.url)}" data-open-page="${page.id}" data-page-id="${page.id}">${escapeHTML(page.emoji)} ${escapeHTML(page.title)}</a>
+        <a class="quick-link" href="${escapeHTML(page.url)}" data-open-page="${page.id}" data-page-id="${page.id}">${hubIcon(page.emoji)} ${escapeHTML(page.title)}</a>
       `).join("");
     }
 
@@ -662,16 +669,16 @@
       const recentPages = getHistory().map(entry => ({ ...entry, page:ENRICHED_PAGES.find(page => page.id===entry.id) })).filter(entry => entry.page).slice(0,5);
       dashboard.innerHTML = `
         <article class="dashboard-card">
-          <h2>↩️ Continuar donde lo dejaste</h2>
-          <div class="mini-list">${recentPages.length ? recentPages.map(entry => `<a class="mini-row" href="${escapeHTML(entry.page.url)}" data-open-page="${entry.page.id}"><span>${escapeHTML(entry.page.emoji)} ${escapeHTML(entry.page.title)}</span><span>${formatHubDate(new Date(entry.at),{day:"2-digit",month:"short"})}</span></a>`).join("") : `<div class="mini-row"><span>Abre una página para iniciar el historial</span><span>Nuevo</span></div>`}</div>
+          <h2>${hubIcon("clock")}Continuar donde lo dejaste</h2>
+          <div class="mini-list">${recentPages.length ? recentPages.map(entry => `<a class="mini-row" href="${escapeHTML(entry.page.url)}" data-open-page="${entry.page.id}"><span>${hubIcon(entry.page.emoji)} ${escapeHTML(entry.page.title)}</span><span>${formatHubDate(new Date(entry.at),{day:"2-digit",month:"short"})}</span></a>`).join("") : `<div class="mini-row"><span>Abre una página para iniciar el historial</span><span>Nuevo</span></div>`}</div>
         </article>
         <article class="dashboard-card">
-          <h2>🔥 Más utilizadas</h2>
-          <div class="mini-list">${mostUsed.length ? mostUsed.map(page => `<a class="mini-row" href="${escapeHTML(page.url)}" data-open-page="${page.id}"><span>${escapeHTML(page.emoji)} ${escapeHTML(page.title)}</span><span>${page.visits} visitas</span></a>`).join("") : `<div class="mini-row"><span>Aún no hay visitas guardadas</span><span>0</span></div>`}</div>
+          <h2>${hubIcon("chart")}Más utilizadas</h2>
+          <div class="mini-list">${mostUsed.length ? mostUsed.map(page => `<a class="mini-row" href="${escapeHTML(page.url)}" data-open-page="${page.id}"><span>${hubIcon(page.emoji)} ${escapeHTML(page.title)}</span><span>${page.visits} visitas</span></a>`).join("") : `<div class="mini-row"><span>Aún no hay visitas guardadas</span><span>0</span></div>`}</div>
         </article>
         <article class="dashboard-card">
-          <h2>⭐ Tus favoritos</h2>
-          <div class="mini-list">${favoritePages.length ? favoritePages.map(page => `<a class="mini-row" href="${escapeHTML(page.url)}" data-open-page="${page.id}"><span>${escapeHTML(page.emoji)} ${escapeHTML(page.title)}</span><span>Abrir</span></a>`).join("") : `<div class="mini-row"><span>Marca tarjetas con ❤️</span><span>Vacío</span></div>`}</div>
+          <h2>${hubIcon("heart")}Tus favoritos</h2>
+          <div class="mini-list">${favoritePages.length ? favoritePages.map(page => `<a class="mini-row" href="${escapeHTML(page.url)}" data-open-page="${page.id}"><span>${hubIcon(page.emoji)} ${escapeHTML(page.title)}</span><span>Abrir</span></a>`).join("") : `<div class="mini-row"><span>Guarda tus páginas favoritas</span><span>Vacío</span></div>`}</div>
         </article>
       `;
     }
@@ -695,15 +702,15 @@
                 <article class="section-card ${statusClass(page.status)}" data-page-id="${page.id}">
                   <div>
                     <div class="card-top">
-                      <div class="icon">${escapeHTML(page.emoji)}</div>
+                      <div class="icon">${hubIcon(page.emoji)}</div>
                       <div class="card-actions">
-                        <button class="fav-btn" type="button" data-fav-page="${page.id}" title="Favorito">${favs.includes(page.id) ? "❤️" : "🤍"}</button>
+                        <button class="fav-btn" type="button" data-fav-page="${page.id}" aria-label="${favs.includes(page.id) ? "Quitar de" : "Añadir a"} favoritos: ${escapeHTML(page.title)}" aria-pressed="${favs.includes(page.id)}">${hubIcon(favs.includes(page.id) ? "heartFilled" : "heart")}</button>
                         ${page.status ? `<span class="tag ${statusClass(page.status)}">${escapeHTML(page.status)}</span>` : `<span class="tag">${escapeHTML(page.category)}</span>`}
                       </div>
                     </div>
                     <h3>${escapeHTML(page.title)}</h3>
                     <p>${escapeHTML(page.description)}</p>
-                    <div class="usage">👁️ ${visits[page.id] || 0} visitas guardadas</div>
+                    <div class="usage">${hubIcon("eye")} ${visits[page.id] || 0} visitas guardadas</div>
                   </div>
                   <a class="card-link ${page.disabled ? "disabled" : ""}" href="${page.disabled ? "#" : escapeHTML(page.url)}" data-open-page="${page.id}">${page.disabled ? "Próximamente" : "Abrir página"} <span>→</span></a>
                 </article>
@@ -762,7 +769,7 @@
     function applyTheme() {
       const saved = localStorage.getItem(LS.theme) || "dark";
       document.body.classList.toggle("light", saved === "light");
-      themeBtn.textContent = saved === "light" ? "🌙 Oscuro" : "☀️ Claro";
+      themeBtn.innerHTML = saved === "light" ? hubIcon("moon") + "Tema oscuro" : hubIcon("sun") + "Tema claro";
     }
 
     tabs.addEventListener("click", event => {
@@ -774,11 +781,10 @@
       applyVisualTheme(config);
     });
 
-    searchInput.addEventListener("input", event => { state.query = event.target.value; renderPages(); renderGlobalSearch(); });
+    searchInput.addEventListener("input", event => { state.query = event.target.value; document.body.classList.toggle("hub-searching", !!state.query.trim()); renderPages(); renderGlobalSearch(); });
     activityBtn.addEventListener("click", () => document.getElementById("activityCenter").scrollIntoView({behavior:"smooth",block:"start"}));
     themeBtn.addEventListener("click", () => { const isLight = document.body.classList.contains("light"); localStorage.setItem(LS.theme, isLight ? "dark" : "light"); applyTheme(); });
-    musicBtn.addEventListener("click", () => musicPanel.classList.toggle("open"));
-    achievementsBtn.addEventListener("click", () => achievementsPanel.classList.toggle("open"));
+    achievementsBtn.addEventListener("click", () => { achievementsPanel.classList.toggle("open"); if (achievementsPanel.classList.contains("open")) achievementsPanel.scrollIntoView({behavior:"smooth",block:"start"}); });
     quoteBtn.addEventListener("click", showRandomQuote);
     resetBgBtn.addEventListener("click", resetVisualTheme);
 
@@ -795,6 +801,7 @@
         state.category = categoryButton.dataset.launchCategory;
         state.query = "";
         searchInput.value = "";
+        document.body.classList.remove("hub-searching");
         render();
         applyVisualTheme(CATEGORY_CONFIG[state.category] || CATEGORY_CONFIG.General);
         document.getElementById("pageCatalog").scrollIntoView({ behavior:"smooth", block:"start" });
@@ -835,6 +842,17 @@
     hubAudio.addEventListener("pause", () => playMusicBtn.textContent = "▶️ Reproducir");
     hubAudio.addEventListener("play", () => playMusicBtn.textContent = "⏸️ Pausar");
 
+    const hubMenu = document.getElementById("hubMenu");
+    document.addEventListener("click", event => {
+      if (!hubMenu.contains(event.target) || event.target.closest(".hub-menu-panel button")) hubMenu.open = false;
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") { hubMenu.open = false; }
+    });
+    document.querySelector('.category-head .text-link').addEventListener('click', () => {
+      state.category = "Todas"; state.query = ""; searchInput.value = "";
+      document.body.classList.remove("hub-searching"); render(); resetVisualTheme();
+    });
     applyTheme();
     hubAudio.volume = Number(localStorage.getItem(LS.volume) || 0.45);
     volumeInput.value = hubAudio.volume;

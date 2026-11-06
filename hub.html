@@ -7,37 +7,43 @@
   <meta name="description" content="Centro de control del RP: personajes, cronología, relaciones, calendarios, archivos y juegos.">
   <title>RP HUB 2.0 — Centro de control</title>
   <link rel="stylesheet" href="assets/css/hub.css">
+  <link rel="stylesheet" href="assets/css/hub-refresh.css?v=20261107-final2">
 </head>
 <body>
   <div class="dynamic-bg" id="dynamicBg"></div>
   <main class="shell">
     <nav class="topbar" aria-label="Navegación superior">
-      <div class="brand"><span class="brand-badge">🐉</span><span>RP HUB</span></div>
+      <a class="brand" href="#" aria-label="RP HUB, inicio"><span class="brand-badge" data-hub-icon="orbit"></span><span>RP<span class="brand-light">HUB</span><small>TUS MUNDOS, CONECTADOS</small></span></a>
+      <label class="search top-search"><span data-hub-icon="search"></span><input id="searchInput" type="search" aria-label="Buscar en el HUB" placeholder="Buscar en tus mundos…" autocomplete="off" /></label>
       <div class="top-actions">
-        <button class="pill-button" id="activityBtn">📡 Actividad</button>
-        <button class="pill-button" id="musicBtn">🎵 Música</button>
-        <button class="pill-button" id="achievementsBtn">🏆 Logros</button>
-        <button class="pill-button" id="randomBtn">🎲 Sorpréndeme</button>
-        <button class="pill-button" id="quoteBtn">🔄 Cita</button>
-        <button class="pill-button" id="themeBtn">🌙 Modo</button>
+        <button class="pill-button" id="activityBtn"><span data-hub-icon="activity"></span>Actividad</button>
+        <a class="pill-button music-shortcut" id="musicBtn" href="OST/index.html"><span data-hub-icon="music"></span><span>Resonance</span></a>
+        <details class="hub-menu" id="hubMenu"><summary class="pill-button" aria-label="Más opciones" title="Más opciones"><span data-hub-icon="settings"></span></summary><div class="hub-menu-panel">
+          <button class="pill-button" id="achievementsBtn"><span data-hub-icon="trophy"></span>Mis logros</button>
+          <button class="pill-button" id="randomBtn"><span data-hub-icon="shuffle"></span>Sorpréndeme</button>
+          <button class="pill-button" id="quoteBtn"><span data-hub-icon="refresh"></span>Cambiar cita</button>
+          <button class="pill-button" id="themeBtn">Cambiar tema</button>
+          <button class="pill-button" id="resetBgBtn"><span data-hub-icon="image"></span>Restaurar fondo</button>
+        </div></details>
       </div>
     </nav>
+    <section class="global-results" id="globalResults" aria-live="polite" hidden></section>
 
     <section class="hero">
       <div class="hero-card">
-        <div class="eyebrow">✨ HUB 2.0 · Datos conectados</div>
-        <h1>Todo tu rol.<br>En un vistazo.</h1>
-        <p>La portada reúne lo que está ocurriendo en los tres servidores: próximas fechas, actividad narrativa, relaciones y accesos para continuar exactamente donde lo dejaste.</p>
+        <div class="eyebrow"><span class="welcome-line"></span>EL PUNTO DE ENCUENTRO DE TUS HISTORIAS</div>
+        <h1>¿Dónde seguimos<br><span>la aventura?</span></h1>
+        <p>Tres universos. Todas tus historias. Elige tu próximo destino.</p>
         <div class="stats">
           <div class="stat"><strong id="totalPages">0</strong><span>Páginas</span></div>
-          <div class="stat"><strong id="totalEvents">0</strong><span>Fechas conectadas</span></div>
-          <div class="stat"><strong id="totalCharacters">0</strong><span>Personajes enlazados</span></div>
+          <div class="stat"><strong id="totalEvents">0</strong><span>Fechas</span></div>
+          <div class="stat"><strong id="totalCharacters">0</strong><span>Personajes</span></div>
         </div>
       </div>
 
       <aside class="quote-card">
         <div>
-          <div class="quote-label">Cita del día</div>
+          <div class="quote-label"><span data-hub-icon="quote"></span>Una pausa en el camino</div>
           <p class="quote-text" id="quoteText">“Cargando poder...”</p>
           <div class="quote-author" id="quoteAuthor">— Maestro Roshi</div>
           <div class="quote-meaning" id="quoteMeaning"></div>
@@ -45,27 +51,27 @@
       </aside>
     </section>
 
+    <section class="category-launcher" aria-labelledby="categoryTitle">
+      <div class="category-head"><div><span>ELIGE TU DESTINO</span><h2 id="categoryTitle">Tus universos</h2></div><a href="#pageCatalog" class="text-link">Ver todas las páginas <span data-hub-icon="arrow"></span></a></div>
+      <div class="category-grid" id="categoryGrid"></div>
+      <div class="universe-extras"><button data-launch-category="General"><span data-hub-icon="grid"></span>Herramientas generales <span data-hub-icon="arrow"></span></button><button data-launch-category="Minijuegos"><span data-hub-icon="game"></span>Sala de juegos <span data-hub-icon="arrow"></span></button></div>
+    </section>
+
+    <section class="quick-panel"><div class="quick-head"><h2><span data-hub-icon="pin"></span>A un paso</h2><span>Tus accesos rápidos</span></div><div class="quick-grid" id="quickLinks"></div></section>
+
     <section class="command-center" id="activityCenter" aria-labelledby="activityTitle">
       <div class="command-head">
-        <div><div class="live-status">Información del código</div><h2 id="activityTitle">Centro de control</h2><p>Calendario, Crónicas y Relaciones reunidos sin repetir información.</p></div>
+        <div><div class="live-status">EL ROL SIGUE</div><h2 id="activityTitle">Mientras tanto, en tus mundos</h2><p>Lo que viene y las historias que siguen creciendo.</p></div>
         <div class="command-actions"><a class="pill-button" href="calendario.html" data-open-page="calendario-conectado">Abrir agenda</a><a class="pill-button" href="cronica.html" data-open-page="cronicas-del-rol">Nueva crónica</a></div>
       </div>
       <div class="command-grid">
         <article class="live-card next-event-card" id="nextEventCard"></article>
-        <article class="live-card"><h3>🗓️ Próximos 7 días</h3><div class="feed-list" id="upcomingFeed"></div></article>
-        <article class="live-card"><h3>⌛ Últimas crónicas</h3><div class="feed-list" id="chronicleFeed"></div></article>
-        <article class="live-card"><h3>💖 Últimos vínculos</h3><div class="feed-list" id="relationshipFeed"></div></article>
+        <article class="live-card"><h3><span data-hub-icon="calendar"></span>Próximos 7 días</h3><div class="feed-list" id="upcomingFeed"></div></article>
+        <article class="live-card"><h3><span data-hub-icon="book"></span>Últimas crónicas</h3><div class="feed-list" id="chronicleFeed"></div></article>
+        <article class="live-card"><h3><span data-hub-icon="heart"></span>Últimos vínculos</h3><div class="feed-list" id="relationshipFeed"></div></article>
       </div>
       <div class="draft-alert" id="draftAlert" hidden></div>
       <div class="server-overview" id="serverOverview"></div>
-    </section>
-
-    <section class="quick-panel">
-      <div class="quick-head">
-        <h2>📌 Accesos rápidos</h2>
-        <button class="pill-button" id="resetBgBtn">Restaurar fondo</button>
-      </div>
-      <div class="quick-grid" id="quickLinks"></div>
     </section>
 
     <section class="music-panel" id="musicPanel">
@@ -83,32 +89,19 @@
     </section>
 
     <section class="achievements-panel" id="achievementsPanel">
-      <h2>🏆 Logros</h2>
+      <h2><span data-hub-icon="trophy"></span>Logros</h2>
       <div class="achievements-grid" id="achievementsGrid"></div>
     </section>
 
-    <section class="category-launcher" aria-labelledby="categoryTitle">
-      <div class="category-head">
-        <div><span>MAPA DEL HUB</span><h2 id="categoryTitle">Explora por universo</h2></div>
-        <p>Entra directamente en una sección y conserva debajo tus favoritos y páginas recientes.</p>
-      </div>
-      <div class="category-grid" id="categoryGrid"></div>
-    </section>
-
     <section class="control-panel" id="pageCatalog">
-      <label class="search">
-        <span>🔎</span>
-        <input id="searchInput" type="search" placeholder="Buscar páginas, fechas, crónicas, personajes o relaciones..." autocomplete="off" />
-      </label>
+      <h2>Tu archivo</h2>
       <div class="tabs" id="tabs"></div>
     </section>
-
-    <section class="global-results" id="globalResults" hidden></section>
 
     <section class="dashboard" id="dashboard"></section>
     <section id="content"></section>
 
-    <footer>RP HUB 2026 — Hecho para crecer sin que la página parezca el inventario de un JRPG.</footer>
+    <footer><span>RP HUB</span>Un lugar para todas tus historias.</footer>
     <img src="logo.png" class="watermark" alt="" />
   </main>
 
@@ -117,6 +110,7 @@
   <script src="cronica-datos.js"></script>
   <script src="relaciones-datos.js"></script>
   <script src="calendario-datos.js"></script>
-  <script src="assets/js/hub.js?v=20261030-hermes"></script>
+  <script src="assets/js/hub-icons.js?v=20261107-final"></script>
+  <script src="assets/js/hub.js?v=20261107-final"></script>
 </body>
 </html>

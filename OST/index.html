@@ -54,40 +54,16 @@
     </section>
   </main>
 
-  <aside class="queue-drawer" id="queueDrawer" aria-label="Cola de reproducción" aria-hidden="true">
-    <div class="drawer-heading"><div><p class="eyebrow">A continuación</p><h2>Cola</h2></div><button class="icon-button" id="closeQueue" aria-label="Cerrar cola" data-icon="close"></button></div>
-    <div id="queueList"></div>
-  </aside>
-
   <div class="modal" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
     <article class="modal-card" id="modalContent"></article>
   </div>
-
-  <footer class="player" id="player" aria-label="Reproductor" hidden>
-    <div class="player-track">
-      <button class="player-cover-button" id="playerCoverButton" aria-label="Ver portada en grande"><img id="playerCover" alt=""><span aria-hidden="true" data-icon="expand"></span></button>
-      <div><strong id="playerTitle"></strong><span id="playerArtist"></span></div>
-      <button class="small-favorite" id="playerFavorite" aria-label="Añadir a favoritos" data-icon="heart"></button>
-    </div>
-    <div class="player-center">
-      <div class="player-controls">
-        <button class="control shuffle-control" id="shuffleButton" aria-label="Reproducción aleatoria" aria-pressed="false" title="Reproducción aleatoria" data-icon="shuffle"></button>
-        <button class="control" id="previousButton" aria-label="Anterior" title="Anterior" data-icon="previous"></button>
-        <button class="play-control" id="playButton" aria-label="Reproducir" data-icon="play"></button>
-        <button class="control" id="nextButton" aria-label="Siguiente" title="Siguiente" data-icon="next"></button>
-        <button class="control repeat-control" id="repeatButton" aria-label="Activar bucle de canción" aria-pressed="false" title="Repetir canción" data-icon="repeat"></button>
-        <button class="control" id="queueButton" aria-label="Abrir cola" title="Cola de reproducción" data-icon="queue"></button>
-      </div>
-      <div class="timeline"><span id="currentTime">0:00</span><input id="progressInput" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posición de reproducción"><span id="duration">0:00</span></div>
-    </div>
-    <div class="volume"><button class="volume-symbol" id="muteButton" aria-label="Silenciar" title="Silenciar" data-icon="volume"></button><input id="volumeInput" type="range" min="0" max="1" value="0.85" step="0.01" aria-label="Volumen"></div>
-  </footer>
 
   <script src="data.js?v=20260804-lyrics"></script>
   <script src="../assets/js/resonance-icons.js?v=20261106"></script>
   <script src="../assets/js/shuffle-cycle.js?v=20261106-preview"></script>
   <script src="../assets/js/track-navigation.js?v=20261106-carousel"></script>
   <script src="../assets/js/resonance-sharing.js?v=20261021"></script>
-  <script src="app.js?v=20261106-carousel"></script>
+  <script src="../assets/js/resonance-bridge.js?v=20261107-file-bridge"></script>
+  <script src="app.js?v=20261107-file-bridge"></script>
 </body>
 </html>

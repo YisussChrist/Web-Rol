@@ -23,19 +23,19 @@ context.setRepeat(false);
 assert.equal(context.audio.loop,false);
 assert.equal(storage.get('resonanceRepeat'),'false');
 assert.equal(renders,2); assert.equal(notifications,2);
-for (const shared of [false,true]) {
+{
   let sharedRepeat = null;
   const library = vm.createContext({state:{repeat:false},audio:{loop:false},
-    sharedShell:shared?{setRepeat:value=>{sharedRepeat=value;context.setRepeat(value);}}:null,
+    sharedShell:{setRepeat:value=>{sharedRepeat=value;context.setRepeat(value);}},
     localStorage:{setItem:(k,v)=>storage.set(k,v)},renderPlayer:()=>{}});
   vm.runInContext(functionSource(app,'toggleRepeat'),library);
   library.toggleRepeat();
   assert.equal(library.state.repeat,true);
-  assert.equal(shared?sharedRepeat:library.audio.loop,true);
+  assert.equal(sharedRepeat,true);
   library.toggleRepeat();
-  assert.equal(shared?context.audio.loop:library.audio.loop,false);
+  assert.equal(context.audio.loop,false);
 }
 assert(shell.includes('repeat: state.repeat'));
 assert(app.includes('state.repeat = sharedState.repeat;'));
 assert(shell.includes('audio.loop = state.repeat;'));
-console.log('Repeat: native audio loop, persistence, notifications and shared/standalone toggles passed.');
+console.log('Repeat: native audio loop, persistence, notifications and library controls passed.');

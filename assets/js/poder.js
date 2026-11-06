@@ -92,7 +92,11 @@ function setTheme(mode){
   body.classList.remove("light-mode","dark-mode");
   body.classList.add(mode);
   themeBtn.setAttribute("aria-pressed", mode==="dark-mode" ? "true":"false");
-  themeBtn.textContent = mode==="dark-mode" ? "☀️" : "🌙";
+  const themePath = mode === 'dark-mode'
+    ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>'
+    : '<path d="M20.8 13A9 9 0 0 1 11 3.2 9 9 0 1 0 20.8 13Z"/>';
+  themeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${themePath}</svg>`;
+  themeBtn.setAttribute('aria-label', mode === 'dark-mode' ? 'Activar tema claro' : 'Activar tema oscuro');
   try { localStorage.setItem(THEME_KEY, mode); } catch(e){}
 }
 function toggleTheme(){
@@ -212,11 +216,11 @@ function updateStats(){
   const avgPower = avg(FILTERED.map(c=>c.strength));
 
   statsBar.innerHTML = `
-    <div class="stat">Personajes: <strong>${total}</strong></div>
-    <div class="stat">En escala: <strong>${visibleTopScale}</strong></div>
-    <div class="stat">Fuerza media: <strong>${formatNumber(avgPower)}</strong></div>
+    <div class="stat"><span>Combatientes visibles</span><strong>${total}</strong></div>
+    <div class="stat"><span>Lecturas en escala</span><strong>${visibleTopScale}</strong></div>
+    <div class="stat"><span>Poder medio</span><strong>${formatNumber(avgPower)}</strong></div>
     <div class="badges">
-      <span class="badge ok">SCOUTER OK</span>
+      <span class="badge ok">SCOUTER</span>
       <span class="badge warn">${(activeRanges.size || hideUnknownPowerEnabled || $("#change-filter").value) ? "FILTRO ACTIVO" : "SIN FILTRO"}</span>
       <span class="badge err">??? ${FILTERED.filter(c=>c.strength==="???").length}</span>
     </div>
@@ -251,7 +255,12 @@ function renderTopThreats(){
 
     const power = document.createElement("div");
     power.className = "threat-power";
-    power.textContent = `${formatNumber(c.strength)} · ${tier.label}`;
+    const reading = document.createElement('strong');
+    reading.textContent = formatNumber(c.strength);
+    reading.title = c.strength.toLocaleString('es-ES');
+    const classification = document.createElement('span');
+    classification.textContent = tier.label;
+    power.append(reading, classification);
 
     const evolution = document.createElement("div"); evolution.innerHTML = changeBadge(c.change);
     card.append(rank, img, name, power, evolution);
@@ -278,7 +287,7 @@ function renderList(){
     meta.className = "meta";
     meta.innerHTML = `
       <div class="name">${character.name}</div>
-      <div class="power">Lectura: ${character.strength==="???" ? "???" : formatNumber(character.strength)}</div>
+      <div class="power"><span>Poder base</span><strong title="${character.strength === '???' ? 'Sin lectura' : character.strength.toLocaleString('es-ES')}">${character.strength==="???" ? "???" : formatNumber(character.strength)}</strong></div>
       <div class="tier-badge" style="--tier-color:${tier.color}">${tier.label}</div>
       ${changeBadge(character.change)}
     `;
@@ -289,7 +298,7 @@ function renderList(){
     // Transformations
     if (Array.isArray(character.transformations) && character.transformations.length) {
       const toggle = document.createElement("button");
-      toggle.textContent = "Desbloquear formas";
+      toggle.textContent = `Ver formas (${character.transformations.length})`;
       toggle.className = "toggle-button";
       toggle.setAttribute("aria-expanded", "false");
 
@@ -343,7 +352,7 @@ tMeta.innerHTML = `
       toggle.onclick = () => {
         tContainer.classList.toggle("hidden");
         toggle.setAttribute("aria-expanded", String(!tContainer.classList.contains("hidden")));
-        toggle.textContent = tContainer.classList.contains("hidden") ? "Desbloquear formas" : "Bloquear formas";
+        toggle.textContent = tContainer.classList.contains("hidden") ? `Ver formas (${character.transformations.length})` : "Cerrar formas";
       };
 
       actions.appendChild(toggle);
@@ -413,7 +422,7 @@ renderComparison();
 // Collapse-all transformations
 collapseAllBtn?.addEventListener("click", ()=>{
   $$(".transformation").forEach(t => t.classList.add("hidden"));
-  $$(".toggle-button").forEach(btn => { btn.textContent = "Desbloquear formas"; btn.setAttribute("aria-expanded", "false"); });
+  $$(".toggle-button").forEach(btn => { btn.textContent = "Ver formas"; btn.setAttribute("aria-expanded", "false"); });
 });
 
 // Scroll-to-top

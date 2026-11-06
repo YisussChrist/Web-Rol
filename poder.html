@@ -6,16 +6,33 @@
   <meta name="description" content="Escala de fuerza de Dragon Ball con niveles de poder, transformaciones y comparación de personajes.">
   <link rel="icon" type="image/png" href="assets/img/poder/scouter-transparent.png?v=1">
   <link rel="apple-touch-icon" href="assets/img/poder/scouter-transparent.png?v=1">
-  <title>Escala de Fuerza — Vista Moderna</title>
-<link rel="stylesheet" href="assets/css/poder.css?v=20261105-3">
+  <title>Scouter — Escala de fuerza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/poder.css?v=20261105-3">
+  <link rel="stylesheet" href="assets/css/poder-scouter.css?v=20261106-scouter-final">
 </head>
 <body class="dark-mode">
   <header class="appbar" role="banner">
-    <div class="brand"><img class="brand-icon" src="assets/img/poder/scouter-transparent.png" width="48" height="48" alt="">Scouter de Fuerza</div>
+    <a class="brand" href="#top"><img class="brand-icon" src="assets/img/poder/scouter-transparent.png" width="48" height="48" alt=""><span>Scouter<small>ARCHIVO DE FUERZA</small></span></a>
+    <nav class="scouter-nav" aria-label="Secciones"><a href="#characters-list">Combatientes</a><a href="#compare-panel">Comparador</a><a href="#changes-panel">Evolución</a></nav>
+    <button id="theme-toggle" class="icon-btn" aria-pressed="false" aria-label="Cambiar tema" title="Cambiar tema"></button>
+  </header>
+
+  <main class="container" id="top">
+    <section class="scouter-intro" aria-labelledby="page-title">
+      <div class="intro-copy"><p class="scouter-kicker"><span></span> DRAGON BALL · REGISTRO DE COMBATE</p><h1 id="page-title">Escala de <em>fuerza.</em></h1><p class="intro-description">Cada lectura cuenta una historia. Explora el poder de tus personajes, sus transformaciones y su evolución.</p><a class="intro-link" href="#characters-list">Explorar combatientes <span aria-hidden="true">↗</span></a></div>
+      <div class="scanner-art" aria-hidden="true"><div class="scanner-orbit"></div><span class="scanner-label">POWER LEVEL / SCOUTER</span><img src="assets/img/poder/scouter-transparent.png" alt=""><span class="scanner-caption">DETECCIÓN · ANÁLISIS · COMPARACIÓN</span><i class="scanner-corner corner-tl"></i><i class="scanner-corner corner-br"></i></div>
+      <section id="stats-bar" aria-label="Resumen de lecturas" aria-live="polite"></section>
+    </section>
+
+    <section class="scan-toolbar" aria-label="Buscar y filtrar lecturas">
     <div class="appbar-main">
       <div class="search-wrap">
-        <input id="global-search" type="search" placeholder="Buscar personajes o transformaciones… (pulsa /)" aria-label="Buscar">
-        <button id="clear-search" class="ghost" aria-label="Limpiar">✕</button>
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+        <input id="global-search" type="search" placeholder="Buscar personaje o transformación…" aria-label="Buscar">
+        <button id="clear-search" class="ghost" aria-label="Limpiar búsqueda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button>
       </div>
       <div class="controls">
         <div class="chip-group" id="range-chips" role="group" aria-label="Filtrar por rango de fuerza">
@@ -36,22 +53,19 @@
             <option value="az">Nombre A→Z</option>
           </select>
         </label>
-        <button id="theme-toggle" class="icon-btn" aria-pressed="false" title="Alternar tema">🌙</button>
       </div>
     </div>
-  </header>
+    </section>
 
-  <section id="stats-bar" aria-live="polite"></section>
-
-  <main class="container">
-    <section class="changes-overview" aria-labelledby="changes-title"><div><p class="changes-kicker">ACTUALIZACIÓN DE PODERES</p><h2 id="changes-title">Así han cambiado las lecturas</h2><p>Comparación con la última versión de poderes guardada en el repositorio (10 de agosto de 2026). Las flechas indican cambios de poder, no de posición.</p></div><div id="change-summary" class="change-summary"></div></section>
     <section class="threat-board" aria-labelledby="top-threat-title">
-      <h2 id="top-threat-title">Top 5 amenazas detectadas</h2>
+      <div class="panel-heading"><div><p class="section-kicker">01 / DETECCIÓN</p><h2 id="top-threat-title">Amenazas destacadas</h2></div><span class="panel-note">Las 5 mayores lecturas base</span></div>
       <div id="top-threats" class="threat-grid"></div>
     </section>
 
-    <section class="compare-card" aria-labelledby="compare-title">
-<h2 id="compare-title">Comparar lecturas</h2><p>Elige dos combatientes o transformaciones de toda la base de datos.</p>
+    <section id="changes-panel" class="changes-overview" aria-labelledby="changes-title"><div><p class="changes-kicker">ACTUALIZACIÓN DE PODERES</p><h2 id="changes-title">Así han cambiado las lecturas</h2><p>Comparación con la última versión de poderes guardada en el repositorio (10 de agosto de 2026). Las flechas indican cambios de poder, no de posición.</p></div><div id="change-summary" class="change-summary"></div></section>
+
+    <section id="compare-panel" class="compare-card" aria-labelledby="compare-title">
+<p class="section-kicker">02 / ANÁLISIS</p><h2 id="compare-title">Frente a frente</h2><p>Elige dos combatientes o transformaciones de toda la base de datos.</p>
 <div class="compare-selects"><label>Primera lectura<select id="compare-a"></select></label><span aria-hidden="true">VS</span><label>Segunda lectura<select id="compare-b"></select></label></div>
 <div id="compare-result" aria-live="polite"></div></section>
 <details class="scale-card"><summary>Escala de poder · 20 mayores lecturas</summary>
@@ -62,18 +76,18 @@
 
     <section id="characters-list">
       <div class="list-header">
-        <h2>Base de datos de combatientes</h2>
-        <label class="change-filter-label">Evolución<select id="change-filter"><option value="">Todos los cambios</option><option value="up">↑ Han subido</option><option value="down">↓ Han bajado</option><option value="new">✦ Nuevos</option><option value="known">Primera lectura</option><option value="same">Sin cambios</option><option value="unknown">Ahora sin lectura</option></select></label><button id="collapse-all" class="ghost small">Bloquear transformaciones</button>
+        <div><p class="section-kicker">03 / ARCHIVO</p><h2>Combatientes</h2></div>
+        <label class="change-filter-label">Evolución<select id="change-filter"><option value="">Todos los cambios</option><option value="up">↑ Han subido</option><option value="down">↓ Han bajado</option><option value="new">✦ Nuevos</option><option value="known">Primera lectura</option><option value="same">Sin cambios</option><option value="unknown">Ahora sin lectura</option></select></label><button id="collapse-all" class="ghost small">Cerrar transformaciones</button>
       </div>
       <ul id="character-list"></ul>
     </section>
   </main>
 
-  <button id="scroll-top" class="icon-fab" title="Subir">↑</button>
+  <button id="scroll-top" class="icon-fab" title="Subir" aria-label="Volver arriba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 20V4m-6 6 6-6 6 6"/></svg></button>
 
-  <script src="assets/js/poder-datos.js?v=20261105-1"></script>
+  <script src="assets/js/poder-datos.js?v=20261106-photo"></script>
   <script src="assets/js/poder-anterior.js?v=20261105-1"></script>
   <script src="assets/js/poder-cambios.js?v=20261105-1"></script>
-  <script src="assets/js/poder.js?v=20261105-1"></script>
+  <script src="assets/js/poder.js?v=20261106-scouter"></script>
 </body>
 </html>

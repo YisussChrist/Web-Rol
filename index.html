@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="resonance-shell.css?v=20261106-polish">
+  <link rel="stylesheet" href="resonance-shell.css?v=20261107-single-player">
 </head>
 <body>
   <main class="page-stage" id="pageStage">
@@ -31,14 +31,11 @@
     </div>
   </main>
 
-  <footer class="resonance-bar" id="resonanceBar" aria-label="Reproductor global del RP HUB">
+  <footer class="resonance-bar global-player" id="resonanceBar" aria-label="Reproductor global del RP HUB">
     <div class="shell-actions">
-      <button class="shell-button home-button" id="homeButton" type="button" aria-label="Volver al HUB" title="Volver al HUB">RP</button>
-      <button class="source-picker-button" id="sourcePickerButton" type="button" aria-label="Cambiar de radio" aria-expanded="false" aria-controls="sourcePicker" title="Cambiar de radio"><span class="source-picker-signal" data-icon="radio"></span><span>RADIOS</span><b data-icon="up"></b></button>
-      <button class="track-summary" id="openResonance" type="button" aria-label="Abrir Resonance">
-        <span class="cover"><img id="globalCover" src="OST/ResonanceLogo.png" alt=""><i id="playingPulse"></i></span>
-        <span class="track-copy"><small id="pageLabel">RESONANCE · REPRODUCTOR GLOBAL</small><strong id="globalTitle">Elige una canción</strong><span id="globalArtist">La música continuará al navegar</span></span>
-      </button>
+      <button class="global-artwork cover" id="globalArtwork" type="button" aria-label="Ver portada en grande"><img id="globalCover" src="OST/ResonanceLogo.png" alt=""><i id="playingPulse"></i><span data-icon="expand"></span></button>
+      <button class="track-summary" id="openResonance" type="button" aria-label="Abrir Resonance"><span class="track-copy"><small id="pageLabel">RESONANCE</small><strong id="globalTitle">Elige una canción</strong><span id="globalArtist">La música continuará al navegar</span></span></button>
+      <button class="control-button global-favorite" id="globalFavorite" type="button" aria-label="Añadir a favoritos" aria-pressed="false" data-icon="heart"></button>
     </div>
 
     <div class="player-main">
@@ -55,6 +52,9 @@
     </div>
 
     <div class="volume-controls">
+      <button class="shell-button home-button" id="homeButton" type="button" aria-label="Volver al HUB" title="Volver al HUB">RP</button>
+      <button class="source-picker-button" id="sourcePickerButton" type="button" aria-label="Cambiar de radio" aria-expanded="false" aria-controls="sourcePicker" title="Cambiar de radio"><span class="source-picker-signal" data-icon="radio"></span><span>RADIOS</span><b data-icon="up"></b></button>
+
       <button class="volume-button" id="globalMute" type="button" aria-label="Silenciar" data-icon="volume"></button>
       <input id="globalVolume" type="range" min="0" max="1" value="0.85" step="0.01" aria-label="Volumen">
       <button class="collapse-button" id="collapsePlayer" type="button" aria-label="Minimizar reproductor" title="Minimizar" data-icon="down"></button>
@@ -133,6 +133,7 @@
   <script src="assets/js/shuffle-cycle.js?v=20261106-preview"></script>
   <script src="assets/js/track-navigation.js?v=20261106-carousel"></script>
   <script src="assets/js/resonance-sharing.js?v=20261021"></script>
-  <script src="resonance-shell.js?v=20261106-carousel"></script>
+  <script src="assets/js/resonance-bridge.js?v=20261107-file-bridge"></script>
+  <script src="resonance-shell.js?v=20261107-file-bridge"></script>
 </body>
 </html>

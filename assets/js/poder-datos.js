@@ -1197,7 +1197,7 @@
       {
         name: "Zhuo Ya (Zoya)",
         strength: "450.000.000",
-        photo: "fotos-`poderes/Zoya.jpg"
+        photo: "fotos-poderes/Zoya.jpg"
       },
       {
         name: "Yelan",
