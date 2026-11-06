@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="resonance-shell.css?v=20261102">
+  <link rel="stylesheet" href="resonance-shell.css?v=20261106-polish">
 </head>
 <body>
   <main class="page-stage" id="pageStage">
@@ -34,7 +34,7 @@
   <footer class="resonance-bar" id="resonanceBar" aria-label="Reproductor global del RP HUB">
     <div class="shell-actions">
       <button class="shell-button home-button" id="homeButton" type="button" aria-label="Volver al HUB" title="Volver al HUB">RP</button>
-      <button class="source-picker-button" id="sourcePickerButton" type="button" aria-label="Cambiar de radio" aria-expanded="false" aria-controls="sourcePicker" title="Cambiar de radio"><span class="source-picker-signal">◉</span><span>RADIOS</span><b>⌃</b></button>
+      <button class="source-picker-button" id="sourcePickerButton" type="button" aria-label="Cambiar de radio" aria-expanded="false" aria-controls="sourcePicker" title="Cambiar de radio"><span class="source-picker-signal" data-icon="radio"></span><span>RADIOS</span><b data-icon="up"></b></button>
       <button class="track-summary" id="openResonance" type="button" aria-label="Abrir Resonance">
         <span class="cover"><img id="globalCover" src="OST/ResonanceLogo.png" alt=""><i id="playingPulse"></i></span>
         <span class="track-copy"><small id="pageLabel">RESONANCE · REPRODUCTOR GLOBAL</small><strong id="globalTitle">Elige una canción</strong><span id="globalArtist">La música continuará al navegar</span></span>
@@ -43,37 +43,37 @@
 
     <div class="player-main">
       <div class="player-controls">
-        <button class="control-button shuffle" id="globalShuffle" type="button" aria-label="Reproducción aleatoria" title="Aleatorio">⤨</button>
-        <button class="control-button" id="globalPrevious" type="button" aria-label="Canción anterior">‹</button>
-        <button class="play-button" id="globalPlay" type="button" aria-label="Reproducir">▶</button>
-        <button class="control-button" id="globalNext" type="button" aria-label="Canción siguiente">›</button>
-      <button class="control-button repeat-control" id="globalRepeat" type="button" aria-label="Activar bucle de canción" aria-pressed="false" title="Repetir canción"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4M4 11V9a2 2 0 0 1 2-2h14M8 21l-4-4 4-4m12 0v2a2 2 0 0 1-2 2H4"/><text x="12" y="14" text-anchor="middle" stroke="none" fill="currentColor" font-size="8">1</text></svg></button>
-        <button class="control-button" id="globalShare" type="button" aria-label="Portada grande y enlace de la canción" title="Portada y compartir">↗</button>
-        <button class="control-button" id="queueButton" type="button" aria-label="Abrir cola" title="Cola">≡</button>
+        <button class="control-button shuffle" id="globalShuffle" type="button" aria-label="Reproducción aleatoria" title="Aleatorio" data-icon="shuffle"></button>
+        <button class="control-button" id="globalPrevious" type="button" aria-label="Canción anterior" data-icon="previous"></button>
+        <button class="play-button" id="globalPlay" type="button" aria-label="Reproducir" data-icon="play"></button>
+        <button class="control-button" id="globalNext" type="button" aria-label="Canción siguiente" data-icon="next"></button>
+      <button class="control-button repeat-control" id="globalRepeat" type="button" aria-label="Activar bucle de canción" aria-pressed="false" title="Repetir canción" data-icon="repeat"></button>
+        <button class="control-button" id="globalShare" type="button" aria-label="Portada grande y enlace de la canción" title="Portada y compartir" data-icon="share"></button>
+        <button class="control-button" id="queueButton" type="button" aria-label="Abrir cola" title="Cola" data-icon="queue"></button>
       </div>
       <div class="timeline"><span id="globalCurrent">0:00</span><input id="globalProgress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posición de reproducción"><span id="globalDuration">0:00</span></div>
     </div>
 
     <div class="volume-controls">
-      <button class="volume-button" id="globalMute" type="button" aria-label="Silenciar">◖</button>
+      <button class="volume-button" id="globalMute" type="button" aria-label="Silenciar" data-icon="volume"></button>
       <input id="globalVolume" type="range" min="0" max="1" value="0.85" step="0.01" aria-label="Volumen">
-      <button class="collapse-button" id="collapsePlayer" type="button" aria-label="Minimizar reproductor" title="Minimizar">⌄</button>
+      <button class="collapse-button" id="collapsePlayer" type="button" aria-label="Minimizar reproductor" title="Minimizar" data-icon="down"></button>
     </div>
   </footer>
 
-  <button class="mini-player" id="miniPlayer" type="button" hidden><span id="miniIcon">▶</span><strong id="miniTitle">Resonance</strong><span>⌃</span></button>
+  <button class="mini-player" id="miniPlayer" type="button" hidden><span id="miniIcon" data-icon="play"></span><strong id="miniTitle">Resonance</strong><span data-icon="up"></span></button>
 
   <aside class="source-picker" id="sourcePicker" aria-hidden="true" aria-labelledby="sourcePickerTitle">
     <header>
       <div><small>EMISORA DEL REPRODUCTOR</small><h2 id="sourcePickerTitle">Cambiar de radio</h2></div>
-      <button id="closeSourcePicker" type="button" aria-label="Cerrar selector de radios">×</button>
+      <button id="closeSourcePicker" type="button" aria-label="Cerrar selector de radios" data-icon="close"></button>
     </header>
     <p class="source-picker-current" id="sourcePickerCurrent">Resonance está seleccionada</p>
     <div class="source-picker-list" id="sourcePickerList"></div>
   </aside>
 
   <aside class="queue-panel" id="globalQueue" aria-hidden="true">
-    <header><div><small>A CONTINUACIÓN</small><h2 id="globalQueueTitle">Cola de Resonance</h2></div><button id="closeQueue" type="button" aria-label="Cerrar">×</button></header>
+    <header><div><small>A CONTINUACIÓN</small><h2 id="globalQueueTitle">Cola de Resonance</h2></div><button id="closeQueue" type="button" aria-label="Cerrar" data-icon="close"></button></header>
     <div id="globalQueueList" class="queue-list"></div>
   </aside>
 
@@ -129,8 +129,10 @@
   <audio id="globalAudio" preload="metadata"></audio>
   <script src="OST/data.js?v=20260804-lyrics"></script>
   <script src="Pokemon/EtruriaRadio/data.js?v=3"></script>
-  <script src="assets/js/shuffle-cycle.js?v=20260917"></script>
+  <script src="assets/js/resonance-icons.js?v=20261106"></script>
+  <script src="assets/js/shuffle-cycle.js?v=20261106-preview"></script>
+  <script src="assets/js/track-navigation.js?v=20261106-carousel"></script>
   <script src="assets/js/resonance-sharing.js?v=20261021"></script>
-  <script src="resonance-shell.js?v=20261102-identity"></script>
+  <script src="resonance-shell.js?v=20261106-carousel"></script>
 </body>
 </html>

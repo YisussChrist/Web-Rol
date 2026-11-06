@@ -39,12 +39,12 @@ function strongestKnown(list, limit=5) {
 function normalizeData(list) {
   return list.map(c => {
     const cc = { ...c };
-    const parsed = parseInt(String(cc.strength).replace(/\./g, ""));
+    const parsed = parseInt(String(cc.strength ?? cc.strenght).replace(/\./g, ""));
     cc.strength = isNaN(parsed) ? "???" : parsed;
     if (Array.isArray(cc.transformations)) {
       cc.transformations = cc.transformations.map(t => {
         const tt = { ...t };
-        const pt = parseInt(String(tt.strength).replace(/\./g, ""));
+        const pt = parseInt(String(tt.strength ?? tt.strenght).replace(/\./g, ""));
         tt.strength = isNaN(pt) ? "???" : pt;
         return tt;
       });
@@ -53,9 +53,26 @@ function normalizeData(list) {
   });
 }
 
-let DATA = normalizeData(characters);
+let DATA = normalizeData(window.PowerChanges.annotate(characters, window.PODER_ANTERIOR?.characters));
 let FILTERED = [...DATA];
 let shownCount = 20;
+
+// Indicadores respecto a la referencia guardada en el repositorio.
+function changeBadge(change) {
+  if (!change || ['same', 'unavailable'].includes(change.kind)) return '';
+  const exact = n => n.toLocaleString('es-ES');
+  if (change.kind === 'new') return '<span class="power-change change-new"><span class="new-spark" aria-hidden="true">✦</span> Nuevo</span>';
+  if (change.kind === 'known') return '<span class="power-change change-known">Primera lectura · Antes: sin asignar</span>';
+  if (change.kind === 'unknown') return `<span class="power-change change-unknown">Sin lectura · Antes: ${exact(change.previous)}</span>`;
+  const up = change.kind === 'up';
+  const percent = change.previous > 0 ? ` (${up ? '+' : '−'}${(Math.abs(change.delta) / change.previous * 100).toLocaleString('es-ES', { maximumFractionDigits: 1 })} %)` : '';
+  return `<span class="power-change change-${change.kind}">${up ? '↑ Subió' : '↓ Bajó'} · ${up ? '+' : '−'}${exact(Math.abs(change.delta))}${percent}<small>Antes: ${exact(change.previous)}</small></span>`;
+}
+function renderChangeSummary() {
+  const counts = { up: 0, down: 0, new: 0, known: 0 };
+  DATA.forEach(c => { if (c.change.kind in counts) counts[c.change.kind]++; });
+  $('#change-summary').innerHTML = `<span class="change-up">↑ ${counts.up} subieron</span><span class="change-down">↓ ${counts.down} bajaron</span><span class="change-new">✦ ${counts.new} nuevos</span><span class="change-known">${counts.known} primeras lecturas</span>`;
+}
 
 // === UI wiring ===
 const searchInput = $("#global-search");
@@ -128,7 +145,8 @@ function runSearchAndFilter(){
       }
       rangeOk = ok;
     }
-    return hit && knownPowerOk && rangeOk;
+    const changeFilter = $('#change-filter').value;
+    return hit && knownPowerOk && rangeOk && (!changeFilter || c.change.kind === changeFilter);
   });
 
   // sort
@@ -174,6 +192,7 @@ chipsWrap?.addEventListener("click", (e)=>{
 });
 
 sortSelect?.addEventListener("change", runSearchAndFilter);
+$("#change-filter").addEventListener("change", runSearchAndFilter);
 
 hideUnknownPower?.addEventListener("change", () => {
   hideUnknownPowerEnabled = hideUnknownPower.checked;
@@ -198,7 +217,7 @@ function updateStats(){
     <div class="stat">Fuerza media: <strong>${formatNumber(avgPower)}</strong></div>
     <div class="badges">
       <span class="badge ok">SCOUTER OK</span>
-      <span class="badge warn">${(activeRanges.size || hideUnknownPowerEnabled) ? "FILTRO ACTIVO" : "SIN FILTRO"}</span>
+      <span class="badge warn">${(activeRanges.size || hideUnknownPowerEnabled || $("#change-filter").value) ? "FILTRO ACTIVO" : "SIN FILTRO"}</span>
       <span class="badge err">??? ${FILTERED.filter(c=>c.strength==="???").length}</span>
     </div>
   `;
@@ -218,7 +237,7 @@ function renderTopThreats(){
   top.forEach((c, idx) => {
     const tier = getTier(c.strength);
     const card = document.createElement("article");
-    card.className = `threat-card rank-${idx + 1}`;
+    card.className = `threat-card rank-${idx + 1} ${c.change.kind === "new" ? "new-reading" : ""}`;
     card.style.setProperty("--tier-color", tier.color);
 
     const rank = document.createElement("div");
@@ -234,7 +253,8 @@ function renderTopThreats(){
     power.className = "threat-power";
     power.textContent = `${formatNumber(c.strength)} · ${tier.label}`;
 
-    card.append(rank, img, name, power);
+    const evolution = document.createElement("div"); evolution.innerHTML = changeBadge(c.change);
+    card.append(rank, img, name, power, evolution);
     topThreats.appendChild(card);
   });
 }
@@ -249,6 +269,7 @@ function renderList(){
     const li = document.createElement("li");
     const tier = getTier(character.strength);
     li.className = `character-item ${character.strength === "???" ? "unknown-card" : ""}`;
+    if (character.change.kind === "new") li.classList.add("new-reading");
     li.style.setProperty("--tier-color", tier.color);
 
     const img = makeImageOrAvatar(character.photo, character.name, "avatar");
@@ -259,6 +280,7 @@ function renderList(){
       <div class="name">${character.name}</div>
       <div class="power">Lectura: ${character.strength==="???" ? "???" : formatNumber(character.strength)}</div>
       <div class="tier-badge" style="--tier-color:${tier.color}">${tier.label}</div>
+      ${changeBadge(character.change)}
     `;
 
     const actions = document.createElement("div");
@@ -277,6 +299,11 @@ function renderList(){
       character.transformations.forEach(t => {
         const tDiv = document.createElement("div");
         tDiv.className = "transformation-item";
+        if (t.change.kind === "new") tDiv.classList.add("new-reading");
+        if (t.disabled) {
+          tDiv.classList.add("is-disabled");
+          tDiv.setAttribute("aria-disabled", "true");
+        }
         const tImg = makeImageOrAvatar(t.photo, t.name, "avatar");
         const tMeta = document.createElement("div");
 
@@ -303,8 +330,10 @@ if (character.strength !== "???" && t.strength !== "???") {
 
 tMeta.innerHTML = `
   <strong>${t.name}</strong> —
+  ${t.disabled ? '<span class="transformation-status">Deshabilitada</span> —' : ''}
   ${t.strength==="???" ? "Fuerza: ???" : "Fuerza: " + formatNumber(t.strength)}
   ${multiplierText}
+  ${changeBadge(t.change)}
 `;
 
         tDiv.appendChild(tImg); tDiv.appendChild(tMeta);
@@ -384,7 +413,7 @@ renderComparison();
 // Collapse-all transformations
 collapseAllBtn?.addEventListener("click", ()=>{
   $$(".transformation").forEach(t => t.classList.add("hidden"));
-  $(".toggle-button").forEach(btn => { btn.textContent = "Desbloquear formas"; btn.setAttribute("aria-expanded", "false"); });
+  $$(".toggle-button").forEach(btn => { btn.textContent = "Desbloquear formas"; btn.setAttribute("aria-expanded", "false"); });
 });
 
 // Scroll-to-top
@@ -394,4 +423,5 @@ window.addEventListener("scroll", ()=>{
 toTop?.addEventListener("click", ()=> window.scrollTo({top:0, behavior:"smooth"}));
 
 // Init
+renderChangeSummary();
 runSearchAndFilter();

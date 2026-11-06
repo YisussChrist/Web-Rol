@@ -2,8 +2,7 @@
 (() => {
   function createShuffleCycle(random = Math.random) {
     let signature = '', remaining = [];
-    return {
-      next(pool, current) {
+    function prepare(pool, current) {
         const unique = [...new Set(pool)];
         if (!unique.length) return null;
         const key = JSON.stringify(unique);
@@ -16,7 +15,14 @@
             [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
           }
         }
-        return remaining.length ? remaining.pop() : unique[0];
+        return remaining.length ? remaining[remaining.length - 1] : unique[0];
+    }
+    return {
+      peek: prepare,
+      next(pool, current) {
+        const next = prepare(pool, current);
+        if (remaining.length) remaining.pop();
+        return next;
       }
     };
   }

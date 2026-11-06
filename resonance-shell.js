@@ -2,6 +2,7 @@
   'use strict';
   if (window.__RP_SHELL_NESTED__) return;
 
+  const icon = window.resonanceIcon;
   const resonance = window.RESONANCE_DATA || { soundtracks: [] };
   const etruriaRadio = window.ETRURIA_RADIO_DATA || { stations: [], soundtracks: [] };
   const tracks = resonance.soundtracks || [];
@@ -38,7 +39,7 @@
   };
   audio.loop = state.repeat;
   const sources = new Map();
-  const shuffleCycles = new Map();
+  const trackNavigators = new Map();
   let activeSource = createSource({
     id: 'resonance', label: 'RESONANCE · REPRODUCTOR GLOBAL', queueLabel: 'Cola de Resonance',
     route: 'OST/index.html', album: 'Resonance', basePath: 'OST/', tracks
@@ -298,6 +299,7 @@
     index = Math.max(0, Math.min(sourceTracks.length - 1, Number(index)));
     const track = sourceTracks[index];
     if (!track) return;
+    navigatorFor(activeSource.id).select(index);
     const nextSource = audioURL(index);
     const changed = state.current !== index || !sameURL(audio.src, nextSource);
     state.current = index;
@@ -356,14 +358,21 @@
     audio.paused ? play() : pause();
   }
 
+  function navigatorFor(sourceId) {
+    if (!trackNavigators.has(sourceId)) trackNavigators.set(sourceId, window.createTrackNavigation());
+    return trackNavigators.get(sourceId);
+  }
+
+  function getNavigation(sourceId = activeSource.id, current = state.current) {
+    const source = sources.get(sourceId);
+    const pool = (source?.tracks || []).map((_, index) => index);
+    return navigatorFor(sourceId).preview(pool, sourceId === activeSource.id ? state.current : current, state.shuffle);
+  }
+
   function next(direction = 1) {
     const sourceTracks = currentTracks();
     if (!sourceTracks.length) return;
-    let index;
-    if (state.shuffle && sourceTracks.length > 1) {
-      if (!shuffleCycles.has(activeSource.id)) shuffleCycles.set(activeSource.id, window.createShuffleCycle());
-      index = shuffleCycles.get(activeSource.id).next(sourceTracks.map((_, i) => i), state.current);
-    } else index = (state.current + direction + sourceTracks.length) % sourceTracks.length;
+    const index = navigatorFor(activeSource.id).step(direction, sourceTracks.map((_, i) => i), state.current, state.shuffle);
     selectActiveTrack(index, true);
   }
 
@@ -392,7 +401,7 @@
       state.previousVolume = audio.volume;
       localStorage.setItem('resonancePreviousVolume', String(audio.volume));
     }
-    nodes.mute.textContent = audio.volume === 0 ? '×' : audio.volume < .45 ? '◔' : '◖';
+    nodes.mute.innerHTML = icon(audio.volume === 0 ? 'muted' : audio.volume < .45 ? 'quiet' : 'volume');
     nodes.mute.setAttribute('aria-label', audio.volume === 0 ? 'Restaurar volumen' : 'Silenciar');
   }
 
@@ -407,7 +416,7 @@
     nodes.pageLabel.textContent = activeSource.label;
     nodes.openResonance.setAttribute('aria-label', `Abrir ${activeSource.label.toLowerCase()}`);
     nodes.sourcePickerButton.setAttribute('title', `Cambiar de radio · Ahora: ${sourceDisplayName(activeSource)}`);
-    nodes.play.textContent = playing ? '❚❚' : '▶';
+    nodes.play.innerHTML = icon(playing ? 'pause' : 'play');
     nodes.play.setAttribute('aria-label', playing ? 'Pausar' : 'Reproducir');
     nodes.bar.classList.toggle('playing', playing);
     $('globalShare').hidden = activeSource.id !== 'resonance';
@@ -417,7 +426,7 @@
     nodes.repeat.setAttribute('aria-label', nodes.repeat.title);
     nodes.shuffle.classList.toggle('active', state.shuffle);
     nodes.shuffle.setAttribute('aria-pressed', String(state.shuffle));
-    nodes.miniIcon.textContent = playing ? '❚❚' : '▶';
+    nodes.miniIcon.innerHTML = icon(playing ? 'pause' : 'play');
     nodes.miniTitle.textContent = `${track.songTitle} · ${track.character}`;
   }
 
@@ -436,7 +445,7 @@
     if (nodes.queueTitle) nodes.queueTitle.textContent = activeSource.queueLabel;
     nodes.queueList.innerHTML = ordered.map(index => {
       const track = sourceTracks[index];
-      return `<button class="queue-item ${index === state.current ? 'active' : ''}" data-track="${index}" type="button"><img src="${escapeHTML(track.songCover || 'OST/ResonanceLogo.png')}" alt=""><span><strong>${escapeHTML(track.songTitle)}</strong><span>${escapeHTML(track.character)}</span></span>${index === state.current ? '<b>SONANDO</b>' : '<b>▶</b>'}</button>`;
+      return `<button class="queue-item ${index === state.current ? 'active' : ''}" data-track="${index}" type="button"><img src="${escapeHTML(track.songCover || 'OST/ResonanceLogo.png')}" alt=""><span><strong>${escapeHTML(track.songTitle)}</strong><span>${escapeHTML(track.character)}</span></span>${index === state.current ? '<b>SONANDO</b>' : `<b>${icon('play')}</b>`}</button>`;
     }).join('');
     nodes.queueList.querySelectorAll('[data-track]').forEach(button => button.addEventListener('click', () => { selectActiveTrack(Number(button.dataset.track), true); closeQueue(); }));
   }
@@ -452,7 +461,7 @@
     return () => subscribers.delete(callback);
   }
 
-  window.ResonanceShell = { showTrackShare, audio, tracks, setTrack, setSource, play, pause, toggle, setShuffle, setRepeat, setVolume, next: () => next(1), previous: () => next(-1), getState, subscribe, assetURL };
+  window.ResonanceShell = { showTrackShare, audio, tracks, setTrack, setSource, play, pause, toggle, setShuffle, setRepeat, setVolume, next: () => next(1), previous: () => next(-1), getState, getNavigation, subscribe, assetURL };
   window.GlobalAudioShell = window.ResonanceShell;
 
   let sharedTrack = null;
@@ -497,10 +506,17 @@
   }
 
   function updateRouteIcon(route) {
-    const isResonance = route.split(/[?#]/)[0] === 'OST/index.html';
+    const page = route.split(/[?#]/)[0];
+    const isResonance = page === 'OST/index.html';
     const icon = $('siteFavicon');
     icon.type = isResonance ? 'image/svg+xml' : 'image/png';
-    icon.href = new URL(isResonance ? 'OST/favicon.svg' : 'logo.png', baseURL).href;
+    const sectionIcons = {
+      'poder.html': 'assets/img/poder/scouter-transparent.png?v=1',
+      'plantillas_inazuma/plantillas-inazuma.html': 'assets/img/icons/inazuma-team.png?v=1',
+      'Hijos Inazuma/index.html': 'assets/img/icons/family-tree.png?v=1',
+      'parejasdragonball.html': 'assets/img/icons/family-tree.png?v=1'
+    };
+    icon.href = new URL(isResonance ? 'OST/favicon.svg' : sectionIcons[page] || 'logo.png', baseURL).href;
   }
 
   function loadRoute(route, replace = false) {

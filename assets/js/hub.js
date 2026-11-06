@@ -12,7 +12,7 @@
       { title: "Héroes", category: "Dragon Ball", emoji: "🦸", url: "heroes.html", description: "Registro de héroes, personajes y fichas del servidor Dragon Ball.", status: "" },
       { title: "Dragon Dex", category: "Dragon Ball", emoji: "🐲", url: "dragon-dex.html", description: "Centro unificado de guerreros, poder, transformaciones, linajes y sellos.", status: "" },
       { title: "Libro de Hermes", category: "Dragon Ball", emoji: "📖", url: "libro-hermes.html", description: "Un libro de Thalia Kane: 150 frases sobre la vida, el amor y el valor de seguir adelante. Para Hermes, de su hermanita.", status: "Nuevo" },
-      { title: "Makai", category: "Dragon Ball", emoji: "☠️", url: "makai.html", description: "Ciudad de los villanos: expedientes, dones, estados y miembros de la Liga de Villanos.", status: "Nuevo" },
+      { title: "Liga de Villanos", category: "Dragon Ball", emoji: "☠️", url: "makai.html", description: "Expedientes de la Liga, dones, estadísticas y panel de combate. Sede: Makai.", status: "Nuevo" },
       { title: "Poder", category: "Dragon Ball", emoji: "⚡", url: "poder.html", description: "Escalas, niveles de poder y referencias de fuerza.", status: "" },
       { title: "Árbol Familiar DB", category: "Dragon Ball", emoji: "🌳", url: "parejasdragonball.html", description: "Familias, parejas y descendencia del universo Dragon Ball.", status: "" },
       { title: "Transformaciones", category: "Dragon Ball", emoji: "🔺", url: "transformacionesdragonball.html?v=2", description: "Archivo de formas, rutas evolutivas, multiplicadores, poder y condiciones.", status: "Renovado" },

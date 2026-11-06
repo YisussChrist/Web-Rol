@@ -4,12 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="Escala de fuerza de Dragon Ball con niveles de poder, transformaciones y comparación de personajes.">
+  <link rel="icon" type="image/png" href="assets/img/poder/scouter-transparent.png?v=1">
+  <link rel="apple-touch-icon" href="assets/img/poder/scouter-transparent.png?v=1">
   <title>Escala de Fuerza — Vista Moderna</title>
-<link rel="stylesheet" href="assets/css/poder.css">
+<link rel="stylesheet" href="assets/css/poder.css?v=20261105-3">
 </head>
 <body class="dark-mode">
   <header class="appbar" role="banner">
-    <div class="brand">Scouter de Fuerza</div>
+    <div class="brand"><img class="brand-icon" src="assets/img/poder/scouter-transparent.png" width="48" height="48" alt="">Scouter de Fuerza</div>
     <div class="appbar-main">
       <div class="search-wrap">
         <input id="global-search" type="search" placeholder="Buscar personajes o transformaciones… (pulsa /)" aria-label="Buscar">
@@ -42,6 +44,7 @@
   <section id="stats-bar" aria-live="polite"></section>
 
   <main class="container">
+    <section class="changes-overview" aria-labelledby="changes-title"><div><p class="changes-kicker">ACTUALIZACIÓN DE PODERES</p><h2 id="changes-title">Así han cambiado las lecturas</h2><p>Comparación con la última versión de poderes guardada en el repositorio (10 de agosto de 2026). Las flechas indican cambios de poder, no de posición.</p></div><div id="change-summary" class="change-summary"></div></section>
     <section class="threat-board" aria-labelledby="top-threat-title">
       <h2 id="top-threat-title">Top 5 amenazas detectadas</h2>
       <div id="top-threats" class="threat-grid"></div>
@@ -60,7 +63,7 @@
     <section id="characters-list">
       <div class="list-header">
         <h2>Base de datos de combatientes</h2>
-        <button id="collapse-all" class="ghost small">Bloquear transformaciones</button>
+        <label class="change-filter-label">Evolución<select id="change-filter"><option value="">Todos los cambios</option><option value="up">↑ Han subido</option><option value="down">↓ Han bajado</option><option value="new">✦ Nuevos</option><option value="known">Primera lectura</option><option value="same">Sin cambios</option><option value="unknown">Ahora sin lectura</option></select></label><button id="collapse-all" class="ghost small">Bloquear transformaciones</button>
       </div>
       <ul id="character-list"></ul>
     </section>
@@ -68,7 +71,9 @@
 
   <button id="scroll-top" class="icon-fab" title="Subir">↑</button>
 
-  <script src="assets/js/poder-datos.js"></script>
-  <script src="assets/js/poder.js"></script>
+  <script src="assets/js/poder-datos.js?v=20261105-1"></script>
+  <script src="assets/js/poder-anterior.js?v=20261105-1"></script>
+  <script src="assets/js/poder-cambios.js?v=20261105-1"></script>
+  <script src="assets/js/poder.js?v=20261105-1"></script>
 </body>
 </html>

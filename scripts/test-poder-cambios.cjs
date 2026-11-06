@@ -1,0 +1,38 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const root = path.resolve(__dirname, '..');
+const read = name => fs.readFileSync(path.join(root, 'assets/js', name + '.js'), 'utf8');
+const nodes = new Map();
+function element() {
+  return {value:'',children:[],listeners:{},style:{setProperty(){}},classList:{add(){},remove(){},contains(){return false;},toggle(){}},setAttribute(){},addEventListener(k,f){this.listeners[k]=f;},append(...items){this.children.push(...items);},appendChild(item){this.children.push(item);},replaceChildren(...items){this.children=items;},set innerHTML(value){this.html=value;this.children=[];},get innerHTML(){return this.html||'';}};
+}
+const get = selector => {if(!nodes.has(selector)) nodes.set(selector,element());return nodes.get(selector);};
+get('#sort-select').value='strength'; get('#compare-a').value='0';
+const ctx={window:{addEventListener(){}},document:{querySelector:get,querySelectorAll:()=>[],createElement:element,addEventListener(){},body:element()},localStorage:{getItem:()=>null,setItem(){}}};
+for(const name of ['poder-datos','poder-anterior','poder-cambios','poder']) vm.runInNewContext(read(name),ctx);
+const {compare,annotate}=ctx.window.PowerChanges;
+assert.equal(compare({strength:'100'},undefined).kind,'new');
+assert.equal(compare({strength:'100'},{strength:''}).kind,'known');
+assert.equal(compare({strength:'???'},{strength:'100'}).kind,'unknown');
+assert.equal(compare({strength:''},{strength:'???'}).kind,'same');
+assert.equal(compare({strength:'1'},{strength:'0'}).kind,'up');
+assert.equal(compare({strength:'2.000'},{strength:'3.000'}).delta,-1000);
+assert.equal(compare({strenght:'2.000'},{strenght:'1.000'}).kind,'up');
+assert.equal(annotate([{name:'Wolf Silverfang',strength:'2.000'}],[{name:'Wolf',strength:''}])[0].change.kind,'known');
+assert.equal(annotate([{name:'Alma'}],undefined)[0].change.kind,'unavailable');
+const forms=annotate([{name:'A',strength:'100',transformations:[{name:'Fórma',strength:'200'},{name:'Nueva',strength:'300'}]}],[{name:'A',strength:'100',transformations:[{name:'Forma',strength:'100'}]}])[0].transformations;
+assert.equal(forms[0].change.kind,'up');assert.equal(forms[1].change.kind,'new');
+assert.equal(get('#character-list').children.length,21);
+assert.match(get('#change-summary').innerHTML,/137 subieron/);
+get('#change-filter').value='down';get('#change-filter').listeners.change();
+assert.equal(get('#character-list').children.length,1);
+assert.match(get('#character-list').children[0].children[1].innerHTML,/David Martínez/);
+assert.match(get('#character-list').children[0].children[1].innerHTML,/45\.000\.000/);
+get('#change-filter').value='new';get('#change-filter').listeners.change();
+assert.match(get('#character-list').children[0].children[1].innerHTML,/new-spark/);
+get('#global-search').value='Yelan'; get('#global-search').listeners.input();
+assert.equal(get('#character-list').children.length,1);
+get('#collapse-all').listeners.click();
+console.log('OK: comparaciones, valores desconocidos, cero, alias, transformaciones, renderizado, filtros combinados y destello de nuevos.');

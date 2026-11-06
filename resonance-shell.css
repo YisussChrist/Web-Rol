@@ -51,4 +51,19 @@ html,body{font-family:"Plus Jakarta Sans","Segoe UI",sans-serif;-webkit-font-smo
 .timeline{grid-template-columns:36px minmax(0,1fr) 36px}.timeline input{min-width:0;width:100%}
 @media(max-width:1000px){:root{--shell-h:146px}.resonance-bar{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:10px 12px}.shell-actions{grid-column:1;grid-row:1}.volume-controls{grid-column:2;grid-row:1}.player-main{grid-column:1/-1;grid-row:2;display:grid;gap:5px}.player-controls{position:static;justify-content:center}.timeline{padding-right:0}.control-button{width:32px;height:32px}.play-button{width:38px;height:38px}.track-copy small{display:none}.cover{width:42px;height:42px}.track-summary{grid-template-columns:42px minmax(0,1fr)}}
 @media(max-width:540px){.player-controls .shuffle,.player-controls #queueButton{display:grid}.player-controls{gap:10px}.home-button{width:32px;height:36px}.shell-actions{gap:6px}.source-picker-button{width:32px}.track-copy strong{font-size:.76rem}.volume-controls{gap:4px}.timeline{padding-right:0}}
+/* Consistent SVG controls, with a clear hierarchy around playback. */
+.resonance-icon{display:block;width:20px;height:20px;flex-shrink:0;pointer-events:none}
+.control-button,.volume-button,.collapse-button,.play-button{padding:0}
+.control-button,.volume-button,.collapse-button{border-color:transparent;background:transparent;color:#c1b8d2}
+.control-button:hover,.volume-button:hover,.collapse-button:hover{color:#fff;background:#ffffff0d}
+.play-button{width:42px;height:42px;background:#e5d8ff;box-shadow:0 4px 18px #ad85ff25}
+.play-button .resonance-icon{width:23px;height:23px}
+.control-button.active{color:#e1bdff;border-color:#b394e54d;background:#ac88e51a}
+.source-picker-signal .resonance-icon{width:19px;height:19px}.source-picker-button b .resonance-icon{width:14px;height:14px}
+.mini-player .resonance-icon{width:16px;height:16px}
+.source-picker header button,.queue-panel header button{display:grid;place-items:center;padding:0}
+.resonance-bar{border-top-color:#cbb1f52b;background:linear-gradient(110deg,#14111f,#1b1529 55%,#12101c)}
+.resonance-bar::before{background:radial-gradient(ellipse at 50% 0,#ac80ef12,transparent 65%)}
+.track-copy strong{font-weight:700}.cover{border-radius:12px;box-shadow:0 3px 14px #0004}
+@media(max-width:1000px){.play-button{width:38px;height:38px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}

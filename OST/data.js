@@ -29,6 +29,14 @@ const characters = [
                 tags: ["emotional", "bossbattle", "supersaiyan", "finalphase"],
                 lore: "Cuando la falsa justicia y la sentencia corrupta amenazaron aquello que Freyja juró proteger, el martillo dejó de ser suficiente. El poder que despertó aquella noche no nació de la ira, sino de la convicción absoluta. 'This is your Judgement of Justice.'"
             },
+            {
+                songTitle: "Beyond Prophecy",
+                songDescription: "La canción de una guerrera que se niega a aceptar el destino de la profecía.",
+                songCover: "img/Freyja3Cover.png",
+                audio: "audio/Beyond Prophecy.mp3",
+                tags: ["emotional", "epicbattle", "rock"],
+                lore: "La imparable necesidad de oponerse al funesto destino que le esperaba, movida por el estilo de la Tortuga Justiciera."
+            }
         ]
     },
     {
@@ -987,6 +995,79 @@ Así que ella conserva las...
             audio: "audio/Crimson Beauty.mp3",
             tags: ["Battle", "Emotional"],
             lore: "El poder de la destrucción, heredado a lo largo de muchas generaciones Gremory, hasta llegar aquí, a la 'Princesa de la Ruina', con un poder que podría matar a cualquiera."
+        }
+    ]
+},{
+    character: "Bete Noire",
+    characterFace: "img/Betty.png",
+    lore: "Un ser creado a partir del odio del mundo, ocultándose en el cuerpo de una pequeña niña.",
+    tracks: [
+        {
+            songTitle: "Black Beast",
+            songDescription: "Cuando Betty entra en combate, una sensación de odio recorre los cuerpos de sus rivales, controlándolos a placer",
+            songCover: "img/BettyPortada.png",
+            audio: "audio/Black Beast.mp3",
+            tags: ["Battle", "Boss"],
+            lore: "No la llames 'Betty'. Eso la hace sonar alegre y amigable, cuando en realidad es todo lo contrario. Llámala por su verdadero nombre: Bete Noire."
+        }
+    ]
+},
+{
+    character: "Dice Arisugawa",
+    characterFace: "img/Dice.png",
+    lore: "Un apostador compulsivo que tiene la suerte de su lado. Si sientes que has tenido un golpe de fortuna, simplemente se estaba aburriendo de ganar",
+    tracks: [
+        {
+            songTitle: "Unfortunate All-In",
+            songDescription: "Una batalla de lo más variopinta, va a ser un gran problema derrotarlo si la suerte no está de tu lado.",
+            songCover: "img/DicePortada.png",
+            audio: "audio/Unfortunate All-In.mp3",
+            tags: ["Battle", "Boss"],
+            lore: "Dice es el Rey de las Apuestas en Makai. Si se esforzase un mínimo, podría vivir la vida más lujosa del mundo, pero sería muy fácil."
+        }
+    ]
+},{
+    character: "Capella Emeralda Lugnica",
+    characterFace: "img/Capella.png",
+    lore: "Una miembro de una pequeña banda que dio el salto a la Liga de Villanos. Una vez caigas en sus encantos no podrás huir de sus labios.",
+    tracks: [
+        {
+            songTitle: "Deadly Kiss",
+            songDescription: "Esta canción somete a los hombres de todas las partes del mundo. Desde Makai hasta el mundo.",
+            songCover: "img/CapellaPortada.png",
+            audio: "audio/Deadly Kiss.mp3",
+            tags: ["Battle", "Boss"],
+            lore: "Ese encanto juvenil es solo una máscara para engatusar a sus víctimas. El amor duele más que un puñal."
+        }
+    ]
+},
+{
+    character: "SAGE",
+    characterFace: "img/SAGE.png",
+    lore: "Una IA creada en el espacio exterior con el objetivo de dar soporte a su propietario. Posee un poder devastador de decodificar la realidad",
+    tracks: [
+        {
+            songTitle: "∞",
+            songDescription: "La capacidad de una Inteligencia Artificial es infinita. No hay nada a su nivel",
+            songCover: "img/SAGEPortada.png",
+            audio: "audio/∞.mp3",
+            tags: ["Battle", "Boss"],
+            lore: "La guerra entre héroes y villanos está apunto de comenzar. Estos últimos tienen un poder infinito de su lado."
+        }
+    ]
+},
+{
+    character: "Eula Lawrence",
+    characterFace: "img/Eula.jpg",
+    lore: "La princesa que solo quiso el bien para su pueblo",
+    tracks: [
+        {
+            songTitle: "The Uncrowned",
+            songDescription: "Si nadie le deja salvar al pueblo, entonces caerá todo el pueblo.",
+            songCover: "img/EulaCover.png",
+            audio: "audio/TheUncrowned.mp3",
+            tags: ["batalla", "epic"],
+            lore: "Si el reino no cede la corona, rebelión al reino."
         }
     ]
 },

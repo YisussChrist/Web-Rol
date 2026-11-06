@@ -383,6 +383,9 @@ body::after{
 .transformation-item .avatar,.transformation-item img.avatar{width:48px;height:48px;border-radius:14px;object-fit:cover}
 .multiplier{font-weight:1000;margin-left:6px;padding:3px 7px;border-radius:8px;transition:all .2s ease;background:rgba(0,0,0,.22)}
 .multiplier.glow{box-shadow:0 0 8px currentColor,0 0 18px currentColor;animation:pulseGlow 1.5s infinite alternate}
+.transformation-item.is-disabled{filter:grayscale(1)}
+.transformation-item.is-disabled .multiplier{animation:none;box-shadow:none}
+.transformation-status{font-size:.85em;font-weight:700}
 @keyframes pulseGlow{from{transform:scale(1)}to{transform:scale(1.08)}}
 
 /* Avatares sin imágenes */
@@ -821,3 +824,20 @@ body.light-mode .icon-btn,body.light-mode .ghost {
   border-color:var(--line);
   color:var(--text)
 }
+/* Evolución de poderes y altas respecto a la referencia anterior. */
+.changes-overview{padding:24px;margin-bottom:24px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.changes-overview h2{margin:4px 0 10px;font-size:23px}.changes-overview p{max-width:760px;line-height:1.6;color:var(--muted);font-size:13px}.changes-kicker{font-size:10px!important;letter-spacing:2px;font-weight:700}
+.change-summary{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.change-summary>span{padding:8px 12px;border:1px solid currentColor;border-radius:8px;font-size:13px;font-weight:700}
+.power-change{display:table;max-width:100%;margin-top:9px;padding:6px 10px;border:1px solid currentColor;border-radius:7px;font-size:12px;font-weight:650;line-height:1.5;overflow-wrap:anywhere}
+.power-change small{display:block;font-size:11px;font-weight:400;margin-top:2px}.change-up{color:#82dca7}.change-down{color:#ff969e}.change-new{color:#ffe076}.change-known{color:#8acaff}.change-unknown{color:var(--muted)}
+.new-reading{border-color:#e5bd4c!important;box-shadow:0 0 0 1px #e5bd4c44,0 0 22px #f7cb3826!important}.new-spark{display:inline-block;filter:drop-shadow(0 0 5px #ffe076);animation:new-spark-glow 2.8s ease-in-out infinite}
+@keyframes new-spark-glow{0%,100%{filter:drop-shadow(0 0 2px #ffe076)}50%{filter:drop-shadow(0 0 9px #ffe076)}}
+.change-filter-label{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}.change-filter-label select{max-width:100%;min-height:40px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px}.list-header{flex-wrap:wrap}.threat-card .power-change{text-align:left;font-size:11px}.transformation-item .power-change{margin-top:7px}
+body.light-mode .change-up{color:#176b3c}body.light-mode .change-down{color:#b5293b}body.light-mode .change-new{color:#795900}body.light-mode .change-known{color:#1d5997}body.light-mode .new-reading{background:linear-gradient(110deg,#fff9db,var(--card));border-color:#b59022!important}body.light-mode .new-spark{color:#976c00}
+@media(max-width:600px){.changes-overview{padding:18px}.changes-overview h2{font-size:20px}.change-summary{gap:7px}.change-summary>span{font-size:12px;padding:7px 9px}.change-filter-label{width:100%;justify-content:space-between}.power-change{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.new-spark{animation:none}}
+
+/* Identidad de Poderes. */
+.brand::before{display:none}
+.brand-icon{width:48px;height:48px;flex-shrink:0;object-fit:contain;background:transparent;border:0;border-radius:0;box-shadow:none}
+@media(max-width:600px){.brand-icon{width:38px;height:38px}}

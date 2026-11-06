@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261102-identity">
+  <link rel="stylesheet" href="styles.css?v=20261106-carousel">
 </head>
 <body>
   <header class="site-header">
@@ -25,18 +25,20 @@
     </nav>
     <div class="header-actions">
       <label class="search-field">
-        <span aria-hidden="true">⌕</span>
+        <span aria-hidden="true" data-icon="search"></span>
         <span class="sr-only">Buscar</span>
         <input id="searchInput" type="search" placeholder="Buscar canciones, personajes…">
       </label>
-      <button class="icon-button header-shuffle" id="headerShuffleButton" aria-label="Activar reproducción aleatoria" aria-pressed="false" title="Reproducción aleatoria">⤨</button>
-      <button class="icon-button repeat-control" id="headerRepeatButton" type="button" aria-label="Activar bucle de canción" aria-pressed="false" title="Repetir canción"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4M4 11V9a2 2 0 0 1 2-2h14M8 21l-4-4 4-4m12 0v2a2 2 0 0 1-2 2H4"/><text x="12" y="14" text-anchor="middle" stroke="none" fill="currentColor" font-size="8">1</text></svg></button>
-      <button class="icon-button" id="favoritesButton" aria-label="Mostrar favoritos" aria-pressed="false">♡</button>
+      <button class="icon-button header-shuffle" id="headerShuffleButton" aria-label="Activar reproducción aleatoria" aria-pressed="false" title="Reproducción aleatoria" data-icon="shuffle"></button>
+      <button class="icon-button repeat-control" id="headerRepeatButton" type="button" aria-label="Activar bucle de canción" aria-pressed="false" title="Repetir canción" data-icon="repeat"></button>
+      <button class="icon-button" id="favoritesButton" aria-label="Mostrar favoritos" aria-pressed="false" data-icon="heart"></button>
     </div>
   </header>
 
   <main id="top">
     <section class="hero" id="hero" aria-label="Selección destacada"></section>
+
+    <section class="discovery" id="discovery" aria-labelledby="discoveryTitle"></section>
 
     <section class="content-section" aria-labelledby="sectionTitle">
       <div class="section-heading">
@@ -53,7 +55,7 @@
   </main>
 
   <aside class="queue-drawer" id="queueDrawer" aria-label="Cola de reproducción" aria-hidden="true">
-    <div class="drawer-heading"><div><p class="eyebrow">A continuación</p><h2>Cola</h2></div><button class="icon-button" id="closeQueue" aria-label="Cerrar cola">×</button></div>
+    <div class="drawer-heading"><div><p class="eyebrow">A continuación</p><h2>Cola</h2></div><button class="icon-button" id="closeQueue" aria-label="Cerrar cola" data-icon="close"></button></div>
     <div id="queueList"></div>
   </aside>
 
@@ -63,27 +65,29 @@
 
   <footer class="player" id="player" aria-label="Reproductor" hidden>
     <div class="player-track">
-      <button class="player-cover-button" id="playerCoverButton" aria-label="Ver portada en grande"><img id="playerCover" alt=""><span aria-hidden="true">⤢</span></button>
+      <button class="player-cover-button" id="playerCoverButton" aria-label="Ver portada en grande"><img id="playerCover" alt=""><span aria-hidden="true" data-icon="expand"></span></button>
       <div><strong id="playerTitle"></strong><span id="playerArtist"></span></div>
-      <button class="small-favorite" id="playerFavorite" aria-label="Añadir a favoritos">♡</button>
+      <button class="small-favorite" id="playerFavorite" aria-label="Añadir a favoritos" data-icon="heart"></button>
     </div>
     <div class="player-center">
       <div class="player-controls">
-        <button class="control shuffle-control" id="shuffleButton" aria-label="Reproducción aleatoria" aria-pressed="false" title="Reproducción aleatoria">⤨</button>
-        <button class="control" id="previousButton" aria-label="Anterior" title="Anterior">‹</button>
-        <button class="play-control" id="playButton" aria-label="Reproducir">▶</button>
-        <button class="control" id="nextButton" aria-label="Siguiente" title="Siguiente">›</button>
-        <button class="control repeat-control" id="repeatButton" aria-label="Activar bucle de canción" aria-pressed="false" title="Repetir canción"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4M4 11V9a2 2 0 0 1 2-2h14M8 21l-4-4 4-4m12 0v2a2 2 0 0 1-2 2H4"/><text x="12" y="14" text-anchor="middle" stroke="none" fill="currentColor" font-size="8">1</text></svg></button>
-        <button class="control" id="queueButton" aria-label="Abrir cola" title="Cola de reproducción">≡</button>
+        <button class="control shuffle-control" id="shuffleButton" aria-label="Reproducción aleatoria" aria-pressed="false" title="Reproducción aleatoria" data-icon="shuffle"></button>
+        <button class="control" id="previousButton" aria-label="Anterior" title="Anterior" data-icon="previous"></button>
+        <button class="play-control" id="playButton" aria-label="Reproducir" data-icon="play"></button>
+        <button class="control" id="nextButton" aria-label="Siguiente" title="Siguiente" data-icon="next"></button>
+        <button class="control repeat-control" id="repeatButton" aria-label="Activar bucle de canción" aria-pressed="false" title="Repetir canción" data-icon="repeat"></button>
+        <button class="control" id="queueButton" aria-label="Abrir cola" title="Cola de reproducción" data-icon="queue"></button>
       </div>
       <div class="timeline"><span id="currentTime">0:00</span><input id="progressInput" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posición de reproducción"><span id="duration">0:00</span></div>
     </div>
-    <div class="volume"><button class="volume-symbol" id="muteButton" aria-label="Silenciar" title="Silenciar">◖</button><input id="volumeInput" type="range" min="0" max="1" value="0.85" step="0.01" aria-label="Volumen"></div>
+    <div class="volume"><button class="volume-symbol" id="muteButton" aria-label="Silenciar" title="Silenciar" data-icon="volume"></button><input id="volumeInput" type="range" min="0" max="1" value="0.85" step="0.01" aria-label="Volumen"></div>
   </footer>
 
   <script src="data.js?v=20260804-lyrics"></script>
-  <script src="../assets/js/shuffle-cycle.js?v=20260917"></script>
+  <script src="../assets/js/resonance-icons.js?v=20261106"></script>
+  <script src="../assets/js/shuffle-cycle.js?v=20261106-preview"></script>
+  <script src="../assets/js/track-navigation.js?v=20261106-carousel"></script>
   <script src="../assets/js/resonance-sharing.js?v=20261021"></script>
-  <script src="app.js?v=20261102-identity"></script>
+  <script src="app.js?v=20261106-carousel"></script>
 </body>
 </html>

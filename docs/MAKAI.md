@@ -72,3 +72,50 @@ El usuario confirma que todos están vivos salvo Marionette: 16 fichas,
 La actualización corrige una sola vez los estados de las copias locales
 anteriores, conserva las notas propias y permite cambios de estado posteriores.
 Comprobados contadores, filtro de fallecidos, imágenes y migración local.
+
+
+## Liga de Villanos — 4 de noviembre de 2026
+
+La página muestra únicamente miembros con afiliación «Liga de Villanos».
+Las fichas de otras afiliaciones se conservan en las copias y exportaciones.
+La galería incluye retratos, filtros de estado y acceso al expediente. Zoya
+aparece destacada en la cabecera. El enlace del HUB se llama Liga de Villanos.
+
+### Estadísticas y combate
+
+`assets/js/makai-stats.js` contiene las reglas. Cada ficha admite un objeto
+opcional `stats`; las copias antiguas sin este objeto siguen siendo válidas.
+Los seis valores empiezan pendientes (`null`) y admiten enteros de 1 a 255.
+Son cifras finales de nivel 50 introducidas por el usuario:
+
+- PS máximos = PS introducidos (Antiquiles: 150, no 210).
+- Otras estadísticas = valor introducido, sin añadir 5.
+- La naturaleza se conserva como información; no se vuelve a aplicar.
+- `stats.valueMode: "level50"` identifica el formato corregido. Los PS de
+  combate de copias anteriores se limitan al máximo corregido al cargarlas.
+- Etapas de −6 a +6: multiplicador (2 + etapa) / 2 si es positiva;
+  2 / (2 − etapa) si es negativa. Se redondea hacia abajo, mínimo 1.
+
+Los PS actuales y las etapas se guardan en `stats.battle`. PS `null` significa
+vida completa (o pendiente si falta el valor). Daño y curación respetan los
+límites; bajar el valor de PS ajusta la vida actual al nuevo máximo.
+Restablecer modificadores no cura; Recuperar PS no cambia las etapas.
+El estado vital narrativo es independiente de llegar a cero PS en combate.
+
+### Edición y publicación manual
+
+1. Elegir un miembro y pulsar «Editar ficha y estadísticas».
+2. Cambiar los valores de nivel 50, naturaleza o información y pulsar «Guardar cambios».
+3. Descargar datos para el repo, sustituir `makai-datos.js` y publicar.
+
+Se conserva `rp-makai-v1`, la migración anterior y la prioridad de los
+borradores locales. Las descargas JS y JSON contienen todas las fichas,
+las estadísticas y el combate. Solo JSON se importa desde la página.
+El guardado es local, sin sincronización entre navegadores o usuarios.
+Una escritura fallida no aplica cambios en memoria. Las estadísticas
+inválidas rechazan la importación completa antes de guardar.
+
+Validación: `node scripts/test-makai.cjs`, sintaxis JavaScript y auditoría de
+referencias locales. La prueba cubre cálculos, copias antiguas, edición,
+recarga, fallo de guardado y exportación/importación. La previsualización
+integrada no pudo acceder al servidor local; revisión visual pendiente.
