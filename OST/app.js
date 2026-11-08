@@ -1,6 +1,15 @@
 (async () => {
   'use strict';
 
+  // This exit works even if the player handshake fails (including local files).
+  window.addEventListener('click', event => {
+    if (!event.target.closest?.('#backToHub') || window.parent === window
+        || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    event.stopPropagation();
+    window.parent.postMessage({ type: 'rp-shell-navigate', route: 'hub.html' }, '*');
+  }, true);
+
   const icon = window.resonanceIcon;
   const { characters, soundtracks } = window.RESONANCE_DATA;
   const state = {

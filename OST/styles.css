@@ -13,6 +13,12 @@ main{padding-bottom:150px}.hero{max-width:var(--max);min-height:530px;margin:0 a
 @media(max-width:420px){.catalog{grid-template-columns:1fr 1fr}.track-card h3{font-size:.92rem}.character-grid{grid-template-columns:repeat(2,1fr)}.filter-row{margin-right:-14px}.player-track{max-width:55vw}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 
+/* A persistent, independent exit to the HUB. */
+.brand-navigation{display:flex;align-items:center;gap:18px;min-width:0}
+.hub-return{display:inline-flex;align-items:center;gap:7px;flex-shrink:0;padding:9px 11px;border:1px solid #c9aff42b;border-radius:10px;color:#d8c8eb;background:#ffffff04;text-decoration:none;font-size:.7rem;font-weight:650;white-space:nowrap}
+.hub-return:hover{color:#fff;background:#b294e818;border-color:#c9aff46b}.hub-return:focus-visible{outline:2px solid #d8b5ff;outline-offset:4px}.hub-return .resonance-icon{width:16px;height:16px;transform:rotate(180deg)}
+@media(max-width:1100px){.brand-navigation{gap:10px}.hub-return{padding:9px 8px;font-size:.65rem}}
+@media(max-width:760px){.brand-navigation{grid-column:1/-1;justify-content:space-between;width:100%}.site-header .header-actions{grid-column:1/-1;grid-row:2}.site-header .main-nav{grid-row:3}.brand-navigation .brand{justify-self:auto}.hub-return{min-height:38px;font-size:.7rem}}
 /* Resonance palette and refined player */
 .site-header{background:rgba(13,9,17,.9)}
 .hero-card{border-color:rgba(239,102,197,.18);background:#17101d;box-shadow:0 34px 100px rgba(75,28,88,.16)}

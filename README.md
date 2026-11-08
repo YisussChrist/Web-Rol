@@ -42,6 +42,26 @@ de ella. No son las versiones activas que se deben editar.
 
 ## Mantenimiento
 
+### Publicación en GitHub Pages
+
+Cada subida a `main` prepara una copia en `_site/` mediante
+`scripts/build-pages.py`. Instala sus dependencias con
+`python -m pip install -r scripts/requirements-pages.txt` si quieres comprobarla
+localmente; después ejecuta `python scripts/build-pages.py`.
+La carpeta `_site/` debe estar ausente al comenzar y no se guarda en Git.
+
+La copia pública reduce los MP3 de mayor bitrate a 128 kb/s y convierte las
+imágenes compatibles de las bibliotecas musicales a WebP sin pérdida. Los
+originales permanecen intactos. La preparación valida duraciones, canales,
+píxeles y presencia de archivos; detiene la publicación si supera 950 MB.
+También versiona los estilos y scripts para cargar la revisión correspondiente.
+`_build-info.json` identifica la revisión publicada y su tamaño.
+
+Para una publicación sin aviso de Discord, incluye `[skip-discord]` en el
+mensaje del commit.
+
+### Comprobaciones locales
+
 - Consulta [la guía de desarrollo](GUIA-DESARROLLO.md) antes de añadir páginas.
 - Ejecuta `python scripts/audit_site.py` para regenerar
   [la auditoría de referencias locales](docs/auditoria-enlaces.json).
