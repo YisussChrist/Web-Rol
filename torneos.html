@@ -1,174 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Torneo Mortal</title>
-<style>
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: radial-gradient(circle at top, #3b0000, #050000 70%);
-  color: #f5d27a;
-  font-family: Impact, Arial, sans-serif;
-  text-align: center;
-}
-
-h1 {
-  font-size: 4rem;
-  color: #ffcc55;
-  text-shadow: 0 0 15px red, 4px 4px #000;
-  letter-spacing: 3px;
-}
-
-button {
-  background: linear-gradient(#ffcc55, #8b0000);
-  border: 3px solid #ffef9a;
-  color: #160000;
-  font-size: 1.5rem;
-  padding: 15px 35px;
-  cursor: pointer;
-  font-family: Impact;
-  box-shadow: 0 0 20px red;
-  margin-bottom: 30px;
-}
-
-button:hover {
-  transform: scale(1.08);
-  filter: brightness(1.2);
-}
-
-#ronda {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 25px;
-  padding: 30px;
-}
-
-.combate {
-  background: linear-gradient(145deg, #1a0000, #390000);
-  border: 3px solid #b8860b;
-  box-shadow: 0 0 25px #8b0000;
-  padding: 25px;
-  position: relative;
-}
-
-.combate h2 {
-  color: #ff3333;
-  text-shadow: 2px 2px #000;
-}
-
-.vs {
-  font-size: 2.5rem;
-  color: #fff;
-  text-shadow: 0 0 12px red;
-  margin: 15px 0;
-}
-
-.luchador {
-  font-size: 1.4rem;
-  background: #090000;
-  border: 2px solid #ffcc55;
-  padding: 12px;
-  margin: 8px 0;
-}
-
-.letra {
-  color: #ff4444;
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101713">
+  <meta name="description" content="Organiza tu Budokai Tenkaichi con los personajes del archivo de poderes: selecciona luchadores, sortea los cruces y decide el campeón.">
+  <title>Budokai Tenkaichi · RP HUB</title>
+  <link rel="icon" href="logo.png">
+  <link rel="stylesheet" href="assets/css/budokai.css?v=20261109">
 </head>
 <body>
-
-<h1>TORNEO MORTAL</h1>
-<button onclick="generarTorneo()">GENERAR KOMBAT</button>
-
-<div id="ronda"></div>
-
-<script>
-const participantes = [
-  { nombre: "Rokurou Rangetsu", letra: "S" },
-  { nombre: "Crownslayer", letra: "S" },
-  { nombre: "Undyne", letra: "S" },
-  { nombre: "Marl Barrock", letra: "S" },
-  { nombre: "Kurumi Tokisaki", letra: "S" },
-
-  { nombre: "Alma Azkaban", letra: "Y" },
-  { nombre: "Tao Saotome", letra: "Y" },
-  { nombre: "Burnin'", letra: "Y" },
-  { nombre: "Freyja Kane", letra: "Y" },
-  { nombre: "Mereoleona Vermillion", letra: "Y" },
-  { nombre: "Albedo Dauthrelle", letra: "Y" },
-
-  { nombre: "Glorio", letra: "L" },
-  { nombre: "Raiko Makiro", letra: "L" },
-  { nombre: "Agoti Kamiji", letra: "L" },
-  { nombre: "Garou", letra: "L" },
-  { nombre: "Tohru Ryugu", letra: "L" }
-];
-
-function mezclar(array) {
-  return [...array].sort(() => Math.random() - 0.5);
-}
-
-function generarPrimeraRonda() {
-  let intentos = 0;
-
-  while (intentos < 10000) {
-    intentos++;
-
-    const lista = mezclar(participantes);
-    const combates = [];
-    let valido = true;
-
-    for (let i = 0; i < lista.length; i += 2) {
-      const p1 = lista[i];
-      const p2 = lista[i + 1];
-
-      if (!p2 || p1.letra === p2.letra) {
-        valido = false;
-        break;
-      }
-
-      combates.push([p1, p2]);
-    }
-
-    if (valido) return combates;
-  }
-
-  return null;
-}
-
-function generarTorneo() {
-  const ronda = generarPrimeraRonda();
-  const contenedor = document.getElementById("ronda");
-  contenedor.innerHTML = "";
-
-  if (!ronda) {
-    contenedor.innerHTML = "<h2>NO HAY KOMBAT POSIBLE</h2>";
-    return;
-  }
-
-  ronda.forEach((combate, index) => {
-    contenedor.innerHTML += `
-      <div class="combate">
-        <h2>KOMBAT ${index + 1}</h2>
-
-        <div class="luchador">
-          ${combate[0].nombre} 
-          <span class="letra">[${combate[0].letra}]</span>
-        </div>
-
-        <div class="vs">VS</div>
-
-        <div class="luchador">
-          ${combate[1].nombre} 
-          <span class="letra">[${combate[1].letra}]</span>
-        </div>
-      </div>
-    `;
-  });
-}
-</script>
-
+  <header class="topbar"><a href="index.html#route=hub.html" id="hub-return"><span aria-hidden="true">←</span> Volver al HUB</a><a class="archive-link" href="poder.html">Archivo de poderes <span aria-hidden="true">↗</span></a></header>
+  <main>
+    <header class="masthead"><div><p class="eyebrow"><span class="signal"></span> DRAGON BALL · TORNEO MUNDIAL</p><h1>BUDOKAI <span>TENKAICHI</span></h1><p class="intro">Un ring. Tus leyendas. Un solo campeón.</p></div><div class="seal" aria-hidden="true">武<span>TENKAICHI</span></div></header>
+    <nav class="steps" aria-label="Preparación del torneo"><button id="step-setup" aria-current="step"><span>01</span> El torneo</button><button id="step-roster" disabled><span>02</span> Los luchadores</button><button id="step-arena" disabled><span>03</span> La arena</button></nav>
+    <p id="notice" class="notice" role="status" aria-live="polite"></p>
+    <section id="setup" aria-labelledby="setup-title">
+      <div class="setup-layout"><div class="setup-content"><p class="eyebrow">PREPARA EL COMBATE</p><h2 id="setup-title" tabindex="-1">¿Cuántos entran<br> en la arena?</h2><p class="muted">Elige el tamaño del torneo. Después podrás seleccionar a cada luchador o dejar que el azar complete las plazas.</p><div id="sizes" class="sizes" role="group" aria-label="Número de participantes"></div><p class="rule-note">2, 4, 8, 16… Parejas completas en todas las rondas, sin pases automáticos.</p><button class="primary" id="choose-fighters">Elegir luchadores <span aria-hidden="true">→</span></button></div>
+      <aside class="tournament-ticket"><div class="ticket-top"><span>INSCRIPCIÓN ABIERTA</span><span aria-hidden="true">✦</span></div><div class="ticket-number" id="ticket-size">16</div><p class="ticket-label">LUCHADORES · ELIMINACIÓN DIRECTA</p><div class="ring" aria-hidden="true"><div></div><span>天下一武道会</span></div><dl class="ticket-facts"><div><dt>Rondas hasta el título</dt><dd id="round-count">4</dd></div><div><dt>Personajes disponibles</dt><dd id="roster-total">—</dd></div></dl><p>Los niveles se consultan directamente en el archivo de poderes del rol.</p></aside></div>
+    </section>
+    <section id="roster" hidden aria-labelledby="roster-title">
+      <div class="section-heading"><div><p class="eyebrow">ELIGE TU CARTEL</p><h2 id="roster-title" tabindex="-1">Los aspirantes</h2><p class="muted">Selecciona tus favoritos. El sorteo mezclará los cruces.</p></div><div class="selection-count"><strong id="selected-count">0 / 16</strong><span>PLAZAS CUBIERTAS</span></div></div>
+      <div class="roster-tools"><label class="search"><span>Buscar luchador</span><input id="fighter-search" type="search" placeholder="Nombre del personaje…" autocomplete="off"></label><label class="filter"><span>Mostrar</span><select id="fighter-filter"><option value="all">Todos los personajes</option><option value="forms">Con transformaciones</option><option value="selected">Seleccionados</option></select></label><button class="secondary" id="random-fill">Completar al azar</button><button class="quiet" id="clear-selection">Vaciar</button></div>
+      <div class="roster-layout"><div><p id="results-count" class="results-count"></p><div id="fighter-grid" class="fighter-grid"></div></div><aside class="selection-panel"><p class="eyebrow">TU EQUIPO DE ASPIRANTES</p><h3>Lista de inscritos</h3><div id="selection-list" class="selection-list"></div><button class="primary" id="draw" disabled>Sortear enfrentamientos <span aria-hidden="true">→</span></button><p id="selection-hint" class="muted"></p><button class="quiet" id="change-size">Cambiar tamaño</button></aside></div>
+    </section>
+    <section id="arena" hidden aria-labelledby="arena-title">
+      <div class="section-heading"><div><p class="eyebrow">QUE COMIENCE EL TORNEO</p><h2 id="arena-title" tabindex="-1">La arena</h2><p class="muted">Marca al ganador de cada combate para avanzar. El poder es una referencia: tú decides el resultado.</p></div><button class="secondary" id="new-tournament">Nuevo torneo</button></div>
+      <div id="champion" class="champion" hidden></div><nav id="round-tabs" class="round-tabs" aria-label="Rondas del torneo"></nav><div class="round-heading"><h3 id="round-title"></h3><span id="round-progress"></span></div><div id="matches" class="matches"></div>
+      <div class="round-footer"><p id="round-hint" class="muted"></p><button class="primary" id="next-round">Siguiente ronda <span aria-hidden="true">→</span></button></div><p class="power-note">Poder máximo: la mayor lectura entre la base y las transformaciones habilitadas. Si falta alguna lectura, se indica. No se inventan multiplicadores ni se suman formas.</p>
+    </section>
+    <footer class="page-footer"><span>RP HUB / BUDOKAI TENKAICHI</span><span id="save-status">El torneo se guarda en este navegador.</span></footer>
+  </main>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-text"><form method="dialog"><p class="eyebrow">ANTES DE CONTINUAR</p><h2 id="confirm-title">¿Empezar de nuevo?</h2><p id="confirm-text"></p><div class="dialog-actions"><button class="secondary" value="cancel">Cancelar</button><button class="primary" value="accept">Continuar</button></div></form></dialog>
+  <noscript>Activa JavaScript para seleccionar luchadores y organizar el torneo.</noscript>
+  <script src="assets/js/poder-datos.js?v=20261109"></script><script src="assets/js/budokai-engine.js?v=20261109"></script><script src="assets/js/budokai.js?v=20261109"></script>
 </body>
 </html>

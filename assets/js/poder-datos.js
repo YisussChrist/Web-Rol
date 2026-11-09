@@ -1397,6 +1397,21 @@
         strength: "90.000.000",
         photo: ""
       },
+      {
+        name: "Kon Kamishiro",
+        strength: "40.000.000",
+        photo: "fotos-poderes/Kon Kamishiro.png"
+      },
+      {
+        name: "Yoko Inari",
+        strength: "100.000.000",
+        photo: "fotos-poderes/Yoko Inari.jpg"
+      },
+      {
+        name: "Renji Kamishiro",
+        strength: "80.000.000",
+        photo: "fotos-poderes/Renji Kamishiro.png"
+      }
       
       
       

@@ -45,7 +45,20 @@ La lista extraoficial de `personajes.html` no se incorpora a Ficha 360.
 - `assets/css/libro-hermes.css` y `assets/js/libro-hermes.js`: aspecto de libro, dedicatoria, despedida, navegación, búsqueda y favoritas.
 - La página de lectura y las favoritas se guardan solo en este navegador con la clave `rp-libro-hermes-v1`. Conserva los IDs al mover una frase; asigna uno nuevo al sustituirla. Los IDs anteriores que siguen vigentes se conservan y los retirados se descartan, sin asignar una favorita antigua a una frase diferente.
 
-### Estructura general
+### Budokai Tenkaichi
+
+- `torneos.html` sustituye al generador antiguo y mantiene su URL en el HUB.
+- Usa directamente `assets/js/poder-datos.js`: todos sus personajes están
+  disponibles, sin una lista de participantes duplicada.
+- `assets/js/budokai-engine.js` calcula lecturas y rondas; `budokai.js` controla
+  el menú y el guardado local `rp-budokai-v1`; `assets/css/budokai.css` define
+  la presentación. Comprueba la lógica con `node scripts/test-budokai.cjs`.
+- Los tamaños son potencias de dos para evitar pases automáticos. El usuario
+  decide los ganadores; cambiar un resultado elimina las rondas que dependían
+  de él, tras confirmación. Los máximos excluyen formas deshabilitadas y no
+  se presentan como completos cuando existen lecturas desconocidas.
+
+### Archivos principales
 
 - `index.html`: contenedor principal y reproductor persistente.
 - `hub.html`: portada y buscador del RP HUB.

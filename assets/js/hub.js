@@ -17,7 +17,7 @@
       { title: "Poder", category: "Dragon Ball", emoji: "⚡", url: "poder.html", description: "Escalas, niveles de poder y referencias de fuerza.", status: "" },
       { title: "Árbol Familiar DB", category: "Dragon Ball", emoji: "🌳", url: "parejasdragonball.html", description: "Familias, parejas y descendencia del universo Dragon Ball.", status: "" },
       { title: "Transformaciones", category: "Dragon Ball", emoji: "🔺", url: "transformacionesdragonball.html?v=2", description: "Archivo de formas, rutas evolutivas, multiplicadores, poder y condiciones.", status: "Renovado" },
-      { title: "Torneos", category: "Dragon Ball", emoji: "🏆", url: "torneos.html", description: "Generador de torneos simple. V16 combatientes.", status: "Sin terminar" },
+      { title: "Budokai Tenkaichi", category: "Dragon Ball", emoji: "🏆", url: "torneos.html", description: "Elige luchadores del archivo de poderes, sortea los cruces y decide el campeón del torneo.", status: "Disponible" },
       { title: "Fusiones", category: "Dragon Ball", emoji: "🔀", url: "fusiones.html", description: "Generador de nombres para fusiones con combinaciones aleatorias y personalizadas.", status: "" },
       { title: "Sellos de Tao", category: "Dragon Ball", emoji: "🌀", url: "sellos tao.html?v=2", description: "Expediente de los quince sellos, sus capacidades, riesgos y combinaciones.", status: "Renovado" },
       { title: "Normativa de Héroe", category: "Dragon Ball", emoji: "📜", url: "codigo_general_heroes.html", description: "Reglamento oficial de los héroes del universo Dragon Ball.", status: "Nuevo" },
