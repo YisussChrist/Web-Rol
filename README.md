@@ -54,6 +54,11 @@ La copia pública reduce los MP3 de mayor bitrate a 128 kb/s y convierte las
 imágenes compatibles de las bibliotecas musicales a WebP sin pérdida. Los
 originales permanecen intactos. La preparación valida duraciones, canales,
 píxeles y presencia de archivos; detiene la publicación si supera 950 MB.
+Las fotos estáticas de `fotos-poderes/` y `Hijos/` de más de 100 KB se optimizan
+en la copia pública manteniendo sus rutas: hasta 1280 píxeles en el lado mayor,
+JPEG/WebP con calidad 90 y PNG con compresión sin pérdida tras el redimensionado.
+Se conservan orientación, perfil de color y transparencia; las animaciones se
+omiten. Solo se sustituye una copia si ocupa menos. Los originales no se editan.
 También versiona los estilos y scripts para cargar la revisión correspondiente.
 `_build-info.json` identifica la revisión publicada y su tamaño.
 

@@ -10,13 +10,74 @@ import sys
 
 import imageio_ffmpeg
 from mutagen.mp3 import MP3
-from PIL import Image
+from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / '_site'
 LIMIT = 950_000_000  # Leave room for the tar headers and below Pages' 1 GB limit.
 INTERNAL = {'.github', '.agents', '.codex', 'scripts', 'docs', 'DiscordWebBot'}
 TEXT_TYPES = {'.html', '.js', '.css', '.json', '.svg'}
+PORTRAIT_ROOTS = {'fotos-poderes', 'Hijos'}
+PORTRAIT_MAX_SIDE = 1280
+
+
+def optimize_character_image(relative):
+    """Keep public URLs and source files; optimize only the deployment copy."""
+    target = OUTPUT / relative
+    formats = {'.jpg': 'JPEG', '.jpeg': 'JPEG', '.png': 'PNG', '.webp': 'WEBP'}
+    file_format = formats.get(target.suffix.lower())
+    before = target.stat().st_size
+    if not file_format or before < 100_000:
+        return 0
+    temporary = target.with_name(target.name + '.optimized')
+    try:
+        with Image.open(target) as original:
+            if getattr(original, 'is_animated', False):
+                return 0
+            picture = ImageOps.exif_transpose(original)
+            # A transparent PNG may have a .jpg extension. Never flatten it.
+            if file_format == 'JPEG':
+                if picture.convert('RGBA').getchannel('A').getextrema()[0] < 255:
+                    return 0
+                if picture.mode not in ('RGB', 'L', 'CMYK'):
+                    picture = picture.convert('RGB')
+            picture.thumbnail((PORTRAIT_MAX_SIDE, PORTRAIT_MAX_SIDE), Image.Resampling.LANCZOS)
+            options = {'icc_profile': picture.info.get('icc_profile', b'')}
+            if picture.getexif():
+                options['exif'] = picture.getexif().tobytes()
+            if file_format == 'JPEG':
+                options.update(quality=90, optimize=True, progressive=True)
+            elif file_format == 'WEBP':
+                options.update(quality=90, method=4)
+            else:
+                options.update(optimize=True)
+            picture.save(temporary, format=file_format, **options)
+            with Image.open(temporary) as encoded:
+                encoded.load()
+                if encoded.size != picture.size or encoded.format != file_format:
+                    raise RuntimeError(f'Portrait validation failed: {relative}')
+                if file_format == 'PNG' and encoded.convert('RGBA').tobytes() != picture.convert('RGBA').tobytes():
+                    raise RuntimeError(f'PNG pixels changed during encoding: {relative}')
+                if file_format == 'WEBP' and encoded.convert('RGBA').getchannel('A').tobytes() != picture.convert('RGBA').getchannel('A').tobytes():
+                    raise RuntimeError(f'Portrait transparency changed: {relative}')
+        saved = before - temporary.stat().st_size
+        if saved > 0:
+            os.replace(temporary, target)
+            return saved
+        return 0
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def optimize_character_images(files):
+    portraits = [path for path in files if path.parts[0] in PORTRAIT_ROOTS
+                 and path.suffix.lower() in {'.png', '.jpg', '.jpeg', '.webp'}]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=min(4, os.cpu_count() or 2)) as pool:
+        savings = list(pool.map(optimize_character_image, portraits))
+    result = {'files': sum(saved > 0 for saved in savings), 'saved_bytes': sum(savings),
+              'max_side': PORTRAIT_MAX_SIDE, 'jpeg_webp_quality': 90}
+    print(f'Optimized {result["files"]} character images; saved {result["saved_bytes"] / 1e6:.1f} MB. Original URLs retained.', flush=True)
+    return result
 
 
 def public_files():
@@ -116,6 +177,7 @@ def build():
             if count % 10 == 0:
                 print(f'Validated audio: {count}/{len(audio)}', flush=True)
     converted = optimize_images(files)
+    portraits = optimize_character_images(files)
     print(f'Optimized {compressed} audio files and {len(converted)} lossless images.', flush=True)
     version = subprocess.check_output(['git', 'rev-parse', '--short=12', 'HEAD'], cwd=ROOT).decode().strip()
     version_assets(files, version)
@@ -128,7 +190,7 @@ def build():
     total = sum(path.stat().st_size for path in OUTPUT.rglob('*') if path.is_file())
     report = {'commit': version, 'source_bytes': initial, 'deployed_bytes': total,
               'limit_bytes': LIMIT, 'audio_files': len(audio), 'compressed_audio': compressed,
-              'lossless_images': converted}
+              'lossless_images': converted, 'character_images': portraits}
     (OUTPUT / '_build-info.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     print(f'Pages payload: {initial / 1e6:.1f} -> {total / 1e6:.1f} MB (limit {LIMIT / 1e6:.0f} MB).', flush=True)
     if total >= LIMIT:
@@ -136,7 +198,8 @@ def build():
     if os.environ.get('GITHUB_STEP_SUMMARY'):
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
             summary.write(f'### Pages size check\n\n{initial / 1e6:.1f} → **{total / 1e6:.1f} MB**. '
-                          f'All {len(audio)} songs retained. {len(converted)} images converted losslessly.\n')
+                          f'All {len(audio)} songs retained. {len(converted)} images converted losslessly. '
+                          f'{portraits["files"]} character images optimized (up to {PORTRAIT_MAX_SIDE}px, JPEG/WebP quality 90); original URLs and source images retained.\n')
 
 
 if __name__ == '__main__':

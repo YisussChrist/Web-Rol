@@ -38,7 +38,10 @@ jobs:
         run: python -m pip install -r scripts/requirements-pages.txt
 
       - name: Optimizar copia pública y comprobar tamaño
-        run: python scripts/build-pages.py
+        # Verify portrait handling before creating the public copy.
+        run: |
+          python scripts/test-pages-images.py
+          python scripts/build-pages.py
 
       - name: Subir archivos de la web
         uses: actions/upload-pages-artifact@v3
