@@ -145,7 +145,7 @@
         {
           name: "Super Saiya-Jin 2",
           strength: "30.000.000.000",
-          photo: "fotos-poderes/Transformaciones/Freyja/SSJ2.png"
+          photo: "fotos-poderes/Transformaciones/Freyja/FreyjaSSJ2.png"
         }
 
     ]
@@ -1227,175 +1227,165 @@
       {
         name: "Indivilia",
         strength: "210.000.000",
-        photo: ""
+        photo: "fotos-poderes/Indivilia.jpg"
       },
       {
         name: "Mnemosyne",
         strength: "240.000.000",
-        photo: ""
+        photo: "fotos-poderes/Isabella Osa.jpg"
       },
       {
         name: "Gecko",
         strength: "100.000.000",
-        photo: ""
+        photo: "fotos-poderes/Gecko.png"
       },
       {
         name: "Marionette",
         strength: "220.000.000",
-        photo: ""
-      },
-      {
-        name: "Isabelle",
-        strength: "270.000.000",
-        photo: ""
+        photo: "fotos-poderes/Taygeta.jpg"
       },
       {
         name: "Arlecchino",
         strength: "290.000.000",
-        photo: ""
+        photo: "fotos-poderes/Arlecchino.jpg"
       },
       {
         name: "Femme Soule",
         strength: "290.000.000",
-        photo: ""
+        photo: "fotos-poderes/Femme Soule.jpg"
       },
       {
-        name: "Dice Arusagawa",
+        name: "Dice Arisugawa",
         strength: "110.000.000",
-        photo: ""
+        photo: "fotos-poderes/Dice Arisugawa.jpg"
       },
       {
         name: "Daybit Semvoid",
         strength: "180.000.000",
-        photo: ""
+        photo: "fotos-poderes/Daybit Semvoid.jpg"
       },
       {
         name: "Sweetheart",
         strength: "270.000.000",
-        photo: ""
+        photo: "fotos-poderes/Sweetheart.jpg"
       },
       {
         name: "Bette Noire",
         strength: "310.000.000",
-        photo: ""
+        photo: "fotos-poderes/Bette Noire.jpg"
       },
       {
         name: "Capella",
         strength: "220.000.000",
-        photo: ""
+        photo: "fotos-poderes/Capella.jpg"
       },
       {
         name: "Diablo Volfir",
         strength: "120.000.000",
-        photo: ""
+        photo: "fotos-poderes/Diablo Volfir.png"
       },
       {
         name: "Jaehwan",
         strength: "380.000.000",
-        photo: ""
+        photo: "fotos-poderes/Jaehwan.jpg"
       },
       {
         name: "Kaldea",
         strength: "400.000.000",
-        photo: ""
+        photo: "fotos-poderes/Kaldea.jpg"
       },
       {
         name: "Goetia",
         strength: "400.000.000",
-        photo: ""
+        photo: "fotos-poderes/Goetia.jpg"
       },
       {
         name: "Jegal",
         strength: "360.000.000",
-        photo: ""
+        photo: "fotos-poderes/Jegal.jpg"
       },
       {
         name: "Antiquiles",
         strength: "650.000.000",
-        photo: ""
+        photo: "fotos-poderes/Antiquiles.jpg"
       },
       {
         name: "Ultrax",
         strength: "190.000.000",
-        photo: ""
+        photo: "fotos-poderes/Ultrax.jpg"
       },
       {
         name: "Hera Kane",
         strength: "20.000.000",
-        photo: "",
+        photo: "Hijos/Jin y Freyja/Hera Mori.png",
         transformations: [
           {
             name: "Super Saiyan",
             strength: "1.000.000.000",
-            photo: "fotos-poderes/Transformaciones/Hera/HeraSSJ.jpg"
+            photo: "fotos-poderes/Transformaciones/Hera/HeraSSJ.png"
           }
         ]
       },
       {
         name: "Inori Mahou",
         strength: "50.000.000",
-        photo: ""
+        photo: "fotos-poderes/Inori Mahou.png"
       },
       
       {
         name: "Oter Mádl",
         strength: "40.000.000",
-        photo: ""
+        photo: "fotos-poderes/Oter Madl.png"
       },
       {
         name: "Meg Mádl",
         strength: "15.000.000",
-        photo: ""
+        photo: "Hijos/Oter e Inori/Meg Madl.png"
       },
       {
         name: "Minerva Kane",
         strength: "1.500.000",
-        photo: ""
+        photo: "Hijos/Kaedehara y Shiva/Minerva Kane.jpg"
       },
       {
         name: "Varek Harfnssön",
         strength: "6.000.000",
-        photo: ""
+        photo: "fotos-poderes/Varek.jpg"
       },
       {
         name: "Ochako Uraraka",
         strength: "1.000.000",
-        photo: ""
-      },
-      {
-        name: "Zak Aetheron",
-        strength: "1.500.000",
-        photo: ""
+        photo: "fotos-poderes/Ochako Uraraka.jpg"
       },
       {
         name: "Jormun Banehjarta",
         strength: "80.000.000",
-        photo: ""
+        photo: "fotos-poderes/Jormun Banehjarta.png"
       },
       {
         name: "Sujeto 666",
         strength: "500.000.000",
-        photo: ""
+        photo: "fotos-poderes/Sujeto 666.png"
       },
       {
         name: "Leo Mikado",
         strength: "3.000.000",
-        photo: ""
+        photo: "Hijos/Akira y cñia/Mereoleona/Leo Mikado.jpg"
       },
       {
         name: "Joryuu Kane",
         strength: "4.000.000",
-        photo: ""
+        photo: "Hijos/Kael y Jibril/Jouryuu Kane.jpg"
       },
       {
         name: "Diana Kane",
         strength: "15.000.000",
-        photo: ""
+        photo: "Hijos/Zeo - Artemisa/Diana Kane.jpg"
       },
       {
-        name: "Qin Shi Wang",
+        name: "Qin Shi Huang",
         strength: "90.000.000",
-        photo: ""
+        photo: "fotos-poderes/Qin Shi Huang.jpg"
       },
       {
         name: "Kon Kamishiro",
