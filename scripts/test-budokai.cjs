@@ -24,21 +24,34 @@ for (const size of E.sizes(roster.length)) {
   assert.deepEqual([...shuffled].sort(), [...selected].sort());
   assert.deepEqual(ids.slice(0, size), selected);
   let rounds = [E.pair(shuffled)], roundIndex = 0;
+  const initialBracket = E.bracket(size, rounds);
+  assert.equal(initialBracket.length, Math.log2(size));
+  assert.equal(initialBracket.flat().length, size - 1);
+  assert.deepEqual(initialBracket[0].flatMap(m => m.fighters), shuffled);
+  assert.ok(initialBracket.slice(1).flat().every(m => !m.available && m.fighters.every(id => id === null)));
   assert.throws(() => E.advance(rounds[0]));
   while (true) {
     for (let i = 0; i < rounds[roundIndex].length; i++) {
       const winner = rounds[roundIndex][i].fighters[i % 2];
       rounds = E.choose(rounds, roundIndex, i, winner);
+      const preview = E.bracket(size, rounds);
+      if (roundIndex + 1 < preview.length) assert.equal(preview[roundIndex + 1][Math.floor(i / 2)].fighters[i % 2], winner);
     }
     if (rounds[roundIndex].length === 1) break;
     rounds.push(E.advance(rounds[roundIndex++]));
   }
   assert.equal(rounds.length, Math.log2(size));
   assert.equal(rounds.flat().length, size - 1);
+  assert.equal(E.bracket(size, rounds).at(-1)[0].winner, rounds.at(-1)[0].winner);
   const saved = { version: 1, size, selected, rounds };
   assert.ok(E.restore(JSON.parse(JSON.stringify(saved)), ids));
   const changed = E.choose(rounds, 0, 0, rounds[0][0].fighters[1]);
   assert.equal(changed.length, 1);
+  const revisedBracket = E.bracket(size, changed);
+  if (size > 2) {
+    assert.equal(revisedBracket[1][0].fighters[0], changed[0][0].winner);
+    assert.ok(revisedBracket.slice(1).flat().every(m => m.winner === null && !m.available));
+  }
   const invalid = JSON.parse(JSON.stringify(saved)); invalid.rounds[0][0].winner = 'Ausente';
   assert.equal(E.restore(invalid, ids), null);
   assert.equal(E.restore(saved, ids.slice(size)), null);

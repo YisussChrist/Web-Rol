@@ -7,7 +7,7 @@
   <meta name="description" content="Organiza tu Budokai Tenkaichi con los personajes del archivo de poderes: selecciona luchadores, sortea los cruces y decide el campeón.">
   <title>Budokai Tenkaichi · RP HUB</title>
   <link rel="icon" href="logo.png">
-  <link rel="stylesheet" href="assets/css/budokai.css?v=20261109">
+  <link rel="stylesheet" href="assets/css/budokai.css?v=20261111-bracket">
 </head>
 <body>
   <header class="topbar"><a href="index.html#route=hub.html" id="hub-return"><span aria-hidden="true">←</span> Volver al HUB</a><a class="archive-link" href="poder.html">Archivo de poderes <span aria-hidden="true">↗</span></a></header>
@@ -26,13 +26,20 @@
     </section>
     <section id="arena" hidden aria-labelledby="arena-title">
       <div class="section-heading"><div><p class="eyebrow">QUE COMIENCE EL TORNEO</p><h2 id="arena-title" tabindex="-1">La arena</h2><p class="muted">Marca al ganador de cada combate para avanzar. El poder es una referencia: tú decides el resultado.</p></div><button class="secondary" id="new-tournament">Nuevo torneo</button></div>
-      <div id="champion" class="champion" hidden></div><nav id="round-tabs" class="round-tabs" aria-label="Rondas del torneo"></nav><div class="round-heading"><h3 id="round-title"></h3><span id="round-progress"></span></div><div id="matches" class="matches"></div>
+      <div id="champion" class="champion" hidden></div>
+      <details class="bracket-panel" open>
+        <summary>Cuadro clasificatorio <span>El camino hasta el título</span></summary>
+        <div class="bracket-toolbar"><p id="bracket-help">Sigue las líneas hasta la final. Pulsa un combate disponible para ver sus poderes y elegir al ganador. Desplaza el cuadro para ver todas las rondas.</p><label>Ir a<select id="bracket-jump" aria-label="Ir a una ronda del cuadro"></select></label></div>
+        <div id="bracket-scroll" class="bracket-scroll" tabindex="0" role="region" aria-label="Cuadro de cruces del torneo" aria-describedby="bracket-help"><div id="bracket-board" class="bracket-board"></div></div>
+        <p class="bracket-legend"><span>✓ Ganador</span><span>Los huecos pendientes se completan al decidir cada combate.</span></p>
+      </details>
+      <nav id="round-tabs" class="round-tabs" aria-label="Rondas del torneo"></nav><div class="round-heading"><h3 id="round-title"></h3><span id="round-progress"></span></div><div id="matches" class="matches"></div>
       <div class="round-footer"><p id="round-hint" class="muted"></p><button class="primary" id="next-round">Siguiente ronda <span aria-hidden="true">→</span></button></div><p class="power-note">Poder máximo: la mayor lectura entre la base y las transformaciones habilitadas. Si falta alguna lectura, se indica. No se inventan multiplicadores ni se suman formas.</p>
     </section>
     <footer class="page-footer"><span>RP HUB / BUDOKAI TENKAICHI</span><span id="save-status">El torneo se guarda en este navegador.</span></footer>
   </main>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-text"><form method="dialog"><p class="eyebrow">ANTES DE CONTINUAR</p><h2 id="confirm-title">¿Empezar de nuevo?</h2><p id="confirm-text"></p><div class="dialog-actions"><button class="secondary" value="cancel">Cancelar</button><button class="primary" value="accept">Continuar</button></div></form></dialog>
   <noscript>Activa JavaScript para seleccionar luchadores y organizar el torneo.</noscript>
-  <script src="assets/js/poder-datos.js?v=20261109"></script><script src="assets/js/budokai-engine.js?v=20261109"></script><script src="assets/js/budokai.js?v=20261109"></script>
+  <script src="assets/js/poder-datos.js?v=20261109"></script><script src="assets/js/budokai-engine.js?v=20261111-bracket"></script><script src="assets/js/budokai.js?v=20261111-bracket"></script>
 </body>
 </html>

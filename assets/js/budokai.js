@@ -90,8 +90,23 @@
   function formDetails(f) {
     return `<strong>${esc(f.name)}</strong><ul><li>Forma base: ${number(f.base)}</li>${f.forms.map(form => `<li>${esc(form.name)}: ${number(form.power)}</li>`).join('')}${f.disabled ? `<li>${f.disabled} forma deshabilitada, fuera del cálculo.</li>` : ''}</ul>`;
   }
+  function renderBracket() {
+    const columns = E.bracket(state.size, state.rounds);
+    const entry = (id, winner, placeholder) => {
+      const fighter = byId.get(id);
+      return `<span class="bracket-fighter ${winner === id && id ? 'qualified' : ''}">${fighter ? portrait(fighter) : '<span class="bracket-placeholder" aria-hidden="true">?</span>'}<span>${fighter ? esc(fighter.name) : esc(placeholder)}</span>${id && id === winner ? '<b aria-label="Ganador">✓</b>' : ''}</span>`;
+    };
+    $('bracket-board').style.setProperty('--bracket-height', `${state.size / 2 * 116}px`);
+    $('bracket-board').innerHTML = columns.map((round, r) => `<section class="bracket-column" data-bracket-column="${r}" aria-label="${roundName(r)}"><h4>${roundName(r)}</h4><div class="bracket-games">${round.map((match, i) => `<div class="bracket-slot"><button class="bracket-match ${match.winner ? 'decided' : ''}" data-open-round="${r}" data-open-match="${i}" ${match.available ? '' : 'disabled'} aria-label="${roundName(r)}, combate ${i + 1}: ${esc(match.fighters.map((id, side) => id || `Ganador del combate ${i * 2 + side + 1} de ${roundName(r - 1)}`).join(' contra '))}"><span class="bracket-match-label">COMBATE ${i + 1}${match.winner ? ' · DECIDIDO' : ''}</span>${match.fighters.map((id, side) => entry(id, match.winner, `Ganador de ${roundName(r - 1)} · ${i * 2 + side + 1}`)).join('')}</button></div>`).join('')}</div></section>`).join('');
+    const championId = columns.at(-1)[0].winner;
+    $('bracket-board').insertAdjacentHTML('beforeend', `<section class="bracket-column bracket-winner" data-bracket-column="${columns.length}" aria-label="Campeón"><h4>Campeón</h4><div class="bracket-games"><div class="bracket-slot"><div class="bracket-match"><span class="bracket-match-label">${championId ? 'CAMPEÓN DEL TORNEO' : 'EL TÍTULO TE ESPERA'}</span>${entry(championId, championId, 'Ganador de la final')}</div></div></div></section>`);
+    const currentJump = $('bracket-jump').value;
+    $('bracket-jump').innerHTML = columns.map((_, r) => `<option value="${r}">${roundName(r)}</option>`).join('') + `<option value="${columns.length}">Campeón</option>`;
+    $('bracket-jump').value = Number(currentJump) <= columns.length ? currentJump || '0' : '0';
+  }
   function renderArena() {
     const round = state.rounds[activeRound];
+    renderBracket();
     $('round-tabs').innerHTML = Array.from({ length: Math.log2(state.size) }, (_, i) => `<button data-round="${i}" aria-current="${i === activeRound}" ${i >= state.rounds.length ? 'disabled' : ''}>${roundName(i)}</button>`).join('');
     $('round-title').textContent = roundName(activeRound);
     const decided = round.filter(m => m.winner).length;
@@ -157,6 +172,25 @@
   $('round-tabs').addEventListener('click', event => {
     const button = event.target.closest('[data-round]'); if (!button || button.disabled) return;
     activeRound = Number(button.dataset.round); renderArena(); $('round-tabs').querySelector(`[data-round="${activeRound}"]`).focus();
+  });
+  $('bracket-board').addEventListener('click', event => {
+    const button = event.target.closest('[data-open-match]');
+    if (!button || button.disabled) return;
+    activeRound = Number(button.dataset.openRound);
+    const matchIndex = Number(button.dataset.openMatch);
+    renderArena();
+    const match = $('matches').children[matchIndex];
+    match.scrollIntoView({ block: 'center', behavior: 'instant' });
+    match.querySelector('.win-button').focus({ preventScroll: true });
+  });
+  $('bracket-jump').addEventListener('change', () => {
+    const column = $('bracket-board').querySelector(`[data-bracket-column="${$('bracket-jump').value}"]`);
+    if (!column) return;
+    const slot = column.querySelector('.bracket-match');
+    const viewport = $('bracket-scroll');
+    const bounds = viewport.getBoundingClientRect(), target = slot.getBoundingClientRect();
+    viewport.scrollTo({ left: column.getBoundingClientRect().left - bounds.left + viewport.scrollLeft - 16,
+      top: target.top - bounds.top + viewport.scrollTop - viewport.clientHeight / 2 + target.height / 2, behavior: 'instant' });
   });
   $('matches').addEventListener('click', async event => {
     const button = event.target.closest('[data-match]'); if (!button) return;

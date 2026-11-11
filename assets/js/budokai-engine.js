@@ -72,5 +72,20 @@
     }
     return { version: 1, size: raw.size, selected: [...raw.selected], rounds: raw.rounds };
   }
-  return { power, fighter, sizes, shuffle, pair, advance, choose, restore };
+  function bracket(size, rounds) {
+    if (!rounds.length) return [];
+    const columns = [];
+    for (let r = 0; r < Math.log2(size); r++) {
+      columns.push(Array.from({ length: size / 2 ** (r + 1) }, (_, i) => {
+        const recorded = rounds[r]?.[i];
+        return {
+          fighters: recorded ? [...recorded.fighters] : [columns[r - 1][i * 2].winner, columns[r - 1][i * 2 + 1].winner],
+          winner: recorded?.winner || null,
+          available: Boolean(recorded)
+        };
+      }));
+    }
+    return columns;
+  }
+  return { power, fighter, sizes, shuffle, pair, advance, choose, restore, bracket };
 });
