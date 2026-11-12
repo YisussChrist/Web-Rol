@@ -32,7 +32,8 @@
         { name: 'Exusiai', img: 'fotos-poderes/Exusiai.jpg' }
       ], children: [
         { name: 'Kiriya Azkaban', img: 'Hijos/Alma y Exusiai/Kiriya Azkaban.jpg', gender: 'F', tag: 'Y', series: "Goddess' Dorm", meta: "Kiriya Sensho — Dorm Mother of the Goddess' Dorm", link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
-        { name: 'Liva Azkaban', img: 'Hijos/Alma y Exusiai/Liva Azkaban.jpg', gender: 'M', tag: 'S', series: "D-Gray Man", meta: "Liva Bookman — D-Gray Man", link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Liva Azkaban', img: 'Hijos/Alma y Exusiai/Liva Azkaban.jpg', gender: 'M', tag: 'S', series: "D-Gray Man", meta: "Liva Bookman — D-Gray Man", link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: "Kayama Azkaban", img: 'Hijos/Alma y Exusiai/Kayama Azkaban.jpg', gender: 'F', tag: 'L', series: "Blue Archive", meta: "Kayama Reijo — Blue Archive", link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Lancelot y Tokishikko', parents: [
         { name: 'Lancelot Tsukue', img: "fotos-poderes/Lancelot Tsukue.jpg" },
@@ -46,7 +47,8 @@
         { name: 'Law Vireon', img: 'fotos-poderes/Law Vireon.jpg' },
         { name: 'Gogo Karashina', img: 'fotos-poderes/Gogo Karashina.jpg' }
       ], children: [
-        { name: 'Fujimaru Vireon', img: 'Hijos/Law y Gogo/Fujimaru Vireon.jpg', gender: 'M', tag: 'L', series: 'Fate', meta: 'Fujimaru Ritsuka — Fate', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Fujimaru Vireon', img: 'Hijos/Law y Gogo/Fujimaru Vireon.jpg', gender: 'M', tag: 'L', series: 'Fate', meta: 'Fujimaru Ritsuka — Fate', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Sakura Vireon', img: 'Hijos/Law y Gogo/Sakura Vireon.jpg', gender: 'F', tag: 'S', series: 'Street Fighter', meta: 'Sakura — Street Fighter', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
       ]},
       { family: 'Skadi y Beelzebub', parents: [
         { name: 'Skadi Dragenfelt', img: 'fotos-poderes/Skadi Dragenfelt.jpg' },
@@ -111,7 +113,7 @@
         { name: 'Scar', img: 'fotos-poderes/Scar.jpg' },
         { name: 'W', img: 'fotos-poderes/W.jpg' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Myouri KalZen', img:"Hijos/Scar y W/Myouri Kal'Zen.jpg", gender: 'M', tag: 'L', series: 'Medaka Box', meta: 'Myouri Unzen — Medaka Box', link: '#' , born: false, age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Simon y Ryuko', parents: [
         { name: 'Simon Drayton', img: 'fotos-poderes/Simon Drayton.jpg' },
@@ -152,7 +154,7 @@
         { name: 'Zeo Torzeus', img: 'fotos-poderes/Zeo Torzeus.jpg' }
       ], children: [
         { name: 'Diana Kane', img: "Hijos/Zeo y Artemisa/Diana Kane.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Himeko — Honkai Star Rail', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true },
-        { name: 'Apoloº Kane', img: "Hijos/Zeo y Artemisa/Apolo Kane.jpg", gender: 'M', tag: 'L', series: 'Maou gakuin no futekigousha The Misfit of Demon King Academy', meta: 'Amur Veewither — Maou gakuin no futekigousha The Misfit of Demon King Academy', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true },
+        { name: 'Apolo Kane', img: "Hijos/Zeo y Artemisa/Apolo Kane.jpg", gender: 'M', tag: 'L', series: 'Maou gakuin no futekigousha The Misfit of Demon King Academy', meta: 'Amur Veewither — Maou gakuin no futekigousha The Misfit of Demon King Academy', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true },
 
       ]},
       { family: 'Venus y Jade', parents: [
@@ -195,7 +197,7 @@
         { name: 'Grimmjow Jearjearquez', img: 'fotos-poderes/Grimmjow.png' },
         { name: 'Adalet', img: 'fotos-poderes/Adalet.png' }
       ], children: [
-        { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Lamia Jearjearquez', img: "Hijos/Grimmjow y Justicia/Lamia Jearjearquez.jpg", gender: 'F', tag: 'L', series: 'Honkai Star Rail', meta: 'Aeon Aha — Honkai Star Rail', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Juri y Vega', parents: [
         { name: 'Juri Han', img: 'fotos-poderes/Juri Han.jpg' },
