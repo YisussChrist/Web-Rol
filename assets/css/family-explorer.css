@@ -100,3 +100,5 @@ body.fx-active .topbar .brand { color:#edf5ff; text-decoration:none; }
 .fx-generation span { position:relative; background:var(--fx-bg); padding:4px 10px; }
 .fx-children { width:max-content; min-width:145px; margin:auto; }
 @media(max-width:600px) { .fx-tools{grid-template-columns:minmax(0,1fr) auto;gap:10px}.fx-tools label:first-child{grid-column:1 / -1}.fx-tools>button{font-size:14px;padding:12px 10px}.fx-heading p{font-size:14px}.fx-heading h2{font-size:25px} }
+
+.fx-person .fx-mother { color:var(--fx-accent); font-size:11px; line-height:1.4; overflow-wrap:anywhere; }

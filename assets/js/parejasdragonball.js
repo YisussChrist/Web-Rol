@@ -23,6 +23,12 @@
     // De momento Gen 1 está bloqueado visualmente, así que estos datos no se muestran todavía.
     const GEN1_DATA = [];
 
+    // En familias con varias madres:
+    // - Marca cada progenitor con relation: 'mother' o relation: 'father'.
+    // - En cada hijo añade mother: 'Nombre exacto de la madre en parents'.
+    // Ejemplo: { name: 'Adelaide Grinberryall', mother: 'Eula Lawrence', ... }
+    // - mother: '' deja la madre por asignar, sin atribuirle todas las madres.
+    // Este campo se muestra en el árbol y el catálogo y determina sus vínculos.
     // Campos extra editables para cada personaje:
     // age: '', role: '', personality: '', powers: '', notes: ''
 
@@ -218,22 +224,22 @@
         { name: '???', gender: '?', tag: '?', series: '???', meta: '??? — ???', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Yuno y Eula', parents: [
-        { name: 'Yuno Grinberryal', img: 'fotos-poderes/Yuno Grinberryal.jpg' },
-        { name: 'Eula Lawrence', img: 'fotos-poderes/Eula.jpg' },
-        { name: 'Roxy Migurdia', img: 'fotos-poderes/Roxy Migurdia.jpg' }
+        { name: 'Yuno Grinberryal', relation: 'father', img: 'fotos-poderes/Yuno Grinberryal.jpg' },
+        { name: 'Eula Lawrence', relation: 'mother', img: 'fotos-poderes/Eula.jpg' },
+        { name: 'Roxy Migurdia', relation: 'mother', img: 'fotos-poderes/Roxy Migurdia.jpg' }
       ], children: [
-        { name: 'Adelaide Grinberryall', img: 'Hijos/Yuno y Eula/Adelaide Grinberryal.png', born:true, gender: 'F', tag: 'Y', series: 'Conquering the Academy with Just a Sashimi Knife', meta: 'Abel von Nibelung — Conquering the Academy with Just a Sashimi Knife — [Eula Lawrence]', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
-        { name: 'Charlotte Grinberryall', img: 'Hijos/Yuno y Eula/Charlotte Grynberryall.jpg', born:true, gender: 'F', tag: 'Y', series: 'Kanteiskill', meta: 'Charlotte - Kanteiskill — [Roxy Migurdia]', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
-        { name: 'Cecilia Grinberryall', img: 'Hijos/Yuno y Eula/Cecilia Grinberryal.png', born:false, gender: 'F', tag: 'Y', series: 'There was a Cute Girl in the Heros Party so I tried to confessing to her', meta: 'Cecilia Aquarain - There was a Cute Girl in the Heros Party so I tried to confessing to her  — [Eula Lawrence]', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Adelaide Grinberryall', mother: 'Eula Lawrence', img: 'Hijos/Yuno y Eula/Adelaide Grinberryal.png', born:true, gender: 'F', tag: 'Y', series: 'Conquering the Academy with Just a Sashimi Knife', meta: 'Abel von Nibelung — Conquering the Academy with Just a Sashimi Knife', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Charlotte Grinberryall', mother: 'Roxy Migurdia', img: 'Hijos/Yuno y Eula/Charlotte Grynberryall.jpg', born:true, gender: 'F', tag: 'Y', series: 'Kanteiskill', meta: 'Charlotte - Kanteiskill', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Cecilia Grinberryall', mother: 'Eula Lawrence', img: 'Hijos/Yuno y Eula/Cecilia Grinberryal.png', born:false, gender: 'F', tag: 'Y', series: 'There was a Cute Girl in the Heros Party so I tried to confessing to her', meta: 'Cecilia Aquarain - There was a Cute Girl in the Heros Party so I tried to confessing to her', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
 
       ]},
       { family: 'Toga, Toru y Hitoshi', parents: [
-        { name: 'Himiko Toga', img: 'fotos-poderes/Himiko Toga.png' },
-        { name: 'Toru Hagakure', img: 'fotos-poderes/Toru Hagakure.png' },
-        { name: 'Hitoshi Shinso', img: 'fotos-poderes/Hitoshi Shinso.png' }
+        { name: 'Himiko Toga', relation: 'mother', img: 'fotos-poderes/Himiko Toga.png' },
+        { name: 'Toru Hagakure', relation: 'mother', img: 'fotos-poderes/Toru Hagakure.png' },
+        { name: 'Hitoshi Shinso', relation: 'father', img: 'fotos-poderes/Hitoshi Shinso.png' }
       ], children: [
-        { name: 'Tenka Shinso', img: "Hijos/Shiso y cñia/Toru/Tenka Shinso.jpg", gender: 'F', tag: 'Y', series: 'Mato Seihei no Slave', meta: 'Tenka Izumo — Mato Seihei no Slave — [Toru Hagakure]', born: true, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
-        { name: 'Fadia Shinso', img: "Hijos/Shiso y cñia/Toga/Fadia Shinso.jpg", gender: 'F', tag: 'Y', series: 'Neverness to Everness', meta: 'Fadia — Neverness to Everness — [Himiko Toga]', born: true, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Tenka Shinso', mother: 'Toru Hagakure', img: "Hijos/Shiso y cñia/Toru/Tenka Shinso.jpg", gender: 'F', tag: 'Y', series: 'Mato Seihei no Slave', meta: 'Tenka Izumo — Mato Seihei no Slave', born: true, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Fadia Shinso', mother: 'Himiko Toga', img: "Hijos/Shiso y cñia/Toga/Fadia Shinso.jpg", gender: 'F', tag: 'Y', series: 'Neverness to Everness', meta: 'Fadia — Neverness to Everness', born: true, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
 
       ]},
       { family: 'Zenos y Rias', parents: [
@@ -267,12 +273,12 @@
         { name: 'Zen Silerfang', img: "Hijos/Garou y Kuroka/Zen Silverfang.jpg", gender: 'M', tag: 'L', series: 'Blood Lad', meta: 'Wolf — Blood Lad', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''} //* 💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀 Deadpool — Deadpool', link: '#' }
       ]},
       { family: 'Akira, Mereoleona y Derieri', parents: [
-        { name: 'Akira Mikado', img: 'fotos-poderes/Akira Mikado.jpg' },
-        { name: 'Mereoleona Vermillion', img: 'fotos-poderes/Mereoleona Vermillion.jpg' },
-        { name: 'Derieri Sukuna', img: "fotos-poderes/Derieri.jpg"},
+        { name: 'Akira Mikado', relation: 'father', img: 'fotos-poderes/Akira Mikado.jpg' },
+        { name: 'Mereoleona Vermillion', relation: 'mother', img: 'fotos-poderes/Mereoleona Vermillion.jpg' },
+        { name: 'Derieri Sukuna', relation: 'mother', img: "fotos-poderes/Derieri.jpg"},
       ], children: [
-        { name: 'Leo Mikado', img: "Hijos/Akira y cñia/Mereoleona/Leo Mikado.jpg", gender: 'M', tag: 'L', series: 'Black Clover', meta: 'Leopold Vermillion - Black Clover - [Mereoleona Vermillion]', link: '#', born: true , age: '2 años', role: 'Guerrero', personality: 'Soberbio y aguerrido', powers: 'Fuego', notes: ''},
-        { name: 'Evanescencia Mikado', img: "Hijos/Akira y cñia/Derieri/Evanescencia Mikado.jpg", gender: 'F', tag: 'Y', series: 'The Demon King’s Channel', meta: 'Evanescencia - The Demon King’s Channel - [Derieri Sukuna]', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Leo Mikado', mother: 'Mereoleona Vermillion', img: "Hijos/Akira y cñia/Mereoleona/Leo Mikado.jpg", gender: 'M', tag: 'L', series: 'Black Clover', meta: 'Leopold Vermillion - Black Clover', link: '#', born: true , age: '2 años', role: 'Guerrero', personality: 'Soberbio y aguerrido', powers: 'Fuego', notes: ''},
+        { name: 'Evanescencia Mikado', mother: 'Derieri Sukuna', img: "Hijos/Akira y cñia/Derieri/Evanescencia Mikado.jpg", gender: 'F', tag: 'Y', series: 'The Demon King’s Channel', meta: 'Evanescencia - The Demon King’s Channel', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
         ]},
       { family: 'Arthur y Momo', parents: [
         { name: 'Arthur Boyle', img: 'fotos-poderes/Arthur Boyle.jpg' },
@@ -441,7 +447,8 @@
                 data-personality="${escapeHTML(kid.personality)}"
                 data-powers="${escapeHTML(kid.powers)}"
                 data-notes="${escapeHTML(kid.notes)}"
-                data-parents-label="${escapeHTML(fam.parents.map(parentName).filter(Boolean).join(' y '))}"
+                data-mother="${escapeHTML(DragonFamilyRelations.motherLabel(fam, kid))}"
+                data-parents-label="${escapeHTML(DragonFamilyRelations.parents(fam, kid).map(parentName).filter(Boolean).join(' y '))}"
                 data-born-label="${escapeHTML(kid.born === true ? 'Nacido/a' : kid.born === false ? 'No nacido/a' : 'Estado desconocido')}"
               >
                 <div class="card-media ${isValidImage(kid.img) ? 'has-img' : ''}">
@@ -456,6 +463,7 @@
                 <div class="card-main">
                   <h3>${escapeHTML(genderMark(kid.gender) + ' ' + kid.name)}</h3>
                   <p>${escapeHTML(kid.meta)}</p>
+                  ${DragonFamilyRelations.motherLabel(fam, kid) ? `<p class="child-mother">Madre: ${escapeHTML(DragonFamilyRelations.motherLabel(fam, kid))}</p>` : ''}
                   <div class="card-status">
                     <span class="status-pill ${kid.born === true ? 'born' : kid.born === false ? 'unborn' : 'unknown'}">
                       ${escapeHTML(kid.born === true ? 'Nacido/a' : kid.born === false ? 'No nacido/a' : 'Estado desconocido')}
@@ -693,7 +701,8 @@
       const gender = card.dataset.gender || '?';
       const parentsLabel = card.dataset.parentsLabel || '';
       const details = [
-        ['Padres', parentsLabel],
+        ['Progenitores', parentsLabel],
+        ['Madre', card.dataset.mother],
         ['Edad', card.dataset.age],
         ['Rol', card.dataset.role],
         ['Personalidad', card.dataset.personality, true],

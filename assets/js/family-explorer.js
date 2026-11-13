@@ -6,8 +6,11 @@
     description: p.descripcion || p.notes || '', reference: p.referencia || p.meta || '',
     born: p.nacido ?? p.born, extra: [p.age && `Edad: ${p.age}`, p.powers && `Poderes: ${p.powers}`, p.personality && `Personalidad: ${p.personality}`].filter(Boolean) });
   const families = (inazuma ? FAMILIAS : DATA).map((f, id) => ({ id, name: f.familia || f.family,
-    parents: inazuma ? [f.madre && person(f.madre, 'Madre'), f.padre && person(f.padre, 'Padre')].filter(Boolean) : f.parents.map(p => person(typeof p === 'string' ? {name:p} : p, 'Progenitor')),
-    children: (f.hijos || f.children).map(p => person(p, 'Descendiente')),
+    parents: inazuma ? [f.madre && person(f.madre, 'Madre'), f.padre && person(f.padre, 'Padre')].filter(Boolean) : f.parents.map(p => person(typeof p === 'string' ? {name:p} : p, p.relation === 'mother' ? 'Madre' : p.relation === 'father' ? 'Padre' : 'Progenitor')),
+    children: (f.hijos || f.children).map(p => ({ ...person(p, 'Descendiente'),
+      mother: inazuma ? '' : DragonFamilyRelations.motherLabel(f, p),
+      parentNames: inazuma ? null : DragonFamilyRelations.parents(f, p).map(parent => typeof parent === 'string' ? parent : parent.name)
+    })),
     description: f.descripcion || ''
   }));
   let current = null, selection = null, zoom = 1, near = false;
@@ -46,6 +49,9 @@
     $('family').value = current.id;
     $('overview').hidden = true; $('branch').hidden = false;
     $('title').textContent = current.name;
+    mount.querySelector('.fx-legend').textContent = current.children.some(child => child.mother)
+      ? 'Progenitores de la familia · Cada hijo indica su madre. Selecciona una persona para consultar sus vínculos.'
+      : 'Línea horizontal: progenitores de la familia · Líneas descendentes: hijos registrados';
     $('diagram').replaceChildren();
     const parents = document.createElement('div'); parents.className = 'fx-parents';
     current.parents.forEach(p => parents.append(node(p)));
@@ -65,6 +71,7 @@
     const button = document.createElement('button'); button.type = 'button'; button.className = 'fx-person';
     button.dataset.name = p.name; button.setAttribute('aria-pressed','false');
     button.append(portrait(p), text('strong', p.name), text('small', p.role));
+    if(p.mother) button.append(text('small', `Madre: ${p.mother}`, 'fx-mother'));
     if(p.born === true) button.append(text('span','Nacido','fx-born'));
     button.addEventListener('click', () => selectPerson(p)); return button;
   }
@@ -75,7 +82,10 @@
     const detail = $('detail'); detail.replaceChildren(portrait(p),text('h4',p.name),text('p',p.reference || p.role));
     if(p.description) detail.append(text('p',p.description));
     p.extra.forEach(value => detail.append(text('p',value)));
-    const related = current.parents.includes(p) ? current.children : current.parents;
+    if(p.mother) detail.append(text('p', `Madre: ${p.mother}`));
+    const related = current.parents.includes(p)
+      ? current.children.filter(child => !child.parentNames || child.parentNames.includes(p.name))
+      : current.parents.filter(parent => !p.parentNames || p.parentNames.includes(parent.name));
     detail.append(text('h5',current.parents.includes(p) ? 'Hijos registrados' : 'Progenitores'));
     relationList(related, detail);
     if(current.children.includes(p)) { detail.append(text('h5','Otros hijos de esta familia')); relationList(current.children.filter(c => c !== p),detail); }
