@@ -54,7 +54,7 @@
         { name: 'Gogo Karashina', img: 'fotos-poderes/Gogo Karashina.jpg' }
       ], children: [
         { name: 'Fujimaru Vireon', img: 'Hijos/Law y Gogo/Fujimaru Vireon.jpg', gender: 'M', tag: 'L', series: 'Fate', meta: 'Fujimaru Ritsuka — Fate', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
-        { name: 'Sakura Vireon', img: 'Hijos/Law y Gogo/Sakura Vireon.jpg', gender: 'F', tag: 'S', series: 'Street Fighter', meta: 'Sakura — Street Fighter', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Sakura Vireon', img: 'Hijos/Law y Gogo/Sakura Vireon.png', gender: 'F', tag: 'S', series: 'Street Fighter', meta: 'Sakura — Street Fighter', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
       ]},
       { family: 'Skadi y Beelzebub', parents: [
         { name: 'Skadi Dragenfelt', img: 'fotos-poderes/Skadi Dragenfelt.jpg' },
@@ -135,7 +135,6 @@
       ], children: [
         { name: 'Milim Kane', img: "Hijos/Kael y Jibril/Milim Kane.jpg", gender: 'F', tag: 'Y', series: 'That Time I Got Reincarnated as a Slime', meta: 'Milim Nava — That Time I Got Reincarnated as a Slime', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
         { name: 'Joryuu Kane', img: "Hijos/Kael y Jibril/Jouryuu Kane.jpg", gender: 'F', tag: 'L', series: 'Mato Seihei no Slave', meta: 'Jouryuu — Mato Seihei no Slave', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''}
-
       ]},
       { family: 'Shionne y Goliat', parents: [
         { name: 'Shionne Imeris', img: 'fotos-poderes/Shionne Imeris.jpg' },
@@ -159,8 +158,8 @@
         { name: 'Artemisa Kane', img: 'fotos-poderes/Artemisa Kane.jpg' },
         { name: 'Zeo Torzeus', img: 'fotos-poderes/Zeo Torzeus.jpg' }
       ], children: [
-        { name: 'Diana Kane', img: "Hijos/Zeo y Artemisa/Diana Kane.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Himeko — Honkai Star Rail', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true },
-        { name: 'Apolo Kane', img: "Hijos/Zeo y Artemisa/Apolo Kane.jpg", gender: 'M', tag: 'L', series: 'Maou gakuin no futekigousha The Misfit of Demon King Academy', meta: 'Amur Veewither — Maou gakuin no futekigousha The Misfit of Demon King Academy', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true },
+        { name: 'Diana Kane', img: "Hijos/Zeo - Artemisa/Diana Kane.jpg", gender: 'F', tag: 'Y', series: 'Honkai Star Rail', meta: 'Himeko — Honkai Star Rail', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true },
+        { name: 'Apolo Kane', img: "Hijos/Zeo - Artemisa/Apolo Kane.png", gender: 'M', tag: 'L', series: 'Maou gakuin no futekigousha The Misfit of Demon King Academy', meta: 'Amur Veewither — Maou gakuin no futekigousha The Misfit of Demon King Academy', link: '#' , age: '', role: '', personality: '', powers: '', notes: '', born: true },
 
       ]},
       { family: 'Venus y Jade', parents: [
@@ -200,10 +199,10 @@
         { name: 'Heine Sukuna', img:'Hijos/Sukuna y Sentencia/Heine Sukuna.png', gender: 'F', tag: 'S', series: 'Sentouin, Hakenshimasu!', meta: 'Heine — Sentouin, Hakenshimasu!', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Grimmjow y Justicia', parents: [
-        { name: 'Grimmjow Jearjearquez', img: 'fotos-poderes/Grimmjow.png' },
+        { name: 'Grimmjow Jaegerjaquez', img: 'fotos-poderes/Grimmjow.png' },
         { name: 'Adalet', img: 'fotos-poderes/Adalet.png' }
       ], children: [
-        { name: 'Lamia Jearjearquez', img: "Hijos/Grimmjow y Justicia/Lamia Jearjearquez.jpg", gender: 'F', tag: 'L', series: 'Honkai Star Rail', meta: 'Aeon Aha — Honkai Star Rail', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Lamia Jaegerjaquez', img: "Hijos/Grimmjow y Justicia/Lamia Jearjearquez.jpg", gender: 'F', tag: 'L', series: 'Honkai Star Rail', meta: 'Aeon Aha — Honkai Star Rail', link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Juri y Vega', parents: [
         { name: 'Juri Han', img: 'fotos-poderes/Juri Han.jpg' },
@@ -243,10 +242,13 @@
 
       ]},
       { family: 'Zenos y Rias', parents: [
-        { name: 'Zenos Sochiku', img: 'fotos-poderes/Zenos.jpg' },
-        { name: 'Rias Gremory', img: 'fotos-poderes/Rias Gremory.jpg' }
+        { name: 'Zenos Sochiku', relation: 'father', img: 'fotos-poderes/Zenos.jpg' },
+        { name: 'Rias Gremory', relation: 'mother', img: 'fotos-poderes/Rias Gremory.jpg' },
+        { name: 'Akeno Himejima', relation: 'mother', img: 'fotos-poderes/Akeno Himejima.jpg' }
       ], children: [
-        { name: 'Millicas Shochiku', img: "Hijos/Zenos y cñia/Rias/Millica Shochiku.png", gender: 'M', tag: 'S', series: 'Highschool DxD', meta: 'Millicas Gremory — Highschool DxD — [Rias Gremory]', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Millicas Shochiku', mother: 'Rias Gremory', img: "Hijos/Zenos y cñia/Rias/Millica Shochiku.png", gender: 'M', tag: 'S', series: 'Highschool DxD', meta: 'Millicas Gremory — Highschool DxD — [Rias Gremory]', link: '#', born: true , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Ming Shochiku', mother: 'Akeno Himejima', img: "Hijos/Zenos y cñia/Akeno/Ming Shochiku.jpg", gender: 'F', tag: '', series: 'Strinova', meta: 'Ming — Strinova', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Iori Shochiku', mother: 'Akeno Himejima', img: "Hijos/Zenos y cñia/Akeno/Iori Shochiku.jpg", gender: 'F', tag: '', series: 'Jujutsu Kaisen', meta: 'Iori — Jujutsu Kaisen', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
       { family: 'Shoto y Mina', parents: [
         { name: 'Shoto Todoroki', img: 'fotos-poderes/Todoroki.jpg' }, //* Devuélveme a mi puta novia *//
@@ -278,7 +280,7 @@
         { name: 'Derieri Sukuna', relation: 'mother', img: "fotos-poderes/Derieri.jpg"},
       ], children: [
         { name: 'Leo Mikado', mother: 'Mereoleona Vermillion', img: "Hijos/Akira y cñia/Mereoleona/Leo Mikado.jpg", gender: 'M', tag: 'L', series: 'Black Clover', meta: 'Leopold Vermillion - Black Clover', link: '#', born: true , age: '2 años', role: 'Guerrero', personality: 'Soberbio y aguerrido', powers: 'Fuego', notes: ''},
-        { name: 'Evanescencia Mikado', mother: 'Derieri Sukuna', img: "Hijos/Akira y cñia/Derieri/Evanescencia Mikado.jpg", gender: 'F', tag: 'Y', series: 'The Demon King’s Channel', meta: 'Evanescencia - The Demon King’s Channel', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Evanescencia Mikado', mother: 'Mereoleona Vermillion', img: "Hijos/Akira y cñia/Derieri/Evanescencia Mikado.jpg", gender: 'F', tag: 'Y', series: 'The Demon King’s Channel', meta: 'Evanescencia - The Demon King’s Channel', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''},
         ]},
       { family: 'Arthur y Momo', parents: [
         { name: 'Arthur Boyle', img: 'fotos-poderes/Arthur Boyle.jpg' },
@@ -292,8 +294,16 @@
         { name: 'Shiva Kane', img: 'fotos-poderes/Shiva Kane.jpg' }
       ], children: [
         { name: 'Minerva Kane', gender: 'F', tag: 'Y', img:"Hijos/Kaedehara y Shiva/Minerva Kane.jpg" ,series: 'Cardfight!! Vanguard G', meta: 'Tokoha Anjou — Cardfight!! Vanguard G', born:true, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
-        { name: 'Vesta Kane', gender: 'F', tag: 'L', img:"Hijos/Kaedehara y Shiva/Vesta Kane.webp" ,series: 'The God of Highschool', meta: 'Mah Miseon — The God of Highschool', born:false, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
+        { name: 'Vesta Kane', gender: 'F', tag: 'L', img:"Hijos/Kaedehara y Shiva/Vesta Kane.webp" ,series: 'The God of Highschool', meta: 'Mah Miseon — The God of Highschool', born:false, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Astrid Kane', gender: 'F', tag: 'Y', img:"Hijos/Kaedehara y Shiva/Astrid Kane.jpg" ,series: 'Chiyu Mahou no Machigatta Tsukaikata', meta: 'Astrid — Chiyu Mahou no Machigatta Tsukaikata', born:false, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
+        { name: 'Iris Kane', gender: 'F', tag: 'Y', img:"Hijos/Kaedehara y Shiva/Iris Kane.png" ,series: 'Magical Girl Lyrical Nanoha', meta: 'Mana Shinomiya — Magical Girl Lyrical Nanoha', born:false, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
       ]},
+      { family: 'Sharrkhan y Maki', parents: [
+        { name: 'Sharrkhan Magi', img: 'fotos-poderes/Sharrkhan.jpg' },
+        { name: 'Maki Zenin', img: 'fotos-poderes/Maki Zenin.png' }
+      ], children: [
+        { name: 'Sui-Feng Magi', img: "Hijos/Sharrkhan y Maki/Sui-Feng Magi.jpg", gender: 'F', tag: 'L', series: 'Bleach', meta: 'Soi Fon — Bleach', link: '#', born: false , age: '', role: '', personality: '', powers: '', notes: ''}
+      ]}
     ];
 
     const familiesEl = document.getElementById('families');
