@@ -287,7 +287,6 @@
       ], children: [
         { name: 'Minerva Kane', gender: 'F', tag: 'Y', img:"Hijos/Kaedehara y Shiva/Minerva Kane.jpg" ,series: 'Cardfight!! Vanguard G', meta: 'Tokoha Anjou — Cardfight!! Vanguard G', born:true, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''},
         { name: 'Vesta Kane', gender: 'F', tag: 'L', img:"Hijos/Kaedehara y Shiva/Vesta Kane.webp" ,series: 'The God of Highschool', meta: 'Mah Miseon — The God of Highschool', born:false, link: '#' , age: '', role: '', personality: '', powers: '', notes: ''}
-
       ]},
     ];
 

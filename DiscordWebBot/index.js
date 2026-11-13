@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { comandoPurge } = require("./purge");
 const { execSync } = require("child_process");
 
 require("dotenv").config();
@@ -42,6 +43,7 @@ const CONFIG_AVISOS = {
 };
 
 const COMANDOS = new Map([
+    ["purge", { nombre: "purge", aliases: [] }],
     ["help", { nombre: "help", aliases: ["ayuda"] }],
     ["cumples", { nombre: "cumples", aliases: [] }],
     ["proximoscumples", { nombre: "proximoscumples", aliases: [] }],
@@ -729,7 +731,8 @@ function crearPaginaAyuda(indice) {
             campos: [
                 ["Personajes", "`-personaje Freyja` · `-track Mio Naruse`\n`-poder Freyja Kane` · `-podercalc Freyja Kane * 100` · `-wiki Nara Midori`"],
                 ["Cálculos", "`-calc 1500 * 2 + 300`\n`-multi 51000000 50`"],
-                ["Web y proyecto", "`-bolos` · `-roadmap` · `-ultimocambio`"]
+                ["Web y proyecto", "`-bolos` · `-roadmap` · `-ultimocambio`"],
+                ["Limpiar mensajes", "`-purge all ///`\nBorra los mensajes que contengan ese texto entre los 50 anteriores al comando. Requiere Gestionar mensajes."]
             ]
         }
     ];
@@ -969,6 +972,11 @@ client.on("messageCreate", async (message) => {
 
     const contenido = message.content.trim();
     const solicitud = interpretarComando(contenido);
+
+    if (solicitud?.nombre === "purge") {
+        return comandoPurge(message, solicitud.argumentos)
+            .catch(error => console.error("Error en purge:", error));
+    }
 
     if (solicitud?.nombre === "help") {
         return enviarAyudaPaginada(message);
